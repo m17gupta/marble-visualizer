@@ -13,6 +13,9 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Search,
   Grid3X3,
@@ -25,10 +28,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Upload,
+  LayoutGrid,
+  Rows3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'grid' | 'list';
+type LayoutMode = 'compact' | 'detailed';
 type SortOption = 'name' | 'price_low' | 'price_high' | 'lrv_low' | 'lrv_high' | 'newest' | 'popular';
 
 export function SwatchBookPage() {
@@ -46,15 +52,26 @@ export function SwatchBookPage() {
   const { user } = useSelector((state: RootState) => state.auth);
   
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('compact');
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [showFilters, setShowFilters] = useState(true);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   const canImport = user?.role === 'admin' || user?.role === 'vendor';
 
+  // Set compact layout as default and increase items per page
   useEffect(() => {
-    dispatch(fetchSwatches({ page: pagination.page, filters }));
-  }, [dispatch, pagination.page, filters]);
+    // Update pagination to show more items in compact mode
+    const newLimit = layoutMode === 'compact' ? 48 : 24;
+    if (pagination.limit !== newLimit) {
+      dispatch(setPage(1)); // Reset to first page when changing layout
+    }
+  }, [layoutMode, dispatch]);
+
+  useEffect(() => {
+    const limit = layoutMode === 'compact' ? 48 : 24;
+    dispatch(fetchSwatches({ page: pagination.page, filters: { ...filters, limit } }));
+  }, [dispatch, pagination.page, filters, layoutMode]);
 
   const handleSearch = (value: string) => {
     dispatch(setFilters({ search: value }));
@@ -106,15 +123,21 @@ export function SwatchBookPage() {
 
   const LoadingSkeleton = () => (
     <div className={cn(
-      'grid gap-6',
-      viewMode === 'grid' 
-        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-        : 'grid-cols-1'
+      'grid gap-4',
+      layoutMode === 'compact' 
+        ? (viewMode === 'grid' 
+          ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8' 
+          : 'grid-cols-1')
+        : (viewMode === 'grid' 
+          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+          : 'grid-cols-1')
     )}>
-      {[...Array(12)].map((_, i) => (
+      {[...Array(layoutMode === 'compact' ? 24 : 12)].map((_, i) => (
         <div key={i} className="space-y-3">
           <Skeleton className={cn(
-            viewMode === 'grid' ? 'aspect-square' : 'h-24'
+            layoutMode === 'compact' 
+              ? (viewMode === 'grid' ? 'aspect-square h-24' : 'h-16')
+              : (viewMode === 'grid' ? 'aspect-square' : 'h-24')
           )} />
           <div className="space-y-2">
             <Skeleton className="h-4 w-3/4" />
@@ -135,7 +158,7 @@ export function SwatchBookPage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">SwatchBook</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">SwatchBook</h1>
           <p className="text-muted-foreground">
             Discover and explore our comprehensive collection of paint swatches
           </p>
@@ -174,13 +197,38 @@ export function SwatchBookPage() {
               placeholder="Search swatches by name, brand, or tags..."
               value={filters.search}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-background"
             />
           </div>
         </div>
 
         {/* Controls */}
         <div className="flex items-center space-x-2">
+          {/* Layout Mode Toggle */}
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="layout-mode" className="text-sm whitespace-nowrap">Layout:</Label>
+            <div className="flex items-center border rounded-md">
+              <Button
+                variant={layoutMode === 'compact' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setLayoutMode('compact')}
+                className="rounded-r-none border-r"
+              >
+                <LayoutGrid className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Compact</span>
+              </Button>
+              <Button
+                variant={layoutMode === 'detailed' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setLayoutMode('detailed')}
+                className="rounded-l-none"
+              >
+                <Rows3 className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Detailed</span>
+              </Button>
+            </div>
+          </div>
+
           {/* Favorites Toggle */}
           <Button
             variant={showFavoritesOnly ? 'default' : 'outline'}
@@ -278,42 +326,42 @@ export function SwatchBookPage() {
           className="flex flex-wrap gap-2"
         >
           {filters.search && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
               Search: "{filters.search}"
             </Badge>
           )}
           {filters.category && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
               Category: {filters.category}
             </Badge>
           )}
           {filters.brand && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
               Brand: {filters.brand}
             </Badge>
           )}
           {filters.style && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
               Style: {filters.style}
             </Badge>
           )}
           {filters.finish && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
               Finish: {filters.finish}
             </Badge>
           )}
           {filters.coating_type && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="bg-muted text-muted-foreground">
               Type: {filters.coating_type}
             </Badge>
           )}
           {filters.tags.map(tag => (
-            <Badge key={tag} variant="secondary">
+            <Badge key={tag} variant="secondary" className="bg-muted text-muted-foreground">
               Tag: {tag}
             </Badge>
           ))}
           {filters.segment_types.map(type => (
-            <Badge key={type} variant="secondary">
+            <Badge key={type} variant="secondary" className="bg-muted text-muted-foreground">
               Area: {type}
             </Badge>
           ))}
@@ -327,7 +375,7 @@ export function SwatchBookPage() {
           {showFilters && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
+              animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="hidden lg:block flex-shrink-0"
@@ -339,7 +387,7 @@ export function SwatchBookPage() {
 
         {/* Mobile Filters */}
         {showFilters && (
-          <div className="lg:hidden">
+          <div className="lg:hidden mb-6">
             <SwatchFilters compact />
           </div>
         )}
@@ -355,6 +403,7 @@ export function SwatchBookPage() {
                 <>
                   Showing {filteredSwatches.length} of {pagination.total} swatches
                   {showFavoritesOnly && ' (favorites only)'}
+                  {layoutMode === 'compact' && ' • Compact view'}
                 </>
               )}
             </div>
@@ -384,13 +433,13 @@ export function SwatchBookPage() {
                 {showFavoritesOnly ? (
                   <>
                     <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">No favorites yet</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">No favorites yet</h3>
                     <p>Start exploring swatches and add your favorites!</p>
                   </>
                 ) : (
                   <>
                     <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">No swatches found</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">No swatches found</h3>
                     <p>Try adjusting your search or filters</p>
                   </>
                 )}
@@ -417,10 +466,14 @@ export function SwatchBookPage() {
               transition={{ duration: 0.3 }}
             >
               <div className={cn(
-                'grid gap-6',
-                viewMode === 'grid' 
-                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                  : 'grid-cols-1'
+                'grid gap-4',
+                layoutMode === 'compact' 
+                  ? (viewMode === 'grid' 
+                    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8' 
+                    : 'grid-cols-1')
+                  : (viewMode === 'grid' 
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                    : 'grid-cols-1')
               )}>
                 <AnimatePresence>
                   {filteredSwatches.map((swatch, index) => (
@@ -429,9 +482,13 @@ export function SwatchBookPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      transition={{ duration: 0.3, delay: index * 0.02 }}
                     >
-                      <SwatchCard swatch={swatch} variant={viewMode} />
+                      <SwatchCard 
+                        swatch={swatch} 
+                        variant={viewMode} 
+                        layoutMode={layoutMode}
+                      />
                     </motion.div>
                   ))}
                 </AnimatePresence>

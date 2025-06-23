@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 interface SwatchCardProps {
   swatch: Swatch;
   variant?: 'grid' | 'list';
+  layoutMode?: 'compact' | 'detailed';
   showActions?: boolean;
   className?: string;
 }
@@ -32,6 +33,7 @@ interface SwatchCardProps {
 export function SwatchCard({ 
   swatch, 
   variant = 'grid', 
+  layoutMode = 'detailed',
   showActions = true,
   className 
 }: SwatchCardProps) {
@@ -68,13 +70,173 @@ export function SwatchCard({
   };
 
   const getLRVCategory = (lrv: number) => {
-    if (lrv >= 70) return { label: 'Light', color: 'bg-yellow-100 text-yellow-800' };
-    if (lrv >= 30) return { label: 'Medium', color: 'bg-orange-100 text-orange-800' };
-    return { label: 'Dark', color: 'bg-gray-100 text-gray-800' };
+    if (lrv >= 70) return { label: 'Light', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800' };
+    if (lrv >= 30) return { label: 'Medium', color: 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800' };
+    return { label: 'Dark', color: 'bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-400 dark:border-gray-800' };
   };
 
   const lrvCategory = getLRVCategory(swatch.color.lrv);
 
+  // Compact List View
+  if (variant === 'list' && layoutMode === 'compact') {
+    return (
+      <TooltipProvider>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.01 }}
+          transition={{ duration: 0.2 }}
+          className={cn('w-full', className)}
+        >
+          <Card 
+            className="cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden bg-card border-border"
+            onClick={handleViewDetails}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <div className="flex items-center p-3">
+              {/* Compact Color Preview */}
+              <div className="w-12 h-12 flex-shrink-0 relative rounded-md overflow-hidden border border-border">
+                <div
+                  className="w-full h-full"
+                  style={{ backgroundColor: swatch.color.hex }}
+                />
+              </div>
+
+              {/* Compact Content */}
+              <div className="flex-1 min-w-0 ml-3">
+                <div className="flex items-center justify-between">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium text-sm truncate text-foreground">{swatch.title}</h3>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <code className="text-xs bg-muted px-1 py-0.5 rounded text-muted-foreground">
+                        {swatch.color.hex}
+                      </code>
+                      <span className="text-xs text-green-600 font-medium">
+                        {formatPrice(swatch.pricing.per_gallon)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Compact Actions */}
+                  {showActions && (
+                    <div className="flex items-center space-x-1 ml-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCopyColor}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleToggleFavorite}
+                        className={cn(
+                          'h-8 w-8 p-0',
+                          isFavorite && 'text-red-500 hover:text-red-600'
+                        )}
+                      >
+                        <Heart className={cn('h-3 w-3', isFavorite && 'fill-current')} />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      </TooltipProvider>
+    );
+  }
+
+  // Compact Grid View
+  if (variant === 'grid' && layoutMode === 'compact') {
+    return (
+      <TooltipProvider>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+          className={cn('w-full', className)}
+        >
+          <Card 
+            className="group cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
+            onClick={handleViewDetails}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {/* Compact Color Preview */}
+            <div className="relative aspect-square">
+              <div
+                className="w-full h-full transition-transform duration-300 group-hover:scale-105"
+                style={{ backgroundColor: swatch.color.hex }}
+              />
+              
+              {/* Compact overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              
+              {/* Compact color info */}
+              <div className="absolute bottom-2 left-2 right-2">
+                <div className="text-white text-xs">
+                  <div className="font-medium truncate">{swatch.title}</div>
+                  <div className="opacity-90">{swatch.color.hex}</div>
+                </div>
+              </div>
+
+              {/* Compact action buttons */}
+              {showActions && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: isHovered ? 1 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-2 right-2 flex space-x-1"
+                >
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleToggleFavorite}
+                    className={cn(
+                      'h-6 w-6 p-0 bg-white/90 hover:bg-white',
+                      isFavorite && 'text-red-500 hover:text-red-600'
+                    )}
+                  >
+                    <Heart className={cn('h-3 w-3', isFavorite && 'fill-current')} />
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* Premium badge for compact */}
+              {swatch.pricing.per_gallon > 80 && (
+                <div className="absolute top-2 left-2">
+                  <Badge className="bg-yellow-500 text-yellow-900 text-xs px-1 py-0">
+                    Pro
+                  </Badge>
+                </div>
+              )}
+            </div>
+
+            {/* Compact footer */}
+            <div className="p-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-green-600 font-medium">
+                  {formatPrice(swatch.pricing.per_gallon)}
+                </span>
+                <Badge variant="outline" className="text-xs px-1 py-0">
+                  {swatch.brand}
+                </Badge>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      </TooltipProvider>
+    );
+  }
+
+  // Detailed List View (existing implementation)
   if (variant === 'list') {
     return (
       <TooltipProvider>
@@ -86,7 +248,7 @@ export function SwatchCard({
           className={cn('w-full', className)}
         >
           <Card 
-            className="cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden"
+            className="cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
             onClick={handleViewDetails}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -106,7 +268,7 @@ export function SwatchCard({
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-lg truncate">{swatch.title}</h3>
+                      <h3 className="font-semibold text-lg truncate text-foreground">{swatch.title}</h3>
                       <Badge variant="outline" className="text-xs">
                         {swatch.sku}
                       </Badge>
@@ -207,6 +369,7 @@ export function SwatchCard({
     );
   }
 
+  // Detailed Grid View (existing implementation)
   return (
     <TooltipProvider>
       <motion.div
@@ -217,7 +380,7 @@ export function SwatchCard({
         className={cn('w-full', className)}
       >
         <Card 
-          className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden"
+          className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-card border-border"
           onClick={handleViewDetails}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -300,7 +463,7 @@ export function SwatchCard({
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg truncate">{swatch.title}</CardTitle>
+                <CardTitle className="text-lg truncate text-foreground">{swatch.title}</CardTitle>
                 <CardDescription className="line-clamp-2 mt-1">
                   {swatch.description}
                 </CardDescription>

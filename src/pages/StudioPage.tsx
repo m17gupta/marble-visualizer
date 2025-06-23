@@ -19,7 +19,7 @@ import { loadSegments } from '@/redux/slices/segmentsSlice';
 import { startAIJob, cancelCurrentJob, clearError as clearJobError } from '@/redux/slices/jobsSlice';
 import { fetchActivityLogs, logActivity } from '@/redux/slices/activityLogsSlice';
 import { fetchProjectAccess } from '@/redux/slices/projectSlice';
- import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
+import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
 import { CanvasEditor } from '@/components/CanvasEditor';
 import { ResultPreview } from '@/components/ResultPreview';
 import { ActivityTimeline } from '@/components/ActivityTimeline';
@@ -27,7 +27,6 @@ import { VersionHistory } from '@/components/VersionHistory';
 import { SegmentsList } from '@/components/SegmentsList';
 import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { SwatchRecommendations } from '@/components/swatch/SwatchRecommendations';
-// import { useJobPolling } from '@/hooks/useJobPolling';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -40,6 +39,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import {
   Upload,
@@ -50,12 +50,8 @@ import {
   Palette,
   Layers,
   Eye,
-  
   X,
-
   Square,
-
-
   Shapes,
   Sparkles,
   AlertCircle,
@@ -69,6 +65,8 @@ import {
   Target,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+type DrawingTool = 'select' | 'polygon';
 
 const styleOptions = [
   { value: 'modern', label: 'Modern', description: 'Clean, minimalist design' },
@@ -115,9 +113,6 @@ export function StudioPage() {
   const [dragActive, setDragActive] = useState(false);
   const [activeTab, setActiveTab] = useState('design');
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
-
-  // Use job polling hook
-  // const { isPolling } = useJobPolling();
 
   // Check permissions
   const canEdit = projectId ? canEditProject(projectId) : false;
@@ -285,28 +280,6 @@ export function StudioPage() {
     }
   };
 
-  // const handleSaveSegments = async () => {
-  //   if (!canEdit) {
-  //     toast.error('You do not have permission to save segments');
-  //     return;
-  //   }
-
-  //   if (!projectId) return;
-    
-  //   const result = await dispatch(saveSegments(projectId));
-  //   if (saveSegments.fulfilled.match(result)) {
-  //     toast.success('Segments saved successfully!');
-      
-  //     dispatch(logActivity({
-  //       projectId,
-  //       type: 'design_saved',
-  //       action: 'Segments Saved',
-  //       detail: `${segments.length} segments saved to project`,
-  //       metadata: { segmentCount: segments.length },
-  //     }));
-  //   }
-  // };
-
   // Handle style change with activity logging
   const handleStyleChange = (value: string) => {
     if (!canEdit) {
@@ -359,9 +332,9 @@ export function StudioPage() {
     if (!currentUserRole) return null;
 
     const roleConfig = {
-      admin: { icon: Crown, color: 'text-yellow-600 bg-yellow-50 border-yellow-200', label: 'Admin' },
-      editor: { icon: Edit3, color: 'text-blue-600 bg-blue-50 border-blue-200', label: 'Editor' },
-      viewer: { icon: Eye, color: 'text-gray-600 bg-gray-50 border-gray-200', label: 'Viewer' },
+      admin: { icon: Crown, color: 'text-yellow-600 bg-yellow-50 border-yellow-200 dark:text-yellow-400 dark:bg-yellow-950 dark:border-yellow-800', label: 'Admin' },
+      editor: { icon: Edit3, color: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950 dark:border-blue-800', label: 'Editor' },
+      viewer: { icon: Eye, color: 'text-muted-foreground bg-muted border-border', label: 'Viewer' },
     };
 
     const config = roleConfig[currentUserRole];
@@ -376,22 +349,23 @@ export function StudioPage() {
   };
 
   return (
-    <div className="h-screen flex bg-background overflow-hidden">
-      {/* Left Sidebar - Configuration Panel */}
+    <div className="flex h-screen bg-background overflow-hidden">
+      {/* Fixed Width Sidebar */}
       <motion.aside
-        initial={{ x: -300, opacity: 0 }}
+        initial={{ x: -288, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-80 bg-card border-r border-border flex flex-col max-h-screen"
+        className="w-72 bg-card border-r border-border flex flex-col"
       >
-        <div className="p-6 border-b border-border flex-shrink-0">
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Settings className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold">Design Studio</h2>
+                <h2 className="text-lg font-semibold text-foreground">Design Studio</h2>
                 <p className="text-sm text-muted-foreground">Configure your design</p>
               </div>
             </div>
@@ -420,235 +394,234 @@ export function StudioPage() {
           )}
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <div className="px-6 pt-4 flex-shrink-0">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="design" className="text-xs">
-                <Palette className="h-3 w-3 mr-1" />
-                Design
+        {/* Tabs Navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <div className="px-4 pt-2 flex-shrink-0">
+            <TabsList className="grid w-full grid-cols-5 h-9">
+              <TabsTrigger value="design" className="text-xs p-1">
+                <Palette className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="segments" className="text-xs">
-                <Shapes className="h-3 w-3 mr-1" />
-                Segments
+              <TabsTrigger value="segments" className="text-xs p-1">
+                <Shapes className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="swatches" className="text-xs">
-                <Target className="h-3 w-3 mr-1" />
-                Swatches
+              <TabsTrigger value="swatches" className="text-xs p-1">
+                <Target className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="history" className="text-xs">
-                <History className="h-3 w-3 mr-1" />
-                History
+              <TabsTrigger value="history" className="text-xs p-1">
+                <History className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="activity" className="text-xs">
-                <Clock className="h-3 w-3 mr-1" />
-                Activity
+              <TabsTrigger value="activity" className="text-xs p-1">
+                <Clock className="h-3 w-3" />
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0 pb-24">
-            <TabsContent value="design" className="p-6 space-y-6 mt-0">
-              {/* Job Status Alert */}
-              {isJobRunning && (
-                <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
-                  <Sparkles className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-800 dark:text-blue-200">
-                    AI is processing your design... This may take a few minutes.
-                  </AlertDescription>
-                </Alert>
-              )}
+          {/* Scrollable Tab Content */}
+          <ScrollArea className="flex-1 px-4">
+            <div className="py-4 space-y-6">
+              <TabsContent value="design" className="space-y-6 mt-0">
+                {/* Job Status Alert */}
+                {isJobRunning && (
+                  <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+                    <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <AlertDescription className="text-blue-800 dark:text-blue-200">
+                      AI is processing your design... This may take a few minutes.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-              {currentJob?.status === 'failed' && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    {currentJob.error || 'AI processing failed. Please try again.'}
-                  </AlertDescription>
-                </Alert>
-              )}
+                {currentJob?.status === 'failed' && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      {currentJob.error || 'AI processing failed. Please try again.'}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-              {/* Style Selection */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <Palette className="h-4 w-4 text-primary" />
-                  <Label className="text-sm font-medium">Style</Label>
-                </div>
-                <Select
-                  value={designSettings.style}
-                  onValueChange={handleStyleChange}
-                  disabled={isJobRunning || !canEdit}
+                {/* Style Selection */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="space-y-3"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a style" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {styleOptions.map((style) => (
-                      <SelectItem key={style.value} value={style.value}>
-                        <div>
-                          <div className="font-medium">{style.label}</div>
-                          <div className="text-xs text-muted-foreground">{style.description}</div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </motion.div>
-
-              <Separator />
-
-              {/* Level Toggle */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <Layers className="h-4 w-4 text-primary" />
-                  <Label className="text-sm font-medium">Processing Level</Label>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg border">
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium">
-                      Level {designSettings.level}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {designSettings.level === 1 ? 'Basic processing' : 'Advanced processing'}
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <Palette className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-medium">Style</Label>
                   </div>
-                  <Switch
-                    checked={designSettings.level === 2}
-                    onCheckedChange={handleLevelChange}
+                  <Select
+                    value={designSettings.style}
+                    onValueChange={handleStyleChange}
+                    disabled={isJobRunning || !canEdit}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {styleOptions.map((style) => (
+                        <SelectItem key={style.value} value={style.value}>
+                          <div>
+                            <div className="font-medium">{style.label}</div>
+                            <div className="text-xs text-muted-foreground">{style.description}</div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </motion.div>
+
+                <Separator />
+
+                {/* Level Toggle */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Layers className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-medium">Processing Level</Label>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30">
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium">
+                        Level {designSettings.level}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {designSettings.level === 1 ? 'Basic processing' : 'Advanced processing'}
+                      </div>
+                    </div>
+                    <Switch
+                      checked={designSettings.level === 2}
+                      onCheckedChange={handleLevelChange}
+                      disabled={isJobRunning || !canEdit}
+                    />
+                  </div>
+                </motion.div>
+
+                <Separator />
+
+                {/* Preserve Objects */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Eye className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-medium">Preserve Objects</Label>
+                  </div>
+                  <div className="space-y-3">
+                    {preserveOptions.map((option) => (
+                      <div key={option.id} className="flex items-center space-x-3">
+                        <Checkbox
+                          id={option.id}
+                          checked={designSettings.preserve.includes(option.id)}
+                          onCheckedChange={() => canEdit && dispatch(togglePreserveObject(option.id))}
+                          disabled={isJobRunning || !canEdit}
+                        />
+                        <div className="flex-1">
+                          <Label htmlFor={option.id} className="text-sm font-medium cursor-pointer">
+                            {option.label}
+                          </Label>
+                          <p className="text-xs text-muted-foreground">{option.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                <Separator />
+
+                {/* Color Tone */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Palette className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-medium">Color Tone</Label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {toneOptions.map((tone) => (
+                      <button
+                        key={tone.value}
+                        onClick={() => canEdit && dispatch(setTone(tone.value))}
+                        disabled={isJobRunning || !canEdit}
+                        className={cn(
+                          'p-3 rounded-lg border text-left transition-all',
+                          designSettings.tone === tone.value
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:border-primary/50 bg-muted/30',
+                          (isJobRunning || !canEdit) && 'opacity-50 cursor-not-allowed'
+                        )}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className={cn('w-3 h-3 rounded-full', tone.color)} />
+                          <span className="text-sm font-medium">{tone.label}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+
+                <Separator />
+
+                {/* Intensity Slider */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Zap className="h-4 w-4 text-primary" />
+                      <Label className="text-sm font-medium">Intensity</Label>
+                    </div>
+                    <Badge variant="secondary">{designSettings.intensity}%</Badge>
+                  </div>
+                  <Slider
+                    value={[designSettings.intensity]}
+                    onValueChange={(value) => canEdit && dispatch(setIntensity(value[0]))}
+                    max={100}
+                    step={5}
+                    className="w-full"
                     disabled={isJobRunning || !canEdit}
                   />
-                </div>
-              </motion.div>
-
-              <Separator />
-
-              {/* Preserve Objects */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <Eye className="h-4 w-4 text-primary" />
-                  <Label className="text-sm font-medium">Preserve Objects</Label>
-                </div>
-                <div className="space-y-3">
-                  {preserveOptions.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-3">
-                      <Checkbox
-                        id={option.id}
-                        checked={designSettings.preserve.includes(option.id)}
-                        onCheckedChange={() => canEdit && dispatch(togglePreserveObject(option.id))}
-                        disabled={isJobRunning || !canEdit}
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor={option.id} className="text-sm font-medium cursor-pointer">
-                          {option.label}
-                        </Label>
-                        <p className="text-xs text-muted-foreground">{option.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <Separator />
-
-              {/* Color Tone */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <Palette className="h-4 w-4 text-primary" />
-                  <Label className="text-sm font-medium">Color Tone</Label>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {toneOptions.map((tone) => (
-                    <button
-                      key={tone.value}
-                      onClick={() => canEdit && dispatch(setTone(tone.value))}
-                      disabled={isJobRunning || !canEdit}
-                      className={cn(
-                        'p-3 rounded-lg border text-left transition-all',
-                        designSettings.tone === tone.value
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:border-primary/50',
-                        (isJobRunning || !canEdit) && 'opacity-50 cursor-not-allowed'
-                      )}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className={cn('w-3 h-3 rounded-full', tone.color)} />
-                        <span className="text-sm font-medium">{tone.label}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-
-              <Separator />
-
-              {/* Intensity Slider */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Zap className="h-4 w-4 text-primary" />
-                    <Label className="text-sm font-medium">Intensity</Label>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Subtle</span>
+                    <span>Dramatic</span>
                   </div>
-                  <Badge variant="secondary">{designSettings.intensity}%</Badge>
-                </div>
-                <Slider
-                  value={[designSettings.intensity]}
-                  onValueChange={(value) => canEdit && dispatch(setIntensity(value[0]))}
-                  max={100}
-                  step={5}
-                  className="w-full"
-                  disabled={isJobRunning || !canEdit}
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Subtle</span>
-                  <span>Dramatic</span>
-                </div>
-              </motion.div>
-            </TabsContent>
+                </motion.div>
+              </TabsContent>
 
-            <TabsContent value="segments" className="p-6 space-y-4 mt-0">
-              {projectId && <SegmentsList projectId={projectId} />}
-            </TabsContent>
+              <TabsContent value="segments" className="space-y-4 mt-0">
+                {projectId && <SegmentsList projectId={projectId} />}
+              </TabsContent>
 
-            <TabsContent value="swatches" className="p-6 mt-0">
-              <SwatchRecommendations selectedSegmentType={selectedSegmentType} />
-            </TabsContent>
+              <TabsContent value="swatches" className="mt-0">
+                <SwatchRecommendations selectedSegmentType={selectedSegmentType} />
+              </TabsContent>
 
-            <TabsContent value="history" className="p-6 mt-0">
-              {projectId && <VersionHistory projectId={projectId} />}
-            </TabsContent>
+              <TabsContent value="history" className="mt-0">
+                {projectId && <VersionHistory projectId={projectId} />}
+              </TabsContent>
 
-            <TabsContent value="activity" className="p-6 mt-0">
-              {projectId && <ActivityTimeline projectId={projectId} />}
-            </TabsContent>
-          </div>
+              <TabsContent value="activity" className="mt-0">
+                {projectId && <ActivityTimeline projectId={projectId} />}
+              </TabsContent>
+            </div>
+          </ScrollArea>
         </Tabs>
 
         {/* Generate Button - Fixed at bottom */}
-        <div className="p-6 border-t border-border flex-shrink-0">
+        <div className="p-4 border-t border-border flex-shrink-0">
           <AnimatePresence mode="wait">
             {isJobRunning ? (
               <motion.div
@@ -705,19 +678,19 @@ export function StudioPage() {
         </div>
       </motion.aside>
 
-      {/* Main Canvas Area */}
+      {/* Main Canvas Area - Takes remaining width */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex-1 p-6 overflow-y-auto"
-        >
-          <div className="space-y-6">
+        <ScrollArea className="flex-1">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="p-6 space-y-6"
+          >
             {/* Canvas Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">Design Canvas</h1>
+                <h1 className="text-2xl font-bold text-foreground">Design Canvas</h1>
                 <p className="text-muted-foreground">
                   {canEdit ? 'Upload an image and use drawing tools to create segments' : 'View-only access to this project'}
                 </p>
@@ -767,7 +740,7 @@ export function StudioPage() {
                         canEdit ? 'cursor-pointer' : 'cursor-not-allowed',
                         dragActive && canEdit
                           ? 'border-primary bg-primary/5'
-                          : 'border-muted-foreground/25 hover:border-primary/50'
+                          : 'border-muted-foreground/25 hover:border-primary/50 bg-muted/10'
                       )}
                       onDrop={canEdit ? handleDrop : undefined}
                       onDragOver={canEdit ? handleDragOver : undefined}
@@ -784,7 +757,7 @@ export function StudioPage() {
                             <>
                               <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto" />
                               <div>
-                                <h3 className="text-lg font-semibold">Uploading...</h3>
+                                <h3 className="text-lg font-semibold text-foreground">Uploading...</h3>
                                 <p className="text-muted-foreground">
                                   Please wait while we process your image
                                 </p>
@@ -800,7 +773,7 @@ export function StudioPage() {
                                 )}
                               </div>
                               <div>
-                                <h3 className="text-xl font-semibold mb-2">
+                                <h3 className="text-xl font-semibold mb-2 text-foreground">
                                   {canEdit ? 'Upload Your Image' : 'No Image Uploaded'}
                                 </h3>
                                 <p className="text-muted-foreground mb-4">
@@ -852,8 +825,8 @@ export function StudioPage() {
                 projectId={projectId}
               />
             )}
-          </div>
-        </motion.div>
+          </motion.div>
+        </ScrollArea>
       </main>
 
       {/* Share Project Dialog */}

@@ -71,7 +71,7 @@ export function MainLayout() {
   };
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-card">
       <div className="flex items-center justify-between p-6">
         <motion.div
           initial={false}
@@ -82,7 +82,7 @@ export function MainLayout() {
             <Home className="h-5 w-5 text-primary-foreground" />
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-xl font-bold">Dashboard</span>
+            <span className="text-xl font-bold text-foreground">Dashboard</span>
           )}
         </motion.div>
         {!mobile && (
@@ -117,7 +117,7 @@ export function MainLayout() {
                 'w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                 active
                   ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -143,7 +143,7 @@ export function MainLayout() {
       <div className="p-4 border-t border-border">
         {(!sidebarCollapsed || mobile) && (
           <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
               <Settings className="h-4 w-4 mr-3" />
               Settings
             </Button>
@@ -199,7 +199,7 @@ export function MainLayout() {
                   <input
                     type="text"
                     placeholder="Search..."
-                    className="pl-10 pr-4 py-2 w-64 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="pl-10 pr-4 py-2 w-64 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
               </div>
@@ -230,7 +230,7 @@ export function MainLayout() {
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={profile?.image_thumb || profile?.image} alt={profile?.name} />
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-muted text-muted-foreground">
                         {profile?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -239,19 +239,19 @@ export function MainLayout() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{profile?.name}</p>
+                      <p className="text-sm font-medium leading-none text-foreground">{profile?.name}</p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user?.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="text-foreground hover:bg-muted">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem onClick={handleLogout} className="text-foreground hover:bg-muted">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
