@@ -1,6 +1,12 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AuthService } from '@/services/authService';
-import { User, UserProfile, LoginCredentials, SignUpCredentials, AuthError } from '@/models';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { AuthService } from "@/services/authService";
+import {
+  User,
+  UserProfile,
+  LoginCredentials,
+  SignUpCredentials,
+  AuthError,
+} from "@/models";
 
 interface AuthState {
   user: User | null;
@@ -26,23 +32,24 @@ const initialState: AuthState = {
 
 // Async thunk for login
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
+  "auth/loginUser",
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await AuthService.signIn(credentials);
+
       return response;
     } catch (error) {
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Login failed. Please check your credentials.');
+      return rejectWithValue("Login failed. Please check your credentials.");
     }
   }
 );
 
 // Async thunk for registration
 export const signUpUser = createAsyncThunk(
-  'auth/signUpUser',
+  "auth/signUpUser",
   async (credentials: SignUpCredentials, { rejectWithValue }) => {
     try {
       const response = await AuthService.signUp(credentials);
@@ -51,44 +58,46 @@ export const signUpUser = createAsyncThunk(
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Registration failed. Please try again.');
+      return rejectWithValue("Registration failed. Please try again.");
     }
   }
 );
 
 // Async thunk for logout
 export const logoutUser = createAsyncThunk(
-  'auth/logoutUser',
+  "auth/logoutUser",
   async (_, { rejectWithValue, dispatch }) => {
     try {
       await AuthService.signOut();
-      
+
       // Force a route change - add this if needed in your setup
-      window.location.href = '/login'; // Force full page refresh to ensure clean state
-      
+      window.location.href = "/login"; // Force full page refresh to ensure clean state
+
       return null;
     } catch (error) {
-      console.error('Logout error:', error);
-      
+      console.error("Logout error:", error);
+
       // Even if server-side logout fails, we should still clean up locally
       // This is important for UX - users expect to be able to log out regardless
       dispatch(clearAuth()); // Immediately clear the Redux state
-      
+
       // Force a route change regardless of error
-      window.location.href = '/login';
-      
+      window.location.href = "/login";
+
       if (error instanceof AuthError) {
         // We return the error, but the UI will still show as logged out
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Logout failed, but local session has been cleared');
+      return rejectWithValue(
+        "Logout failed, but local session has been cleared"
+      );
     }
   }
 );
 
 // Async thunk to initialize auth state
 export const initializeAuth = createAsyncThunk(
-  'auth/initializeAuth',
+  "auth/initializeAuth",
   async (_, { rejectWithValue }) => {
     try {
       const result = await AuthService.getCurrentUser();
@@ -97,44 +106,45 @@ export const initializeAuth = createAsyncThunk(
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to initialize authentication');
+      return rejectWithValue("Failed to initialize authentication");
     }
   }
 );
 
 // Async thunk to get current user
 export const getCurrentUser = createAsyncThunk(
-  'auth/getCurrentUser',
+  "auth/getCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
       const result = await AuthService.getCurrentUser();
+
       return result;
     } catch (error) {
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to get current user');
+      return rejectWithValue("Failed to get current user");
     }
   }
 );
 
 // Async thunk to refresh session
 export const refreshSession = createAsyncThunk(
-  'auth/refreshSession',
+  "auth/refreshSession",
   async (_, { rejectWithValue }) => {
     try {
       const session = await AuthService.refreshSession();
       if (!session) {
-        throw new Error('No session returned');
+        throw new Error("No session returned");
       }
-      
+
       const result = await AuthService.getCurrentUser();
       return result;
     } catch (error) {
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Session refresh failed');
+      return rejectWithValue("Session refresh failed");
     }
   }
 );
@@ -148,7 +158,7 @@ export const refreshSession = createAsyncThunk(
 //       if (!state.auth.user) {
 //         throw new Error('No user logged in');
 //       }
-      
+
 //       const updatedProfile = await AuthService.updateProfile(state.auth.user.id, updates);
 //       return updatedProfile;
 //     } catch (error) {
@@ -161,13 +171,16 @@ export const refreshSession = createAsyncThunk(
 // );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     clearError: (state) => {
       state.error = null;
     },
-    setUser: (state, action: PayloadAction<{ user: User; profile: UserProfile } | null>) => {
+    setUser: (
+      state,
+      action: PayloadAction<{ user: User; profile: UserProfile } | null>
+    ) => {
       if (action.payload) {
         state.user = action.payload.user;
         state.profile = action.payload.profile;
@@ -212,7 +225,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })
-      
+
       // Login cases
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
@@ -231,7 +244,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })
-      
+
       // Sign up cases
       .addCase(signUpUser.pending, (state) => {
         state.isLoading = true;
@@ -250,7 +263,7 @@ const authSlice = createSlice({
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })
-      
+
       // Logout cases
       .addCase(logoutUser.pending, (state) => {
         state.isLoading = true;
@@ -276,7 +289,7 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.refreshToken = null;
       })
-      
+
       // Get current user cases
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         if (action.payload) {
@@ -294,7 +307,7 @@ const authSlice = createSlice({
         state.profile = null;
         state.isAuthenticated = false;
       })
-      
+
       // Refresh session cases
       .addCase(refreshSession.fulfilled, (state, action) => {
         if (action.payload) {
@@ -311,9 +324,7 @@ const authSlice = createSlice({
         state.user = null;
         state.profile = null;
         state.isAuthenticated = false;
-      })
-      
-   
+      });
   },
 });
 

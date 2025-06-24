@@ -1,69 +1,74 @@
-import { AuthAPI } from '@/api/authApi';
-import { 
-  LoginCredentials, 
-  SignUpCredentials, 
-  AuthResponse, 
-  
+import { AuthAPI } from "@/api/authApi";
+import {
+  LoginCredentials,
+  SignUpCredentials,
+  AuthResponse,
   User,
   UserProfile,
-  UpdateAuthUserProfileRequest
-} from '@/models';
+  UpdateAuthUserProfileRequest,
+} from "@/models";
 
 export class AuthService {
   /**
    * Sign in with email and password
    */
   static async signIn(credentials: LoginCredentials): Promise<AuthResponse> {
-    return AuthAPI.signIn(credentials);
+    return await AuthAPI.signIn(credentials);
   }
 
   /**
    * Sign up with email and password
    */
   static async signUp(credentials: SignUpCredentials): Promise<AuthResponse> {
-    return AuthAPI.signUp(credentials);
+    return await AuthAPI.signUp(credentials);
   }
 
   /**
    * Sign out current user
    */
   static async signOut(): Promise<void> {
-    return AuthAPI.signOut();
+    return await AuthAPI.signOut();
   }
 
   /**
    * Get current user session
    */
   static async getCurrentSession() {
-    return AuthAPI.getCurrentSession();
+    return await AuthAPI.getCurrentSession();
   }
 
   /**
    * Get current user with profile
    */
-  static async getCurrentUser(): Promise<{ user: User; profile: UserProfile } | null> {
-    return AuthAPI.getCurrentUser();
+  static async getCurrentUser(): Promise<{
+    user: User;
+    profile: UserProfile;
+  } | null> {
+    return await AuthAPI.getCurrentUser();
   }
 
   /**
    * Refresh current session
    */
   static async refreshSession() {
-    return AuthAPI.refreshSession();
+    return await AuthAPI.refreshSession();
   }
 
   /**
    * Update user profile
    */
-  static async updateProfile(userId: string, updates: UpdateAuthUserProfileRequest): Promise<UserProfile> {
-    return AuthAPI.updateUserProfile(userId, updates);
+  static async updateProfile(
+    userId: string,
+    updates: UpdateAuthUserProfileRequest
+  ): Promise<UserProfile> {
+    return await AuthAPI.updateUserProfile(userId, updates);
   }
 
   /**
    * Reset password
    */
   static async resetPassword(email: string): Promise<void> {
-    return AuthAPI.resetPassword(email);
+    return await AuthAPI.resetPassword(email);
   }
 
   /**
@@ -84,23 +89,23 @@ export class AuthService {
     const errors: string[] = [];
 
     if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
+      errors.push("Password must be at least 8 characters long");
     }
 
     if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
+      errors.push("Password must contain at least one uppercase letter");
     }
 
     if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
+      errors.push("Password must contain at least one lowercase letter");
     }
 
     if (!/\d/.test(password)) {
-      errors.push('Password must contain at least one number');
+      errors.push("Password must contain at least one number");
     }
 
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.push('Password must contain at least one special character');
+      errors.push("Password must contain at least one special character");
     }
 
     return {
@@ -113,6 +118,6 @@ export class AuthService {
    * Generate username from email
    */
   static generateUsernameFromEmail(email: string): string {
-    return email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+    return email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "");
   }
 }

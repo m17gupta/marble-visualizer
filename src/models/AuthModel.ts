@@ -8,11 +8,12 @@ export interface SignUpCredentials {
   password: string;
   full_name: string;
   dob?: string;
+  role?: string;
 }
 
 export interface AuthResponse {
-  user: User;
-  profile: UserProfile;
+  user: any;
+  profile?: UserProfile;
   session: {
     access_token: string;
     refresh_token: string;
@@ -33,10 +34,10 @@ export class AuthError extends Error {
 
   constructor(error: { message: string; status?: number; code?: string }) {
     super(error.message);
-    this.name = 'AuthError';
+    this.name = "AuthError";
     this.status = error.status;
     this.code = error.code;
-    
+
     // Maintains proper stack trace for where our error was thrown (only available on V8)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, AuthError);
@@ -71,4 +72,4 @@ export interface CreateAuthUserRequest {
 }
 
 // Import User and UserProfile types
-import { User, UserProfile } from './UserModel';
+import { User, UserProfile } from "./UserModel";

@@ -1,3 +1,5 @@
+import { boolean } from "zod";
+
 export interface User {
   id: string;
   email: string;
@@ -26,8 +28,8 @@ export interface UserProfile {
   id: number; // Auto-increment ID
 }
 
-export type UserRole = 'admin' | 'editor' | 'viewer' | 'vendor' | 'user';
-export type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending';
+export type UserRole = "admin" | "realtor" | "vendor";
+export type UserStatus = true | false;
 
 export interface CreateUserRequest {
   email: string;
