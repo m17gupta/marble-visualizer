@@ -42,10 +42,11 @@ export class UserAPI {
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('_id', userId)
+        .eq('user_id', userId)
         .single();
 
       if (error) {
+        console.log('Error fetching user profile:', error);
         throw new AuthError({
           message: error.message,
           status: 404,

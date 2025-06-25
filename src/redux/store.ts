@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { createSelector } from '@reduxjs/toolkit';
 import authSlice from './slices/authSlice';
+import userProfileSlice from './slices/userProfileSlice';
 import projectSlice from './slices/projectSlice';
 import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
@@ -13,6 +14,7 @@ import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
 export const store = configureStore({
   reducer: {
     auth: authSlice,
+    userProfile: userProfileSlice,
     projects: projectSlice,
     studio: studioSlice,
     segments: segmentsSlice,

@@ -56,7 +56,8 @@ export function MainLayout() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { theme, setTheme } = useTheme();
-  const { user, profile } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.userProfile);
   
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -229,9 +230,9 @@ export function MainLayout() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={profile?.image_thumb || profile?.image} alt={profile?.name} />
+                      <AvatarImage src={profile?.profile_image} alt={profile?.full_name} />
                       <AvatarFallback className="bg-muted text-muted-foreground">
-                        {profile?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                        {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -239,7 +240,7 @@ export function MainLayout() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none text-foreground">{profile?.name}</p>
+                      <p className="text-sm font-medium leading-none text-foreground">{profile?.full_name}</p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user?.email}
                       </p>

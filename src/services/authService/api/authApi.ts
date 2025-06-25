@@ -1,0 +1,867 @@
+import { supabase } from "@/lib/supabase";
+import {
+  LoginCredentials,
+  SignUpCredentials,
+  AuthResponse,
+  AuthError,
+  User,
+  UserProfile,
+} from "@/models";
+
+export class AuthAPI {
+  /**
+   * Sign in with email and password
+   */
+  static async signIn(credentials: LoginCredentials): Promise<AuthResponse> {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
+      });
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 400,
+          code: error.name || "SIGN_IN_ERROR",
+        });
+      }
+
+      if (!data.user || !data.session) {
+        throw new AuthError({
+          message: "Authentication failed",
+          status: 401,
+          code: "AUTH_FAILED",
+        });
+      }
+
+       console.log("User signed in:", data.user);
+       
+      // Update last login
+      await this.updateLastLogin(data.user.id);
+
+      // Get user and profile data
+      // const [user, profile] = await Promise.all([
+      //   this.getUserById(data.user.id),
+      //   this.getUserProfile(data.user.id),
+      // ]);
+
+      // console.log(data.user, data.session)
+
+      // return {
+      //   user,
+      //   profile,
+      //   session: {
+      //     access_token: data.session.access_token,
+      //     refresh_token: data.session.refresh_token,
+      //     expires_at: data.session.expires_at!,
+      //   },
+      // };
+
+      const userAuth: User = {
+        id: data.user.id,
+        email: data.user.email || '',
+        profile: 0, // Default profile ID or fetch from database
+        is_active: true,
+        status: 'active',
+        created_at: data.user.created_at || new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      };
+
+      return {
+        user: userAuth,
+        session: {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: data.session.expires_at!,
+        },
+      };
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "An unexpected error occurred during sign in",
+        status: 500,
+        code: "UNEXPECTED_ERROR",
+      });
+    }
+  }
+
+  /**
+   * Sign up with email and password
+   */
+  static async signUp(credentials: SignUpCredentials): Promise<AuthResponse> {
+    try {
+      const finalUser: {
+        email: string;
+        password: string;
+        options: {
+          data: {
+            full_name: string;
+          };
+        };
+      } = {
+        email: credentials.email,
+        password: credentials.password,
+        options: {
+          data: {
+            full_name: credentials.full_name,
+          },
+        },
+      };
+
+      // First create the Supabase auth user
+      const { data, error } = await supabase.auth.signUp(finalUser);
+               
+      console.log("user Sign up authh",data, error);
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 400,
+          code: error.name || "SIGN_UP_ERROR",
+        });
+      }
+
+      if (!data.user || !data.session) {
+        throw new AuthError({
+          message: "Registration failed",
+          status: 400,
+          code: "REGISTRATION_FAILED",
+        });
+      }
+
+      const profileData = {
+        user_id: data.user.id,
+        full_name: credentials.full_name,
+        role: this.validateUserRole(credentials?.role),
+      };
+
+      // Create user profile in user_profiles table
+      const profile = await this.createUserProfile(profileData);
+
+      console.log("User profile created:", profile);
+
+
+      const userAuth: User = {
+        id: data.user.id,
+        email: data.user.email || '',
+        profile: profile.id,
+        is_active: true,
+        status: 'active',
+        created_at: data.user.created_at || new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      };
+
+      return {
+        user: userAuth,
+        profile: profile,
+        session: {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: data.session.expires_at!,
+        },
+      };
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "An unexpected error occurred during registration",
+        status: 500,
+        code: "UNEXPECTED_ERROR",
+      });
+    }
+  }
+
+  /**
+   * Sign out current user
+   */
+  static async signOut(): Promise<void> {
+    try {
+      // Use the scope parameter to clear all storage types
+      const { error } = await supabase.auth.signOut({ scope: "global" });
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 400,
+          code: error.name || "SIGN_OUT_ERROR",
+        });
+      }
+
+      // Manually clear browser storage as well for redundancy
+      localStorage.removeItem("supabase.auth.token");
+      sessionStorage.removeItem("supabase.auth.token");
+
+      // Clear any other auth-related local storage items
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("supabase.auth.")) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith("supabase.auth.")) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "An unexpected error occurred during sign out",
+        status: 500,
+        code: "UNEXPECTED_ERROR",
+      });
+    }
+  }
+
+  /**
+   * Get current user session
+   */
+  static async getCurrentSession() {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 401,
+          code: error.name || "SESSION_ERROR",
+        });
+      }
+
+      return data.session;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to get current session",
+        status: 500,
+        code: "SESSION_FETCH_ERROR",
+      });
+    }
+  }
+
+  /**
+   * Get current user with profile
+   */
+  static async getCurrentUser(): Promise<{
+    user: User;
+    profile: UserProfile | null;
+  } | null> {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 401,
+          code: error.name || "USER_FETCH_ERROR",
+        });
+      }
+
+      if (!data.user) {
+        return null;
+      }
+
+      // const [user, profile] = await Promise.all([
+      //   this.getUserById(data.user.id),
+      //   this.getUserProfile(data.user.id),
+      // ]);
+
+      const userAuth: User = {
+        id: data.user.id,
+        email: data.user.email || '',
+        profile: 0, // Default profile ID or fetch from database
+        is_active: true,
+        status: 'active',
+        created_at: data.user.created_at || new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      };
+
+      return { user: userAuth, profile: null };
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      return null;
+    }
+  }
+
+
+  // get current user profile based on userId
+   static async getUserProfileByUserId(userId: string): Promise<UserProfile | null> {
+    try { 
+      console.log("getUserProfileByUserId - Input userId:", userId);
+      
+      // First, check if user_profiles table exists and has data
+      const response = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("user_id", userId);
+       
+      console.log("getUserProfileByUserId - Response: supabase", response);
+      
+      if (response.error) {
+        console.error("getUserProfileByUserId - Database error:", response.error);
+        
+        // If table doesn't exist, let's debug what tables are available
+        if (response.error.message.includes('relation "public.user_profiles" does not exist')) {
+          console.log("user_profiles table doesn't exist, running debug...");
+          await this.debugDatabaseTables();
+          
+          // Try with profiles table instead
+          const profilesResponse = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", userId);
+            
+          console.log("profiles table response:", profilesResponse);
+          
+          if (profilesResponse.error) {
+            throw new AuthError({
+              message: `Failed to get user profile from both tables: ${profilesResponse.error.message}`,
+              status: 500,
+              code: "PROFILE_QUERY_ERROR",
+            });
+          }
+          
+          if (!profilesResponse.data || profilesResponse.data.length === 0) {
+            console.log("getUserProfileByUserId - No profile found in profiles table for userId:", userId);
+            return null;
+          }
+          
+          // Map profiles table data to UserProfile interface
+          const profileData = profilesResponse.data[0];
+          return {
+            id: 0,
+            user_id: profileData.id,
+            full_name: profileData.full_name || profileData.email?.split('@')[0] || '',
+            role: profileData.role || 'user',
+            profile_image: profileData.avatar_url,
+            status: true,
+            created_at: profileData.created_at,
+            updated_at: profileData.updated_at,
+          } as UserProfile;
+        }
+        
+        throw new AuthError({
+          message: `Failed to get user profile: ${response.error.message}`,
+          status: 500,
+          code: "PROFILE_QUERY_ERROR",
+        });
+      }
+
+      // If no rows found, return null
+      if (!response.data || response.data.length === 0) {
+        console.log("getUserProfileByUserId - No profile found for userId:", userId);
+        
+        // Let's also debug what's in the table
+        console.log("Checking what profiles exist in user_profiles table...");
+        const allProfilesResponse = await supabase
+          .from("user_profiles")
+          .select("user_id, full_name")
+          .limit(5);
+        console.log("Sample profiles in table:", allProfilesResponse);
+        
+        return null;
+      }
+
+      // If multiple rows found, log warning and return the first one
+      if (response.data.length > 1) {
+        console.warn(`getUserProfileByUserId - Multiple profiles found for userId: ${userId}, returning first one`);
+      }
+
+      console.log("getUserProfileByUserId - Found profile:", response.data[0]);
+      return response.data[0] as UserProfile;
+
+    }
+    catch (error) {
+      console.error("getUserProfileByUserId - Catch error:", error);
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to get user profile",
+        status: 500,
+        code: "USER_PROFILE_FETCH_ERROR",
+      });
+    }
+  }
+
+  /**
+   * Create user record in users table
+   */
+  // private static async createUser(
+  //   userData: CreateAuthUserRequest
+  // ): Promise<User> {
+  //   const { data, error } = await supabase
+  //     .from("users")
+  //     .insert({
+  //       id: userData.id,
+  //       email: userData.email,
+  //       role: userData.role,
+  //       profile: userData.profile,
+  //       is_active: userData.is_active,
+  //       status: userData.status,
+  //       version: 1,
+  //       created_at: new Date().toISOString(),
+  //       modified_at: new Date().toISOString(),
+  //     })
+  //     .select()
+  //     .single();
+
+  //   if (error) {
+  //     throw new AuthError({
+  //       message: `Failed to create user: ${error.message}`,
+  //       status: 400,
+  //       code: "USER_CREATE_ERROR",
+  //     });
+  //   }
+
+  //   return data;
+  // }
+
+  /**
+   * Create user profile in profiles table
+   */
+  private static async createUserProfile(profileData: {
+    user_id: string;
+    role: string;
+    full_name: string;
+  }): Promise<UserProfile> {
+    console.log("createUserProfile - Input data:", profileData);
+
+    // Validate role before insertion
+    const validatedRole = this.validateUserRole(profileData.role);
+    console.log("createUserProfile - Validated role:", validatedRole);
+
+    // For profiles table, we need to map the fields correctly
+    const insertData = {
+      id: profileData.user_id, // profiles table uses 'id' as the user reference
+      email: '', // This should be filled from auth data
+      full_name: profileData.full_name,
+      role: validatedRole,
+    };
+
+    console.log("createUserProfile - Insert data:", insertData);
+
+    // Try user_profiles first, then fallback to profiles
+    let response = await supabase
+      .from("user_profiles")
+      .insert({
+        user_id: profileData.user_id,
+        role: validatedRole,
+        full_name: profileData.full_name,
+        status: true,
+      })
+      .select()
+      .single();
+
+    // If user_profiles table doesn't exist, use profiles table
+    if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
+      console.log("user_profiles table doesn't exist, using profiles table");
+      
+      // Get user email from auth
+      const { data: authUser } = await supabase.auth.getUser();
+      insertData.email = authUser?.user?.email || '';
+      
+      response = await supabase
+        .from("profiles")
+        .insert(insertData)
+        .select()
+        .single();
+    }
+
+    if (response.error) {
+      console.log("Error creating user profile:", response.error);
+      console.log("Error details:", {
+        message: response.error.message,
+        details: response.error.details,
+        hint: response.error.hint,
+        code: response.error.code
+      });
+      throw new AuthError({
+        message: `Failed to create user profile: ${response.error.message}`,
+        status: 400,
+        code: "PROFILE_CREATE_ERROR",
+      });
+    }
+
+    console.log("createUserProfile - Success:", response.data);
+    
+    // Map profiles table data to UserProfile interface
+    const profileResult = response.data;
+    if (!profileResult.user_id) {
+      // If using profiles table, map the fields
+      return {
+        id: 0,
+        user_id: profileResult.id,
+        full_name: profileResult.full_name,
+        role: profileResult.role,
+        profile_image: profileResult.avatar_url,
+        status: true,
+        created_at: profileResult.created_at,
+        updated_at: profileResult.updated_at,
+      } as UserProfile;
+    }
+    
+    return profileResult;
+  }
+
+  /**
+   * Get user profile by user ID from profiles/user_profiles table
+   */
+  static async getUserProfile(userId: string): Promise<UserProfile> {
+    try {
+      // Try user_profiles first, then fallback to profiles
+      let response = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      // If user_profiles table doesn't exist, use profiles table
+      if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
+        response = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", userId)
+          .single();
+          
+        if (!response.error && response.data) {
+          // Map profiles data to UserProfile interface
+          return {
+            id: 0,
+            user_id: response.data.id,
+            full_name: response.data.full_name,
+            role: response.data.role,
+            profile_image: response.data.avatar_url,
+            status: true,
+            created_at: response.data.created_at,
+            updated_at: response.data.updated_at,
+          } as UserProfile;
+        }
+      }
+
+      if (response.error) {
+        throw new AuthError({
+          message: `Failed to get user profile: ${response.error.message}`,
+          status: 404,
+          code: "PROFILE_NOT_FOUND",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to retrieve user profile",
+        status: 500,
+        code: "PROFILE_FETCH_ERROR",
+      });
+    }
+  }
+
+  /**
+   * Update user profile
+   */
+  static async updateUserProfile(
+    userId: string, 
+    updates: Partial<UserProfile>
+  ): Promise<UserProfile> {
+    try {
+      // Try user_profiles first, then fallback to profiles
+      let response = await supabase
+        .from("user_profiles")
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId)
+        .select()
+        .single();
+
+      // If user_profiles table doesn't exist, use profiles table
+      if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
+        // Map UserProfile updates to profiles table format
+        const profileUpdates = {
+          full_name: updates.full_name,
+          role: updates.role,
+          avatar_url: updates.profile_image,
+          updated_at: new Date().toISOString(),
+        };
+        
+        response = await supabase
+          .from("profiles")
+          .update(profileUpdates)
+          .eq("id", userId)
+          .select()
+          .single();
+          
+        if (!response.error && response.data) {
+          // Map profiles data back to UserProfile interface
+          return {
+            id: 0,
+            user_id: response.data.id,
+            full_name: response.data.full_name,
+            role: response.data.role,
+            profile_image: response.data.avatar_url,
+            status: true,
+            created_at: response.data.created_at,
+            updated_at: response.data.updated_at,
+          } as UserProfile;
+        }
+      }
+
+      if (response.error) {
+        throw new AuthError({
+          message: `Failed to update user profile: ${response.error.message}`,
+          status: 400,
+          code: "PROFILE_UPDATE_ERROR",
+        });
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to update user profile",
+        status: 500,
+        code: "PROFILE_UPDATE_FAILED",
+      });
+    }
+  }
+
+  /**
+   * Upload user profile image
+   */
+  static async uploadProfileImage(
+    userId: string, 
+    file: File
+  ): Promise<{ imageUrl: string }> {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `profiles/${fileName}`;
+
+      // Upload file to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from('user-profiles')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw new AuthError({
+          message: `Failed to upload image: ${uploadError.message}`,
+          status: 400,
+          code: "IMAGE_UPLOAD_ERROR",
+        });
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('user-profiles')
+        .getPublicUrl(filePath);
+
+      // Update user profile with new image URL
+      await this.updateUserProfile(userId, { profile_image: publicUrl });
+
+      return { imageUrl: publicUrl };
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to upload profile image",
+        status: 500,
+        code: "IMAGE_UPLOAD_FAILED",
+      });
+    }
+  }
+
+  /**
+   * Delete user profile image
+   */
+  static async deleteProfileImage(userId: string, imageUrl: string): Promise<void> {
+    try {
+      // Extract file path from URL
+      const urlParts = imageUrl.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+      const filePath = `profiles/${fileName}`;
+
+      // Delete file from storage
+      const { error: deleteError } = await supabase.storage
+        .from('user-profiles')
+        .remove([filePath]);
+
+      if (deleteError) {
+        console.warn(`Failed to delete image file: ${deleteError.message}`);
+        // Don't throw error here, continue to update profile
+      }
+
+      // Update user profile to remove image URL
+      await this.updateUserProfile(userId, { profile_image: undefined });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to delete profile image",
+        status: 500,
+        code: "IMAGE_DELETE_FAILED",
+      });
+    }
+  }
+
+  /**
+   * Update last login timestamp
+   */
+  private static async updateLastLogin(userId: string): Promise<void> {
+    await supabase
+      .from("users")
+      .update({
+        last_login: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+  }
+
+  /**
+   * Refresh current session
+   */
+  static async refreshSession() {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 401,
+          code: error.name || "REFRESH_ERROR",
+        });
+      }
+
+      return data.session;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to refresh session",
+        status: 500,
+        code: "REFRESH_FAILED",
+      });
+    }
+  }
+
+  /**
+   * Reset password
+   */
+  static async resetPassword(email: string): Promise<void> {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 400,
+          code: error.name || "RESET_PASSWORD_ERROR",
+        });
+      }
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to send reset password email",
+        status: 500,
+        code: "RESET_PASSWORD_FAILED",
+      });
+    }
+  }
+
+  /**
+   * Validate and sanitize user role
+   */
+  private static validateUserRole(role?: string): string {
+    const validRoles = ['admin', 'user', 'viewer', 'vendor', 'designer', "customer"];
+    if (!role || !validRoles.includes(role)) {
+      return 'user'; // Default to 'user' if invalid role
+    }
+    return role;
+  }
+
+  /**
+   * Debug method to check what tables exist and their structure
+   */
+  static async debugDatabaseTables() {
+    try {
+      console.log("=== DEBUGGING DATABASE TABLES ===");
+      
+      // Try to query user_profiles table
+      const userProfilesResponse = await supabase
+        .from("user_profiles")
+        .select("*", { count: 'exact' })
+        .limit(1);
+      
+      console.log("user_profiles table response:", userProfilesResponse);
+      
+      // Try to query profiles table
+      const profilesResponse = await supabase
+        .from("profiles")
+        .select("*", { count: 'exact' })
+        .limit(1);
+      
+      console.log("profiles table response:", profilesResponse);
+      
+      return {
+        user_profiles: userProfilesResponse,
+        profiles: profilesResponse
+      };
+    } catch (error) {
+      console.error("Error debugging tables:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Ensure user profile exists, create if not found
+   */
+  static async ensureUserProfile(userId: string, email?: string, fullName?: string): Promise<UserProfile> {
+    try {
+      // First try to get existing profile
+      const existingProfile = await this.getUserProfileByUserId(userId);
+      
+      if (existingProfile) {
+        console.log("Profile already exists:", existingProfile);
+        return existingProfile;
+      }
+      
+      // If no profile exists, create one
+      console.log("No profile found, creating new profile for user:", userId);
+      
+      const profileData = {
+        user_id: userId,
+        full_name: fullName || email?.split('@')[0] || 'User',
+        role: 'user',
+      };
+      
+      return await this.createUserProfile(profileData);
+      
+    } catch (error) {
+      console.error("Error ensuring user profile:", error);
+      throw error;
+    }
+  }
+}

@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { AuthService } from "@/services/authService";
+import { AuthService } from "@/services/authService/authService";
 import {
   User,
-  UserProfile,
   LoginCredentials,
   SignUpCredentials,
   AuthError,
@@ -10,7 +9,6 @@ import {
 
 interface AuthState {
   user: User | null;
-  profile: UserProfile | null;
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
@@ -21,7 +19,6 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  profile: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
@@ -149,27 +146,6 @@ export const refreshSession = createAsyncThunk(
   }
 );
 
-// // Async thunk to update profile
-// export const updateProfile = createAsyncThunk(
-//   'auth/updateProfile',
-//   async (updates: { name?: string; dob?: string; image?: string; projects?: any }, { getState, rejectWithValue }) => {
-//     try {
-//       const state = getState() as { auth: AuthState };
-//       if (!state.auth.user) {
-//         throw new Error('No user logged in');
-//       }
-
-//       const updatedProfile = await AuthService.updateProfile(state.auth.user.id, updates);
-//       return updatedProfile;
-//     } catch (error) {
-//       if (error instanceof AuthError) {
-//         return rejectWithValue(error.message);
-//       }
-//       return rejectWithValue('Failed to update profile');
-//     }
-//   }
-// );
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -179,21 +155,18 @@ const authSlice = createSlice({
     },
     setUser: (
       state,
-      action: PayloadAction<{ user: User; profile: UserProfile } | null>
+      action: PayloadAction<User | null>
     ) => {
       if (action.payload) {
-        state.user = action.payload.user;
-        state.profile = action.payload.profile;
+        state.user = action.payload;
         state.isAuthenticated = true;
       } else {
         state.user = null;
-        state.profile = null;
         state.isAuthenticated = false;
       }
     },
     clearAuth: (state) => {
       state.user = null;
-      state.profile = null;
       state.isAuthenticated = false;
       state.error = null;
       state.accessToken = null;
@@ -211,11 +184,9 @@ const authSlice = createSlice({
         state.isInitialized = true;
         if (action.payload) {
           state.user = action.payload.user;
-          state.profile = action.payload.profile;
           state.isAuthenticated = true;
         } else {
           state.user = null;
-          state.profile = null;
           state.isAuthenticated = false;
         }
       })
@@ -234,7 +205,6 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
-        state.profile = action.payload.profile;
         state.isAuthenticated = true;
         state.accessToken = action.payload.session.access_token;
         state.refreshToken = action.payload.session.refresh_token;
@@ -253,7 +223,6 @@ const authSlice = createSlice({
       .addCase(signUpUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
-        state.profile = action.payload.profile;
         state.isAuthenticated = true;
         state.accessToken = action.payload.session.access_token;
         state.refreshToken = action.payload.session.refresh_token;
@@ -272,7 +241,6 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.isLoading = false;
         state.user = null;
-        state.profile = null;
         state.isAuthenticated = false;
         state.error = null;
         state.accessToken = null;
@@ -284,27 +252,26 @@ const authSlice = createSlice({
         // Even if logout fails on the server, we should clear the state in the client
         // This ensures the user can still "log out" from the UI perspective
         state.user = null;
-        state.profile = null;
         state.isAuthenticated = false;
         state.accessToken = null;
         state.refreshToken = null;
       })
 
       // Get current user cases
+      .addCase(getCurrentUser.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         if (action.payload) {
           state.user = action.payload.user;
-          state.profile = action.payload.profile;
           state.isAuthenticated = true;
         } else {
           state.user = null;
-          state.profile = null;
           state.isAuthenticated = false;
         }
       })
       .addCase(getCurrentUser.rejected, (state) => {
         state.user = null;
-        state.profile = null;
         state.isAuthenticated = false;
       })
 
@@ -312,21 +279,20 @@ const authSlice = createSlice({
       .addCase(refreshSession.fulfilled, (state, action) => {
         if (action.payload) {
           state.user = action.payload.user;
-          state.profile = action.payload.profile;
           state.isAuthenticated = true;
         } else {
           state.user = null;
-          state.profile = null;
           state.isAuthenticated = false;
         }
       })
       .addCase(refreshSession.rejected, (state) => {
         state.user = null;
-        state.profile = null;
         state.isAuthenticated = false;
       });
   },
 });
 
 export const { clearError, setUser, clearAuth } = authSlice.actions;
+
+export const getUserData = (state: { auth: AuthState }) => state.auth.user;
 export default authSlice.reducer;

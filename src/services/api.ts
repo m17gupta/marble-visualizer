@@ -1,24 +1,6 @@
-import { apiClient } from '@/middlewares/authMiddleware';
-import { AxiosRequestConfig } from 'axios';
+import { ProjectModel } from "@/models/projectModel/ProjectModel";
+import { apiService } from "./ApiService";
 
-// Generic API service functions
-export const apiService = {
-  // Generic CRUD operations
-  get: <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.get(url, config).then(response => response.data),
-    
-  post: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.post(url, data, config).then(response => response.data),
-    
-  put: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.put(url, data, config).then(response => response.data),
-    
-  patch: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.patch(url, data, config).then(response => response.data),
-    
-  delete: <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.delete(url, config).then(response => response.data),
-};
 
 // Authentication API endpoints
 export const authAPI = {
@@ -46,10 +28,10 @@ export const projectsAPI = {
   getById: (id: string) =>
     apiService.get(`/projects/${id}`),
     
-  create: (project: any) =>
+  create: (project: ProjectModel) =>
     apiService.post('/projects', project),
     
-  update: (id: string, project: any) =>
+  update: (id: string, project: ProjectModel) =>
     apiService.put(`/projects/${id}`, project),
     
   delete: (id: string) =>
@@ -81,12 +63,19 @@ export const studioAPI = {
   getTool: (id: string) =>
     apiService.get(`/studio/tools/${id}`),
     
-  createProject: (data: any) =>
-    apiService.post('/studio/projects', data),
+  // createProject: (data: any) =>
+  //   apiService.post('/studio/projects', data),
     
-  updateProject: (id: string, data: any) =>
-    apiService.put(`/studio/projects/${id}`, data),
+  // updateProject: (id: string, data: any) =>
+  //   apiService.put(`/studio/projects/${id}`, data),
+};
+
+// Create a comprehensive API client object
+const apiClient = {
+  auth: authAPI,
+  projects: projectsAPI,
+  materials: materialsAPI,
+  studio: studioAPI,
 };
 
 export default apiClient;
-</btml:action>

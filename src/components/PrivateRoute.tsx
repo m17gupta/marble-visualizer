@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
 import { initializeAuth } from '@/redux/slices/authSlice';
 import { Loader2 } from 'lucide-react';
-import { UserRole } from '@/models';
+import { UserRole } from '@/types/auth';
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -14,6 +14,7 @@ interface PrivateRouteProps {
 export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRouteProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, isLoading, isInitialized, user } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.userProfile);
   const location = useLocation();
 
   // Initialize auth on mount
@@ -43,7 +44,7 @@ export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRoutePr
   }
 
   // Check role permissions
-  if (requiredRole && user) {
+  if (requiredRole && user && profile) {
     const roleHierarchy: Record<UserRole, number> = {
       'user': 0,
       'viewer': 1,
@@ -52,7 +53,7 @@ export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRoutePr
       'admin': 4,
     };
 
-    const userRoleLevel = roleHierarchy[user.role] || 0;
+    const userRoleLevel = roleHierarchy[profile.role as UserRole] || 0;
     const requiredRoleLevel = roleHierarchy[requiredRole] || 0;
 
     if (userRoleLevel < requiredRoleLevel) {
@@ -64,7 +65,7 @@ export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRoutePr
               You don't have permission to access this resource.
             </p>
             <p className="text-sm text-muted-foreground">
-              Required role: {requiredRole} | Your role: {user.role}
+              Required role: {requiredRole} | Your role: {profile.role}
             </p>
           </div>
         </div>

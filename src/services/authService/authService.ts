@@ -1,4 +1,4 @@
-import { AuthAPI } from "@/api/authApi";
+import { AuthAPI } from "@/services/authService/api/authApi";
 import {
   LoginCredentials,
   SignUpCredentials,
@@ -42,7 +42,7 @@ export class AuthService {
    */
   static async getCurrentUser(): Promise<{
     user: User;
-    profile: UserProfile;
+    profile: UserProfile | null;
   } | null> {
     return await AuthAPI.getCurrentUser();
   }
@@ -55,13 +55,24 @@ export class AuthService {
   }
 
   /**
+   * Get user profile by user ID
+   */
+  static async getUserProfileByUserId(
+    userId: string
+  ){
+    return await AuthAPI.getUserProfileByUserId(userId);
+  }
+
+  /**
    * Update user profile
    */
   static async updateProfile(
     userId: string,
     updates: UpdateAuthUserProfileRequest
   ): Promise<UserProfile> {
-    return await AuthAPI.updateUserProfile(userId, updates);
+    // TODO: Implement updateUserProfile in AuthAPI
+    console.log('UpdateProfile called with:', { userId, updates });
+    throw new Error('Method not implemented');
   }
 
   /**

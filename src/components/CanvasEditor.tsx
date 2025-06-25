@@ -49,6 +49,7 @@ import { cn } from '@/lib/utils';
 
 type DrawingTool = 'select' | 'polygon';
 
+
 interface CanvasEditorProps {
   imageUrl?: string;
   width?: number;
@@ -222,7 +223,7 @@ export function CanvasEditor({
       // Store reference and add to canvas
       backgroundImageRef.current = fabricImage;
       canvas.add(fabricImage);
-      canvas.sendToBack(fabricImage);
+      canvas.sendObjectToBack(fabricImage);
       canvas.renderAll();
 
       console.log('Background image added to canvas');
@@ -249,7 +250,8 @@ export function CanvasEditor({
     // Update object selectability
     const objects = canvas.getObjects();
     objects.forEach(obj => {
-      if (obj.data?.type === 'segment') {
+      const objData = (obj as any).data;
+      if (objData?.type === 'segment') {
         obj.selectable = activeTool === 'select';
         obj.evented = activeTool === 'select';
       }
@@ -266,7 +268,7 @@ export function CanvasEditor({
     console.log('Syncing segments with canvas:', segments.length);
     
     // Remove existing segments (keep background image)
-    const objects = canvas.getObjects().filter(obj => obj.data?.type === 'segment');
+    const objects = canvas.getObjects().filter(obj => (obj as any).data?.type === 'segment');
     objects.forEach(obj => canvas.remove(obj));
 
     // Add segments to canvas (sorted by zIndex)
@@ -326,7 +328,7 @@ export function CanvasEditor({
   }, [segments, activeTool, canvasReady]);
 
   // Handle mouse down events
-  const handleMouseDown = useCallback((e: fabric.IEvent) => {
+  const handleMouseDown = useCallback((e: fabric.TEvent) => {
     if (!fabricCanvasRef.current || activeTool !== 'polygon') return;
 
     const canvas = fabricCanvasRef.current;
@@ -366,7 +368,7 @@ export function CanvasEditor({
   }, [activeTool, isPolygonMode, tempPoints, dispatch]);
 
   // Handle mouse move for preview line
-  const handleMouseMove = useCallback((e: fabric.IEvent) => {
+  const handleMouseMove = useCallback((e: fabric.TEvent) => {
     if (!fabricCanvasRef.current || !isPolygonMode || tempPoints.length === 0) return;
 
     const canvas = fabricCanvasRef.current;
@@ -441,7 +443,7 @@ export function CanvasEditor({
   }, [isPolygonMode, tempPoints, segments.length, dispatch]);
 
   // Handle object selection
-  const handleSelection = useCallback((e: fabric.IEvent) => {
+  const handleSelection = useCallback((e: any) => {
     const activeObject = e.selected?.[0] || e.target;
     console.log('Object selected:', activeObject?.data);
     if (activeObject?.data?.segmentId) {
@@ -450,7 +452,7 @@ export function CanvasEditor({
   }, [dispatch]);
 
   // Handle object modification
-  const handleObjectModified = useCallback((e: fabric.IEvent) => {
+  const handleObjectModified = useCallback((e: any) => {
     const obj = e.target;
     console.log('Object modified:', obj?.data);
     if (obj?.data?.segmentId && obj.type === 'polygon') {
@@ -467,7 +469,7 @@ export function CanvasEditor({
   }, [dispatch]);
 
   // Handle mouse over for hover effects
-  const handleMouseOver = useCallback((e: fabric.IEvent) => {
+  const handleMouseOver = useCallback((e: any) => {
     const obj = e.target;
     if (obj?.data?.segmentId && activeTool === 'select') {
       setHoveredSegmentId(obj.data.segmentId);
@@ -478,7 +480,7 @@ export function CanvasEditor({
   }, [activeTool]);
 
   // Handle mouse out for hover effects
-  const handleMouseOut = useCallback((e: fabric.IEvent) => {
+  const handleMouseOut = useCallback((e: any) => {
     const obj = e.target;
     if (obj?.data?.segmentId && activeTool === 'select') {
       setHoveredSegmentId(null);

@@ -2,13 +2,14 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { LoginPage } from '@/pages/LoginPage';
+import { SignUpPage } from '@/pages/SignUpPage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
 import { StudioPage } from '@/pages/StudioPage';
 import { MaterialsPage } from '@/pages/MaterialsPage';
-import { SwatchBookPage } from '@/pages/SwatchBookPage';
+// import { SwatchBookPage } from '@/pages/SwatchBookPage';
 import { SwatchDetailsPage } from '@/pages/SwatchDetailsPage';
 import { SwatchCreatePage } from '@/pages/SwatchCreatePage';
-import { SwatchImportPage } from '@/pages/SwatchImportPage';
+// import { SwatchImportPage } from '@/pages/SwatchImportPage';
 import { PublicProjectPage } from '@/pages/PublicProjectPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
@@ -26,6 +27,17 @@ export function AppRouter() {
             <Navigate to="/projects" replace />
           ) : (
             <LoginPage />
+          )
+        } 
+      />
+      
+      <Route 
+        path="/signup" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/projects" replace />
+          ) : (
+            <SignUpPage />
           )
         } 
       />
@@ -50,11 +62,11 @@ export function AppRouter() {
         <Route path="studio" element={<StudioPage />} />
         <Route path="studio/:id" element={<StudioPage />} />
         <Route path="materials" element={<MaterialsPage />} />
-        <Route path="swatchbook" element={<SwatchBookPage />} />
+        {/* <Route path="swatchbook" element={<SwatchBookPage />} /> */}
         <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
         {/* TEMPORARY: Remove role restrictions for swatch creation and import */}
         <Route path="swatch/create" element={<SwatchCreatePage />} />
-        <Route path="swatch/import" element={<SwatchImportPage />} />
+        {/* <Route path="swatch/import" element={<SwatchImportPage />} /> */}
       </Route>
 
       {/* Catch all route */}

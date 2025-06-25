@@ -387,7 +387,7 @@ const projectSlice = createSlice({
         if (state.currentProject?.id === projectId) {
           state.currentProject.accessList = accessList;
           state.currentProject.currentUserRole = currentUserRole;
-          state.currentUserRole = currentUserRole;
+          state.currentUserRole = currentUserRole || null;
         }
       })
       .addCase(fetchProjectAccess.rejected, (state, action) => {

@@ -1,4 +1,4 @@
-import { User as SupabaseUser } from '@supabase/supabase-js'
+// import { User as SupabaseUser } from '@supabase/supabase-js'
 import { Database } from './database'
 
 export type UserRole = 'admin' | 'editor' | 'viewer' | 'vendor' | 'user'
@@ -11,9 +11,27 @@ export interface User {
   avatar?: string
   created_at: string
   updated_at: string
+  profile?: UserProfile
+  is_active?: boolean
+  status?: 'active' | 'inactive' | 'suspended' | 'pending'
+  modified_at?: string
+  version?: number
 }
 
-export interface Profile extends Database['public']['Tables']['profiles']['Row'] {}
+export interface UserProfile {
+  _id: string
+  email: string
+  name: string
+  dob?: string | null
+  projects?: Record<string, unknown>
+  image?: string | null
+  image_thumb?: string | null
+  created_at: string
+  modified_at: string
+  id?: number
+}
+
+export type Profile = Database['public']['Tables']['user_profiles']['Row']
 
 export interface AuthResponse {
   user: User

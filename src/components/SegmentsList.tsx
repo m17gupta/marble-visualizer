@@ -13,10 +13,9 @@ import {
   pasteSegment,
   bringForward,
   sendBackward,
-  clearCopiedSegment,
 } from '@/redux/slices/segmentsSlice';
 import { logActivity } from '@/redux/slices/activityLogsSlice';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card,  } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -103,7 +102,30 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
     toast.success('Segment duplicated');
   };
 
-  const handleCopySegment = (segmentId: string) => {
+  const handleCopySegment = () => {
+    if (selectedSegmentIds.length === 0) {
+      toast.error('Select a segment to copy');
+      return;
+    }
+    
+    const segmentId = selectedSegmentIds[0]; // Copy the first selected segment
+    const segment = segments.find(s => s.id === segmentId);
+    dispatch(copySegment(segmentId));
+    
+    if (segment) {
+      dispatch(logActivity({
+        projectId,
+        type: 'segment_edited',
+        action: 'Segment Copied',
+        detail: `Segment "${segment.name}" was copied`,
+        metadata: { segmentId, segmentName: segment.name },
+      }));
+    }
+    
+    toast.success('Segment copied');
+  };
+
+  const handleCopySpecificSegment = (segmentId: string) => {
     dispatch(copySegment(segmentId));
     toast.success('Segment copied to clipboard');
   };
@@ -431,7 +453,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
                               <Focus className="h-3 w-3 mr-2" />
                               Focus
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleCopySegment(segment.id)}>
+                            <DropdownMenuItem onClick={() => handleCopySpecificSegment(segment.id)}>
                               <Copy className="h-3 w-3 mr-2" />
                               Copy
                             </DropdownMenuItem>

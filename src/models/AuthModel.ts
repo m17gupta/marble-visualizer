@@ -1,3 +1,6 @@
+// Import User and UserProfile types
+import { User, UserProfile, UserRole } from "./userModel/UserModel";
+
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -7,13 +10,13 @@ export interface SignUpCredentials {
   email: string;
   password: string;
   full_name: string;
-  dob?: string;
-  role?: string;
+  phone?: string;
+  role?: UserRole;
 }
 
 export interface AuthResponse {
-  user: any;
-  profile?: UserProfile;
+  user: User;
+  profile?: UserProfile | null;
   session: {
     access_token: string;
     refresh_token: string;
@@ -70,6 +73,3 @@ export interface CreateAuthUserRequest {
   is_active: boolean;
   status: string;
 }
-
-// Import User and UserProfile types
-import { User, UserProfile } from "./UserModel";

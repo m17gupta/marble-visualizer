@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion,  } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
 import { fetchSwatchBySlug, toggleFavorite } from '@/redux/slices/swatchSlice';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,6 @@ import {
   Heart,
   Share2,
   Copy,
-  Download,
   Palette,
   DollarSign,
   Clock,
@@ -44,7 +43,7 @@ export function SwatchDetailsPage() {
   );
   
   const [activeTab, setActiveTab] = useState('overview');
-  const [imageLoaded, setImageLoaded] = useState(false);
+  // const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     if (slug) {
@@ -71,17 +70,17 @@ export function SwatchDetailsPage() {
   const handleShare = async () => {
     if (!currentSwatch) return;
     
-    try {
-      await navigator.share({
-        title: currentSwatch.title,
-        text: currentSwatch.description,
-        url: window.location.href,
-      });
-    } catch (error) {
-      // Fallback to copying URL
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard');
-    }
+    // try {
+    //   await navigator.share({
+    //     title: currentSwatch.title,
+    //     text: currentSwatch.description,
+    //     url: window.location.href,
+    //   });
+    // } catch (erro) {
+    //   // Fallback to copying URL
+    //   navigator.clipboard.writeText(window.location.href);
+    //   toast.success('Link copied to clipboard');
+    // }
   };
 
   const formatPrice = (price: number) => {
@@ -323,7 +322,7 @@ export function SwatchDetailsPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-medium">{currentSwatch.color.lrv}</span>
-                  <Badge className={lrvCategory.color} variant="secondary" className="text-xs">
+                  <Badge className={`${lrvCategory.color} text-xs`} variant="secondary">
                     {lrvCategory.label}
                   </Badge>
                 </div>
@@ -586,7 +585,7 @@ export function SwatchDetailsPage() {
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Pricing by Size</Label>
                   <div className="space-y-2">
-                    {currentSwatch.container_sizes.map((size, index) => {
+                    {currentSwatch.container_sizes.map((size) => {
                       // Mock pricing calculation based on size
                       const multiplier = size.includes('Quart') ? 0.25 : size.includes('5') ? 4.5 : 1;
                       const price = currentSwatch.pricing.per_gallon * multiplier;

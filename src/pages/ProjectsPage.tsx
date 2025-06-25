@@ -9,8 +9,7 @@ import { AppDispatch, RootState } from '@/redux/store';
 import { 
   fetchProjects, 
   createProject, 
-  toggleProjectVisibility,
-  optimisticToggleVisibility,
+
   clearError 
 } from '@/redux/slices/projectSlice';
 import { ShareProjectDialog } from '@/components/ShareProjectDialog';
@@ -49,6 +48,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import UserProfileHome from '@/components/userProfile/UserProfileHome';
 
 // Form validation schema
 const createProjectSchema = z.object({
@@ -61,7 +61,7 @@ const createProjectSchema = z.object({
     .string()
     .max(200, 'Description must be less than 200 characters')
     .optional(),
-  visibility: z.enum(['public', 'private']),
+  visibility: z.enum(['public', 'private']).default('private'),
 });
 
 type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
@@ -95,7 +95,11 @@ export function ProjectsPage() {
   }, [error, dispatch]);
 
   const onCreateProject = async (values: CreateProjectFormValues) => {
-    const result = await dispatch(createProject(values));
+    const projectData = {
+      ...values,
+      description: values.description || '', // Provide default empty string
+    };
+    const result = await dispatch(createProject(projectData));
     
     if (createProject.fulfilled.match(result)) {
       toast.success('Project created successfully!');
@@ -104,21 +108,7 @@ export function ProjectsPage() {
     }
   };
 
-  const handleVisibilityToggle = async (projectId: string, currentVisibility: 'public' | 'private') => {
-    const newVisibility = currentVisibility === 'public' ? 'private' : 'public';
-    
-    // Optimistic update
-    dispatch(optimisticToggleVisibility({ id: projectId, visibility: newVisibility }));
-    
-    try {
-      await dispatch(toggleProjectVisibility({ id: projectId, visibility: newVisibility }));
-      toast.success(`Project is now ${newVisibility}`);
-    } catch (error) {
-      // Revert optimistic update on error
-      dispatch(optimisticToggleVisibility({ id: projectId, visibility: currentVisibility }));
-      toast.error('Failed to update project visibility');
-    }
-  };
+
 
   const handleProjectClick = (projectId: string) => {
     navigate(`/studio/${projectId}`);
@@ -134,19 +124,19 @@ export function ProjectsPage() {
     toast.success('Project link copied to clipboard!');
   };
 
-  const handleCopyPublicLink = (project: any) => {
-    if (project.publicSlug) {
-      const publicUrl = `${window.location.origin}/project/public/${project.publicSlug}`;
-      navigator.clipboard.writeText(publicUrl);
-      toast.success('Public link copied to clipboard!');
-    }
-  };
+  // const handleCopyPublicLink = (project: any) => {
+  //   if (project.publicSlug) {
+  //     const publicUrl = `${window.location.origin}/project/public/${project.publicSlug}`;
+  //     navigator.clipboard.writeText(publicUrl);
+  //     toast.success('Public link copied to clipboard!');
+  //   }
+  // };
 
-  const handleOpenPublic = (project: any) => {
-    if (project.publicSlug) {
-      window.open(`/project/public/${project.publicSlug}`, '_blank');
-    }
-  };
+  // const handleOpenPublic = (project: any) => {
+  //   if (project.publicSlug) {
+  //     window.open(`/project/public/${project.publicSlug}`, '_blank');
+  //   }
+  // };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -234,6 +224,7 @@ export function ProjectsPage() {
   };
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -576,17 +567,24 @@ export function ProjectsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleCopyLink(project)}>
+                        <DropdownMenuItem 
+                        onClick={() => handleCopyLink(project)}
+                        >
                           <Copy className="h-4 w-4 mr-2" />
                           Copy Link
                         </DropdownMenuItem>
                         {project.isPublic && project.publicSlug && (
                           <>
-                            <DropdownMenuItem onClick={() => handleCopyPublicLink(project)}>
+                            <DropdownMenuItem 
+                           // onClick={() => handleCopyPublicLink(project)}
+                            >
                               <Globe className="h-4 w-4 mr-2" />
                               Copy Public Link
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleOpenPublic(project)}>
+                            <DropdownMenuItem 
+                            // onClick={() => handleOpenPublic(project)}
+                              
+                              >
                               <ExternalLink className="h-4 w-4 mr-2" />
                               Open Public View
                             </DropdownMenuItem>
@@ -635,5 +633,8 @@ export function ProjectsPage() {
         />
       )}
     </motion.div>
+
+    <UserProfileHome/>
+    </>
   );
 }
