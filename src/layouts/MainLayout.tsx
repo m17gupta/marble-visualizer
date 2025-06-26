@@ -1,52 +1,59 @@
-import { useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from 'next-themes';
-import { RootState, AppDispatch } from '@/redux/store';
-import { logoutUser } from '@/redux/slices/authSlice';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Menu, 
-  Home, 
-  FolderOpen, 
-  Palette, 
-  Package, 
-  Settings, 
-  LogOut, 
-  Sun, 
-  Moon, 
+import { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
+import { RootState, AppDispatch } from "@/redux/store";
+import { logoutUser } from "@/redux/slices/authSlice";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import {
+  Menu,
+  Home,
+  FolderOpen,
+  Palette,
+  Package,
+  Settings,
+  LogOut,
+  Sun,
+  Moon,
   Bell,
   Search,
   ChevronLeft,
   ChevronRight,
   Paintbrush,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   {
-    name: 'Projects',
-    href: '/projects',
+    name: "Projects",
+    href: "/projects",
     icon: FolderOpen,
   },
   {
-    name: 'Studio',
-    href: '/studio',
+    name: "Studio",
+    href: "/studio",
     icon: Palette,
   },
   {
-    name: 'Materials',
-    href: '/materials',
+    name: "Materials",
+    href: "/materials",
     icon: Package,
   },
   {
-    name: 'SwatchBook',
-    href: '/swatchbook',
+    name: "SwatchBook",
+    href: "/swatchbook",
     icon: Paintbrush,
   },
 ];
@@ -58,7 +65,7 @@ export function MainLayout() {
   const { theme, setTheme } = useTheme();
   const { user } = useSelector((state: RootState) => state.auth);
   const { profile } = useSelector((state: RootState) => state.userProfile);
-  
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -68,7 +75,9 @@ export function MainLayout() {
   };
 
   const isActivePath = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
   };
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
@@ -106,7 +115,7 @@ export function MainLayout() {
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(item.href);
-          
+
           return (
             <motion.button
               key={item.name}
@@ -115,10 +124,10 @@ export function MainLayout() {
                 if (mobile) setMobileMenuOpen(false);
               }}
               className={cn(
-                'w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                "w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                 active
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -128,7 +137,7 @@ export function MainLayout() {
                 {(!sidebarCollapsed || mobile) && (
                   <motion.span
                     initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: 'auto' }}
+                    animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
                     className="ml-3"
                   >
@@ -144,7 +153,10 @@ export function MainLayout() {
       <div className="p-4 border-t border-border">
         {(!sidebarCollapsed || mobile) && (
           <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
+            >
               <Settings className="h-4 w-4 mr-3" />
               Settings
             </Button>
@@ -160,6 +172,7 @@ export function MainLayout() {
       <motion.aside
         initial={false}
         animate={{ width: sidebarCollapsed ? 80 : 280 }}
+        // className="hidden lg:flex bg-card border-r border-border"
         className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border"
       >
         <SidebarContent />
@@ -173,10 +186,12 @@ export function MainLayout() {
       </Sheet>
 
       {/* Main Content */}
-      <div className={cn(
-        'transition-all duration-300 lg:pl-80',
-        sidebarCollapsed && 'lg:pl-20'
-      )}>
+      <div
+        className={cn(
+          "transition-all w-screen duration-300 lg:pl-80",
+          sidebarCollapsed && "lg:pl-20"
+        )}
+      >
         {/* Header */}
         <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="flex items-center justify-between px-6 py-4">
@@ -193,7 +208,7 @@ export function MainLayout() {
                   </Button>
                 </SheetTrigger>
               </Sheet>
-              
+
               <div className="hidden md:flex items-center space-x-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -217,9 +232,9 @@ export function MainLayout() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               >
-                {theme === 'dark' ? (
+                {theme === "dark" ? (
                   <Sun className="h-5 w-5" />
                 ) : (
                   <Moon className="h-5 w-5" />
@@ -228,11 +243,20 @@ export function MainLayout() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full"
+                  >
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={profile?.profile_image} alt={profile?.full_name} />
+                      <AvatarImage
+                        src={profile?.profile_image}
+                        alt={profile?.full_name}
+                      />
                       <AvatarFallback className="bg-muted text-muted-foreground">
-                        {profile?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                        {profile?.full_name
+                          ?.split(" ")
+                          .map((n: string) => n[0])
+                          .join("") || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -240,7 +264,9 @@ export function MainLayout() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none text-foreground">{profile?.full_name}</p>
+                      <p className="text-sm font-medium leading-none text-foreground">
+                        {profile?.full_name}
+                      </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user?.email}
                       </p>
@@ -252,7 +278,10 @@ export function MainLayout() {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-foreground hover:bg-muted">
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-foreground hover:bg-muted"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
