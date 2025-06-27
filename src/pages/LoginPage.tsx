@@ -33,6 +33,7 @@ import {
   Lock,
   LogIn,
 } from "lucide-react";
+import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -239,6 +240,8 @@ export function LoginPage() {
           </CardContent>
         </Card>
       </motion.div>
+
+      <SwatchBookDataHome/>
     </div>
   );
 }
