@@ -5,14 +5,15 @@ import { LoginPage } from '@/pages/LoginPage';
 import { SignUpPage } from '@/pages/SignUpPage';
 import { ProjectsPage } from '@/pages/projectPage/ProjectsPage';
 import { StudioPage } from '@/pages/StudioPage';
-import { MaterialsPage } from '@/pages/MaterialsPage';
-// import { SwatchBookPage } from '@/pages/SwatchBookPage';
+// import { MaterialsPage } from '@/pages/MaterialsPage';
+
 import { SwatchDetailsPage } from '@/pages/SwatchDetailsPage';
 import { SwatchCreatePage } from '@/pages/SwatchCreatePage';
 // import { SwatchImportPage } from '@/pages/SwatchImportPage';
 import { PublicProjectPage } from '@/pages/PublicProjectPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
+import { SwatchBookPage } from '@/pages/SwatchBookPage';
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -61,8 +62,8 @@ export function AppRouter() {
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="studio" element={<StudioPage />} />
         <Route path="studio/:id" element={<StudioPage />} />
-        <Route path="materials" element={<MaterialsPage />} />
-        {/* <Route path="swatchbook" element={<SwatchBookPage />} /> */}
+        {/* <Route path="materials" element={<MaterialsPage />} /> */}
+        <Route path="swatchbook" element={<SwatchBookPage />} /> 
         <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
         {/* TEMPORARY: Remove role restrictions for swatch creation and import */}
         <Route path="swatch/create" element={<SwatchCreatePage />} />

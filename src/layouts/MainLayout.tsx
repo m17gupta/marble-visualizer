@@ -22,7 +22,7 @@ import {
   Home,
   FolderOpen,
   Palette,
-  Package,
+  // Package,
   Settings,
   LogOut,
   Sun,
@@ -46,11 +46,11 @@ const navigation = [
     href: "/studio",
     icon: Palette,
   },
-  {
-    name: "Materials",
-    href: "/materials",
-    icon: Package,
-  },
+  // {
+  //   name: "Materials",
+  //   href: "/materials",
+  //   icon: Package,
+  // },
   {
     name: "SwatchBook",
     href: "/swatchbook",

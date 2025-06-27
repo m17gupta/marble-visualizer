@@ -43,9 +43,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 
   const getUserProfiles = useSelector(selectProfile);
 
-  const [isStartUpload, setIsStartUpload] = useState(false);
 
-  const [isCreatJob, setIsCreatJob] = useState(false);  
   useEffect(() => {
      if( createdProjectId && createdProjectId!==null) {
      handleUpload()

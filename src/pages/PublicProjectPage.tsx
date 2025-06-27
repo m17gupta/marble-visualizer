@@ -14,11 +14,11 @@ import {
   Users,
   Eye,
   Share2,
-  ExternalLink,
+  
   ArrowLeft,
   Palette,
   Image as ImageIcon,
-  Info,
+  
   Lock,
   AlertTriangle,
 } from 'lucide-react';

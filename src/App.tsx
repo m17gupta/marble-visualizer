@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { store } from "./redux/store";
 import { initializeAuth } from "./redux/slices/authSlice";
 import { AppRouter } from "./routes/AppRouter";
-import { ConnectionStatus } from "@/components/ConnectionStatus";
+// import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Toaster } from "@/components/ui/sonner";
 
 function App() {
