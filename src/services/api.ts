@@ -70,12 +70,15 @@ export const studioAPI = {
   //   apiService.put(`/studio/projects/${id}`, data),
 };
 
+// S3 Upload API endpoints
+
 // Create a comprehensive API client object
 const apiClient = {
   auth: authAPI,
   projects: projectsAPI,
   materials: materialsAPI,
   studio: studioAPI,
+
 };
 
 export default apiClient;

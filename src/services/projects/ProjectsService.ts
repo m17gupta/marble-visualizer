@@ -1,3 +1,4 @@
+import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { ProjectAPI } from "./projectApi/ProjectApi";
 
 
@@ -10,7 +11,11 @@ export class ProjectService {
   }
 
   
-
- 
+  /**
+   * create project
+   */ 
+  static async createProject(project: ProjectModel) {
+    return await ProjectAPI.createProject(project);
+  }
 
 }

@@ -14,46 +14,36 @@ import {
   uploadImage,
   clearCurrentImage,
   clearError,
-} from "@/redux/slices/studioSlice";
-import { loadSegments } from "@/redux/slices/segmentsSlice";
-import {
-  startAIJob,
-  cancelCurrentJob,
-  clearError as clearJobError,
-} from "@/redux/slices/jobsSlice";
-import {
-  fetchActivityLogs,
-  logActivity,
-} from "@/redux/slices/activityLogsSlice";
-import { fetchProjectAccess } from "@/redux/slices/projectSlice";
-import { canEditProject, canAdminProject } from "@/middlewares/authMiddleware";
-import { CanvasEditor } from "@/components/CanvasEditor";
-import { ResultPreview } from "@/components/ResultPreview";
-import { ActivityTimeline } from "@/components/ActivityTimeline";
-import { VersionHistory } from "@/components/VersionHistory";
-import { SegmentsList } from "@/components/SegmentsList";
-import { ShareProjectDialog } from "@/components/ShareProjectDialog";
-import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
+  updateCurentImage,
+ 
+} from '@/redux/slices/studioSlice';
+import { loadSegments } from '@/redux/slices/segmentsSlice';
+import { createJob, fetchJobsByProject, clearError as clearJobError, clearCurrentJob } from '@/redux/slices/jobSlice';
+
+import { fetchActivityLogs, logActivity } from '@/redux/slices/activityLogsSlice';
+import { fetchProjectAccess } from '@/redux/slices/projectSlice';
+import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
+import { CanvasEditor } from '@/components/CanvasEditor';
+// import { ResultPreview } from '@/components/ResultPreview';
+import { ActivityTimeline } from '@/components/ActivityTimeline';
+// import { VersionHistory } from '@/components/VersionHistory';
+import { SegmentsList } from '@/components/SegmentsList';
+import { ShareProjectDialog } from '@/components/ShareProjectDialog';
+import { SwatchRecommendations } from '@/components/swatch/SwatchRecommendations';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
 import {
   Upload,
   Image as ImageIcon,
@@ -145,17 +135,11 @@ export function StudioPage() {
     isUploading,
     error,
   } = useSelector((state: RootState) => state.studio);
-
-  const { segments, activeSegmentId } = useSelector(
-    (state: RootState) => state.segments
-  );
-  const { currentJob, error: jobError } = useSelector(
-    (state: RootState) => state.jobs
-  );
-  const { currentProject, currentUserRole } = useSelector(
-    (state: RootState) => state.projects
-  );
-
+  
+  const { segments, activeSegmentId } = useSelector((state: RootState) => state.segments);
+  const { currentJob, error: jobError, isCreating: isJobRunning } = useSelector((state: RootState) => state.jobs);
+  const { currentProject, currentUserRole } = useSelector((state: RootState) => state.projects);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [activeTab, setActiveTab] = useState("design");
@@ -164,6 +148,17 @@ export function StudioPage() {
   // Check permissions
   const canEdit = projectId ? canEditProject(projectId) : false;
   const canAdmin = projectId ? canAdminProject(projectId) : false;
+
+  const getAllJob = useSelector((state: RootState) => state.jobs.list);
+
+  // update the current job
+  useEffect(() => {
+    if (getAllJob &&
+      getAllJob.length > 0 
+    ) {
+      dispatch(updateCurentImage(getAllJob[0].full_image || ""));
+    }
+  }, [getAllJob]);
 
   // Update selected segment type when active segment changes
   useEffect(() => {
@@ -180,10 +175,13 @@ export function StudioPage() {
   useEffect(() => {
     if (projectId) {
       dispatch(setCurrentProject(projectId));
-      dispatch(fetchProjectAccess(projectId));
+     // dispatch(fetchProjectAccess(projectId));
       dispatch(loadSegments(projectId));
       dispatch(fetchActivityLogs(projectId));
-
+      
+      // Fetch jobs for this project
+      dispatch(fetchJobsByProject(parseInt(projectId)));
+      
       // Log project access
       dispatch(
         logActivity({
@@ -209,6 +207,10 @@ export function StudioPage() {
       dispatch(clearJobError());
     }
   }, [jobError, dispatch]);
+
+  // Job status variables
+  const jobProgress = 0; // The new job slice doesn't have progress tracking like the old one
+  const hasResult = currentJob?.id ? true : false; // Simple check if there's a current job
 
   const handleFileUpload = async (file: File) => {
     if (!canEdit) {
@@ -282,19 +284,25 @@ export function StudioPage() {
       return;
     }
 
-    // Prepare job payload
-    const payload = {
-      imageUrl: currentImageUrl,
-      style: designSettings.style,
-      level: designSettings.level,
-      preserve: designSettings.preserve,
-      tone: designSettings.tone,
-      intensity: designSettings.intensity,
-      segments: segments.map((segment) => ({
-        id: segment.id,
-        points: segment.points,
-        materialId: segment.material?.materialId,
-      })),
+    // Prepare job data for the new job slice
+    const jobData = {
+      title: `Design Generation - ${new Date().toLocaleString()}`,
+      jobType: designSettings.style,
+      full_image: currentImageUrl,
+      thumbnail: currentImageUrl,
+      project_id: parseInt(projectId),
+      segements: JSON.stringify({
+        style: designSettings.style,
+        level: designSettings.level,
+        preserve: designSettings.preserve,
+        tone: designSettings.tone,
+        intensity: designSettings.intensity,
+        segments: segments.map(segment => ({
+          id: segment.id,
+          points: segment.points,
+          materialId: segment.material?.materialId,
+        })),
+      }),
     };
 
     // Log activity
@@ -314,16 +322,20 @@ export function StudioPage() {
       })
     );
 
-    const result = await dispatch(startAIJob({ projectId, payload }));
-    if (startAIJob.fulfilled.match(result)) {
-      toast.success("AI job started! Processing your design...");
+    const result = await dispatch(createJob(jobData));
+    if (createJob.fulfilled.match(result)) {
+      toast.success('AI job started! Processing your design...');
+      // Fetch updated jobs for the project
+      dispatch(fetchJobsByProject(parseInt(projectId)));
     }
   };
 
   const handleCancelJob = () => {
-    dispatch(cancelCurrentJob());
-    toast.info("Job cancelled");
-
+    if (currentJob) {
+      dispatch(clearCurrentJob());
+    }
+    toast.info('Job cancelled');
+    
     if (projectId) {
       dispatch(
         logActivity({
@@ -382,10 +394,6 @@ export function StudioPage() {
       );
     }
   };
-
-  const isJobRunning = currentJob?.status === "loading";
-  const jobProgress = currentJob?.progress || 0;
-  const hasResult = currentJob?.resultUrl || currentJob?.status === "completed";
 
   // Role badge component
   const RoleBadge = () => {
@@ -514,12 +522,11 @@ export function StudioPage() {
                   </Alert>
                 )}
 
-                {currentJob?.status === "failed" && (
+                {currentJob && jobError && (
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      {currentJob.error ||
-                        "AI processing failed. Please try again."}
+                      {jobError || 'AI processing failed. Please try again.'}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -724,7 +731,7 @@ export function StudioPage() {
               </TabsContent>
 
               <TabsContent value="history" className="mt-0">
-                {projectId && <VersionHistory projectId={projectId} />}
+                {/* {projectId && <VersionHistory projectId={projectId} />} */}
               </TabsContent>
 
               <TabsContent value="activity" className="mt-0">
@@ -944,12 +951,12 @@ export function StudioPage() {
             </div>
 
             {/* Result Preview */}
-            {currentImageUrl && hasResult && projectId && (
+            {/* {currentImageUrl && hasResult && projectId && (
               <ResultPreview
                 originalImageUrl={currentImageUrl}
                 projectId={projectId}
               />
-            )}
+            )} */}
           </motion.div>
         </ScrollArea>
       </main>
@@ -959,8 +966,8 @@ export function StudioPage() {
         <ShareProjectDialog
           open={shareDialogOpen}
           onOpenChange={setShareDialogOpen}
-          projectId={currentProject.id}
-          projectName={currentProject.name}
+          projectId={currentProject.id?.toString() || ''}
+          projectName={currentProject.name || ''}
         />
       )}
     </div>

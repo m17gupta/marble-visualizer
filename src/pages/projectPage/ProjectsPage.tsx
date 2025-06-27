@@ -2,90 +2,55 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { AppDispatch, RootState } from '@/redux/store';
+import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { 
   fetchProjects, 
-  createProject, 
-
   clearError 
 } from '@/redux/slices/projectSlice';
 import { ShareProjectDialog } from '@/components/ShareProjectDialog';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { 
   Plus, 
   Calendar, 
-  TrendingUp, 
   Share2, 
   Edit3, 
-  Eye, 
-  EyeOff,
   Globe,
   Lock,
-  Loader2,
   FolderOpen,
   BarChart3,
   MoreHorizontal,
-  Crown,
   Users,
   Settings,
   Copy,
-  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UserProfileHome from '@/components/userProfile/UserProfileHome';
-
-// Form validation schema
-const createProjectSchema = z.object({
-  name: z
-    .string()
-    .min(1, 'Project name is required')
-    .min(3, 'Project name must be at least 3 characters')
-    .max(50, 'Project name must be less than 50 characters'),
-  description: z
-    .string()
-    .max(200, 'Description must be less than 200 characters')
-    .optional(),
-  visibility: z.enum(['public', 'private']).default('private'),
-});
-
-type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
+import { CreateProjectDialog } from './CreateProject';
+import JobHome from '@/components/job/JobHome';
 
 export function ProjectsPage() {
+  const [user_id, setUser_id] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { list: projects, isLoading, isCreating, error } = useSelector((state: RootState) => state.projects);
+  const { list: projects, isLoading, error } = useSelector((state: RootState) => state.projects);
+  const { user } = useSelector((state: RootState) => state.auth);
   
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
 
-  const form = useForm<CreateProjectFormValues>({
-    resolver: zodResolver(createProjectSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-      visibility: 'private',
-    },
-  });
-
   useEffect(() => {
-    dispatch(fetchProjects());
-  }, [dispatch]);
+    if (user?.id) {
+      dispatch(fetchProjects(user.id));
+    }
+  }, [dispatch, user?.id]);
 
   useEffect(() => {
     if (error) {
@@ -94,31 +59,21 @@ export function ProjectsPage() {
     }
   }, [error, dispatch]);
 
-  const onCreateProject = async (values: CreateProjectFormValues) => {
-    const projectData = {
-      ...values,
-      description: values.description || '', // Provide default empty string
-    };
-    const result = await dispatch(createProject(projectData));
-    
-    if (createProject.fulfilled.match(result)) {
-      toast.success('Project created successfully!');
-      setIsCreateDialogOpen(false);
-      form.reset();
+
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(undefined);
+  const handleProjectClick = (projectId: number | undefined) => {
+
+    if (projectId) {
+      setSelectedProjectId(projectId);
+      navigate(`/studio/${projectId}`);
     }
   };
 
-
-
-  const handleProjectClick = (projectId: string) => {
-    navigate(`/studio/${projectId}`);
+  const handleShare = (project: ProjectModel) => {
+    setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
   };
 
-  const handleShare = (project: any) => {
-    setShareDialogProject({ id: project.id, name: project.name });
-  };
-
-  const handleCopyLink = (project: any) => {
+  const handleCopyLink = (project: ProjectModel) => {
     const projectUrl = `${window.location.origin}/studio/${project.id}`;
     navigator.clipboard.writeText(projectUrl);
     toast.success('Project link copied to clipboard!');
@@ -220,9 +175,14 @@ export function ProjectsPage() {
     total: projects.length,
     active: projects.filter(p => p.status === 'active').length,
     completed: projects.filter(p => p.status === 'completed').length,
-    avgProgress: projects.length > 0 ? Math.round(projects.reduce((acc, p) => acc + p.progress, 0) / projects.length) : 0,
+    avgProgress: projects.length > 0 ? Math.round(projects.reduce((acc, p) => acc + (p?.progress || 0), 0) / projects.length) : 0,
   };
 
+
+  const handleCloseCreateDialog = () => {
+    setIsCreateDialogOpen(false);
+    
+  };
   return (
     <>
     <motion.div
@@ -239,115 +199,17 @@ export function ProjectsPage() {
             Manage your projects and track progress
           </p>
         </div>
-        
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="shadow-lg">
-              <Plus className="mr-2 h-4 w-4" />
-              New Project
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Create New Project</DialogTitle>
-              <DialogDescription>
-                Start a new project and bring your ideas to life.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onCreateProject)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project Name *</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter project name"
-                          disabled={isCreating}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Describe your project (optional)"
-                          rows={3}
-                          disabled={isCreating}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="visibility"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          {field.value === 'public' ? 'Public Project' : 'Private Project'}
-                        </FormLabel>
-                        <div className="text-sm text-muted-foreground">
-                          {field.value === 'public' 
-                            ? 'Anyone can view this project' 
-                            : 'Only you can view this project'
-                          }
-                        </div>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value === 'public'}
-                          onCheckedChange={(checked) => 
-                            field.onChange(checked ? 'public' : 'private')
-                          }
-                          disabled={isCreating}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex justify-end space-x-2 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    disabled={isCreating}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={isCreating}>
-                    {isCreating ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      'Create Project'
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <Button
+         
+          onClick={() => setIsCreateDialogOpen(true)}
+          className="flex items-center space-x-2"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Create Project</span>
+        </Button>
       </div>
+        
+       
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -482,7 +344,7 @@ export function ProjectsPage() {
 
                   {/* Role badge */}
                   <div className="absolute top-2 left-2">
-                    <Badge 
+                    {/* <Badge 
                       variant="outline" 
                       className={cn("text-xs", getRoleBadgeColor(project.currentUserRole || 'viewer'))}
                     >
@@ -490,15 +352,15 @@ export function ProjectsPage() {
                       {project.currentUserRole === 'editor' && <Edit3 className="h-3 w-3 mr-1" />}
                       {project.currentUserRole === 'viewer' && <Eye className="h-3 w-3 mr-1" />}
                       {project.currentUserRole}
-                    </Badge>
+                    </Badge> */}
                   </div>
                 </div>
 
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg truncate">{project.name}</CardTitle>
-                    <Badge className={getStatusColor(project.status)}>
-                      {project.status}
+                    <Badge className={getStatusColor(project?.status || 'active')}>
+                      {project?.status}
                     </Badge>
                   </div>
                   <CardDescription className="line-clamp-2">
@@ -509,19 +371,19 @@ export function ProjectsPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="mr-2 h-4 w-4" />
-                    Updated {formatDate(project.updatedAt)}
+                    Updated {formatDate(project.updated_at || '')}
                   </div>
 
                   {/* Access info */}
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="mr-2 h-4 w-4" />
-                    <span>{project.accessList.length} member{project.accessList.length !== 1 ? 's' : ''}</span>
+                    {/* <span>{project.accessList.length} member{project.accessList.length !== 1 ? 's' : ''}</span>
                     {project.isPublic && (
                       <>
                         <span className="mx-1">•</span>
                         <span className="text-green-600">Public</span>
                       </>
-                    )}
+                    )} */}
                   </div>
 
                   <div className="space-y-2">
@@ -573,7 +435,7 @@ export function ProjectsPage() {
                           <Copy className="h-4 w-4 mr-2" />
                           Copy Link
                         </DropdownMenuItem>
-                        {project.isPublic && project.publicSlug && (
+                        {/* {project.isPublic && project.publicSlug && (
                           <>
                             <DropdownMenuItem 
                            // onClick={() => handleCopyPublicLink(project)}
@@ -589,7 +451,7 @@ export function ProjectsPage() {
                               Open Public View
                             </DropdownMenuItem>
                           </>
-                        )}
+                        )} */}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleShare(project)}>
                           <Settings className="h-4 w-4 mr-2" />
@@ -635,6 +497,21 @@ export function ProjectsPage() {
     </motion.div>
 
     <UserProfileHome/>
+
+    <JobHome
+      selectedProjectId={selectedProjectId || undefined}
+      
+    />
+
+     { isCreateDialogOpen  &&
+        user?.id && (
+        <CreateProjectDialog
+          open={isCreateDialogOpen}
+          user_id={user?.id }
+          onOpenChange={setIsCreateDialogOpen}
+          onJobCreated={handleCloseCreateDialog}
+        />)}
+      
     </>
   );
 }

@@ -15,11 +15,11 @@ const GetUserProfile = ({ userId, resetUserProfile }: Props) => {
   const userProfile = useCallback(async (userId: string) => {
     try {
       const getUserProfileData = await dispatch(getUserProfile(userId));
-      console.log('getUserProfileData', getUserProfileData);
+      // console.log('getUserProfileData', getUserProfileData);
       if (getUserProfileData.meta.requestStatus === 'fulfilled') {
-        console.log('User profile fetched successfully:', getUserProfileData.payload);
+        // console.log('User profile fetched successfully:', getUserProfileData.payload);
       } else {
-        console.error('Failed to fetch user profile:', getUserProfileData);
+        // console.error('Failed to fetch user profile:', getUserProfileData);
       }
 
       isApi.current = true;

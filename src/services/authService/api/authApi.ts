@@ -35,7 +35,6 @@ export class AuthAPI {
         });
       }
 
-       console.log("User signed in:", data.user);
        
       // Update last login
       await this.updateLastLogin(data.user.id);
@@ -141,8 +140,7 @@ export class AuthAPI {
       // Create user profile in user_profiles table
       const profile = await this.createUserProfile(profileData);
 
-      console.log("User profile created:", profile);
-
+  
 
       const userAuth: User = {
         id: data.user.id,
@@ -435,12 +433,10 @@ export class AuthAPI {
     role: string;
     full_name: string;
   }): Promise<UserProfile> {
-    console.log("createUserProfile - Input data:", profileData);
-
+ 
     // Validate role before insertion
     const validatedRole = this.validateUserRole(profileData.role);
-    console.log("createUserProfile - Validated role:", validatedRole);
-
+   
     // For profiles table, we need to map the fields correctly
     const insertData = {
       id: profileData.user_id, // profiles table uses 'id' as the user reference

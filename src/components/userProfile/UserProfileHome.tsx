@@ -9,7 +9,7 @@ const UserProfileHome = () => {
   const isUserProfile = useRef<boolean>(false);
   const [userId, setUserId] = React.useState<string | null>(null);
   const getUserDatas = useSelector(getUserData)
-  console.log("getUserDatas", getUserDatas);
+  
   useEffect(() => {
     if (getUserDatas &&
       getUserDatas.id

@@ -142,6 +142,9 @@ const studioSlice = createSlice({
     setLevel: (state, action: PayloadAction<1 | 2>) => {
       state.designSettings.level = action.payload;
     },
+    updateCurentImage: (state, action: PayloadAction<string | null>) => {
+      state.currentImageUrl = action.payload;
+    },
     togglePreserveObject: (state, action: PayloadAction<string>) => {
       const object = action.payload;
       const preserve = state.designSettings.preserve;
@@ -233,6 +236,7 @@ export const {
   clearCurrentImage,
   clearError,
   cancelCurrentJob,
+  updateCurentImage
 } = studioSlice.actions;
 
 export default studioSlice.reducer;

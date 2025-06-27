@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { LoginPage } from '@/pages/LoginPage';
 import { SignUpPage } from '@/pages/SignUpPage';
-import { ProjectsPage } from '@/pages/ProjectsPage';
+import { ProjectsPage } from '@/pages/projectPage/ProjectsPage';
 import { StudioPage } from '@/pages/StudioPage';
 import { MaterialsPage } from '@/pages/MaterialsPage';
 // import { SwatchBookPage } from '@/pages/SwatchBookPage';

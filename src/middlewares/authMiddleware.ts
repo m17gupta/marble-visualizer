@@ -24,10 +24,10 @@ apiClient.interceptors.request.use(
     
     // Log request in development
     if (import.meta.env.DEV) {
-      console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`, {
-        headers: config.headers,
-        data: config.data,
-      });
+      // console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`, {
+      //   headers: config.headers,
+      //   data: config.data,
+      // });
     }
     
     return config;
@@ -43,10 +43,10 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // Log successful response in development
     if (import.meta.env.DEV) {
-      console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`, {
-        status: response.status,
-        data: response.data,
-      });
+      // console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`, {
+      //   status: response.status,
+      //   data: response.data,
+      // });
     }
     
     return response;
@@ -86,7 +86,7 @@ apiClient.interceptors.response.use(
             }
           }
         } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
+        //  console.error('Token refresh failed:', refreshError);
           // Clear auth state and redirect to login
           store.dispatch(clearAuth());
           window.location.href = '/login';
@@ -130,7 +130,7 @@ export const checkProjectAccess = (
   // Temporarily log in development mode but ignore in prod
   if (import.meta.env.DEV && projectId && requiredRole) {
     // This is just to use the parameters so they're not flagged as unused
-    console.log(`TEMPORARY: Access check for project ${projectId} with role ${requiredRole} - returning isAuthenticated`);
+   // console.log(`TEMPORARY: Access check for project ${projectId} with role ${requiredRole} - returning isAuthenticated`);
   }
   
   // TEMPORARY: Just check if user is authenticated, ignore role requirements
@@ -188,7 +188,7 @@ export const authMiddleware: Middleware = ({ getState }) => next => action => {
     if (action.type === 'auth/initializeAuth/rejected') {
       // Special handling for initialization failure
       if ('payload' in action && action.payload === 'Auth session missing!') {
-        console.log('📢 Auth initialization: No active session found. User needs to log in.');
+        //console.log('📢 Auth initialization: No active session found. User needs to log in.');
       } else {
         console.error('❌ Auth initialization failed:', 'payload' in action ? action.payload : 'Unknown error');
       }
@@ -196,13 +196,13 @@ export const authMiddleware: Middleware = ({ getState }) => next => action => {
     
     // Log authentication events in development
     if (import.meta.env.DEV) {
-      console.log('🔐 Auth middleware:', {
-        action: action.type,
-        isAuthenticated: state.auth.isAuthenticated,
-        user: state.auth.user?.email,
-        hasAccessToken: !!state.auth.accessToken,
-        hasRefreshToken: !!state.auth.refreshToken,
-      });
+      // console.log('🔐 Auth middleware:', {
+      //   action: action.type,
+      //   isAuthenticated: state.auth.isAuthenticated,
+      //   user: state.auth.user?.email,
+      //   hasAccessToken: !!state.auth.accessToken,
+      //   hasRefreshToken: !!state.auth.refreshToken,
+      // });
     }
   }
   
@@ -214,11 +214,11 @@ export const errorMiddleware: Middleware = ({ dispatch }) => next => action => {
   if (typeof action === 'object' && action !== null && 'type' in action && typeof action.type === 'string' && action.type.endsWith('/rejected')) {
     // Log errors in development
     if (import.meta.env.DEV) {
-      console.error('🚨 Redux Error:', {
-        action: action.type,
-        payload: 'payload' in action ? action.payload : undefined,
-        error: 'error' in action ? action.error : undefined,
-      });
+      // console.error('🚨 Redux Error:', {
+      //   action: action.type,
+      //   payload: 'payload' in action ? action.payload : undefined,
+      //   error: 'error' in action ? action.error : undefined,
+      // });
     }
     
     // Handle specific error types
@@ -226,7 +226,7 @@ export const errorMiddleware: Middleware = ({ dispatch }) => next => action => {
       const payload = action.payload;
       
       if (payload === 'Auth session missing!') {
-        console.info('No active auth session found - user needs to log in');
+       // console.info('No active auth session found - user needs to log in');
         // This is an expected error during initialization when no user is logged in
         // Don't force logout as this is a normal condition for non-authenticated users
       } else if (typeof payload === 'string') {

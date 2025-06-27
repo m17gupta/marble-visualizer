@@ -6,7 +6,8 @@ import projectSlice from './slices/projectSlice';
 import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
 import materialsSlice from './slices/materialsSlice';
-import jobsSlice from './slices/jobsSlice';
+
+import jobSlice from './slices/jobSlice'; // New job slice based on JobModel
 import activityLogsSlice from './slices/activityLogsSlice';
 import swatchSlice from './slices/swatchSlice';
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
@@ -19,7 +20,8 @@ export const store = configureStore({
     studio: studioSlice,
     segments: segmentsSlice,
     materials: materialsSlice,
-    jobs: jobsSlice,
+
+    jobs: jobSlice, // New job slice based on JobModel
     activityLogs: activityLogsSlice,
     swatches: swatchSlice,
   },
