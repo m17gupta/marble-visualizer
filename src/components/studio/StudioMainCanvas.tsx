@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CanvasEditor } from '@/components/CanvasEditor';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,18 @@ export function StudioMainCanvas({
 }: StudioMainCanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+    const [canavsImage, setCanvasImage]= useState<string | null>(null);
 
+
+    // update the canavss image
+    useEffect(() => {
+      if(currentCanvasImage && currentCanvasImage !== "") { 
+        console.log("currentCanvasImage changed:", currentCanvasImage);
+        setCanvasImage(currentCanvasImage);
+      } else {
+        setCanvasImage(null); 
+      }
+    },[currentCanvasImage]);
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
@@ -104,16 +115,16 @@ export function StudioMainCanvas({
             )}
             
             <AnimatePresence mode="wait">
-              {currentCanvasImage ? (
+              {canavsImage ? (
                 <motion.div
-                  key={`canvas-${currentCanvasImage}`}
+                  key={`canvas-${canavsImage}`}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                 >
                   <CanvasEditor
-                    key={`canvas-editor-${currentCanvasImage}`}
-                    imageUrl={currentCanvasImage}
+                    key={`canvas-editor-${canavsImage}`}
+                    imageUrl={canavsImage}
                     width={800}
                     height={600}
                     className="mb-6"  

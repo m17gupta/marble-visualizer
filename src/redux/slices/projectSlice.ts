@@ -34,36 +34,7 @@ const initialState: ProjectState = {
   error: null,
 };
 
-// Mock data for development
-const mockProjects: ProjectModel[] = [
-  {
-    id: 1,
-    name: 'Modern Dashboard',
-    description: 'A beautiful dashboard with dark mode support and advanced analytics',
-    visibility: 'public',
-    created_at: '2024-01-15T10:30:00Z',
-    updated_at: '2024-01-20T14:45:00Z',
-    user_id: '1',
-  },
-  {
-    id: 2,
-    name: 'E-commerce Platform',
-    description: 'Full-featured online store with payment integration and inventory management',
-    visibility: 'private',
-    created_at: '2024-01-10T09:15:00Z',
-    updated_at: '2024-01-18T16:20:00Z',
-    user_id: '1',
-  },
-  {
-    id: 3,
-    name: 'Portfolio Website',
-    description: 'Creative portfolio with smooth animations and responsive design',
-    visibility: 'public',
-    created_at: '2024-01-05T11:00:00Z',
-    updated_at: '2024-01-12T13:30:00Z',
-    user_id: '1',
-  },
-];
+
 
 // Async thunk to fetch projects
 export const fetchProjects = createAsyncThunk(
@@ -84,7 +55,7 @@ export const fetchProjects = createAsyncThunk(
 // Async thunk to create a new project
 export const createProject = createAsyncThunk(
   'projects/createProject',
-  async (projectData: ProjectModel, { rejectWithValue, getState }) => {
+  async (projectData: ProjectModel, { rejectWithValue }) => {
     try {
 
       const projectResponse = await ProjectService.createProject(projectData);
@@ -154,7 +125,7 @@ export const fetchProjectAccess = createAsyncThunk(
 // Async thunk to invite user to project
 export const inviteUserToProject = createAsyncThunk(
   'projects/inviteUserToProject',
-  async ({ projectId, email, role }: { projectId: number; email: string; role: string }, { rejectWithValue, getState }) => {
+  async ({  email, role }: { projectId: number; email: string; role: string }, { rejectWithValue, getState }) => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -181,7 +152,7 @@ export const inviteUserToProject = createAsyncThunk(
 // Async thunk to update user role
 export const updateUserRole = createAsyncThunk(
   'projects/updateUserRole',
-  async ({ projectId, userId, role }: { projectId: number; userId: string; role: string }, { rejectWithValue }) => {
+  async ({  userId, role }: { projectId: number; userId: string; role: string }, { rejectWithValue }) => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -197,7 +168,7 @@ export const updateUserRole = createAsyncThunk(
 // Async thunk to remove user from project
 export const removeUserFromProject = createAsyncThunk(
   'projects/removeUserFromProject',
-  async ({ projectId, userId }: { projectId: number; userId: string }, { rejectWithValue }) => {
+  async ({  userId }: { projectId: number; userId: string }, { rejectWithValue }) => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));

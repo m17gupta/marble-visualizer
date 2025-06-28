@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
-import { fetchMaterials, searchMaterials, setSearchQuery, setSelectedCategory, clearSearch, Material } from '@/redux/slices/materialsSlice';
+import { fetchMaterials, searchMaterials, setSearchQuery, setSelectedCategory, clearSearch } from '@/redux/slices/materialsSlice';
+import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,13 +12,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, X, Crown, Palette, Image as ImageIcon, Grid3X3 } from 'lucide-react';
+import { Search, X, Crown, Palette, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MaterialPickerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (material: Material) => void;
+  onSelect: (material: MaterialModel) => void;
   selectedMaterialId?: string;
 }
 
@@ -43,10 +44,15 @@ export function MaterialPickerDialog({
   useEffect(() => {
     if (open) {
       const delayedSearch = setTimeout(() => {
-        dispatch(searchMaterials({ 
-          query: searchQuery, 
-          category: selectedCategory || undefined 
-        }));
+        if (searchQuery) {
+          dispatch(searchMaterials({ 
+            query: searchQuery, 
+            category: selectedCategory || undefined 
+          }));
+        } else {
+          // If no search query, fetch all materials
+          dispatch(fetchMaterials());
+        }
       }, 300);
 
       return () => clearTimeout(delayedSearch);
@@ -65,19 +71,29 @@ export function MaterialPickerDialog({
     dispatch(clearSearch());
   };
 
-  const handleMaterialSelect = (material: Material) => {
+  const handleMaterialSelect = (material: MaterialModel) => {
     onSelect(material);
     onOpenChange(false);
   };
 
   const filteredMaterials = materials.filter(material => {
-    if (activeTab === 'textures') return material.type === 'texture';
-    if (activeTab === 'colors') return material.type === 'color';
-    if (activeTab === 'patterns') return material.type === 'pattern';
-    return true;
+    // Since MaterialModel doesn't have a type property, we'll show all materials for now
+    // This can be updated based on material_type_id or other properties when available
+    let passesFilter = true;
+    
+    // Apply search filter if searchQuery exists
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      passesFilter = passesFilter && Boolean(
+        material.title?.toLowerCase().includes(query) ||
+        material.description?.toLowerCase().includes(query)
+      );
+    }
+    
+    return passesFilter;
   });
 
-  const MaterialCard = ({ material }: { material: Material }) => (
+  const MaterialCard = ({ material }: { material: MaterialModel }) => (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -88,7 +104,7 @@ export function MaterialPickerDialog({
       <Card
         className={cn(
           'cursor-pointer transition-all duration-200 hover:shadow-md',
-          selectedMaterialId === material.id
+          selectedMaterialId === material.id.toString()
             ? 'ring-2 ring-primary border-primary'
             : 'hover:border-primary/50'
         )}
@@ -98,37 +114,39 @@ export function MaterialPickerDialog({
           <div className="space-y-3">
             {/* Material Preview */}
             <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-              {material.type === 'color' ? (
+              {material.color ? (
                 <div
                   className="w-full h-full"
                   style={{ backgroundColor: material.color }}
                 />
-              ) : (
+              ) : material.photo ? (
                 <img
-                  src={material.thumbnail}
-                  alt={material.name}
+                  src={material.photo}
+                  alt={material.title}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <ImageIcon className="h-8 w-8 text-gray-400" />
+                </div>
               )}
               
-              {/* Premium Badge */}
-              {material.isPremium && (
+              {/* Featured Badge */}
+              {material.is_featured && (
                 <div className="absolute top-2 right-2">
                   <Badge className="bg-yellow-500 text-yellow-900 border-yellow-600">
                     <Crown className="h-3 w-3 mr-1" />
-                    Pro
+                    Featured
                   </Badge>
                 </div>
               )}
               
-              {/* Type Icon */}
+              {/* Material Type Icon */}
               <div className="absolute top-2 left-2">
                 <Badge variant="secondary" className="text-xs">
-                  {material.type === 'texture' && <ImageIcon className="h-3 w-3 mr-1" />}
-                  {material.type === 'color' && <Palette className="h-3 w-3 mr-1" />}
-                  {material.type === 'pattern' && <Grid3X3 className="h-3 w-3 mr-1" />}
-                  {material.type}
+                  <ImageIcon className="h-3 w-3 mr-1" />
+                  Material
                 </Badge>
               </div>
             </div>
@@ -136,18 +154,18 @@ export function MaterialPickerDialog({
             {/* Material Info */}
             <div className="space-y-2">
               <div>
-                <h3 className="font-medium text-sm truncate">{material.name}</h3>
-                <p className="text-xs text-muted-foreground truncate">{material.brand}</p>
+                <h3 className="font-medium text-sm truncate">{material.title}</h3>
+                <p className="text-xs text-muted-foreground truncate">{material.description || 'No description'}</p>
               </div>
               
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className="text-xs">
-                  {material.category}
+                  ID: {material.id}
                 </Badge>
-                {material.price && (
-                  <span className="text-xs font-medium text-green-600">
-                    ${material.price}
-                  </span>
+                {material.status && (
+                  <Badge variant="outline" className="text-xs text-green-600">
+                    Active
+                  </Badge>
                 )}
               </div>
             </div>

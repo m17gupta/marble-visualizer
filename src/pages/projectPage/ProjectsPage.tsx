@@ -35,9 +35,10 @@ import { cn } from '@/lib/utils';
 import UserProfileHome from '@/components/userProfile/UserProfileHome';
 import { CreateProjectDialog } from './CreateProject';
 import JobHome from '@/components/job/JobHome';
+import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
 
 export function ProjectsPage() {
-  const [user_id, setUser_id] = useState<string | null>(null);
+  // const [user_id, setUser_id] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { list: projects, isLoading, error } = useSelector((state: RootState) => state.projects);
@@ -106,18 +107,18 @@ export function ProjectsPage() {
     }
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20';
-      case 'editor':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-      case 'viewer':
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
-      default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
-    }
-  };
+  // const getRoleBadgeColor = (role: string) => {
+  //   switch (role) {
+  //     case 'admin':
+  //       return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20';
+  //     case 'editor':
+  //       return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
+  //     case 'viewer':
+  //       return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
+  //     default:
+  //       return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
+  //   }
+  // };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -511,7 +512,8 @@ export function ProjectsPage() {
           onOpenChange={setIsCreateDialogOpen}
           onJobCreated={handleCloseCreateDialog}
         />)}
-      
+
+      <SwatchBookDataHome   />
     </>
   );
 }

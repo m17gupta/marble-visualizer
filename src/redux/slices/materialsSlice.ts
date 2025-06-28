@@ -1,24 +1,17 @@
+import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
+import { MaterialFilters, MaterialService } from '@/services/material/materialService/MaterialService';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
-export interface Material {
-  id: string;
-  name: string;
-  brand: string;
-  category: string;
-  type: 'texture' | 'color' | 'pattern';
-  thumbnail: string;
-  previewUrl?: string;
-  textureUrl?: string;
-  color?: string;
-  description: string;
-  tags: string[];
-  price?: number;
-  isPremium: boolean;
-  createdAt: string;
-}
+
 
 interface MaterialsState {
-  materials: Material[];
+  materials: MaterialModel[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  },
   categories: string[];
   selectedCategory: string | null;
   searchQuery: string;
@@ -28,6 +21,12 @@ interface MaterialsState {
 
 const initialState: MaterialsState = {
   materials: [],
+  pagination: {
+    page: 0,
+    limit: 0,
+    total: 0,
+    totalPages: 0,
+  },
   categories: [],
   selectedCategory: null,
   searchQuery: '',
@@ -35,128 +34,25 @@ const initialState: MaterialsState = {
   error: null,
 };
 
-// Mock materials data
-const mockMaterials: Material[] = [
-  {
-    id: '1',
-    name: 'Concrete Wall',
-    brand: 'Urban Materials',
-    category: 'Architecture',
-    type: 'texture',
-    thumbnail: 'https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    textureUrl: 'https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2',
-    description: 'High-resolution concrete texture with realistic surface details',
-    tags: ['concrete', 'wall', 'urban', 'gray'],
-    isPremium: false,
-    createdAt: '2024-01-15T10:30:00Z',
-  },
-  {
-    id: '2',
-    name: 'Natural Wood',
-    brand: 'Forest Collection',
-    category: 'Natural',
-    type: 'texture',
-    thumbnail: 'https://images.pexels.com/photos/129731/pexels-photo-129731.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    textureUrl: 'https://images.pexels.com/photos/129731/pexels-photo-129731.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2',
-    description: 'Beautiful natural wood grain pattern',
-    tags: ['wood', 'natural', 'brown', 'grain'],
-    isPremium: false,
-    createdAt: '2024-01-14T09:15:00Z',
-  },
-  {
-    id: '3',
-    name: 'Brick Pattern',
-    brand: 'Classic Materials',
-    category: 'Architecture',
-    type: 'texture',
-    thumbnail: 'https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    textureUrl: 'https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2',
-    description: 'Traditional red brick wall texture',
-    tags: ['brick', 'red', 'wall', 'traditional'],
-    isPremium: true,
-    price: 9.99,
-    createdAt: '2024-01-13T14:20:00Z',
-  },
-  {
-    id: '4',
-    name: 'Ocean Blue',
-    brand: 'Color Palette Pro',
-    category: 'Colors',
-    type: 'color',
-    thumbnail: 'https://images.pexels.com/photos/1279813/pexels-photo-1279813.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    color: '#2E86AB',
-    description: 'Calming ocean blue color',
-    tags: ['blue', 'ocean', 'calm', 'water'],
-    isPremium: false,
-    createdAt: '2024-01-12T11:45:00Z',
-  },
-  {
-    id: '5',
-    name: 'Marble Texture',
-    brand: 'Luxury Surfaces',
-    category: 'Luxury',
-    type: 'texture',
-    thumbnail: 'https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    textureUrl: 'https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2',
-    description: 'Elegant white marble with natural veining',
-    tags: ['marble', 'white', 'luxury', 'elegant'],
-    isPremium: true,
-    price: 19.99,
-    createdAt: '2024-01-11T16:30:00Z',
-  },
-  {
-    id: '6',
-    name: 'Forest Green',
-    brand: 'Nature Colors',
-    category: 'Colors',
-    type: 'color',
-    thumbnail: 'https://images.pexels.com/photos/1279813/pexels-photo-1279813.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    color: '#355E3B',
-    description: 'Deep forest green color',
-    tags: ['green', 'forest', 'nature', 'deep'],
-    isPremium: false,
-    createdAt: '2024-01-10T08:15:00Z',
-  },
-  {
-    id: '7',
-    name: 'Metal Steel',
-    brand: 'Industrial Materials',
-    category: 'Industrial',
-    type: 'texture',
-    thumbnail: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    textureUrl: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2',
-    description: 'Brushed steel metal texture',
-    tags: ['metal', 'steel', 'industrial', 'silver'],
-    isPremium: false,
-    createdAt: '2024-01-09T13:20:00Z',
-  },
-  {
-    id: '8',
-    name: 'Fabric Weave',
-    brand: 'Textile Collection',
-    category: 'Textile',
-    type: 'texture',
-    thumbnail: 'https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&dpr=2',
-    textureUrl: 'https://images.pexels.com/photos/1974596/pexels-photo-1974596.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&dpr=2',
-    description: 'Soft fabric weave pattern',
-    tags: ['fabric', 'textile', 'soft', 'weave'],
-    isPremium: false,
-    createdAt: '2024-01-08T10:45:00Z',
-  },
-];
 
+// Function to reset pagination
 // Async thunk to fetch materials
 export const fetchMaterials = createAsyncThunk(
   'materials/fetchMaterials',
-  async (_, { rejectWithValue }) => {
+  async (filters: MaterialFilters = {}, { rejectWithValue }) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // In a real app, this would be: return await materialsAPI.getAll();
-      return mockMaterials;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch materials');
+      const result = await MaterialService.getMaterials(filters);
+
+      if (result.success && result.data) {
+        return {
+          materials: result.data.materials,
+          pagination: result.data.pagination,
+        };
+      } else {
+        return rejectWithValue(result.error || 'Failed to fetch materials');
+      }
+    } catch (error: unknown) {
+      return rejectWithValue((error as Error).message || 'Failed to fetch materials');
     }
   }
 );
@@ -166,26 +62,23 @@ export const searchMaterials = createAsyncThunk(
   'materials/searchMaterials',
   async ({ query, category }: { query: string; category?: string }, { rejectWithValue }) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      let filtered = mockMaterials;
-      
-      if (query) {
-        filtered = filtered.filter(material =>
-          material.name.toLowerCase().includes(query.toLowerCase()) ||
-          material.description.toLowerCase().includes(query.toLowerCase()) ||
-          material.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
-        );
-      }
-      
+      const filters: { material_category_id?: number } = {};
       if (category) {
-        filtered = filtered.filter(material => material.category === category);
+        // Convert category string to material_category_id if needed
+        // For now, we'll skip the category filter since we need the proper ID
       }
-      
-      return filtered;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to search materials');
+      const result = await MaterialService.searchMaterials(query, filters);
+
+      if (result.success && result.data) {
+        return {
+          materials: result.data.materials,
+          pagination: result.data.pagination,
+        };
+      } else {
+        return rejectWithValue(result.error || 'Failed to search materials');
+      }
+    } catch (error: unknown) {
+      return rejectWithValue((error as Error).message || 'Failed to search materials');
     }
   }
 );
@@ -207,6 +100,9 @@ const materialsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    addMaterialPagination: (state, action) => {
+      state.pagination.page += action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -217,21 +113,34 @@ const materialsSlice = createSlice({
       })
       .addCase(fetchMaterials.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.materials = action.payload;
-        state.categories = [...new Set(action.payload.map(m => m.category))];
+        const { materials, pagination } = action.payload;
+        state.materials = materials;
+        state.pagination = pagination || {
+          page: 0,
+          limit: 0,
+          total: 0,
+          totalPages: 0,
+        };
       })
       .addCase(fetchMaterials.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Search materials
       .addCase(searchMaterials.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(searchMaterials.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.materials = action.payload;
+        const { materials, pagination } = action.payload;
+        state.materials = materials;
+        state.pagination = pagination || {
+          page: 0,
+          limit: 0,
+          total: 0,
+          totalPages: 0,
+        };
       })
       .addCase(searchMaterials.rejected, (state, action) => {
         state.isLoading = false;
@@ -245,6 +154,7 @@ export const {
   setSelectedCategory,
   clearSearch,
   clearError,
+  addMaterialPagination
 } = materialsSlice.actions;
 
 export default materialsSlice.reducer;

@@ -67,7 +67,8 @@ export function StudioPage() {
   
   // Add debugging for currentImageUrl changes
   useEffect(() => {
-     if(currentImageUrl){
+     if(currentImageUrl && currentImageUrl !== "") {
+      console.log("currentImageUrl changed:", currentImageUrl);
       setCurrentCanvasImage(currentImageUrl)
      }
   }, [currentImageUrl]);

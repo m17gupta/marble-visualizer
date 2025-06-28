@@ -271,10 +271,10 @@ export const fetchSwatches = createAsyncThunk(
   async (params: { page?: number; filters?: Partial<SwatchFilters> } = {}, { rejectWithValue }) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       let filtered = [...mockSwatches];
       const { filters } = params;
-      
+
       if (filters?.search) {
         const search = filters.search.toLowerCase();
         filtered = filtered.filter(swatch =>
@@ -284,39 +284,39 @@ export const fetchSwatches = createAsyncThunk(
           swatch.tags.some(tag => tag.toLowerCase().includes(search))
         );
       }
-      
+
       if (filters?.category) {
         filtered = filtered.filter(swatch => swatch.category === filters.category);
       }
-      
+
       if (filters?.brand) {
         filtered = filtered.filter(swatch => swatch.brand === filters.brand);
       }
-      
+
       if (filters?.style) {
         filtered = filtered.filter(swatch => swatch.style === filters.style);
       }
-      
+
       if (filters?.finish) {
         filtered = filtered.filter(swatch => swatch.finish === filters.finish);
       }
-      
+
       if (filters?.coating_type) {
         filtered = filtered.filter(swatch => swatch.coating_type === filters.coating_type);
       }
-      
+
       if (filters?.tags && filters.tags.length > 0) {
         filtered = filtered.filter(swatch =>
           filters.tags!.some(tag => swatch.tags.includes(tag))
         );
       }
-      
+
       if (filters?.segment_types && filters.segment_types.length > 0) {
         filtered = filtered.filter(swatch =>
           filters.segment_types!.some(type => swatch.segment_types.includes(type))
         );
       }
-      
+
       const page = params.page || 1;
       const limit = 24;
       const total = filtered.length;
@@ -324,7 +324,7 @@ export const fetchSwatches = createAsyncThunk(
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
       const paginatedSwatches = filtered.slice(startIndex, endIndex);
-      
+
       return {
         swatches: paginatedSwatches,
         pagination: { page, limit, total, totalPages },
@@ -338,8 +338,11 @@ export const fetchSwatches = createAsyncThunk(
           all_segment_types: [...new Set(mockSwatches.flatMap(s => s.segment_types))],
         },
       };
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch swatches');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch swatches');
     }
   }
 );
@@ -349,15 +352,18 @@ export const fetchSwatchBySlug = createAsyncThunk(
   async (slug: string, { rejectWithValue }) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       const swatch = mockSwatches.find(s => s.slug === slug);
       if (!swatch) {
         throw new Error('Swatch not found');
       }
-      
+
       return swatch;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch swatch');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to fetch swatch');
     }
   }
 );
@@ -367,7 +373,7 @@ export const createSwatch = createAsyncThunk(
   async (swatchData: Omit<Swatch, '_id' | 'slug' | 'created_at' | 'updated_at'>, { rejectWithValue }) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const newSwatch: Swatch = {
         ...swatchData,
         _id: Date.now().toString(),
@@ -375,10 +381,13 @@ export const createSwatch = createAsyncThunk(
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      
+
       return newSwatch;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to create swatch');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to create swatch');
     }
   }
 );
@@ -389,7 +398,7 @@ export const bulkImportSwatches = createAsyncThunk(
     try {
       // Simulate API call with progress
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const importedSwatches: Swatch[] = swatchesData.map((swatchData, index) => ({
         ...swatchData,
         _id: `imported_${Date.now()}_${index}`,
@@ -397,10 +406,13 @@ export const bulkImportSwatches = createAsyncThunk(
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }));
-      
+
       return importedSwatches;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to import swatches');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to import swatches');
     }
   }
 );
@@ -410,10 +422,13 @@ export const updateSwatch = createAsyncThunk(
   async ({ id, updates }: { id: string; updates: Partial<Swatch> }, { rejectWithValue }) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       return { id, updates: { ...updates, updated_at: new Date().toISOString() } };
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to update swatch');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to update swatch');
     }
   }
 );
@@ -423,10 +438,10 @@ export const toggleFavorite = createAsyncThunk(
   async (swatchId: string, { getState }) => {
     const state = getState() as { swatches: SwatchState };
     const isFavorite = state.swatches.favorites.includes(swatchId);
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     return { swatchId, isFavorite: !isFavorite };
   }
 );
@@ -477,7 +492,7 @@ const swatchSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Fetch swatch by slug
       .addCase(fetchSwatchBySlug.pending, (state) => {
         state.isLoading = true;
@@ -491,7 +506,7 @@ const swatchSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Create swatch
       .addCase(createSwatch.pending, (state) => {
         state.isCreating = true;
@@ -505,7 +520,7 @@ const swatchSlice = createSlice({
         state.isCreating = false;
         state.error = action.payload as string;
       })
-      
+
       // Bulk import swatches
       .addCase(bulkImportSwatches.pending, (state) => {
         state.isImporting = true;
@@ -521,7 +536,7 @@ const swatchSlice = createSlice({
         state.isImporting = false;
         state.error = action.payload as string;
       })
-      
+
       // Update swatch
       .addCase(updateSwatch.pending, (state) => {
         state.isUpdating = true;
@@ -542,7 +557,7 @@ const swatchSlice = createSlice({
         state.isUpdating = false;
         state.error = action.payload as string;
       })
-      
+
       // Toggle favorite
       .addCase(toggleFavorite.fulfilled, (state, action) => {
         const { swatchId, isFavorite } = action.payload;
@@ -551,16 +566,16 @@ const swatchSlice = createSlice({
         } else {
           state.favorites = state.favorites.filter(id => id !== swatchId);
         }
-        
+
         // Update localStorage
         localStorage.setItem('swatch_favorites', JSON.stringify(state.favorites));
-        
+
         // Update swatch in list
         const swatch = state.swatches.find(s => s._id === swatchId);
         if (swatch) {
           swatch.is_favorite = isFavorite;
         }
-        
+
         // Update current swatch
         if (state.currentSwatch?._id === swatchId) {
           state.currentSwatch.is_favorite = isFavorite;
