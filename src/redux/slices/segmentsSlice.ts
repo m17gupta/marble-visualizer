@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Material } from './materialsSlice';
+import { Material } from './materialSlices/materialsSlice';
 import { logActivity } from './activityLogsSlice';
 
 export interface SegmentPoint {

@@ -32,6 +32,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Paintbrush,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -273,6 +274,13 @@ export function MainLayout() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/profile')}
+                    className="text-foreground hover:bg-muted"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem className="text-foreground hover:bg-muted">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>

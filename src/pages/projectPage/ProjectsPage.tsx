@@ -308,10 +308,11 @@ export function ProjectsPage() {
                   className="relative"
                   onClick={() => handleProjectClick(project.id)}
                 >
-                  {project.thumbnail ? (
+                  {project.jobData &&
+                   project.jobData.length > 0 ? (
                     <div className="relative overflow-hidden">
                       <img
-                        src={project.thumbnail}
+                        src={project.jobData[0]?.thumbnail || '/placeholder-image.png'}
                         alt={project.name}
                         className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-105"
                       />

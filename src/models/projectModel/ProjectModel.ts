@@ -1,3 +1,5 @@
+import { JobModel } from "../jobModel/JobModel";
+
 export interface ProjectModel {
     id?: number;
     name?: string;
@@ -9,6 +11,7 @@ export interface ProjectModel {
     user_id?: string;
     progress?: number;
     thumbnail?: string;
+    jobData?:JobModel[]
 }
 
 export interface CreateProjectRequest {

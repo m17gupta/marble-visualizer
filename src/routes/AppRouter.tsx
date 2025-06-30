@@ -5,6 +5,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { SignUpPage } from '@/pages/SignUpPage';
 import { ProjectsPage } from '@/pages/projectPage/ProjectsPage';
 import { StudioPage } from '@/pages/StudioPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 // import { MaterialsPage } from '@/pages/MaterialsPage';
 
 import { SwatchDetailsPage } from '@/pages/SwatchDetailsPage';
@@ -60,6 +61,7 @@ export function AppRouter() {
       >
         <Route index element={<Navigate to="/projects" replace />} />
         <Route path="projects" element={<ProjectsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
         <Route path="studio" element={<StudioPage />} />
         <Route path="studio/:id" element={<StudioPage />} />
         {/* <Route path="materials" element={<MaterialsPage />} /> */}

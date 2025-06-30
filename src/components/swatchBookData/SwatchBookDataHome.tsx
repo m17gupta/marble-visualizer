@@ -1,9 +1,11 @@
 import { useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/redux/store'
-import { fetchCategories } from '@/redux/slices/categorySlice'
-import { fetchBrands } from '@/redux/slices/brandSlice'
-import { fetchMaterials } from '@/redux/slices/materialsSlice'
+import { fetchCategories } from '@/redux/slices/materialSlices/categorySlice'
+import { fetchBrands } from '@/redux/slices/materialSlices/brandSlice'
+import { fetchMaterials } from '@/redux/slices/materialSlices/materialsSlice'
+import { fetchStyles } from '@/redux/slices/materialSlices/StyleSlice'
+import GetAllMaterialSegment from './GetMaterialSegments'
 
 
 const SwatchBookDataHome = () => {
@@ -16,7 +18,7 @@ const SwatchBookDataHome = () => {
   const { categories, isLoading: categoriesLoading } = useSelector((state: RootState) => state.categories)
   const { brands, isLoading: brandsLoading } = useSelector((state: RootState) => state.brands)
   const { materials, isLoading: materialsLoading } = useSelector((state: RootState) => state.materials)
-
+  const { styles, isLoading: stylesLoading } = useSelector((state: RootState) => state.styles)
 
   const fetchAllCategories = useCallback(async () => {
    
@@ -31,6 +33,19 @@ const SwatchBookDataHome = () => {
       console.error('Error fetching categories:', error)
     }
   }, [dispatch])
+
+  const fetchAllStyles = useCallback(async () => {
+    try {
+      const response = await dispatch(fetchStyles())
+      if (fetchStyles.fulfilled.match(response)) {
+        console.log('Styles fetched successfully:', response.payload)
+      }
+    } catch (error) {
+      console.error('Error fetching styles:', error)
+    }
+  }, [dispatch])
+
+
 
   const fetchAllBrands = useCallback(async () => {
     
@@ -91,21 +106,34 @@ const SwatchBookDataHome = () => {
     } else if (materials.length > 0) {
       console.log('Materials already loaded, skipping fetch')
     }
+
+
+    if( styles.length === 0 && !stylesLoading) {
+      console.log('Fetching styles...')
+      fetchAllStyles()
+    }else{
+      console.log('Styles already loaded, skipping fetch')
+    }
   }, [
     isAuthenticated, 
     isInitialized, 
     categories.length, 
     brands.length, 
     materials.length, 
+    styles.length,
+    stylesLoading,
     categoriesLoading, 
     brandsLoading, 
     materialsLoading,
     fetchAllCategories,
     fetchAllBrands,
-    fetchAllMaterials
+    fetchAllMaterials,
+    fetchAllStyles
   ])
 
-  return null
+  return (
+    <GetAllMaterialSegment/>
+  )
 }
 
 export default SwatchBookDataHome

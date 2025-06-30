@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
-import { fetchSwatches, Swatch } from '@/redux/slices/swatchSlice';
-import { SwatchCard } from './SwatchCard';
+import {  Swatch } from '@/redux/slices/swatchSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +20,7 @@ import {
   Layers,
   Info,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
 
 interface SwatchRecommendationsProps {
   selectedSegmentType: string | null;
@@ -36,10 +35,10 @@ export function SwatchRecommendations({ selectedSegmentType, className }: Swatch
   const [recommendedSwatches, setRecommendedSwatches] = useState<Swatch[]>([]);
   const [groupedSwatches, setGroupedSwatches] = useState<Record<string, Swatch[]>>({});
 
-  useEffect(() => {
-    // Fetch swatches when component mounts
-    dispatch(fetchSwatches({}));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // Fetch swatches when component mounts
+  //   dispatch(fetchSwatches({}));
+  // }, [dispatch]);
 
   useEffect(() => {
     if (selectedSegmentType && swatches.length > 0) {
@@ -210,11 +209,11 @@ export function SwatchRecommendations({ selectedSegmentType, className }: Swatch
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2, delay: index * 0.05 }}
                           >
-                            <SwatchCard 
+                            {/* <SwatchCard 
                               swatch={swatch} 
                               variant="list" 
                               className="hover:shadow-sm transition-shadow"
-                            />
+                            /> */}
                           </motion.div>
                         ))}
                       </AnimatePresence>

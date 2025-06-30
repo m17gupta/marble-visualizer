@@ -254,6 +254,8 @@ export class MaterialApi {
     }
   }
 
+  // get material based on category Id
+
   /**
    * Get material by ID
    */

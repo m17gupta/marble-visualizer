@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CanvasEditor } from '@/components/CanvasEditor';
 import { Button } from '@/components/ui/button';
@@ -32,18 +32,25 @@ export function StudioMainCanvas({
 }: StudioMainCanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
-    const [canavsImage, setCanvasImage]= useState<string | null>(null);
+  const [canvasImage, setCanvasImage] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
 
+  // update the canvas image
+  useEffect(() => {
+    if(currentCanvasImage && currentCanvasImage !== "") { 
+      console.log("currentCanvasImage changed:", currentCanvasImage);
+      setImageLoading(true);
+      setCanvasImage(currentCanvasImage);
+    } else {
+      setCanvasImage(null);
+      setImageLoading(false);
+    }
+  },[currentCanvasImage]);
 
-    // update the canavss image
-    useEffect(() => {
-      if(currentCanvasImage && currentCanvasImage !== "") { 
-        console.log("currentCanvasImage changed:", currentCanvasImage);
-        setCanvasImage(currentCanvasImage);
-      } else {
-        setCanvasImage(null); 
-      }
-    },[currentCanvasImage]);
+  // Handle image load completion
+  const handleImageLoad = useCallback(() => {
+    setImageLoading(false);
+  }, []);
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
@@ -108,26 +115,43 @@ export function StudioMainCanvas({
           {/* Canvas Content */}
           <div className="relative">
             {/* Debug info */}
-            {process.env.NODE_ENV === 'development' && (
+            {/* {process.env.NODE_ENV === 'development' && (
               <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
                 Debug: currentCanvasImage = {currentCanvasImage || 'null'}
               </div>
-            )}
+            )} */}
             
             <AnimatePresence mode="wait">
-              {canavsImage ? (
+              {canvasImage ? (
                 <motion.div
-                  key={`canvas-${canavsImage}`}
+                  key={`canvas-${canvasImage}`}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
+                  className="relative"
                 >
+                  {/* Image Loading Overlay */}
+                  {imageLoading && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg"
+                    >
+                      <div className="flex flex-col items-center space-y-4">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                        <p className="text-sm text-muted-foreground">Loading image...</p>
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   <CanvasEditor
-                    key={`canvas-editor-${canavsImage}`}
-                    imageUrl={canavsImage}
+                    key={`canvas-editor-${canvasImage}`}
+                    imageUrl={canvasImage}
                     width={800}
                     height={600}
-                    className="mb-6"  
+                    className="mb-6"
+                    onImageLoad={handleImageLoad}
                   />
                 </motion.div>
               ) : (

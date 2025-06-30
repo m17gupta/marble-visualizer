@@ -5,13 +5,15 @@ import userProfileSlice from './slices/userProfileSlice';
 import projectSlice from './slices/projectSlice';
 import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
-import materialsSlice from './slices/materialsSlice';
+import materialsSlice from './slices/materialSlices/materialsSlice';
+import materialSegmentSlice from './slices/materialSlices/materialSegmentSlice';
 
 import jobSlice from './slices/jobSlice'; // New job slice based on JobModel
 import activityLogsSlice from './slices/activityLogsSlice';
 import swatchSlice from './slices/swatchSlice';
-import categorySlice from './slices/categorySlice'; // New category slice
-import brandSlice from './slices/brandSlice'; // New brand slice
+import categorySlice from './slices/materialSlices/categorySlice'; // New category slice
+import brandSlice from './slices/materialSlices/brandSlice'; // New brand slice
+import StyleSlice from './slices/materialSlices/StyleSlice'; // Assuming styles are part of swatches
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
 
 export const store = configureStore({
@@ -22,12 +24,14 @@ export const store = configureStore({
     studio: studioSlice,
     segments: segmentsSlice,
     materials: materialsSlice,
+    materialSegments: materialSegmentSlice,
 
     jobs: jobSlice, // New job slice based on JobModel
     activityLogs: activityLogsSlice,
     swatches: swatchSlice,
     categories: categorySlice, // New category slice
     brands: brandSlice, // New brand slice
+    styles: StyleSlice  , // Assuming styles are part of swatches
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

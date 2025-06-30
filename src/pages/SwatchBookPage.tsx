@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
-import { fetchSwatches, setPage } from '@/redux/slices/swatchSlice';
+
 import { SwatchBookHeader } from '@/components/swatchBook/SwatchBookHeader';
 import { SwatchBookSearch } from '@/components/swatchBook/SwatchBookSearch';
 import { SwatchBookControls } from '@/components/swatchBook/SwatchBookControls';
@@ -27,17 +27,17 @@ export function SwatchBookPage() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // Set compact layout as default and increase items per page
-  useEffect(() => {
-    // Update pagination to show more items in compact mode
-    const newLimit = layoutMode === 'compact' ? 48 : 24;
-    if (pagination.limit !== newLimit) {
-      dispatch(setPage(1)); // Reset to first page when changing layout
-    }
-  }, [layoutMode, dispatch, pagination.limit]);
+  // useEffect(() => {
+  //   // Update pagination to show more items in compact mode
+  //   const newLimit = layoutMode === 'compact' ? 48 : 24;
+  //   if (pagination.limit !== newLimit) {
+  //     dispatch(setPage(1)); // Reset to first page when changing layout
+  //   }
+  // }, [layoutMode, dispatch, pagination.limit]);
 
-  useEffect(() => {
-    dispatch(fetchSwatches({ page: pagination.page, filters }));
-  }, [dispatch, pagination.page, filters, layoutMode]);
+  // useEffect(() => {
+  //   dispatch(fetchSwatches({ page: pagination.page, filters }));
+  // }, [dispatch, pagination.page, filters, layoutMode]);
 
   const handleSort = (option: SortOption) => {
     setSortBy(option);

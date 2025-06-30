@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppDispatch, RootState } from '@/redux/store';
-import { fetchSwatches, setFilters, setPage } from '@/redux/slices/swatchSlice';
-import { addMaterialPagination, fetchMaterials } from '@/redux/slices/materialsSlice';
+import {  setFilters, setPage } from '@/redux/slices/swatchSlice';
+import { addMaterialPagination, fetchMaterials } from '@/redux/slices/materialSlices/materialsSlice';
 import { toast } from 'sonner';
 
 type ViewMode = 'grid' | 'list';
@@ -138,7 +138,7 @@ export function SwatchBookMainContent({
         {error && (
           <div className="text-center py-12">
             <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={() => dispatch(fetchSwatches({ page: 1 }))}>
+            <Button >
               Try Again
             </Button>
           </div>
