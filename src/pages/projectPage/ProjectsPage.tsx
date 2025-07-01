@@ -45,7 +45,7 @@ export function ProjectsPage() {
   const { user } = useSelector((state: RootState) => state.auth);
   
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
+  // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -71,7 +71,7 @@ export function ProjectsPage() {
   };
 
   const handleShare = (project: ProjectModel) => {
-    setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
+   // setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
   };
 
   const handleCopyLink = (project: ProjectModel) => {

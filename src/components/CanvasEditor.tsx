@@ -20,7 +20,7 @@ import {
   bringForward,
   sendBackward,
 } from '@/redux/slices/segmentsSlice';
-import { MaterialPickerDialog } from './MaterialPickerDialog';
+//import { MaterialPickerDialog } from './MaterialPickerDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -89,7 +89,7 @@ export function CanvasEditor({
   const tempPoints = useRef<fabric.Point[]>([]);
   const tempLines = useRef<fabric.Line[]>([]);
   const tempPointCircles = useRef<fabric.Circle[]>([]);
-  const [materialPickerOpen, setMaterialPickerOpen] = useState(false);
+
   const [hoveredSegmentId] = useState<string | null>(null);
   const [canvasReady, setCanvasReady] = useState(false);
 
@@ -235,15 +235,15 @@ export function CanvasEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [width, height, activeSegmentId, copiedSegment, dispatch]);
 
-  // Load background image
+  // Load background image with comprehensive CORS and fallback handling
   useEffect(() => {
     if (!fabricCanvasRef.current || !canvasReady || !imageUrl) {
-      //  console.log('Skipping image load:', { canvasReady, imageUrl: !!imageUrl });
+        console.log('Skipping image load:', { canvasReady, imageUrl: !!imageUrl });
       return;
     }
 
     const canvas = fabricCanvasRef.current;
-    // console.log('Loading background image:', imageUrl);
+    console.log('Loading background image:', imageUrl);
 
     // Remove existing background image
     if (backgroundImageRef.current) {
@@ -251,13 +251,8 @@ export function CanvasEditor({
       backgroundImageRef.current = null;
     }
 
-    // Create image element first
-    const imgElement = new Image();
-    imgElement.crossOrigin = 'anonymous';
-
-    imgElement.onload = () => {
-      // console.log('Image loaded, creating Fabric image...');
-
+    // Helper function to create and add fabric image to canvas
+    const addImageToCanvas = (imgElement: HTMLImageElement, loadMethod: string) => {
       const fabricImage = new fabric.Image(imgElement, {
         selectable: false,
         evented: false,
@@ -287,7 +282,8 @@ export function CanvasEditor({
       canvas.sendObjectToBack(fabricImage);
       canvas.renderAll();
 
-      // console.log('Background image added to canvas');
+      console.log(`Background image loaded successfully via ${loadMethod}`);
+      toast.success('Background image loaded successfully');
 
       // Call the onImageLoad callback if provided
       if (onImageLoad) {
@@ -295,17 +291,117 @@ export function CanvasEditor({
       }
     };
 
-    imgElement.onerror = (error) => {
-      console.error('Failed to load image:', error);
-      toast.error('Failed to load background image');
+    // Strategy 1: Try with different CORS modes
+    const loadImageWithCORS = (corsMode: string | null = 'anonymous') => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const imgElement = new Image();
+        
+        if (corsMode) {
+          imgElement.crossOrigin = corsMode;
+        }
 
+        imgElement.onload = () => {
+          resolve(imgElement);
+        };
+
+        imgElement.onerror = (error) => {
+          reject(error);
+        };
+
+        imgElement.src = imageUrl;
+      });
+    };
+
+    // Strategy 2: Try with fetch and different CORS modes
+    const loadImageWithFetch = async (fetchMode: RequestMode) => {
+      try {
+        const response = await fetch(imageUrl, {
+          mode: fetchMode,
+          credentials: 'omit',
+          cache: 'no-cache',
+          headers: {
+            'Accept': 'image/*'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+          const imgElement = new Image();
+          
+          imgElement.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            resolve(imgElement);
+          };
+          
+          imgElement.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('Failed to load image from blob'));
+          };
+          
+          imgElement.src = objectUrl;
+        });
+        
+      } catch (error) {
+        throw new Error(`Fetch failed with mode ${fetchMode}: ${error}`);
+      }
+    };
+
+    // Try all loading strategies in sequence
+    const tryLoadImage = async () => {
+      // Strategy 1: Try different CORS modes
+      const corsOptions = ['anonymous', null, 'use-credentials'];
+      
+      for (const corsMode of corsOptions) {
+        try {
+          console.log(`Attempting to load image with CORS mode: ${corsMode || 'none'}`);
+          const imgElement = await loadImageWithCORS(corsMode);
+          addImageToCanvas(imgElement, `CORS mode: ${corsMode || 'none'}`);
+          return; // Success, exit
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode || 'none'}`, error);
+        }
+      }
+
+      // Strategy 2: Try different fetch modes
+      const fetchModes: RequestMode[] = ['cors', 'no-cors', 'same-origin'];
+      
+      for (const fetchMode of fetchModes) {
+        try {
+          console.log(`Attempting to load image via fetch with mode: ${fetchMode}`);
+          const imgElement = await loadImageWithFetch(fetchMode);
+          addImageToCanvas(imgElement, `Fetch mode: ${fetchMode}`);
+          return; // Success, exit
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+        }
+      }
+
+      // All strategies failed
+      console.error('All image loading strategies failed for URL:', imageUrl);
+      
+      // Provide detailed error message with suggestions
+      const errorMessage = imageUrl.includes('s3.') 
+        ? 'Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain.'
+        : 'Failed to load background image. The image server may not allow cross-origin requests.';
+      
+      toast.error(errorMessage, { 
+        duration: 6000,
+        description: 'Check browser console for detailed error information.'
+      });
+      
       // Call the onImageLoad callback even on error to clear loading state
       if (onImageLoad) {
         onImageLoad();
       }
     };
 
-    imgElement.src = imageUrl;
+    tryLoadImage();
   }, [imageUrl, canvasReady, width, height, onImageLoad]);
 
   // Update tool behavior

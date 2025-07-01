@@ -13,6 +13,7 @@ import {
   Users,
   Badge,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarItem {
   id: string;
@@ -27,7 +28,7 @@ interface SidebarItem {
 const SideBar = () => {
   const [activeSection, setActiveSection] = useState('profile');
   const [isCollapsed, setIsCollapsed] = useState(false);
-
+  const navigate = useNavigate();
   const sidebarSections: {
     title: string;
     items: SidebarItem[];
@@ -68,6 +69,11 @@ const SideBar = () => {
     },
   ];
 
+  const handleSignIn = () => {
+    // Handle sign-in logic here
+    navigate("/login")
+  };
+
   return (
 
 
@@ -81,9 +87,11 @@ const SideBar = () => {
         {!isCollapsed && (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-              <User className="h-5 w-5 text-white" />
+              <User className="h-5 w-5 text-white" onClick={handleSignIn} />
             </div>
-            <p className="font-semibold text-gray-900">Dashboard</p>
+            <p className="font-semibold text-gray-900" onClick={handleSignIn}>
+              Sign in
+            </p>
           </div>
         )}
         <button
