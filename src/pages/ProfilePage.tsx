@@ -7,20 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  User,
-  
   CreditCard,
-  Crown,
- 
+
   Mail,
   Shield,
-  Zap,
+ 
   Star,
   LogOut,
   Edit,
   Users,
 } from 'lucide-react';
 import SideBar from '@/components/userProfile/SideBar';
+import SubscriptionPlan from '@/components/userProfile/SubscriptionPlanData';
 
 
 
@@ -38,8 +36,8 @@ export function ProfilePage() {
     joinDate: 'June 2024',
   };
 
-  
-
+  const { subscriptionalPlans } = useSelector((state: RootState) => state.subscriptionPlan);
+   console.log('subscriptionalPlans', subscriptionalPlans);
   const planFeatures = {
     free: [
       'Up to 3 projects',
@@ -271,32 +269,15 @@ export function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                {/* Pro Plan */}
-                <Card className="border-2 border-blue-500 relative">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-500">Most Popular</Badge>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>Pro Plan</span>
-                      <Zap className="h-5 w-5 text-blue-500" />
-                    </CardTitle>
-                    <div className="text-3xl font-bold">$29<span className="text-lg text-gray-500">/month</span></div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {planFeatures.pro.map((feature, index) => (
-                      <div key={index} className="flex items-center text-sm">
-                        <Star className="h-4 w-4 mr-2 text-green-500" />
-                        {feature}
-                      </div>
-                    ))}
-                    <Button className="w-full mt-4">
-                      <Crown className="h-4 w-4 mr-2" />
-                      Upgrade to Pro
-                    </Button>
-                  </CardContent>
-                </Card>
+                {subscriptionalPlans && subscriptionalPlans.length>0 &&
+                subscriptionalPlans.map((plan) => (
+                  <SubscriptionPlan
+                   plan={plan}
+                  />
+                ))}
+                
               </div>
+
             </motion.div>
           )}
 

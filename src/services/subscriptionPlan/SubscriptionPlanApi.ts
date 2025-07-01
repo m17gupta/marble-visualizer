@@ -14,7 +14,7 @@ export class SubscriptionPlanApi {
   static async getAllPlans(filters?: SubscriptionPlanFilters): Promise<SubscriptionPlanModel[]> {
     try {
       let query = supabase
-        .from('subscription_plans')
+        .from('plan_features')
         .select('*');
 
       // Apply filters
