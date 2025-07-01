@@ -11,26 +11,26 @@ const categoryData = {
     rooms: [
       {
         id: 'living-room',
-        title: 'Living Room',
-        image: '/images/living-room.jpg',
+        title: 'Front View',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Modern living room with comfortable seating'
       },
       {
         id: 'kitchen',
-        title: 'Kitchen',
-        image: '/images/kitchen.jpg',
+        title: 'Front View',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Contemporary kitchen with modern appliances'
       },
       {
         id: 'bedroom',
-        title: 'Bedroom',
-        image: '/images/bedroom.jpg',
+        title: 'Front View',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Comfortable bedroom with natural lighting'
       },
       {
         id: 'bathroom',
-        title: 'Bathroom',
-        image: '/images/bathroom.jpg',
+        title: 'Front View',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Modern bathroom with clean design'
       }
     ]
@@ -39,26 +39,26 @@ const categoryData = {
     rooms: [
       {
         id: 'garden',
-        title: 'Garden',
-        image: '/images/garden.jpg',
+        title: 'Front View',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Beautiful garden landscape'
       },
       {
         id: 'patio',
         title: 'Patio',
-        image: '/images/patio.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Outdoor patio area'
       },
       {
         id: 'pool-area',
         title: 'Pool Area',
-        image: '/images/pool-area.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Swimming pool and deck'
       },
       {
         id: 'facade',
         title: 'Facade',
-        image: '/images/facade.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Building exterior facade'
       }
     ]
@@ -68,25 +68,25 @@ const categoryData = {
       {
         id: 'office',
         title: 'Office',
-        image: '/images/office.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Modern office space'
       },
       {
         id: 'retail',
         title: 'Retail',
-        image: '/images/retail.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Retail store interior'
       },
       {
         id: 'restaurant',
         title: 'Restaurant',
-        image: '/images/restaurant.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Restaurant dining area'
       },
       {
         id: 'lobby',
         title: 'Lobby',
-        image: '/images/lobby.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Commercial building lobby'
       }
     ]
@@ -96,25 +96,25 @@ const categoryData = {
       {
         id: 'office',
         title: 'Office',
-        image: '/images/office.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Modern office space'
       },
       {
         id: 'retail',
         title: 'Retail',
-        image: '/images/retail.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Retail store interior'
       },
       {
         id: 'restaurant',
         title: 'Restaurant',
-        image: '/images/restaurant.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Restaurant dining area'
       },
       {
         id: 'lobby',
         title: 'Lobby',
-        image: '/images/lobby.jpg',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Commercial building lobby'
       }
     ]
@@ -126,7 +126,7 @@ const topPicks = [
     id: 'renovate',
     title: 'Renovate',
     description: 'Fully renovate your existing room or home with AI and try different templates, styles, and colors for your dream space.',
-    image: '/images/renovate.jpg',
+    image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
     ctaText: 'Try Now',
     ctaColor: 'bg-black hover:bg-gray-800'
   },
@@ -134,7 +134,7 @@ const topPicks = [
     id: 'virtual-staging',
     title: 'Virtual Staging (New)',
     description: 'Professional AI virtual staging for your real estate photos in 15-20 seconds!',
-    image: '/images/virtual-staging.jpg',
+    image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
     ctaText: 'Stage',
     ctaColor: 'bg-black hover:bg-gray-800',
     badge: 'MLS Compliant'
@@ -143,7 +143,7 @@ const topPicks = [
     id: 'studio',
     title: 'Studio',
     description: 'Use our studio to create your dream space by accessing all our tools in one place.',
-    image: '/images/studio.jpg',
+    image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
     ctaText: 'Use',
     ctaColor: 'bg-black hover:bg-gray-800'
   }
@@ -278,7 +278,7 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
   onTopPickClick
 }) => {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
   {/* <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200"> */}
 
@@ -287,7 +287,7 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
 
       {/* Right Main Content */}
 {/* <div clas> */}
-      <div className="rounded-md transition-all  duration-300">
+      <div className="rounded-md transition-all px-6 pt-6 duration-300">
          {/* lg:pl-80 */}
         {/* Header */}
         <div className='bg-white px-6 py-4 rounded-lg'>
@@ -297,17 +297,18 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
 
           {/* Tabs Section */}
           <Tabs defaultValue="homeOwner" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-              <TabsTrigger value="homeOwner" className="flex items-center gap-2">
+  <TabsList className="grid w-full max-w-lg mx-auto grid-cols-4 mb-8 gap-3 h-14">
+
+              <TabsTrigger value="homeOwner" className="flex items-center gap-2 px-4 py-2 rounded-md">
                 🏠 Home Owner
               </TabsTrigger>
-              <TabsTrigger value="realtor" className="flex items-center gap-2">
+              <TabsTrigger value="realtor" className="flex items-center gap-2 px-4 py-2 rounded-md">
                 🏖️ Realtor
               </TabsTrigger>
-              <TabsTrigger value="trade" className="flex items-center gap-2">
+              <TabsTrigger value="trade" className="flex items-center gap-2 px-4 py-2 rounded-md">
                 🏢 Trade
               </TabsTrigger>
-              <TabsTrigger value="distributor" className="flex items-center gap-2">
+              <TabsTrigger value="distributor" className="flex items-center gap-2 px-4 py-2 rounded-md">
                 🏢 Distributor
               </TabsTrigger>
             </TabsList>
@@ -332,9 +333,9 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
         </div>
 
         {/* Top Picks Section */}
-        <div className="space-y-8 px-6">
+        <div className="space-y-8 px-6 mt-6">
           <div className="text-left">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Picks</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Top Picks</h2>
             <p className="text-gray-600 text-lg">Trending Renovation Solutions.</p>
           </div>
 
