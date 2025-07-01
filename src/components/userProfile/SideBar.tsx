@@ -77,19 +77,26 @@ const SideBar = () => {
   return (
 
 
-    <div
-      className={`h-screen ${
-        isCollapsed ? 'w-16' : 'w-64'
-      } transition-all duration-300 border-r border-gray-200 bg-white flex flex-col`}
-    >
+<div
+  className="h-screen flex flex-col border-r border-gray-200 bg-white transition-all duration-300"
+  style={{
+    width: isCollapsed ? '64px' : '280px',
+    minWidth: isCollapsed ? '64px' : '280px', // ✅ lock min width
+  }}
+>
+
+
+
+
+
       {/* Header + Toggle */}
       <div className="p-4 flex items-center justify-between border-b border-gray-200">
         {!isCollapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center cursor-pointer">
               <User className="h-5 w-5 text-white" onClick={handleSignIn} />
             </div>
-            <p className="font-semibold text-gray-900" onClick={handleSignIn}>
+            <p className="font-semibold text-gray-900 cursor-pointer" onClick={handleSignIn}>
               Sign in
             </p>
           </div>
