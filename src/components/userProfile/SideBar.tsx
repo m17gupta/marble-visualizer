@@ -14,6 +14,8 @@ import {
   Badge,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 interface SidebarItem {
   id: string;
@@ -28,6 +30,9 @@ interface SidebarItem {
 const SideBar = () => {
   const [activeSection, setActiveSection] = useState('profile');
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
+  
   const navigate = useNavigate();
   const sidebarSections: {
     title: string;
@@ -93,12 +98,17 @@ const SideBar = () => {
       <div className="p-4 flex items-center justify-between border-b border-gray-200">
         {!isCollapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center cursor-pointer">
-              <User className="h-5 w-5 text-white" onClick={handleSignIn} />
-            </div>
-            <p className="font-semibold text-gray-900 cursor-pointer" onClick={handleSignIn}>
-              Sign in
-            </p>
+            {!isAuthenticated && (
+              <>
+                <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center cursor-pointer">
+                  <User className="h-5 w-5 text-white" onClick={handleSignIn} />
+                </div>
+
+                <p className="font-semibold text-gray-900 cursor-pointer" onClick={handleSignIn}>
+                  Sign in
+                </p>
+              </>
+            )}
           </div>
         )}
         <button

@@ -250,25 +250,7 @@ export function ProfilePage() {
               <h1 className="text-3xl font-bold text-gray-900">Upgrade Your Plan</h1>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Free Plan */}
-                <Card className="border-2 border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>Free Plan</span>
-                      <Badge variant="secondary">Current</Badge>
-                    </CardTitle>
-                    <div className="text-3xl font-bold">$0<span className="text-lg text-gray-500">/month</span></div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {planFeatures.free.map((feature, index) => (
-                      <div key={index} className="flex items-center text-sm">
-                        <Star className="h-4 w-4 mr-2 text-green-500" />
-                        {feature}
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
+              
                 {subscriptionalPlans && subscriptionalPlans.length>0 &&
                 subscriptionalPlans.map((plan) => (
                   <SubscriptionPlan
