@@ -62,6 +62,12 @@ export function AppRouter() {
         path="/project/public/:slug"
         element={<PublicProjectPage />}
       />
+
+      {/* Public landing page - no authentication required */}
+      <Route
+        path="/landing-page"
+        element={<MainLandingPage />}
+      />
  
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}
       <Route
@@ -73,7 +79,6 @@ export function AppRouter() {
         }
       >
         <Route index element={<Navigate to="/app/projects" replace />} />
-        <Route path="landing-page" element={ <MainLandingPage /> } />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="studio" element={<StudioPage />} />

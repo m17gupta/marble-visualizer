@@ -19,7 +19,7 @@ const Navigation = () => {
               <a href="/login">Sign In</a>
             </Button>
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              <a href="/signup" className="text-white">Get Started</a>
+              <a href="/landing-page" className="text-white">Get Started</a>
             </Button>
           </div>
         </div>
