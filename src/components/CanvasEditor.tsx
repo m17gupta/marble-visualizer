@@ -172,7 +172,7 @@ export function CanvasEditor({
       dispatch(selectSegment(null));
     });
     // canvas.on('object:modified', handleObjectModified);
-    // canvas.on('mouse:over', (e) => handleMouseOver(e as fabric.TEvent));
+   // canvas.on('mouse:over', handleMouseOver);
     // canvas.on('mouse:out', handleMouseOut);
 
     // Keyboard shortcuts
@@ -574,10 +574,10 @@ export function CanvasEditor({
     const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
     // Remove existing preview line
-    // const previewLine = canvas.getObjects().find(obj => (obj as any).data?.type === 'preview-line');
-    // if (previewLine) {
-    //   canvas.remove(previewLine);
-    // }
+    const previewLine = canvas.getObjects().find(obj => (obj as any).data?.type === 'preview-line');
+    if (previewLine) {
+      canvas.remove(previewLine);
+    }
 
     // Add new preview line
     const line = new fabric.Line([lastPoint.x, lastPoint.y, pointer.x, pointer.y], {

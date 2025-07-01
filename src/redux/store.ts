@@ -17,7 +17,7 @@ import StyleSlice from './slices/materialSlices/StyleSlice'; // Assuming styles 
 import inspirationalColorSlice from './slices/InspirationalSlice/inspirationalColorSlice'; // New inspirational color slice
 import inspirationalImageSlice from './slices/InspirationalSlice/inspirationalImageSlice'; // New inspirational image slice
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
-
+import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; // New subscription plan slice  
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -36,6 +36,7 @@ export const store = configureStore({
     styles: StyleSlice, // Assuming styles are part of swatches
     inspirationalColors: inspirationalColorSlice, // New inspirational color slice
     inspirationalImages: inspirationalImageSlice, // New inspirational image slice
+    subscriptionPlan: subscriptionPlanSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
