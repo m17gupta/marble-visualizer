@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 
 export interface FilterSwatchModel{
@@ -122,10 +122,69 @@ const initialState: SwatchState = {
   },
 };
 
+// Async thunks
+export const fetchSwatchBySlug = createAsyncThunk(
+  'swatches/fetchBySlug',
+  async (slug: string, { rejectWithValue }) => {
+    try {
+      // TODO: Replace with actual API call
+      const response = await fetch(`/api/swatches/${slug}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch swatch');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
 
+export const toggleFavorite = createAsyncThunk(
+  'swatches/toggleFavorite',
+  async (swatchId: string, { getState, rejectWithValue }) => {
+    try {
+      // TODO: Replace with actual API call
+      const state = getState() as { swatches: SwatchState };
+      const isFavorite = state.swatches.favorites.includes(swatchId);
+      
+      const response = await fetch(`/api/swatches/${swatchId}/favorite`, {
+        method: isFavorite ? 'DELETE' : 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to toggle favorite');
+      }
+      
+      return { swatchId, isFavorite: !isFavorite };
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
 
-
-
+export const createSwatch = createAsyncThunk(
+  'swatches/create',
+  async (swatchData: Omit<Swatch, '_id' | 'created_at' | 'updated_at'>, { rejectWithValue }) => {
+    try {
+      // TODO: Replace with actual API call
+      const response = await fetch('/api/swatches', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(swatchData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create swatch');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
 
 const swatchSlice = createSlice({
   name: 'swatches',
@@ -177,6 +236,45 @@ const swatchSlice = createSlice({
     resetSwatchFilter:()=>{
       return initialState
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      // fetchSwatchBySlug
+      .addCase(fetchSwatchBySlug.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchSwatchBySlug.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentSwatch = action.payload;
+      })
+      .addCase(fetchSwatchBySlug.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // toggleFavorite
+      .addCase(toggleFavorite.fulfilled, (state, action) => {
+        const { swatchId, isFavorite } = action.payload;
+        if (isFavorite) {
+          state.favorites.push(swatchId);
+        } else {
+          state.favorites = state.favorites.filter(id => id !== swatchId);
+        }
+        localStorage.setItem('swatch_favorites', JSON.stringify(state.favorites));
+      })
+      // createSwatch
+      .addCase(createSwatch.pending, (state) => {
+        state.isCreating = true;
+        state.error = null;
+      })
+      .addCase(createSwatch.fulfilled, (state, action) => {
+        state.isCreating = false;
+        state.swatches.unshift(action.payload);
+      })
+      .addCase(createSwatch.rejected, (state, action) => {
+        state.isCreating = false;
+        state.error = action.payload as string;
+      });
   },
 
 });

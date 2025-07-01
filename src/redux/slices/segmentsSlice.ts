@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Material } from './materialSlices/materialsSlice';
-import { logActivity } from './activityLogsSlice';
+import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
 
 export interface SegmentPoint {
   x: number;
@@ -82,8 +81,9 @@ export const saveSegments = createAsyncThunk(
       
       // In a real app, this would be: return await segmentsAPI.save(projectId, segments);
       return segments;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to save segments');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save segments';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -98,8 +98,9 @@ export const loadSegments = createAsyncThunk(
       
       // Mock data - in a real app, this would be: return await segmentsAPI.load(projectId);
       return [];
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to load segments');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load segments';
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -292,17 +293,17 @@ const segmentsSlice = createSlice({
     },
     
     // Material assignment
-    assignMaterialToSegment: (state, action: PayloadAction<{ segmentId: string; material: Material; projectId?: string }>) => {
-      const { segmentId, material, projectId } = action.payload;
+    assignMaterialToSegment: (state, action: PayloadAction<{ segmentId: string; material: MaterialModel; projectId?: string }>) => {
+      const { segmentId, material } = action.payload;
       const segment = state.segments.find(s => s.id === segmentId);
       
       if (segment) {
         const segmentMaterial: SegmentMaterial = {
-          materialId: material.id,
-          materialName: material.name,
-          materialType: material.type,
-          previewUrl: material.thumbnail,
-          textureUrl: material.textureUrl,
+          materialId: material.id.toString(),
+          materialName: material.title,
+          materialType: 'color', // Default type, could be determined from material_type_id
+          previewUrl: material.photo,
+          textureUrl: material.bucket_path,
           color: material.color,
           appliedAt: new Date().toISOString(),
         };
@@ -311,7 +312,7 @@ const segmentsSlice = createSlice({
         segment.updatedAt = new Date().toISOString();
         
         // Update visual properties based on material
-        if (material.type === 'color' && material.color) {
+        if (material.color) {
           segment.fillColor = material.color;
         }
       }
@@ -377,7 +378,7 @@ const segmentsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Save segments
-      .addCase(saveSegments.fulfilled, (state) => {
+      .addCase(saveSegments.fulfilled, () => {
         // Segments saved successfully
       })
       .addCase(saveSegments.rejected, (state, action) => {

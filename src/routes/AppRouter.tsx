@@ -9,12 +9,14 @@ import { ProfilePage } from '@/pages/ProfilePage';
 // import { MaterialsPage } from '@/pages/MaterialsPage';
 
 import { SwatchDetailsPage } from '@/pages/SwatchDetailsPage';
-import { SwatchCreatePage } from '@/pages/SwatchCreatePage';
+// import { SwatchCreatePage } from '@/pages/SwatchCreatePage';
 // import { SwatchImportPage } from '@/pages/SwatchImportPage';
 import { PublicProjectPage } from '@/pages/PublicProjectPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { SwatchBookPage } from '@/pages/SwatchBookPage';
+import LandingPage from '@/pages/LandingPage';
+import DzinlyLandingDemo from '@/pages/DzinlyLandingDemo';
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -22,6 +24,17 @@ export function AppRouter() {
   return (
     <Routes>
       {/* Public routes */}
+      <Route 
+        path="/" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/projects" replace />
+          ) : (
+            <LandingPage />
+          )
+        } 
+      />
+      
       <Route 
         path="/login" 
         element={
@@ -50,16 +63,22 @@ export function AppRouter() {
         element={<PublicProjectPage />} 
       />
 
+      {/* Demo route for Dzinly Landing */}
+      <Route 
+        path="/demo" 
+        element={<DzinlyLandingDemo />} 
+      />
+
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}
       <Route
-        path="/"
+        path="/app"
         element={
           <PrivateRoute>
             <MainLayout />
           </PrivateRoute>
         }
       >
-        <Route index element={<Navigate to="/projects" replace />} />
+        <Route index element={<Navigate to="/app/projects" replace />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="studio" element={<StudioPage />} />
@@ -67,9 +86,7 @@ export function AppRouter() {
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} /> 
         <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
-        {/* TEMPORARY: Remove role restrictions for swatch creation and import */}
-        <Route path="swatch/create" element={<SwatchCreatePage />} />
-        {/* <Route path="swatch/import" element={<SwatchImportPage />} /> */}
+       
       </Route>
 
       {/* Catch all route */}
@@ -77,7 +94,7 @@ export function AppRouter() {
         path="*" 
         element={
           <Navigate 
-            to={isAuthenticated ? "/projects" : "/login"} 
+            to={isAuthenticated ? "/app/projects" : "/"} 
             replace 
           />
         } 

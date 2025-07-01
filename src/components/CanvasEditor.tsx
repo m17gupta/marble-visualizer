@@ -10,7 +10,7 @@ import {
   cancelDrawing,
   selectSegment,
   deleteSegment,
-  assignMaterialToSegment,
+  // assignMaterialToSegment,
   removeMaterialFromSegment,
   saveToHistory,
   undo,
@@ -620,25 +620,25 @@ export function CanvasEditor({
   };
 
   // Material assignment handlers
-  const handleAssignMaterial = () => {
-    if (!activeSegmentId) {
-      toast.error('Please select a segment first');
-      return;
-    }
-    setMaterialPickerOpen(true);
-  };
+  // const handleAssignMaterial = () => {
+  //   if (!activeSegmentId) {
+  //     toast.error('Please select a segment first');
+  //     return;
+  //   }
+  //   setMaterialPickerOpen(true);
+  // };
 
-  const handleMaterialSelect = (material: unknown) => {
-    if (!activeSegmentId) return;
+  // const handleMaterialSelect = (material: unknown) => {
+  //   if (!activeSegmentId) return;
 
-    dispatch(assignMaterialToSegment({
-      segmentId: activeSegmentId,
-      material
-    }));
+  //   dispatch(assignMaterialToSegment({
+  //     segmentId: activeSegmentId,
+  //     material
+  //   }));
 
-    toast.success(`Material "${material.name}" applied to segment`);
-    saveCanvasState();
-  };
+  //   // toast.success(`Material "${material.name}" applied to segment`);
+  //   saveCanvasState();
+  // };
 
   const handleRemoveMaterial = () => {
     if (!activeSegmentId) return;
@@ -855,7 +855,7 @@ export function CanvasEditor({
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={handleAssignMaterial}
+                           // onClick={handleAssignMaterial}
                           >
                             <Paintbrush className="h-4 w-4 mr-1" />
                             Material
@@ -988,12 +988,12 @@ export function CanvasEditor({
         </motion.div>
 
         {/* Material Picker Dialog */}
-        <MaterialPickerDialog
+        {/* <MaterialPickerDialog
           open={materialPickerOpen}
           onOpenChange={setMaterialPickerOpen}
           onSelect={handleMaterialSelect}
           selectedMaterialId={activeSegment?.material?.materialId}
-        />
+        /> */}
       </div>
     </TooltipProvider>
   );

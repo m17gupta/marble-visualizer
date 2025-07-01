@@ -58,7 +58,7 @@ export const useS3Upload = (options: UseS3UploadOptions = {}): UseS3UploadReturn
     setResult(null);
 
     try {
-      const uploadResult = await DirectS3UploadService.uploadFile(file, (progressData: UploadProgress) => {
+      const uploadResult = await DirectS3UploadService.uploadFile(file, undefined, (progressData: UploadProgress) => {
         setProgress(progressData);
         onProgress?.(progressData);
       });

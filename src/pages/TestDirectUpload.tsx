@@ -55,6 +55,9 @@ const TestDirectUpload: React.FC = () => {
             maxSize={10 * 1024 * 1024} // 10MB
             allowedTypes={['image/jpeg', 'image/png', 'image/gif', 'image/webp']}
             className="w-full"
+            jobImageUpload={(file: File) => {
+              console.log('Job image upload:', file);
+            }}
           />
         </div>
         

@@ -32,6 +32,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { fetchSwatchBySlug, toggleFavorite } from '@/redux/slices/swatchSlice';
 
 export function SwatchDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
