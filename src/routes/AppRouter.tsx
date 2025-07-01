@@ -15,7 +15,6 @@ import { PublicProjectPage } from '@/pages/PublicProjectPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { SwatchBookPage } from '@/pages/SwatchBookPage';
-import LandingPage from '@/pages/MainLandingPage';
 import MainLandingPage from '@/pages/MainLandingPage';
  
 export function AppRouter() {

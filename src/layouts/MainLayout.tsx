@@ -39,12 +39,12 @@ import { cn } from "@/lib/utils";
 const navigation = [
   {
     name: "Projects",
-    href: "/projects",
+    href: "/app/projects",
     icon: FolderOpen,
   },
   {
     name: "Studio",
-    href: "/studio",
+    href: "/app/studio",
     icon: Palette,
   },
   // {
@@ -54,7 +54,7 @@ const navigation = [
   // },
   {
     name: "SwatchBook",
-    href: "/swatchbook",
+    href: "/app/swatchbook",
     icon: Paintbrush,
   },
 ];
@@ -275,7 +275,7 @@ export function MainLayout() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate('/app/profile')}
                     className="text-foreground hover:bg-muted"
                   >
                     <User className="mr-2 h-4 w-4" />

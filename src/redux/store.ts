@@ -14,6 +14,8 @@ import swatchSlice from './slices/swatchSlice';
 import categorySlice from './slices/materialSlices/categorySlice'; // New category slice
 import brandSlice from './slices/materialSlices/brandSlice'; // New brand slice
 import StyleSlice from './slices/materialSlices/StyleSlice'; // Assuming styles are part of swatches
+import inspirationalColorSlice from './slices/InspirationalSlice/inspirationalColorSlice'; // New inspirational color slice
+import inspirationalImageSlice from './slices/InspirationalSlice/inspirationalImageSlice'; // New inspirational image slice
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
 
 export const store = configureStore({
@@ -31,7 +33,9 @@ export const store = configureStore({
     swatches: swatchSlice,
     categories: categorySlice, // New category slice
     brands: brandSlice, // New brand slice
-    styles: StyleSlice  , // Assuming styles are part of swatches
+    styles: StyleSlice, // Assuming styles are part of swatches
+    inspirationalColors: inspirationalColorSlice, // New inspirational color slice
+    inspirationalImages: inspirationalImageSlice, // New inspirational image slice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

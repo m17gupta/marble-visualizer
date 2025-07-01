@@ -91,97 +91,12 @@ export class InspirationalColorApi {
     }
   }
 
-  /**
-   * Fetch inspiration colors with pagination helper
-   */
-  static async fetchInspirationColorsPaginated(
-    page: number = 1,
-    pageSize: number = 20,
-    filters: Omit<InspirationColorFilters, 'limit' | 'offset'> = {}
-  ): Promise<PaginatedInspirationColorResponse> {
-    const offset = (page - 1) * pageSize;
-    
-    const response = await this.fetchInspirationColors({
-      ...filters,
-      limit: pageSize,
-      offset
-    });
+  
 
-    const totalCount = response.count || 0;
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const hasMore = page < totalPages;
+ 
 
-    return {
-      data: (response.data as InspirationColorModel[]) || [],
-      count: totalCount,
-      totalPages,
-      currentPage: page,
-      hasMore
-    };
-  }
-
-  /**
-   * Fetch inspiration color by ID
-   */
-  static async fetchInspirationColorById(id: string): Promise<InspirationColorApiResponse> {
-    try {
-      const { data, error } = await supabase
-        .from(this.TABLE_NAME)
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching inspiration color by ID:', error);
-        return {
-          success: false,
-          error: error.message
-        };
-      }
-
-      if (!data) {
-        return {
-          success: false,
-          error: 'Inspiration color not found'
-        };
-      }
-
-      return {
-        success: true,
-        data: data as InspirationColorModel,
-        message: 'Inspiration color fetched successfully'
-      };
-
-    } catch (error) {
-      console.error('Unexpected error in fetchInspirationColorById:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
-    }
-  }
-
-  /**
-   * Search inspiration colors by name
-   */
-  static async searchInspirationColorsByName(
-    searchTerm: string,
-    limit: number = 10
-  ): Promise<InspirationColorApiResponse> {
-    return this.fetchInspirationColors({
-      search: searchTerm,
-      limit
-    });
-  }
-
-  /**
-   * Fetch inspiration colors by hex color
-   */
-  static async fetchInspirationColorsByHex(hex: string): Promise<InspirationColorApiResponse> {
-    return this.fetchInspirationColors({
-      hex
-    });
-  }
+ 
+  
 }
 
 export default InspirationalColorApi;

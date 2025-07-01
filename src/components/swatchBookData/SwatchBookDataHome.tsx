@@ -6,13 +6,14 @@ import { fetchBrands } from '@/redux/slices/materialSlices/brandSlice'
 import { fetchMaterials } from '@/redux/slices/materialSlices/materialsSlice'
 import { fetchStyles } from '@/redux/slices/materialSlices/StyleSlice'
 import GetAllMaterialSegment from './GetMaterialSegments'
+import GetAllInspirational from './GetAllInsiprational'
 
 
 const SwatchBookDataHome = () => {
   const dispatch = useDispatch<AppDispatch>()
-  
 
-  
+
+
   // Get auth and data states
   const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth)
   const { categories, isLoading: categoriesLoading } = useSelector((state: RootState) => state.categories)
@@ -21,12 +22,12 @@ const SwatchBookDataHome = () => {
   const { styles, isLoading: stylesLoading } = useSelector((state: RootState) => state.styles)
 
   const fetchAllCategories = useCallback(async () => {
-   
-    
+
+
     try {
       const response = await dispatch(fetchCategories())
       if (fetchCategories.fulfilled.match(response)) {
-        
+
         console.log('Categories fetched successfully:', response.payload)
       }
     } catch (error) {
@@ -48,12 +49,12 @@ const SwatchBookDataHome = () => {
 
 
   const fetchAllBrands = useCallback(async () => {
-    
-    
+
+
     try {
       const response = await dispatch(fetchBrands())
       if (fetchBrands.fulfilled.match(response)) {
-      
+
         console.log('Brands fetched successfully:', response.payload)
       }
     } catch (error) {
@@ -64,11 +65,11 @@ const SwatchBookDataHome = () => {
 
 
   const fetchAllMaterials = useCallback(async () => {
-  
+
     try {
       const response = await dispatch(fetchMaterials({ page: 1, limit: 100 }))
       if (fetchMaterials.fulfilled.match(response)) {
-        
+
         console.log('Materials fetched successfully:', response.payload)
       }
     } catch (error) {
@@ -108,22 +109,22 @@ const SwatchBookDataHome = () => {
     }
 
 
-    if( styles.length === 0 && !stylesLoading) {
+    if (styles.length === 0 && !stylesLoading) {
       console.log('Fetching styles...')
       fetchAllStyles()
-    }else{
+    } else {
       console.log('Styles already loaded, skipping fetch')
     }
   }, [
-    isAuthenticated, 
-    isInitialized, 
-    categories.length, 
-    brands.length, 
-    materials.length, 
+    isAuthenticated,
+    isInitialized,
+    categories.length,
+    brands.length,
+    materials.length,
     styles.length,
     stylesLoading,
-    categoriesLoading, 
-    brandsLoading, 
+    categoriesLoading,
+    brandsLoading,
     materialsLoading,
     fetchAllCategories,
     fetchAllBrands,
@@ -132,7 +133,12 @@ const SwatchBookDataHome = () => {
   ])
 
   return (
-    <GetAllMaterialSegment/>
+    <>
+      <GetAllMaterialSegment />
+
+      <GetAllInspirational />
+    </>
+
   )
 }
 
