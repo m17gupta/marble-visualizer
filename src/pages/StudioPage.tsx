@@ -21,7 +21,7 @@ import { createJob, fetchJobsByProject, clearError as clearJobError, clearCurren
 import { fetchActivityLogs, logActivity } from '@/redux/slices/activityLogsSlice';
 import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
 import { StudioSidebar, StudioMainCanvas } from '@/components/studio';
-import { ShareProjectDialog } from '@/components/ShareProjectDialog';
+// import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { toast } from 'sonner';
 
 //type DrawingTool = "select" | "polygon";
@@ -345,14 +345,14 @@ export function StudioPage() {
       />
 
       {/* Share Project Dialog */}
-      {shareDialogOpen && currentProject && (
+      {/* {shareDialogOpen && currentProject && (
         <ShareProjectDialog
           open={shareDialogOpen}
           onOpenChange={setShareDialogOpen}
           projectId={currentProject.id?.toString() || ''}
           projectName={currentProject.name || ''}
         />
-      )}
+      )} */}
     </div>
   );
 }

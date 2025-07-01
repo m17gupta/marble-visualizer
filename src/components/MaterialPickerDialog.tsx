@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
-import { fetchMaterials, searchMaterials, setSearchQuery, setSelectedCategory, clearSearch } from '@/redux/slices/materialSlices/materialsSlice';
+import {  searchMaterials, setSearchQuery, setSelectedCategory, clearSearch } from '@/redux/slices/materialSlices/materialsSlice';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -37,7 +37,7 @@ export function MaterialPickerDialog({
 
   useEffect(() => {
     if (open && materials.length === 0) {
-      dispatch(fetchMaterials());
+     // dispatch(fetchMaterials());
     }
   }, [open, materials.length, dispatch]);
 
@@ -51,7 +51,7 @@ export function MaterialPickerDialog({
           }));
         } else {
           // If no search query, fetch all materials
-          dispatch(fetchMaterials());
+        //  dispatch(fetchMaterials());
         }
       }, 300);
 

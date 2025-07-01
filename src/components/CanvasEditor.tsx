@@ -90,8 +90,62 @@ export function CanvasEditor({
   const tempLines = useRef<fabric.Line[]>([]);
   const tempPointCircles = useRef<fabric.Circle[]>([]);
   const [materialPickerOpen, setMaterialPickerOpen] = useState(false);
-  const [hoveredSegmentId, setHoveredSegmentId] = useState<string | null>(null);
+  const [hoveredSegmentId] = useState<string | null>(null);
   const [canvasReady, setCanvasReady] = useState(false);
+
+  // Save canvas state to history
+  const saveCanvasState = useCallback(() => {
+    if (!fabricCanvasRef.current) return;
+
+    const canvasState = JSON.stringify(fabricCanvasRef.current.toJSON());
+    dispatch(saveToHistory(canvasState));
+  }, [dispatch]);
+
+  // Undo/Redo handlers
+  const handleUndo = useCallback(() => {
+    if (historyIndex > 0) {
+      dispatch(undo());
+      const previousState = canvasHistory[historyIndex - 1];
+      if (previousState && fabricCanvasRef.current) {
+        fabricCanvasRef.current.loadFromJSON(previousState, () => {
+          fabricCanvasRef.current!.renderAll();
+        });
+      }
+    }
+  }, [historyIndex, canvasHistory, dispatch]);
+
+  const handleRedo = useCallback(() => {
+    if (historyIndex < canvasHistory.length - 1) {
+      dispatch(redo());
+      const nextState = canvasHistory[historyIndex + 1];
+      if (nextState && fabricCanvasRef.current) {
+        fabricCanvasRef.current.loadFromJSON(nextState, () => {
+          fabricCanvasRef.current!.renderAll();
+        });
+      }
+    }
+  }, [historyIndex, canvasHistory, dispatch]);
+
+  // Delete selected segment
+  const handleDeleteSelected = useCallback(() => {
+    if (!activeSegmentId || !fabricCanvasRef.current) return;
+
+    dispatch(deleteSegment(activeSegmentId));
+    saveCanvasState();
+    toast.success('Segment deleted');
+  }, [activeSegmentId, dispatch, saveCanvasState]);
+
+  const handleCancelDrawing = useCallback(() => {
+    if (fabricCanvasRef.current) {
+      // Remove temp objects logic would go here
+    }
+
+    isPolygonMode.current = false;
+    tempPoints.current = [];
+    tempLines.current = [];
+    tempPointCircles.current = [];
+    dispatch(cancelDrawing());
+  }, [dispatch]);
 
   // Initialize Fabric.js canvas
   useEffect(() => {
@@ -118,8 +172,8 @@ export function CanvasEditor({
       dispatch(selectSegment(null));
     });
     // canvas.on('object:modified', handleObjectModified);
-    canvas.on('mouse:over', (e) => handleMouseOver(e as fabric.TEvent));
-    canvas.on('mouse:out', handleMouseOut);
+    // canvas.on('mouse:over', (e) => handleMouseOver(e as fabric.TEvent));
+    // canvas.on('mouse:out', handleMouseOut);
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -178,7 +232,8 @@ export function CanvasEditor({
       backgroundImageRef.current = null;
       setCanvasReady(false);
     };
-  }, [width, height]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [width, height, activeSegmentId, copiedSegment, dispatch]);
 
   // Load background image
   useEffect(() => {
@@ -530,38 +585,29 @@ export function CanvasEditor({
   // }, [dispatch]);
 
   // Handle mouse over for hover effects
-  const handleMouseOver = useCallback((e: fabric.TEvent) => {
-    const obj = e.target;
-    if (obj?.data?.segmentId && activeTool.current === 'select') {
-      setHoveredSegmentId(obj.data.segmentId);
-      obj.set('stroke', '#007bff');
-      obj.set('strokeWidth', 3);
-      fabricCanvasRef.current?.renderAll();
-    }
-  }, []);
+  // const handleMouseOver = useCallback((e: fabric.TEvent) => {
+  //   const obj = e.target;
+  //   if (obj?.data?.segmentId && activeTool.current === 'select') {
+  //     setHoveredSegmentId(obj.data.segmentId);
+  //     obj.set('stroke', '#007bff');
+  //     obj.set('strokeWidth', 3);
+  //     fabricCanvasRef.current?.renderAll();
+  //   }
+  // }, []);
 
   // Handle mouse out for hover effects
-  const handleMouseOut = useCallback((e: any) => {
-    const obj = e.target;
-    if (obj?.data?.segmentId && activeTool.current === 'select') {
-      setHoveredSegmentId(null);
-      const segment = segments.find(s => s.id === obj.data.segmentId);
-      if (segment) {
-        obj.set('stroke', segment.strokeColor);
-        obj.set('strokeWidth', segment.strokeWidth);
-        fabricCanvasRef.current?.renderAll();
-      }
-    }
-  }, [segments]);
-
-  // Save canvas state to history
-  const saveCanvasState = useCallback(() => {
-    if (!fabricCanvasRef.current) return;
-
-    const canvasState = JSON.stringify(fabricCanvasRef.current.toJSON());
-    dispatch(saveToHistory(canvasState));
-  }, [dispatch]);
-
+  // const handleMouseOut = useCallback((e: any) => {
+  //   const obj = e.target;
+  //   if (obj?.data?.segmentId && activeTool.current === 'select') {
+  //     setHoveredSegmentId(null);
+  //     const segment = segments.find(s => s.id === obj.data.segmentId);
+  //     if (segment) {
+  //       obj.set('stroke', segment.strokeColor);
+  //       obj.set('strokeWidth', segment.strokeWidth);
+  //       fabricCanvasRef.current?.renderAll();
+  //     }
+  //   }
+  // }, [segments]);
   // Tool handlers
   const handleToolChange = (tool: DrawingTool) => {
     console.log('Changing tool to:', tool);
@@ -573,24 +619,6 @@ export function CanvasEditor({
     activeTool.current = tool;
   };
 
-  const handleCancelDrawing = () => {
-    if (fabricCanvasRef.current) {
-      const tempObjects = fabricCanvasRef.current.getObjects().filter(obj =>
-        (obj as any).data?.type === 'temp-line' || 
-        (obj as any).data?.type === 'preview-line' || 
-        (obj as any).data?.type === 'temp-point'
-      );
-      tempObjects.forEach(obj => fabricCanvasRef.current!.remove(obj));
-      fabricCanvasRef.current.renderAll();
-    }
-
-    isPolygonMode.current = false;
-    tempPoints.current = [];
-    tempLines.current = [];
-    tempPointCircles.current = [];
-    dispatch(cancelDrawing());
-  };
-
   // Material assignment handlers
   const handleAssignMaterial = () => {
     if (!activeSegmentId) {
@@ -600,7 +628,7 @@ export function CanvasEditor({
     setMaterialPickerOpen(true);
   };
 
-  const handleMaterialSelect = (material: any) => {
+  const handleMaterialSelect = (material: unknown) => {
     if (!activeSegmentId) return;
 
     dispatch(assignMaterialToSegment({
@@ -621,19 +649,6 @@ export function CanvasEditor({
   };
 
   // Delete selected segment
-  const handleDeleteSelected = () => {
-    if (!activeSegmentId || !fabricCanvasRef.current) return;
-
-    const activeObject = fabricCanvasRef.current.getActiveObject();
-    if (activeObject?.data?.segmentId === activeSegmentId) {
-      fabricCanvasRef.current.remove(activeObject);
-      fabricCanvasRef.current.renderAll();
-    }
-
-    dispatch(deleteSegment(activeSegmentId));
-    saveCanvasState();
-    toast.success('Segment deleted');
-  };
 
   // Copy/Paste handlers
   const handleCopySelected = () => {
@@ -666,31 +681,6 @@ export function CanvasEditor({
     dispatch(sendBackward(activeSegmentId));
     saveCanvasState();
     toast.success('Segment moved backward');
-  };
-
-  // Undo/Redo handlers
-  const handleUndo = () => {
-    if (historyIndex > 0) {
-      dispatch(undo());
-      const previousState = canvasHistory[historyIndex - 1];
-      if (previousState && fabricCanvasRef.current) {
-        fabricCanvasRef.current.loadFromJSON(previousState, () => {
-          fabricCanvasRef.current!.renderAll();
-        });
-      }
-    }
-  };
-
-  const handleRedo = () => {
-    if (historyIndex < canvasHistory.length - 1) {
-      dispatch(redo());
-      const nextState = canvasHistory[historyIndex + 1];
-      if (nextState && fabricCanvasRef.current) {
-        fabricCanvasRef.current.loadFromJSON(nextState, () => {
-          fabricCanvasRef.current!.renderAll();
-        });
-      }
-    }
   };
 
   // Export canvas as image

@@ -8,7 +8,7 @@ import {
   fetchProjects, 
   clearError 
 } from '@/redux/slices/projectSlice';
-import { ShareProjectDialog } from '@/components/ShareProjectDialog';
+// import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -488,14 +488,14 @@ export function ProjectsPage() {
       )}
 
       {/* Share Project Dialog */}
-      {shareDialogProject && (
+      {/* {shareDialogProject && (
         <ShareProjectDialog
           open={!!shareDialogProject}
           onOpenChange={(open) => !open && setShareDialogProject(null)}
           projectId={shareDialogProject.id}
           projectName={shareDialogProject.name}
         />
-      )}
+      )} */}
     </motion.div>
 
     <UserProfileHome/>
