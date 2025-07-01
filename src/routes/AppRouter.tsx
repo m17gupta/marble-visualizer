@@ -16,6 +16,7 @@ import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { SwatchBookPage } from '@/pages/SwatchBookPage';
 import MainLandingPage from '@/pages/MainLandingPage';
+import Homepage from '@/pages/Homepage';
  
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -29,7 +30,7 @@ export function AppRouter() {
           isAuthenticated ? (
             <Navigate to="/projects" replace />
           ) : (
-            <MainLandingPage />
+            <Homepage />
           )
         }
       />
@@ -72,6 +73,7 @@ export function AppRouter() {
         }
       >
         <Route index element={<Navigate to="/app/projects" replace />} />
+        <Route path="landing-page" element={ <MainLandingPage /> } />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="studio" element={<StudioPage />} />

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge, Crown, Star, Zap } from 'lucide-react'
-import { Button } from '../ui/button'
+import { Button } from 'react-day-picker'
 import { SubscriptionPlanModel } from '@/models/subscriptionPlan/SubscriptionPlanModel'
 
 
@@ -36,7 +36,7 @@ const SubscriptionPlanData = ({ plan }: SubscriptionPlanProps) => {
                     ))}
                     <Button className="w-full mt-4">
                         <Crown className="h-4 w-4 mr-2" />
-                        Upgrade 
+                        Upgrade to Pro
                     </Button>
                 </CardContent>
             </Card></>
