@@ -136,8 +136,17 @@ export function CanvasEditor({
   }, [activeSegmentId, dispatch, saveCanvasState]);
 
   const handleCancelDrawing = useCallback(() => {
-    if (fabricCanvasRef.current) {
-      // Remove temp objects logic would go here
+    if (fabricCanvasRef.current && isPolygonMode.current) {
+      const canvas = fabricCanvasRef.current;
+      
+      // Remove all temporary objects (lines, preview line, and point circles)
+      const tempObjects = canvas.getObjects().filter(obj =>
+        (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' || 
+        (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line' ||
+        (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-point'
+      );
+      tempObjects.forEach(obj => canvas.remove(obj));
+      canvas.renderAll();
     }
 
     isPolygonMode.current = false;
@@ -145,6 +154,8 @@ export function CanvasEditor({
     tempLines.current = [];
     tempPointCircles.current = [];
     dispatch(cancelDrawing());
+    
+    toast.info('Polygon drawing cancelled');
   }, [dispatch]);
 
   // Initialize Fabric.js canvas
@@ -512,6 +523,63 @@ export function CanvasEditor({
     });
   }, []);
 
+  // Helper function to calculate distance between two points
+  const calculateDistance = useCallback((point1: fabric.Point, point2: { x: number; y: number }) => {
+    const dx = point1.x - point2.x;
+    const dy = point1.y - point2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }, []);
+
+  // Helper function to finish and display the polygon
+  const finishPolygon = useCallback(() => {
+    if (!fabricCanvasRef.current || tempPoints.current.length < 3) return;
+
+    const canvas = fabricCanvasRef.current;
+    console.log('Finishing polygon with', tempPoints.current.length, 'points');
+
+    // Remove all temporary objects (lines, preview line, and point circles)
+    const tempObjects = canvas.getObjects().filter(obj =>
+      (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' || 
+      (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line' ||
+      (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-point'
+    );
+    tempObjects.forEach(obj => canvas.remove(obj));
+
+    // Create the actual polygon
+    const polygonPoints = tempPoints.current.map(p => new fabric.Point(p.x, p.y));
+    const polygon = new fabric.Polygon(polygonPoints, {
+      fill: 'rgba(0, 123, 255, 0.3)', // Semi-transparent blue fill
+      stroke: '#007bff',
+      strokeWidth: 2,
+      selectable: true,
+      evented: true,
+    });
+
+    // Add custom data to the polygon for identification
+    (polygon as fabric.Object & { data?: { type?: string; segmentId?: string } }).data = {
+      type: 'segment',
+      segmentId: `segment-${Date.now()}`, // Temporary ID, will be replaced by Redux
+    };
+
+    canvas.add(polygon);
+    canvas.renderAll();
+
+    // Finish drawing in Redux
+    dispatch(finishDrawing({ name: `Segment ${segments.length + 1}` }));
+
+    // Clean up temporary state
+    isPolygonMode.current = false;
+    tempPoints.current = [];
+    tempLines.current = [];
+    tempPointCircles.current = [];
+
+    // Save to history
+    const canvasState = JSON.stringify(canvas.toJSON());
+    dispatch(saveToHistory(canvasState));
+
+    toast.success('Polygon created successfully! Ready to draw another.');
+  }, [dispatch, segments.length]);
+
   // Handle mouse down events
   const handleMouseDown = useCallback((e: fabric.TEvent) => {
     console.log('Mouse down event activeTool:', activeTool.current);
@@ -537,6 +605,19 @@ export function CanvasEditor({
       
       dispatch(startDrawing());
     } else {
+      // Check if we have at least 3 points and clicked near the first point
+      if (tempPoints.current.length >= 3) {
+        const firstPoint = tempPoints.current[0];
+        const distance = calculateDistance(firstPoint, pointer);
+        const snapDistance = 15; // pixels
+        
+        if (distance <= snapDistance) {
+          console.log('Auto-completing polygon - clicked near first point');
+          finishPolygon();
+          return;
+        }
+      }
+
       // Add point to current polygon
       const newPoint = new fabric.Point(pointer.x, pointer.y);
       const lastPoint = tempPoints.current[tempPoints.current.length - 1];
@@ -549,8 +630,10 @@ export function CanvasEditor({
         strokeWidth: 2,
         selectable: false,
         evented: false,
-        data: { type: 'temp-line' },
       });
+
+      // Add custom data to the line for identification
+      (line as fabric.Object & { data?: { type?: string } }).data = { type: 'temp-line' };
 
       // Create point circle for the new point (blue color)
       const pointCircle = createPointCircle(pointer.x, pointer.y, false);
@@ -563,7 +646,7 @@ export function CanvasEditor({
 
       dispatch(addPoint({ x: pointer.x, y: pointer.y }));
     }
-  }, [activeTool, dispatch, createPointCircle]);
+  }, [activeTool, dispatch, createPointCircle, calculateDistance, finishPolygon]);
 
   // Handle mouse move for preview line
   const handleMouseMove = useCallback((e: fabric.TEvent) => {
@@ -574,7 +657,9 @@ export function CanvasEditor({
     const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
     // Remove existing preview line
-    const previewLine = canvas.getObjects().find(obj => (obj as any).data?.type === 'preview-line');
+    const previewLine = canvas.getObjects().find(obj => 
+      (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line'
+    );
     if (previewLine) {
       canvas.remove(previewLine);
     }
@@ -586,8 +671,10 @@ export function CanvasEditor({
       strokeDashArray: [5, 5],
       selectable: false,
       evented: false,
-      data: { type: 'preview-line' },
     });
+
+    // Add custom data to the preview line for identification
+    (line as fabric.Object & { data?: { type?: string } }).data = { type: 'preview-line' };
 
     canvas.add(line);
 
@@ -607,52 +694,9 @@ export function CanvasEditor({
   const handleDoubleClick = useCallback(() => {
     if (!fabricCanvasRef.current || !isPolygonMode.current || tempPoints.current.length < 3) return;
 
-    const canvas = fabricCanvasRef.current;
-    console.log('Finishing polygon with', tempPoints.current.length, 'points');
-
-    // Remove temporary lines, preview line, and point circles
-    // const tempObjects = canvas.getObjects().filter(obj =>
-    //   (obj as any).data?.type === 'temp-line' || 
-    //   (obj as any).data?.type === 'preview-line' ||
-    //   (obj as any).data?.type === 'temp-point'
-    // );
-    // tempObjects.forEach(obj => canvas.remove(obj));
-
-    // Close polygon with line to first point
-    const firstPoint = tempPoints.current[0];
-    const lastPoint = tempPoints.current[tempPoints.current.length - 1];
-    const closingLine = new fabric.Line([lastPoint.x, lastPoint.y, firstPoint.x, firstPoint.y], {
-      stroke: '#007bff',
-      strokeWidth: 2,
-      selectable: false,
-      evented: false,
-      data: { type: 'temp-line' },
-    });
-
-    canvas.add(closingLine);
-    canvas.renderAll();
-
-    // Finish drawing
-    dispatch(finishDrawing({ name: `Segment ${segments.length + 1}` }));
-
-    // Clean up
-    isPolygonMode.current = false;
-    tempPoints.current = [];
-    tempLines.current = [];
-    tempPointCircles.current = [];
-
-    // Remove temporary lines after a short delay
-    setTimeout(() => {
-      canvas.remove(closingLine);
-      canvas.renderAll();
-    }, 100);
-
-    // Save to history
-    const canvasState = JSON.stringify(canvas.toJSON());
-    dispatch(saveToHistory(canvasState));
-
-    toast.success('Polygon created successfully!');
-  }, [segments.length, dispatch]);
+    console.log('Double-click detected - finishing polygon');
+    finishPolygon();
+  }, [finishPolygon]);
 
   // Handle object selection
   // const handleSelection = useCallback((e: any) => {
@@ -1048,7 +1092,7 @@ export function CanvasEditor({
 
                 {isPolygonMode.current && (
                   <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
-                    Click to add points, double-click to finish, Esc to cancel
+                    Click to add points • Click near first point or double-click to finish • Esc to cancel
                   </div>
                 )}
 

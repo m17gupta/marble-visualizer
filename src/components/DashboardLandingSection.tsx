@@ -7,7 +7,7 @@ import SideBar from './userProfile/SideBar';
 
 // Data for different categories
 const categoryData = {
-  residential: {
+  homeOwner: {
     rooms: [
       {
         id: 'living-room',
@@ -35,7 +35,7 @@ const categoryData = {
       }
     ]
   },
-  exterior: {
+  realtor: {
     rooms: [
       {
         id: 'garden',
@@ -63,7 +63,35 @@ const categoryData = {
       }
     ]
   },
-  commercial: {
+  trade: {
+    rooms: [
+      {
+        id: 'office',
+        title: 'Office',
+        image: '/images/office.jpg',
+        alt: 'Modern office space'
+      },
+      {
+        id: 'retail',
+        title: 'Retail',
+        image: '/images/retail.jpg',
+        alt: 'Retail store interior'
+      },
+      {
+        id: 'restaurant',
+        title: 'Restaurant',
+        image: '/images/restaurant.jpg',
+        alt: 'Restaurant dining area'
+      },
+      {
+        id: 'lobby',
+        title: 'Lobby',
+        image: '/images/lobby.jpg',
+        alt: 'Commercial building lobby'
+      }
+    ]
+  },
+  distributor: {
     rooms: [
       {
         id: 'office',
@@ -268,16 +296,19 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
           </div>
 
           {/* Tabs Section */}
-          <Tabs defaultValue="residential" className="w-full">
+          <Tabs defaultValue="homeOwner" className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-              <TabsTrigger value="residential" className="flex items-center gap-2">
-                🏠 Residential
+              <TabsTrigger value="homeOwner" className="flex items-center gap-2">
+                🏠 Home Owner
               </TabsTrigger>
-              <TabsTrigger value="exterior" className="flex items-center gap-2">
-                🏖️ Exterior
+              <TabsTrigger value="realtor" className="flex items-center gap-2">
+                🏖️ Realtor
               </TabsTrigger>
-              <TabsTrigger value="commercial" className="flex items-center gap-2">
-                🏢 Commercial
+              <TabsTrigger value="trade" className="flex items-center gap-2">
+                🏢 Trade
+              </TabsTrigger>
+              <TabsTrigger value="distributor" className="flex items-center gap-2">
+                🏢 Distributor
               </TabsTrigger>
             </TabsList>
 
