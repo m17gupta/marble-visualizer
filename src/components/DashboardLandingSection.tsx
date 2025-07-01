@@ -249,10 +249,11 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
   onTopPickClick
 }) => {
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 py-8 space-y-12">
+    <div className="w-full max-w-7xl mx-auto  py-8 space-y-12 rounded-md">
       {/* Header */}
+      <div className='bg-white px-6 py-4 rounded-lg'>
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900">Let's get started!</h1>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Let's get started!</h2>
       </div>
 
       {/* Tabs Section */}
@@ -287,8 +288,10 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
         ))}
       </Tabs>
 
+      </div>
+
       {/* Top Picks Section */}
-      <div className="space-y-8">
+      <div className="space-y-8 px-6">
         <div className="text-left">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Picks</h2>
           <p className="text-gray-600 text-lg">Trending Renovation Solutions.</p>

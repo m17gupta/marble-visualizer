@@ -7,7 +7,7 @@ import { ProjectsPage } from '@/pages/projectPage/ProjectsPage';
 import { StudioPage } from '@/pages/StudioPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 // import { MaterialsPage } from '@/pages/MaterialsPage';
-
+ 
 import { SwatchDetailsPage } from '@/pages/SwatchDetailsPage';
 // import { SwatchCreatePage } from '@/pages/SwatchCreatePage';
 // import { SwatchImportPage } from '@/pages/SwatchImportPage';
@@ -15,60 +15,54 @@ import { PublicProjectPage } from '@/pages/PublicProjectPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { SwatchBookPage } from '@/pages/SwatchBookPage';
-import LandingPage from '@/pages/LandingPage';
-import DzinlyLandingDemo from '@/pages/DzinlyLandingDemo';
-
+import LandingPage from '@/pages/MainLandingPage';
+import MainLandingPage from '@/pages/MainLandingPage';
+ 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
+ 
   return (
     <Routes>
       {/* Public routes */}
-      <Route 
-        path="/" 
+      <Route
+        path="/"
         element={
           isAuthenticated ? (
             <Navigate to="/projects" replace />
           ) : (
-            <LandingPage />
+            <MainLandingPage />
           )
-        } 
+        }
       />
-      
-      <Route 
-        path="/login" 
+     
+      <Route
+        path="/login"
         element={
           isAuthenticated ? (
             <Navigate to="/projects" replace />
           ) : (
             <LoginPage />
           )
-        } 
+        }
       />
-      
-      <Route 
-        path="/signup" 
+     
+      <Route
+        path="/signup"
         element={
           isAuthenticated ? (
             <Navigate to="/projects" replace />
           ) : (
             <SignUpPage />
           )
-        } 
+        }
       />
-
+ 
       {/* Public project viewing - no authentication required */}
-      <Route 
-        path="/project/public/:slug" 
-        element={<PublicProjectPage />} 
+      <Route
+        path="/project/public/:slug"
+        element={<PublicProjectPage />}
       />
-
-      {/* Demo route for Dzinly Landing */}
-      <Route 
-        path="/demo" 
-        element={<DzinlyLandingDemo />} 
-      />
-
+ 
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}
       <Route
         path="/app"
@@ -84,20 +78,20 @@ export function AppRouter() {
         <Route path="studio" element={<StudioPage />} />
         <Route path="studio/:id" element={<StudioPage />} />
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
-        <Route path="swatchbook" element={<SwatchBookPage />} /> 
+        <Route path="swatchbook" element={<SwatchBookPage />} />
         <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
        
       </Route>
-
+ 
       {/* Catch all route */}
-      <Route 
-        path="*" 
+      <Route
+        path="*"
         element={
-          <Navigate 
-            to={isAuthenticated ? "/app/projects" : "/"} 
-            replace 
+          <Navigate
+            to={isAuthenticated ? "/app/projects" : "/"}
+            replace
           />
-        } 
+        }
       />
     </Routes>
   );
