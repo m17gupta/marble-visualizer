@@ -61,9 +61,9 @@ export function ProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* Left Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
+       <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
           {/* User Section */}
-          <div className="p-4 border-b border-gray-200">
+          {/* <div className="p-4 border-b border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                 <User className="h-5 w-5 text-white" />
@@ -73,7 +73,7 @@ export function ProfilePage() {
                 <p className="text-sm text-gray-500">{profileData.plan}</p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Navigation */}
           <div className="py-4 space-y-6">

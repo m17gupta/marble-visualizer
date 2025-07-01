@@ -252,12 +252,15 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Left Sidebar */}
-      <div className="flex-shrink-0 w-64 py-4 space-y-6">
+  {/* <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200"> */}
+
         <SideBar/>
-      </div>
+      {/* </div> */}
 
       {/* Right Main Content */}
-      <div className="flex-1 w-full max-w-7xl mx-auto py-8 space-y-12 rounded-md">
+{/* <div clas> */}
+      <div className="rounded-md transition-all  duration-300">
+         {/* lg:pl-80 */}
         {/* Header */}
         <div className='bg-white px-6 py-4 rounded-lg'>
           <div className="text-center space-y-2">
@@ -316,7 +319,8 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
           </div>
         </div>
       </div>
-    </div>
+</div>
+    // </div>
   );
 };
 
