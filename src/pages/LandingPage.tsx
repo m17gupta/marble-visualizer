@@ -1,8 +1,7 @@
+import DashboardLandingSection from '@/components/DashboardLandingSection';
 import React from 'react'
-import { DashboardLandingSection } from '@/components/DashboardLandingSection'
 
-
-const MainLandingPage = () => {
+const LandingPage = () => {
   const handleRoomClick = (roomId: string) => {
     console.log('Room clicked:', roomId);
     // Add your navigation logic here
@@ -25,17 +24,13 @@ const MainLandingPage = () => {
   };
 
   return (
-    <>
-    {/* <ProfilePage/> */}
-   
-    <div className="min-h-screen bg-gray-50 ">
-         <DashboardLandingSection 
-           onRoomClick={handleRoomClick}
-           onTopPickClick={handleTopPickClick}
-         />
-       </div>
-    </>
+    <div className="min-h-screen bg-gray-50">
+      <DashboardLandingSection 
+        onRoomClick={handleRoomClick}
+        onTopPickClick={handleTopPickClick}
+      />
+    </div>
   )
 }
 
-export default MainLandingPage
+export default LandingPage

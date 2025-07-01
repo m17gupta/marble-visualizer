@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import SideBar from './userProfile/SideBar';
 
 // Data for different categories
 const categoryData = {
@@ -249,63 +250,70 @@ export const DashboardLandingSection: React.FC<DashboardLandingSectionProps> = (
   onTopPickClick
 }) => {
   return (
-    <div className="w-full max-w-7xl mx-auto  py-8 space-y-12 rounded-md">
-      {/* Header */}
-      <div className='bg-white px-6 py-4 rounded-lg'>
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Let's get started!</h2>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Left Sidebar */}
+      <div className="flex-shrink-0 w-64 py-4 space-y-6">
+        <SideBar/>
       </div>
 
-      {/* Tabs Section */}
-      <Tabs defaultValue="residential" className="w-full">
-        <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-          <TabsTrigger value="residential" className="flex items-center gap-2">
-            🏠 Residential
-          </TabsTrigger>
-          <TabsTrigger value="exterior" className="flex items-center gap-2">
-            🏖️ Exterior
-          </TabsTrigger>
-          <TabsTrigger value="commercial" className="flex items-center gap-2">
-            🏢 Commercial
-          </TabsTrigger>
-        </TabsList>
+      {/* Right Main Content */}
+      <div className="flex-1 w-full max-w-7xl mx-auto py-8 space-y-12 rounded-md">
+        {/* Header */}
+        <div className='bg-white px-6 py-4 rounded-lg'>
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Let's get started!</h2>
+          </div>
 
-        {/* Room Cards - Horizontal Scrollable */}
-        {Object.entries(categoryData).map(([category, data]) => (
-          <TabsContent key={category} value={category} className="space-y-8">
-            <div className="overflow-x-auto pb-4">
-              <div className="flex gap-6 min-w-max">
-                {data.rooms.map((room) => (
-                  <RoomCard 
-                    key={room.id} 
-                    room={room} 
-                    onClick={onRoomClick}
-                  />
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+          {/* Tabs Section */}
+          <Tabs defaultValue="residential" className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
+              <TabsTrigger value="residential" className="flex items-center gap-2">
+                🏠 Residential
+              </TabsTrigger>
+              <TabsTrigger value="exterior" className="flex items-center gap-2">
+                🏖️ Exterior
+              </TabsTrigger>
+              <TabsTrigger value="commercial" className="flex items-center gap-2">
+                🏢 Commercial
+              </TabsTrigger>
+            </TabsList>
 
-      </div>
-
-      {/* Top Picks Section */}
-      <div className="space-y-8 px-6">
-        <div className="text-left">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Picks</h2>
-          <p className="text-gray-600 text-lg">Trending Renovation Solutions.</p>
+            {/* Room Cards - Horizontal Scrollable */}
+            {Object.entries(categoryData).map(([category, data]) => (
+              <TabsContent key={category} value={category} className="space-y-8">
+                <div className="overflow-x-auto pb-4">
+                  <div className="flex gap-6 min-w-max">
+                    {data.rooms.map((room) => (
+                      <RoomCard 
+                        key={room.id} 
+                        room={room} 
+                        onClick={onRoomClick}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
 
-        {/* Top Picks Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {topPicks.map((pick) => (
-            <TopPickCard 
-              key={pick.id} 
-              pick={pick} 
-              onClick={onTopPickClick}
-            />
-          ))}
+        {/* Top Picks Section */}
+        <div className="space-y-8 px-6">
+          <div className="text-left">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Picks</h2>
+            <p className="text-gray-600 text-lg">Trending Renovation Solutions.</p>
+          </div>
+
+          {/* Top Picks Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {topPicks.map((pick) => (
+              <TopPickCard 
+                key={pick.id} 
+                pick={pick} 
+                onClick={onTopPickClick}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
