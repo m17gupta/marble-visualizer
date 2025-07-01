@@ -66,7 +66,7 @@ export function ProjectsPage() {
 
     if (projectId) {
       setSelectedProjectId(projectId);
-      navigate(`/studio/${projectId}`);
+      navigate(`/app/studio/${projectId}`);
     }
   };
 
