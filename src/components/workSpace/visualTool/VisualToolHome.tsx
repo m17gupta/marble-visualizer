@@ -6,7 +6,7 @@ import { useViewFiles } from '@/hooks/useWorkspace';
 import ViewUploader from './ViewUploader';
 import { ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { useNavigate } from 'react-router-dom';
-
+import Camera from '../../../../dist/assets/image/camera.png'; // Assuming you have a camera image in your assets
 const VisualToolHome = () => {
   const navigate = useNavigate();
   const { enterStepperMode } = useWorkspace();
@@ -43,11 +43,11 @@ const VisualToolHome = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-40">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 py-6">
+      <div className=" border-b border-gray-200 py-6">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center relative">
+          <div className="text-center relative flex items-center justify-center ">
             {/* Back button positioned absolutely in header */}
             <Button
               onClick={handleGoBack}
@@ -57,14 +57,15 @@ const VisualToolHome = () => {
               <ArrowLeft className="h-4 w-4" />
               <span>Back</span>
             </Button>
-
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Home View</h1>
+            <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">Home View</h1>
             <p className="text-lg text-gray-600 mb-1">
               Select the initial view you want to work on
             </p>
             <p className="text-sm text-gray-500">
               (Additional views available after delivery of initial project)
             </p>
+            </div>
           </div>
         </div>
       </div>
@@ -74,19 +75,23 @@ const VisualToolHome = () => {
         {/* Instructions Section */}
         <div className="grid md:grid-cols-2 gap-12 mb-12">
           {/* Photo Instructions */}
-          <div className="bg-white rounded-xl p-8 shadow-sm">
-            <div className="flex items-center mb-6">
+ 
+           <div>
+             <div className="flex items-center mb-6">
               <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
                 1
               </div>
               <h2 className="text-xl font-semibold text-gray-900">Photo Instruction</h2>
             </div>
 
+
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+         
             <div className="space-y-6">
               {/* Time Recommendation */}
               <div className="flex items-center space-x-3">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Clock className="h-8 w-8 text-gray-600" />
+                <div className="w-16 h-16  rounded-full flex items-center justify-center">
+                  <Clock className="h-10 w-10 text-gray-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-700">
@@ -98,10 +103,11 @@ const VisualToolHome = () => {
 
               {/* Device Recommendation */}
               <div className="flex items-center space-x-3">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                  <div className="w-8 h-6 bg-gray-800 rounded border-2 border-gray-600 relative">
-                    <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div>
-                  </div>
+                <div className="w-18 h-20  rounded-full flex items-center justify-center">
+                  {/* <div className="w-10 h-8 bg-gray-800 rounded border-2 border-gray-600 relative"> */}
+                    {/* <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div> */}
+                  {/* </div> */}
+                  <img src={Camera} alt="Camera Icon" className="h-16 w-16 object-contain" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-700">
@@ -113,29 +119,34 @@ const VisualToolHome = () => {
 
               {/* Quality Guidelines */}
               <div className="flex items-center space-x-3">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                <div className="w-10 h-16  rounded-full flex items-center justify-center">
                   <Home className="h-8 w-8 text-gray-600" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-700">
                     Be sure to avoid pictures that are blurry, far-away or obstructed by objects.
                   </p>
+                </div>
+              </div>
+
                   <button className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-1">
                     See Example
                   </button>
-                </div>
-              </div>
             </div>
           </div>
+        </div>
 
           {/* Photo Upload Grid */}
-          <div className="bg-white rounded-xl p-8 shadow-sm">
-            <div className="flex items-center mb-6">
+          <div>
+               <div className="flex items-center mb-6">
               <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
                 2
               </div>
               <h2 className="text-xl font-semibold text-gray-900">Photo Upload</h2>
             </div>
+      
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+         
 
             <div className="grid grid-cols-2 gap-4">
               {viewTypes.map((viewType) => (
@@ -162,6 +173,7 @@ const VisualToolHome = () => {
               </div>
             )}
           </div>
+              </div>
         </div>
 
         {/* Action Button */}

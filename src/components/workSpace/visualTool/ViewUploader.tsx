@@ -81,7 +81,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
 
   return (
     <div className="relative">
-      <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">{viewType}</h3>
+      <h3 className="text-md font-medium text-gray-700 mb-3 text-center font-medium ">{viewType}</h3>
 
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${disabled
@@ -132,22 +132,28 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
             <div className="w-8 h-8 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-2">
               <Check className="h-4 w-4 text-green-600" />
             </div>
-            <p className="text-xs font-medium truncate px-2 bg-black bg-opacity-50 rounded px-2 py-1">
+            {/* <p className="text-xs font-medium truncate px-2 bg-black bg-opacity-50 rounded px-2 py-1">
               {uploadedFile.name}
             </p>
             <p className="text-xs bg-black bg-opacity-50 rounded px-2 py-1 mt-1">
               {(uploadedFile.size / 1024 / 1024).toFixed(1)} MB
-            </p>
+            </p> */}
             {/* Remove button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onFileRemove();
-              }}
-              className="absolute top-2 right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors shadow-lg"
-            >
-              <X className="h-3 w-3 text-white" />
-            </button>
+
+
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    onFileRemove();
+  }}
+  className="absolute top-2 right-2 w-10 h-10 rounded-full bg-white/80 hover:bg-gray-50 text-black hover:text-black flex items-center justify-center shadow-md transition-all"
+>
+<span>X</span>
+</button>
+
+
+
+
           </div>
         ) : (
           <div className="absolute inset-0 flex flex-col justify-center items-center z-10">

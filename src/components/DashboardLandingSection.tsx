@@ -25,7 +25,7 @@ export const DashboardLandingSection = () => {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all w-screen duration-300 lg:pl-80",
+          "transition-all w-screen duration-300 lg:pl-80 bg-gray-50",
           sidebarCollapsed && "lg:pl-20"
         )}
       >

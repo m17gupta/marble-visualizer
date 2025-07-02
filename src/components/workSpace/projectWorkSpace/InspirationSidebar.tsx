@@ -19,6 +19,7 @@ const InspirationSidebar: React.FC = () => (
       {styles.map((style) => (
         <div key={style} className="relative cursor-pointer">
           <div className="w-full h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+            {/* <img src="https://dzinly.com/files/inspirational-houses/blacks/black-01.jpg"></img> */}
             <span className="text-sm text-gray-600">{style}</span>
           </div>
           {/* Placeholder for selected badge */}
