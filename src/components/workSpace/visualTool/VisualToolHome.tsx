@@ -1,6 +1,6 @@
 import React from 'react';
 import { Clock, Home, ArrowLeft } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { useWorkspace } from '@/hooks/useWorkspace';
 import { useViewFiles } from '@/hooks/useWorkspace';
 import ViewUploader from './ViewUploader';

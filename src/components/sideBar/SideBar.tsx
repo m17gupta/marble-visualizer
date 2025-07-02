@@ -1,27 +1,21 @@
 import { useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
-import { RootState, AppDispatch } from "@/redux/store";
-import { logoutUser } from "@/redux/slices/authSlice";
+
 import { Button } from "@/components/ui/button";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import {
- 
-  Home,
   FolderOpen,
   Palette,
-  // Package,
   Settings,
   ChevronLeft,
   ChevronRight,
   Paintbrush,
   
 } from "lucide-react";
-import { RiUserShared2Fill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -52,7 +46,7 @@ const navigation = [
 export function SideBar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
   // const { theme, setTheme } = useTheme();
   // const { user } = useSelector((state: RootState) => state.auth);
   // const { profile } = useSelector((state: RootState) => state.userProfile);
@@ -60,10 +54,10 @@ export function SideBar() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    // Navigation is handled within the thunk
-  };
+  // const handleLogout = () => {
+  //   dispatch(logoutUser());
+  //   // Navigation is handled within the thunk
+  // };
 
     const handleSignIn = () => {
     // Handle sign-in logic here
@@ -86,7 +80,7 @@ export function SideBar() {
           className="flex items-center space-x-3 cursor-pointer" 
         >
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-      <RiUserShared2Fill className="text-white" />
+            <Settings className="h-5 w-5 text-primary-foreground" />
 
 {/* <User
   className="h-5 w-5 text-white bg-purple-600 rounded-lg p-1 cursor-pointer hover:bg-purple-700 transition-colors"

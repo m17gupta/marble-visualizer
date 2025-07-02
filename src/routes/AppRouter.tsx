@@ -16,6 +16,7 @@ import { MainLayout } from '@/layouts/MainLayout';
 import { PrivateRoute } from '@/components/PrivateRoute';
 import { SwatchBookPage } from '@/pages/SwatchBookPage';
 import MainLandingPage from '@/pages/MainLandingPage';
+import WorkspaceProjectPage from '@/pages/WorkspaceProjectPage';
 import Homepage from '@/pages/Homepage';
  
 export function AppRouter() {
@@ -67,6 +68,10 @@ export function AppRouter() {
       <Route
         path="/workspace"
         element={<MainLandingPage />}
+      />
+      <Route
+        path="/workspace/project/:projectId"
+        element={<WorkspaceProjectPage />}
       />
  
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}

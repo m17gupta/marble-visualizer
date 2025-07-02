@@ -11,10 +11,8 @@ interface WorkspaceState {
   currentStep: number;
   uploadedFile: File | null; // Keep for backward compatibility
   viewFiles: {
-    front: File | null;
-    rear: File | null;
-    left: File | null;
-    right: File | null;
+    image: string | null;
+    viewType: ViewType | null;
   };
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
@@ -28,10 +26,8 @@ const initialState: WorkspaceState = {
   currentStep: 0,
   uploadedFile: null,
   viewFiles: {
-    front: null,
-    rear: null,
-    left: null,
-    right: null,
+    image: "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/2025/06/26/styled_output_ea735964574e45e2b1b08703074bba64_1750934191023_s5xj6a.png",
+   viewType: "front", // This can be set to a specific view type if needed
   },
   processingState: 'idle',
   error: null,
@@ -85,22 +81,20 @@ const workspaceSlice = createSlice({
     },
 
     // Set view file for specific view
-    setViewFile: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
-      state.viewFiles[action.payload.view] = action.payload.file;
+    setViewFile: (state, action: PayloadAction<{ view: ViewType; image:string }>) => {
+     // state.viewFiles[action.payload.view] = action.payload.image;
     },
 
     // Remove view file for specific view
     removeViewFile: (state, action: PayloadAction<ViewType>) => {
-      state.viewFiles[action.payload] = null;
+     // state.viewFiles[action.payload] = null;
     },
 
     // Clear all view files
     clearAllViewFiles: (state) => {
       state.viewFiles = {
-        front: null,
-        rear: null,
-        left: null,
-        right: null,
+        image: null,
+        viewType: null,
       };
     },
     
@@ -151,10 +145,8 @@ const workspaceSlice = createSlice({
       state.currentStep = 0;
       state.uploadedFile = null;
       state.viewFiles = {
-        front: null,
-        rear: null,
-        left: null,
-        right: null,
+        image: null,
+        viewType: null,
       };
       state.processingState = 'idle';
       state.error = null;
@@ -205,7 +197,7 @@ export const selectUploadedFile = (state: { workspace: WorkspaceState }) => stat
 export const selectProcessingState = (state: { workspace: WorkspaceState }) => state.workspace.processingState;
 export const selectError = (state: { workspace: WorkspaceState }) => state.workspace.error;
 export const selectViewFiles = (state: { workspace: WorkspaceState }) => state.workspace.viewFiles;
-export const selectViewFile = (view: ViewType) => (state: { workspace: WorkspaceState }) => state.workspace.viewFiles[view];
+
 export const selectHasAnyViewFile = (state: { workspace: WorkspaceState }) => 
   Object.values(state.workspace.viewFiles).some(file => file !== null);
 export const selectViewFileCount = (state: { workspace: WorkspaceState }) => 

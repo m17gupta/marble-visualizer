@@ -6,7 +6,7 @@ import LandingHome from './workSpace/landing/LandingHome';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { SideBar } from './sideBar/SideBar';
-import VisualToolHome from './visualTool/VisualToolHome';
+import VisualToolHome from './workSpace/visualTool/VisualToolHome';
 import { cn } from '@/lib/utils';
 import SideBarHome from './sideBar/SideBarHome';
 
