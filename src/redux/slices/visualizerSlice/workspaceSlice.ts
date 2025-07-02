@@ -10,10 +10,8 @@ interface WorkspaceState {
   isStepper: boolean;
   currentStep: number;
   uploadedFile: File | null; // Keep for backward compatibility
-  viewFiles: {
-    image: string | null;
-    viewType: ViewType | null;
-  };
+  // Map of each view type to its uploaded file
+  viewFiles: { [key in ViewType]: File | null };
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
 }
@@ -26,8 +24,10 @@ const initialState: WorkspaceState = {
   currentStep: 0,
   uploadedFile: null,
   viewFiles: {
-    image: "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/2025/06/26/styled_output_ea735964574e45e2b1b08703074bba64_1750934191023_s5xj6a.png",
-   viewType: "front", // This can be set to a specific view type if needed
+    front: null,
+    rear: null,
+    left: null,
+    right: null,
   },
   processingState: 'idle',
   error: null,
@@ -81,20 +81,22 @@ const workspaceSlice = createSlice({
     },
 
     // Set view file for specific view
-    setViewFile: (state, action: PayloadAction<{ view: ViewType; image:string }>) => {
-     // state.viewFiles[action.payload.view] = action.payload.image;
+    setViewFile: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
+      state.viewFiles[action.payload.view] = action.payload.file;
     },
 
     // Remove view file for specific view
     removeViewFile: (state, action: PayloadAction<ViewType>) => {
-     // state.viewFiles[action.payload] = null;
+      state.viewFiles[action.payload] = null;
     },
 
     // Clear all view files
     clearAllViewFiles: (state) => {
       state.viewFiles = {
-        image: null,
-        viewType: null,
+        front: null,
+        rear: null,
+        left: null,
+        right: null,
       };
     },
     
@@ -145,8 +147,10 @@ const workspaceSlice = createSlice({
       state.currentStep = 0;
       state.uploadedFile = null;
       state.viewFiles = {
-        image: null,
-        viewType: null,
+        front: null,
+        rear: null,
+        left: null,
+        right: null,
       };
       state.processingState = 'idle';
       state.error = null;

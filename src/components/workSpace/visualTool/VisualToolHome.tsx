@@ -12,7 +12,8 @@ const VisualToolHome = () => {
   const { enterStepperMode } = useWorkspace();
   const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, fileCount, isAllViewsUploaded } = useViewFiles();
 
-  const handleFileUpload = (view: ViewType, file: File) => {
+  // Upload a file for a given view
+  const handleFileUpload = (file: File, view: ViewType) => {
     setViewFile(view, file);
   };
 
@@ -56,7 +57,7 @@ const VisualToolHome = () => {
               <ArrowLeft className="h-4 w-4" />
               <span>Back</span>
             </Button>
-            
+
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Home View</h1>
             <p className="text-lg text-gray-600 mb-1">
               Select the initial view you want to work on
@@ -142,7 +143,7 @@ const VisualToolHome = () => {
                   key={viewType.key}
                   viewType={viewType.label}
                   uploadedFile={viewFiles[viewType.key]}
-                  onFileUpload={(file) => handleFileUpload(viewType.key, file)}
+                  onFileUpload={(file) => handleFileUpload(file, viewType.key)}
                   onFileRemove={() => handleFileRemove(viewType.key)}
                   disabled={false}
                 />
@@ -168,11 +169,10 @@ const VisualToolHome = () => {
           <Button
             onClick={handleContinue}
             disabled={!hasAnyFiles}
-            className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${
-              hasAnyFiles
+            className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${hasAnyFiles
                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
+              }`}
           >
             {hasAnyFiles ? `Continue with ${fileCount} view${fileCount > 1 ? 's' : ''}` : 'Upload at least one view to continue'}
           </Button>

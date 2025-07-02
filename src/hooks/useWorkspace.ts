@@ -181,7 +181,7 @@ export const useViewFiles = () => {
     workspace.clearAllViewFiles();
   };
 
-  const getViewFile = (view: ViewType) => viewFiles[view];
+  // const getViewFile = (view: ViewType) => viewFiles;
 
   const hasAnyFiles = Object.values(viewFiles).some(file => file !== null);
   const fileCount = Object.values(viewFiles).filter(file => file !== null).length;
@@ -192,7 +192,7 @@ export const useViewFiles = () => {
     setViewFile,
     removeViewFile,
     clearAllFiles,
-    getViewFile,
+    // getViewFile,
     hasAnyFiles,
     fileCount,
     isAllViewsUploaded,

@@ -4,7 +4,7 @@ import { Upload, X, Check } from 'lucide-react';
 interface ViewUploaderProps {
   viewType: string;
   uploadedFile: File | null;
-  onFileUpload: (file: File) => void;
+  onFileUpload: (file: File, viewType: string) => void;
   onFileRemove: () => void;
   disabled?: boolean;
 }
@@ -58,18 +58,18 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith('image/')) {
-        onFileUpload(file);
+        onFileUpload(file, viewType);
       }
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      onFileUpload(e.target.files[0]);
+      onFileUpload(e.target.files[0], viewType);
     }
   };
 
@@ -82,17 +82,16 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
   return (
     <div className="relative">
       <h3 className="text-sm font-medium text-gray-700 mb-3 text-center">{viewType}</h3>
-      
+
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${
-          disabled 
-            ? 'border-gray-200 bg-gray-50 cursor-not-allowed' 
+        className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${disabled
+            ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
             : dragActive
-            ? 'border-blue-500 bg-blue-50'
-            : uploadedFile
-            ? 'border-green-500 bg-green-50'
-            : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
-        }`}
+              ? 'border-blue-500 bg-blue-50'
+              : uploadedFile
+                ? 'border-green-500 bg-green-50'
+                : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
+          }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -101,7 +100,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
       >
         {/* Background Image */}
         {!uploadedFile && (
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
             style={{
               backgroundImage: `url(${getBackgroundImage(viewType)})`,
@@ -111,7 +110,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
 
         {/* Uploaded Image Thumbnail */}
         {uploadedFile && imagePreview && (
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
               backgroundImage: `url(${imagePreview})`,
