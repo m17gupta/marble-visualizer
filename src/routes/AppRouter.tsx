@@ -88,6 +88,9 @@ export function AppRouter() {
         <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
        
       </Route>
+
+
+      
  
       {/* Catch all route */}
       <Route

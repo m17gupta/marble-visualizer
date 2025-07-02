@@ -93,155 +93,161 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-md"
-      >
-        <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm">
-          <CardHeader className="space-y-4 pb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center"
-            >
-              <LogIn className="h-6 w-6 text-primary-foreground" />
-            </motion.div>
-            <div className="text-center space-y-2">
-              <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Sign in to your account to continue
-              </CardDescription>
-            </div>
-          </CardHeader>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-muted/20">
+      {/* Left: Image */}
+      <div className="hidden lg:block">
+        <img
+          src="https://www.dzinly.org/img/login-img.jpg"
+          alt="Login visual"
+          className="object-cover h-full w-full"
+        />
+      </div>
 
-          <CardContent className="space-y-6">
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Alert
-                  variant="destructive"
-                  className="border-destructive/50 bg-destructive/5"
-                >
-                  <AlertDescription className="text-sm">
-                    {error}
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
+      {/* Right: Login Card */}
+      <div className="flex items-center justify-center px-6 py-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="space-y-4 pb-8 pt-8">
+              {/* <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center"
+              > */}
+                {/* <LogIn className="h-6 w-6 text-white" /> */}
+                <div className="w-12 flex items-center justify-center m-auto">
+                <img  src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"></img>
+                </div>
+              {/* </motion.div> */}
+              <div className="text-center space-y-2">
+                <CardTitle className="text-2xl font-bold">Login</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Hello! let's join with us
+                </CardDescription>
+              </div>
+            </CardHeader>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Email address
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            {...field}
-                            type="email"
-                            placeholder="Enter your email"
-                            className="pl-10 h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                            disabled={isLoading}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Password
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            {...field}
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter your password"
-                            className="pl-10 pr-10 h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                            disabled={isLoading}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="absolute right-0 top-0 h-11 px-3 py-2 hover:bg-transparent"
-                            onClick={() => setShowPassword(!showPassword)}
-                            disabled={isLoading}
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <Eye className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
+            <CardContent className="space-y-6">
+              {error && (
                 <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <Button
-                    type="submit"
-                    className="w-full h-11 text-sm font-medium"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
-                      </>
-                    ) : (
-                      <>
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Sign in
-                      </>
-                    )}
-                  </Button>
+                  <Alert variant="destructive">
+                    <AlertDescription className="text-sm">{error}</AlertDescription>
+                  </Alert>
                 </motion.div>
-              </form>
-            </Form>
+              )}
 
-            {/* Sign up link */}
-            <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link
-                to="/signup"
-                className="text-primary hover:underline font-medium"
-              >
-                Sign up here
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  {/* Email */}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email*</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="carlos@dzinly.com"
+                              className="pl-10 h-11"
+                              disabled={isLoading}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
 
-      <SwatchBookDataHome/>
+                  {/* Password */}
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password*</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              {...field}
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              className="pl-10 pr-10 h-11"
+                              disabled={isLoading}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-11 px-3"
+                              onClick={() => setShowPassword(!showPassword)}
+                              disabled={isLoading}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                              )}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submit */}
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                    <Button
+                      type="submit"
+                      className="w-full h-11 text-sm font-medium"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Signing in...
+                        </>
+                      ) : (
+                        <>
+                          <LogIn className="mr-2 h-4 w-4" />
+                          Log In
+                        </>
+                      )}
+                    </Button>
+                  </motion.div>
+                </form>
+              </Form>
+
+              {/* Forgot + Create */}
+              <div className="text-center text-sm">
+                <Link to="/forgot-password" className="text-blue-600 hover:underline">
+                  Forgot Password?
+                </Link>
+              </div>
+              <div className="text-center text-sm text-muted-foreground">
+                Don’t have an account?{" "}
+                <Link to="/signup" className="text-primary hover:underline font-medium">
+                  Create Account
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   );
 }

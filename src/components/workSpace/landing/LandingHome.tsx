@@ -250,6 +250,8 @@ const TopPickCard: React.FC<TopPickCardProps> = ({ pick, onClick }) => {
         )}
       </div>
 
+      
+
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-bold">{pick.title}</CardTitle>
         <CardDescription className="text-gray-600 leading-relaxed">

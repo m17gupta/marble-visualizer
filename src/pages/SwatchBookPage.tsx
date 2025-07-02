@@ -87,7 +87,7 @@ export function SwatchBookPage() {
           getActiveFiltersCount={getActiveFiltersCount}
         />
       </div>
-
+      
       {/* Active Filters */}
       <SwatchBookActiveFilters getActiveFiltersCount={getActiveFiltersCount} />
 
