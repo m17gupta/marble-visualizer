@@ -1,200 +1,202 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
+import { RootState, AppDispatch } from "@/redux/store";
+import { logoutUser } from "@/redux/slices/authSlice";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  User,
-  Settings,
-  CreditCard,
-  Plus,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import {
+  Menu,
+  Home,
   FolderOpen,
-  Package,
-  Layout,
   Palette,
-  BookOpen,
+  // Package,
+  Settings,
+  LogOut,
+  Sun,
+  Moon,
+  Bell,
+  Search,
+  ChevronLeft,
   ChevronRight,
-  Users,
-  Badge,
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+  Paintbrush,
+  User,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import LandingHome from "../workSpace/landing/LandingHome";
 
-interface SidebarItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  active?: boolean;
-  badge?: string;
-  hasChevron?: boolean;
-  isAction?: boolean;
-}
+const navigation = [
+  {
+    name: "Projects",
+    href: "/app/projects",
+    icon: FolderOpen,
+  },
+  {
+    name: "Studio",
+    href: "/app/studio",
+    icon: Palette,
+  },
+  // {
+  //   name: "Materials",
+  //   href: "/materials",
+  //   icon: Package,
+  // },
+  {
+    name: "SwatchBook",
+    href: "/app/swatchbook",
+    icon: Paintbrush,
+  },
+];
 
-const SideBar = () => {
-  const [activeSection, setActiveSection] = useState('profile');
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-    const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
-  
+export function SideBar() {
+  const location = useLocation();
   const navigate = useNavigate();
-  const sidebarSections: {
-    title: string;
-    items: SidebarItem[];
-  }[] = [
-    {
-      title: 'ACCOUNT',
-      items: [
-        { id: 'profile', label: 'Profile', icon: User },
-        { id: 'settings', label: 'Settings', icon: Settings },
-        { id: 'billing', label: 'Billing', icon: CreditCard },
-      ],
-    },
-    {
-      title: 'ORGANIZATIONS',
-      items: [
-        { id: 'personal', label: 'Personal', icon: User, badge: 'Free Plan' },
-        { id: 'add-org', label: 'Add Organization', icon: Plus, isAction: true },
-      ],
-    },
-    {
-      title: 'WORKSPACE',
-      items: [
-        { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true },
-        { id: 'assets', label: 'Assets', icon: Package },
-        { id: 'boards', label: 'Boards', icon: Layout },
-      ],
-    },
-    {
-      title: 'TOOLS & FEATURES',
-      items: [{ id: 'design-tools', label: 'Design Tools', icon: Palette }],
-    },
-    {
-      title: 'COMMUNITY',
-      items: [
-        { id: 'blogs', label: 'Blogs', icon: BookOpen },
-        { id: 'affiliate', label: 'Affiliate Program', icon: Users },
-      ],
-    },
-  ];
+  const dispatch = useDispatch<AppDispatch>();
+  const { theme, setTheme } = useTheme();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.userProfile);
 
-  const handleSignIn = () => {
-    // Handle sign-in logic here
-    navigate("/login")
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    // Navigation is handled within the thunk
   };
 
-  return (
+  const isActivePath = (path: string) => {
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
+  };
 
-
-<div
-  className="h-screen flex flex-col border-r border-gray-200 bg-white transition-all duration-300"
-  style={{
-    width: isCollapsed ? '64px' : '280px',
-    minWidth: isCollapsed ? '64px' : '280px', // ✅ lock min width
-  }}
->
-
-
-
-
-
-      {/* Header + Toggle */}
-      <div className="p-4 flex items-center justify-between border-b border-gray-200">
-        {!isCollapsed && (
-          <div className="flex items-center gap-3">
-            {!isAuthenticated && (
-              <>
-                <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center cursor-pointer">
-                  <User className="h-5 w-5 text-white" onClick={handleSignIn} />
-                </div>
-
-                <p className="font-semibold text-gray-900 cursor-pointer" onClick={handleSignIn}>
-                  Sign in
-                </p>
-              </>
+  const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
+    <div className="flex flex-col h-full bg-card">
+      <div className="flex items-center justify-between p-6">
+        <motion.div
+          initial={false}
+          animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
+          className="flex items-center space-x-3"
+        >
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <Home className="h-5 w-5 text-primary-foreground" />
+          </div>
+          {(!sidebarCollapsed || mobile) && (
+            <span className="text-xl font-bold text-foreground">Dashboard</span>
+          )}
+        </motion.div>
+        {!mobile && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="hidden lg:flex"
+          >
+            {sidebarCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
             )}
+          </Button>
+        )}
+      </div>
+
+      <nav className="flex-1 px-4 space-y-2">
+        {navigation.map((item) => {
+          const Icon = item.icon;
+          const active = isActivePath(item.href);
+
+          return (
+            <motion.button
+              key={item.name}
+              onClick={() => {
+                navigate(item.href);
+                if (mobile) setMobileMenuOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                active
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Icon className="h-5 w-5 flex-shrink-0" />
+              <AnimatePresence>
+                {(!sidebarCollapsed || mobile) && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    className="ml-3"
+                  >
+                    {item.name}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          );
+        })}
+      </nav>
+
+      <div className="p-4 border-t border-border">
+        {(!sidebarCollapsed || mobile) && (
+          <div className="space-y-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
+            >
+              <Settings className="h-4 w-4 mr-3" />
+              Settings
+            </Button>
           </div>
         )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 border rounded-md text-xs text-blue-600 border-blue-600 hover:bg-blue-50"
-        >
-          {isCollapsed ? '➡️' : '⬅️'}
-        </button>
-      </div>
-
-      {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto space-y-6 pt-4">
-        {sidebarSections.map((section) => (
-          <div key={section.title} className="px-2">
-            {!isCollapsed && (
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
-                {section.title}
-              </h3>
-            )}
-            <div className="space-y-1">
-              {section.items.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`group w-full flex items-center ${
-                    isCollapsed ? 'justify-center' : 'justify-between'
-                  } px-2 py-2 rounded-lg transition-colors ${
-                    activeSection === item.id
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  } ${item.isAction ? 'text-blue-600 hover:bg-blue-50' : ''}`}
-                >
-                  <div
-                    className={`flex items-center gap-3 ${
-                      isCollapsed ? 'justify-center' : ''
-                    }`}
-                  >
-                    <item.icon
-                      className={`h-5 w-5 ${
-                        activeSection === item.id
-                          ? 'text-blue-700'
-                          : 'text-gray-500 group-hover:text-blue-600'
-                      }`}
-                    />
-                    {!isCollapsed && (
-                      <span className="text-sm font-medium">{item.label}</span>
-                    )}
-                  </div>
-
-                  {!isCollapsed && (
-                    <div className="flex items-center gap-2">
-                      {item.badge && (
-                        <Badge className="text-xs bg-gray-100 text-gray-600">
-                          {item.badge}
-                        </Badge>
-                      )}
-                      {item.hasChevron && (
-                        <ChevronRight className="h-4 w-4 text-gray-400" />
-                      )}
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Footer - Settings */}
-      <div className={`p-4 ${isCollapsed ? 'flex justify-center' : ''}`}>
-        <button
-          onClick={() => setActiveSection('settings')}
-          className={`w-full flex items-center ${
-            isCollapsed ? 'justify-center' : 'justify-start'
-          } px-2 py-2 rounded-lg transition-colors hover:bg-gray-100`}
-        >
-          <Settings className="h-5 w-5 text-gray-600" />
-          {!isCollapsed && (
-            <span className="ml-3 text-sm font-medium">Settings</span>
-          )}
-        </button>
       </div>
     </div>
-
-    
   );
-};
 
-export default SideBar;
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Desktop Sidebar */}
+      <motion.aside
+        initial={false}
+        animate={{ width: sidebarCollapsed ? 80 : 280 }}
+        // className="hidden lg:flex bg-card border-r border-border"
+        className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border"
+      >
+        <SidebarContent />
+      </motion.aside>
+
+      {/* Mobile Sidebar */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="p-0 w-80">
+          <SidebarContent mobile />
+        </SheetContent>
+      </Sheet>
+
+      {/* Main Content */}
+      <div
+        className={cn(
+          "transition-all w-screen duration-300 lg:pl-80",
+          sidebarCollapsed && "lg:pl-20"
+        )}
+      >
+
+      <LandingHome />
+      </div>
+    </div>
+  );
+}

@@ -17,7 +17,7 @@ import {
   Edit,
   Users,
 } from 'lucide-react';
-import SideBar from '@/components/userProfile/SideBar';
+// import SideBar from '@/components/userProfile/SideBar';
 import SubscriptionPlan from '@/components/userProfile/SubscriptionPlanData';
 
 
@@ -60,36 +60,14 @@ export function ProfilePage() {
       <div className="flex">
         {/* Left Sidebar */}
        <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
-          {/* User Section */}
-          {/* <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                <User className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="font-semibold text-gray-900">Personal</p>
-                <p className="text-sm text-gray-500">{profileData.plan}</p>
-              </div>
-            </div>
-          </div> */}
+        
 
           {/* Navigation */}
           <div className="py-4 space-y-6">
-            <SideBar/>
+            {/* <SideBar/> */}
           </div>
 
-          {/* Upgrade Button */}
-          {/* <div className="absolute bottom-4 left-4 right-4">
-            <Button
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-              onClick={() => setActiveSection('upgrade')}
-            >
-              <Crown className="h-4 w-4 mr-2" />
-              Upgrade Plan
-            </Button>
-          </div> */}
-
-          {/* User Info at Bottom */}
+       
           <div className="absolute bottom-16 left-4 right-4 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8">

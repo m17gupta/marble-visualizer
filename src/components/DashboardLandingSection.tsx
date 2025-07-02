@@ -1,8 +1,9 @@
 import React from 'react';
 
-import SideBar from './userProfile/SideBar';
+// import SideBar from './userProfile/SideBar';
 import LandingHome from './workSpace/landing/LandingHome';
 import VisualToolHome from './workSpace/visualTool/VisualToolHome';
+import { SideBar } from './userProfile/SideBar';
 
 
 export const DashboardLandingSection = () => {
@@ -16,9 +17,9 @@ export const DashboardLandingSection = () => {
 
       {/* Right Main Content */}
 
-      <LandingHome />
+      {/* <LandingHome /> */}
 
-      <VisualToolHome />
+      {/* <VisualToolHome /> */}
 
     </div>
     // </div>
