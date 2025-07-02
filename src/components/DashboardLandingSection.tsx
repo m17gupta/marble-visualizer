@@ -1,25 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // import SideBar from './userProfile/SideBar';
 import LandingHome from './workSpace/landing/LandingHome';
-import VisualToolHome from './workSpace/visualTool/VisualToolHome';
-import { SideBar } from './userProfile/SideBar';
+
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { SideBar } from './sideBar/SideBar';
+import VisualToolHome from './visualTool/VisualToolHome';
+import { cn } from '@/lib/utils';
+import SideBarHome from './sideBar/SideBarHome';
 
 
 export const DashboardLandingSection = () => {
+  const { isWorkSpace, isVisual } = useSelector((state: RootState) => state.workspace);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
       {/* <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200"> */}
 
-      <SideBar />
+      <SideBarHome />
       {/* </div> */}
 
-      {/* Right Main Content */}
+      {/* Main Content */}
+      <div
+        className={cn(
+          "transition-all w-screen duration-300 lg:pl-80",
+          sidebarCollapsed && "lg:pl-20"
+        )}
+      >
+        {isWorkSpace && <LandingHome />}
 
-      {/* <LandingHome /> */}
+        {isVisual && <VisualToolHome />}
 
-      {/* <VisualToolHome /> */}
+      </div>
+
 
     </div>
     // </div>

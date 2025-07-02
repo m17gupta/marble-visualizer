@@ -6,36 +6,22 @@ import { useTheme } from "next-themes";
 import { RootState, AppDispatch } from "@/redux/store";
 import { logoutUser } from "@/redux/slices/authSlice";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import {
-  Menu,
+ 
   Home,
   FolderOpen,
   Palette,
   // Package,
   Settings,
-  LogOut,
-  Sun,
-  Moon,
-  Bell,
-  Search,
   ChevronLeft,
   ChevronRight,
   Paintbrush,
-  User,
+  
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import LandingHome from "../workSpace/landing/LandingHome";
 
 const navigation = [
   {
@@ -64,9 +50,9 @@ export function SideBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { theme, setTheme } = useTheme();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { profile } = useSelector((state: RootState) => state.userProfile);
+  // const { theme, setTheme } = useTheme();
+  // const { user } = useSelector((state: RootState) => state.auth);
+  // const { profile } = useSelector((state: RootState) => state.userProfile);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -187,16 +173,7 @@ export function SideBar() {
         </SheetContent>
       </Sheet>
 
-      {/* Main Content */}
-      <div
-        className={cn(
-          "transition-all w-screen duration-300 lg:pl-80",
-          sidebarCollapsed && "lg:pl-20"
-        )}
-      >
-
-      <LandingHome />
-      </div>
+    
     </div>
   );
 }

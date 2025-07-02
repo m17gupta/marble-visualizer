@@ -9,6 +9,9 @@ import {
   previousStep,
   resetSteps,
   setUploadedFile,
+  setViewFile,
+  removeViewFile,
+  clearAllViewFiles,
   setProcessingState,
   setError,
   clearError,
@@ -17,6 +20,7 @@ import {
   enterStepperMode,
   resetWorkspace,
   completeWorkflow,
+  ViewType,
 } from '@/redux/slices/visualizerSlice/workspaceSlice';
 
 // Custom hook for workspace state management
@@ -30,6 +34,7 @@ export const useWorkspace = () => {
   const isStepper = useSelector((state: RootState) => state.workspace.isStepper);
   const currentStep = useSelector((state: RootState) => state.workspace.currentStep);
   const uploadedFile = useSelector((state: RootState) => state.workspace.uploadedFile);
+  const viewFiles = useSelector((state: RootState) => state.workspace.viewFiles);
   const processingState = useSelector((state: RootState) => state.workspace.processingState);
   const error = useSelector((state: RootState) => state.workspace.error);
 
@@ -43,6 +48,9 @@ export const useWorkspace = () => {
     previousStep: () => dispatch(previousStep()),
     resetSteps: () => dispatch(resetSteps()),
     setUploadedFile: (file: File | null) => dispatch(setUploadedFile(file)),
+    setViewFile: (view: ViewType, file: File | null) => dispatch(setViewFile({ view, file })),
+    removeViewFile: (view: ViewType) => dispatch(removeViewFile(view)),
+    clearAllViewFiles: () => dispatch(clearAllViewFiles()),
     setProcessingState: (state: 'idle' | 'uploading' | 'processing' | 'completed' | 'error') => 
       dispatch(setProcessingState(state)),
     setError: (error: string | null) => dispatch(setError(error)),
@@ -79,6 +87,7 @@ export const useWorkspace = () => {
     isStepper,
     currentStep,
     uploadedFile,
+    viewFiles,
     processingState,
     error,
     
@@ -152,5 +161,40 @@ export const useFileUpload = () => {
     uploadFile,
     removeFile,
     clearError,
+  };
+};
+
+// Hook for managing multiple view files
+export const useViewFiles = () => {
+  const workspace = useWorkspace();
+  const { viewFiles } = workspace;
+  
+  const setViewFile = (view: ViewType, file: File | null) => {
+    workspace.setViewFile(view, file);
+  };
+
+  const removeViewFile = (view: ViewType) => {
+    workspace.removeViewFile(view);
+  };
+
+  const clearAllFiles = () => {
+    workspace.clearAllViewFiles();
+  };
+
+  const getViewFile = (view: ViewType) => viewFiles[view];
+
+  const hasAnyFiles = Object.values(viewFiles).some(file => file !== null);
+  const fileCount = Object.values(viewFiles).filter(file => file !== null).length;
+  const isAllViewsUploaded = Object.values(viewFiles).every(file => file !== null);
+
+  return {
+    viewFiles,
+    setViewFile,
+    removeViewFile,
+    clearAllFiles,
+    getViewFile,
+    hasAnyFiles,
+    fileCount,
+    isAllViewsUploaded,
   };
 };

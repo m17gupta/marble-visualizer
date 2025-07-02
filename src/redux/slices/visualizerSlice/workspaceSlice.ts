@@ -1,23 +1,38 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+// Define view types
+export type ViewType = 'front' | 'rear' | 'left' | 'right';
+
 // Define the state interface
 interface WorkspaceState {
   isWorkSpace: boolean;
   isVisual: boolean;
   isStepper: boolean;
   currentStep: number;
-  uploadedFile: File | null;
+  uploadedFile: File | null; // Keep for backward compatibility
+  viewFiles: {
+    front: File | null;
+    rear: File | null;
+    left: File | null;
+    right: File | null;
+  };
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
 }
 
 // Define the initial state
 const initialState: WorkspaceState = {
-  isWorkSpace: false,
+  isWorkSpace: true,
   isVisual: false,
   isStepper: false,
   currentStep: 0,
   uploadedFile: null,
+  viewFiles: {
+    front: null,
+    rear: null,
+    left: null,
+    right: null,
+  },
   processingState: 'idle',
   error: null,
 };
@@ -68,6 +83,26 @@ const workspaceSlice = createSlice({
     setUploadedFile: (state, action: PayloadAction<File | null>) => {
       state.uploadedFile = action.payload;
     },
+
+    // Set view file for specific view
+    setViewFile: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
+      state.viewFiles[action.payload.view] = action.payload.file;
+    },
+
+    // Remove view file for specific view
+    removeViewFile: (state, action: PayloadAction<ViewType>) => {
+      state.viewFiles[action.payload] = null;
+    },
+
+    // Clear all view files
+    clearAllViewFiles: (state) => {
+      state.viewFiles = {
+        front: null,
+        rear: null,
+        left: null,
+        right: null,
+      };
+    },
     
     // Set processing state
     setProcessingState: (state, action: PayloadAction<WorkspaceState['processingState']>) => {
@@ -115,6 +150,12 @@ const workspaceSlice = createSlice({
       state.isStepper = false;
       state.currentStep = 0;
       state.uploadedFile = null;
+      state.viewFiles = {
+        front: null,
+        rear: null,
+        left: null,
+        right: null,
+      };
       state.processingState = 'idle';
       state.error = null;
     },
@@ -138,6 +179,9 @@ export const {
   previousStep,
   resetSteps,
   setUploadedFile,
+  setViewFile,
+  removeViewFile,
+  clearAllViewFiles,
   setProcessingState,
   setError,
   clearError,
@@ -160,3 +204,9 @@ export const selectCurrentStep = (state: { workspace: WorkspaceState }) => state
 export const selectUploadedFile = (state: { workspace: WorkspaceState }) => state.workspace.uploadedFile;
 export const selectProcessingState = (state: { workspace: WorkspaceState }) => state.workspace.processingState;
 export const selectError = (state: { workspace: WorkspaceState }) => state.workspace.error;
+export const selectViewFiles = (state: { workspace: WorkspaceState }) => state.workspace.viewFiles;
+export const selectViewFile = (view: ViewType) => (state: { workspace: WorkspaceState }) => state.workspace.viewFiles[view];
+export const selectHasAnyViewFile = (state: { workspace: WorkspaceState }) => 
+  Object.values(state.workspace.viewFiles).some(file => file !== null);
+export const selectViewFileCount = (state: { workspace: WorkspaceState }) => 
+  Object.values(state.workspace.viewFiles).filter(file => file !== null).length;

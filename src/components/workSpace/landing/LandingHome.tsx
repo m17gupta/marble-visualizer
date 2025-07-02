@@ -4,6 +4,8 @@ import { ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDispatch } from 'react-redux';
+import { setVisual, setWorkSpace } from '@/redux/slices/visualizerSlice/workspaceSlice';
 
 // Data for different categories
 const categoryData = {
@@ -160,6 +162,7 @@ interface RoomCardProps {
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({ room, onClick }) => {
+
   return (
     <div
       className="relative flex-shrink-0 w-72 h-48 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group"
@@ -201,6 +204,7 @@ interface TopPickCardProps {
 }
 
 const TopPickCard: React.FC<TopPickCardProps> = ({ pick, onClick }) => {
+
   return (
     <Card className="group hover:scale-105 transition-all duration-300 hover:shadow-xl border-0 shadow-md">
       <div className="relative">
@@ -268,17 +272,20 @@ const TopPickCard: React.FC<TopPickCardProps> = ({ pick, onClick }) => {
   );
 };
 const LandingHome = () => {
+  const dispatch = useDispatch();
 
-      const handleRoomClick = (roomId: string) => {
-        console.log('Room clicked:', roomId);
-        // Add your navigation logic here
-      };
+  const handleRoomClick = (roomId: string) => {
+    console.log('Room clicked:', roomId);
+    // Add your navigation logic here
+  };
     
       const handleTopPickClick = (pickId: string) => {
         console.log('Top pick clicked:', pickId);
         // Add your navigation logic here
         switch (pickId) {
           case 'renovate':
+              dispatch(setWorkSpace(false))
+              dispatch(setVisual(true))
             // Navigate to renovation tool
             break;
           case 'virtual-staging':

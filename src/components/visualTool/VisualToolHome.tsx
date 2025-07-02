@@ -1,178 +1,189 @@
-import React, { useRef } from 'react';
-import { Upload, Image } from 'lucide-react';
+import React from 'react';
+import { Clock, Home, ArrowLeft } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useWorkspace, useFileUpload } from '@/hooks/useWorkspace';
+import { useWorkspace } from '@/hooks/useWorkspace';
+import { useViewFiles } from '@/hooks/useWorkspace';
+import ViewUploader from './ViewUploader';
+import { ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { useNavigate } from 'react-router-dom';
 
 const VisualToolHome = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Use workspace hooks
-  const { enterWorkspace, enterStepperMode } = useWorkspace();
-  const { uploadedFile, processingState, error, uploadFile, removeFile } = useFileUpload();
-  
-  // Local state for drag handling
-  const [dragActive, setDragActive] = React.useState(false);
+  const navigate = useNavigate();
+  const { enterStepperMode } = useWorkspace();
+  const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, fileCount, isAllViewsUploaded } = useViewFiles();
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
+  const handleFileUpload = (view: ViewType, file: File) => {
+    setViewFile(view, file);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      if (file.type.startsWith('image/')) {
-        uploadFile(file);
-      }
-    }
+  const handleFileRemove = (view: ViewType) => {
+    removeViewFile(view);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      uploadFile(e.target.files[0]);
-    }
-  };
-
-  const openFileSelector = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleProcessImage = () => {
-    if (uploadedFile) {
+  const handleContinue = () => {
+    if (hasAnyFiles) {
       enterStepperMode();
-      // Here you would typically navigate to the next step or processing view
-      console.log('Processing file:', uploadedFile);
+      console.log('Proceeding with uploaded files:', viewFiles);
     }
   };
+
+  const handleGoBack = () => {
+    // Navigate back to the previous page or dashboard
+    navigate(-1); // Go back one step in browser history
+    // Alternative: navigate('/app/dashboard') or navigate('/app/projects')
+  };
+
+  // Define view types and their display names
+  const viewTypes: { key: ViewType; label: string }[] = [
+    { key: 'front', label: 'Front View' },
+    { key: 'rear', label: 'Rear View' },
+    { key: 'left', label: 'Left View' },
+    { key: 'right', label: 'Right View' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-   
+      <div className="bg-white border-b border-gray-200 py-6">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center relative">
+            {/* Back button positioned absolutely in header */}
+            <Button
+              onClick={handleGoBack}
+              variant="outline"
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back</span>
+            </Button>
+            
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Home View</h1>
+            <p className="text-lg text-gray-600 mb-1">
+              Select the initial view you want to work on
+            </p>
+            <p className="text-sm text-gray-500">
+              (Additional views available after delivery of initial project)
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="max-w-2xl w-full text-center">
-          {/* Logo/Icon */}
-          <div className="mb-8">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
-                  <Image className="h-4 w-4 text-white" />
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {/* Instructions Section */}
+        <div className="grid md:grid-cols-2 gap-12 mb-12">
+          {/* Photo Instructions */}
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+            <div className="flex items-center mb-6">
+              <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
+                1
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Photo Instruction</h2>
+            </div>
+
+            <div className="space-y-6">
+              {/* Time Recommendation */}
+              <div className="flex items-center space-x-3">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Clock className="h-8 w-8 text-gray-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-700">
+                    For the best results, we recommend taking your photo between 10am and 4pm.{' '}
+                    <span className="font-semibold">Overcast conditions are best.</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Device Recommendation */}
+              <div className="flex items-center space-x-3">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-6 bg-gray-800 rounded border-2 border-gray-600 relative">
+                    <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Project images need to be a min. of 1MB in landscape orientation.{' '}
+                    <span className="font-semibold">We can only render what is visible in image.</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Quality Guidelines */}
+              <div className="flex items-center space-x-3">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Home className="h-8 w-8 text-gray-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Be sure to avoid pictures that are blurry, far-away or obstructed by objects.
+                  </p>
+                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-1">
+                    See Example
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Title */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-12">
-           Everything home exterior in one place
-          </h1>
-
-          {/* Upload Area */}
-          <div
-            className={`relative border-2 border-dashed rounded-2xl p-12 mb-8 transition-all duration-300 ${
-              dragActive
-                ? 'border-blue-500 bg-blue-50'
-                : uploadedFile
-                ? 'border-green-500 bg-green-50'
-                : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-            
-            <div className="space-y-4">
-              {uploadedFile ? (
-                <>
-                  <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-                    <Image className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    File Selected: {uploadedFile.name}
-                  </h3>
-                  <p className="text-gray-500">
-                    {processingState === 'uploading' ? 'Uploading...' : 
-                     processingState === 'processing' ? 'Processing...' :
-                     processingState === 'completed' ? 'Ready to process your image' :
-                     processingState === 'error' ? 'Error occurred' : 'Ready to process'}
-                  </p>
-                  {error && (
-                    <p className="text-red-500 text-sm">{error}</p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-                    <Upload className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Drag-drop your photo here
-                  </h3>
-                  <p className="text-gray-500 max-w-md mx-auto">
-                    Upload furnished or empty space, sketches, house exterior, and landscaping.
-                    <br />
-                    Supports JPG and PNG formats.
-                  </p>
-                </>
-              )}
+          {/* Photo Upload Grid */}
+          <div className="bg-white rounded-xl p-8 shadow-sm">
+            <div className="flex items-center mb-6">
+              <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
+                2
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Photo Upload</h2>
             </div>
 
-            {/* Browse Files Link */}
-            {!uploadedFile && (
-              <div className="mt-6">
-                <button
-                  onClick={openFileSelector}
-                  className="text-blue-600 hover:text-blue-700 font-medium underline transition-colors"
-                >
-                  Or click here to browse files
-                </button>
+            <div className="grid grid-cols-2 gap-4">
+              {viewTypes.map((viewType) => (
+                <ViewUploader
+                  key={viewType.key}
+                  viewType={viewType.label}
+                  uploadedFile={viewFiles[viewType.key]}
+                  onFileUpload={(file) => handleFileUpload(viewType.key, file)}
+                  onFileRemove={() => handleFileRemove(viewType.key)}
+                  disabled={false}
+                />
+              ))}
+            </div>
+
+            {/* Upload Summary */}
+            {hasAnyFiles && (
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <span className="font-semibold">{fileCount}</span> of 4 views uploaded
+                  {isAllViewsUploaded && (
+                    <span className="ml-2 text-green-700 font-medium">✓ All views ready!</span>
+                  )}
+                </p>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Action Button */}
+        {/* Action Button */}
+        <div className="text-center">
           <Button
-            onClick={uploadedFile ? handleProcessImage : openFileSelector}
-            disabled={processingState === 'uploading' || processingState === 'processing'}
-            className={`w-full max-w-md py-4 text-lg font-semibold rounded-xl transition-all ${
-              uploadedFile
+            onClick={handleContinue}
+            disabled={!hasAnyFiles}
+            className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${
+              hasAnyFiles
                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                : 'bg-gray-800 hover:bg-gray-900 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
-            <Image className="mr-2 h-5 w-5" />
-            {uploadedFile ? 'Process Image' : 'Choose a Photo'}
+            {hasAnyFiles ? `Continue with ${fileCount} view${fileCount > 1 ? 's' : ''}` : 'Upload at least one view to continue'}
           </Button>
-
-          {/* Additional Info */}
-          {!uploadedFile && (
-            <div className="mt-8 text-sm text-gray-500">
-              <p>
-                Supported formats: JPG, PNG • Maximum file size: 10MB
-              </p>
-            </div>
-          )}
         </div>
-      </main>
+
+        {/* Additional Info */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>Supported formats: JPG, PNG • Maximum file size: 10MB per image</p>
+          <p className="mt-1">You can upload additional views after the initial project delivery</p>
+        </div>
+      </div>
     </div>
   );
 };
