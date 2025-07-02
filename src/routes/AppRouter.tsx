@@ -65,7 +65,7 @@ export function AppRouter() {
 
       {/* Public landing page - no authentication required */}
       <Route
-        path="/landing-page"
+        path="/workspace"
         element={<MainLandingPage />}
       />
  
