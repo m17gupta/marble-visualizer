@@ -67,7 +67,18 @@ export function ProfilePage() {
             {/* <SideBar/> */}
           </div>
 
-       
+          {/* Upgrade Button */}
+          {/* <div className="absolute bottom-4 left-4 right-4">
+            <Button
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              onClick={() => setActiveSection('upgrade')}
+            >
+              <Crown className="h-4 w-4 mr-2" />
+              Upgrade Plan
+            </Button>
+          </div> */}
+
+          {/* User Info at Bottom */}
           <div className="absolute bottom-16 left-4 right-4 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8">
