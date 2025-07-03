@@ -13,6 +13,7 @@ const WorkspaceProjectPage: React.FC = () => {
       </div>
 
 
+      
       {/* Middle: Main image preview and AI Guidance panel */}
       <div className="w-3/4 p-4 flex flex-col bg-gray-100">
 

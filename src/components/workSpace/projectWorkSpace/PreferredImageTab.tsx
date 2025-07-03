@@ -2,6 +2,7 @@ import { InspirationImageModel } from '@/models/inspirational/Inspirational';
 import { RootState } from '@/redux/store';
 import React, { useRef, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import SidebarObject from './SidebarObject';
 
 const tabs = [
   { id: 0, name: 'All' }
@@ -124,6 +125,9 @@ const StyleAndRenovationPanel: React.FC = () => {
         >
           Preserve Objects
         </button>
+
+        <SidebarObject/>
+
       </div>
     </div>
   );
