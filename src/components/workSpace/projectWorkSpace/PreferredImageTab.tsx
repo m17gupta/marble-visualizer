@@ -1,6 +1,6 @@
 import { InspirationImageModel } from '@/models/inspirational/Inspirational';
 import { RootState } from '@/redux/store';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 const tabs = [
@@ -28,6 +28,12 @@ const StyleAndRenovationPanel: React.FC = () => {
     setActiveTab(0);
     stylesToShow.current = Inspirational_images;
   };
+
+  // Initialize images when component mounts
+  useEffect(() => {
+    stylesToShow.current = Inspirational_images;
+  }, [Inspirational_images]);
+  
   return (
     <div className="max-w-md mx-auto p-1 space-y-6">
       {/* Tabs */}
@@ -70,26 +76,28 @@ const StyleAndRenovationPanel: React.FC = () => {
 
         <div className="grid grid-cols-3 gap-4">
           {
-            stylesToShow.current.map((style, i) => (
-              <div key={i} className="flex flex-col items-center">
-                <img
-                  src={style.image}
-                  alt={style.name}
-                  className="w-full h-32 object-cover rounded-2xl shadow"
-              />
-              <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
-                {style.name}
-              </span>
-            </div>
-          ))}
+            stylesToShow.current
+              .slice(0, showAll ? stylesToShow.current.length : 9)
+              .map((style, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <img
+                    src={style.image}
+                    alt={style.name}
+                    className="w-full h-32 object-cover rounded-2xl shadow"
+                />
+                <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
+                  {style.name}
+                </span>
+              </div>
+            ))}
         </div>
 
         {/* Show More */}
-        {stylesToShow.current.length > 6 && (
+        {stylesToShow.current.length > 9 && (
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="text-sm text-black flex items-center gap-1"
+              className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-800 flex items-center gap-1 transition-colors"
             >
               <span>{showAll ? 'Show Less' : 'Show More'}</span>
               <span className={`transition-transform duration-200 ${showAll ? 'rotate-180' : ''}`}>

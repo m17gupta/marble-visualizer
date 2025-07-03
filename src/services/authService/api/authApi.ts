@@ -406,7 +406,7 @@ export class AuthAPI {
     if (!profileData.user_id || profileData.user_id === "") {
       profileData.user_id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
 
-      console.log("Generated new user_id: updated ", response);
+      
     }
   
     // For profiles table, we need to map the fields correctly
