@@ -111,7 +111,7 @@ export function LoginPage() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
-          <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm">
+          <Card className="border-0 bg-card/50 shadow-none backdrop-blur-sm">
             <CardHeader className="space-y-4 pb-8 pt-8">
               {/* <motion.div
                 initial={{ scale: 0 }}
@@ -121,7 +121,8 @@ export function LoginPage() {
               > */}
                 {/* <LogIn className="h-6 w-6 text-white" /> */}
                 <div className="w-12 flex items-center justify-center m-auto">
-                <img  src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"></img>
+                
+                   <img  src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"></img>
                 </div>
               {/* </motion.div> */}
               <div className="text-center space-y-2">

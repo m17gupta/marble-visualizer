@@ -176,7 +176,7 @@ export function SignUpPage() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center"
+              className="mx-auto w-12 h-12 bg-primary  flex items-center justify-center"
             >
               <UserPlus className="h-6 w-6 text-primary-foreground" />
             </motion.div>

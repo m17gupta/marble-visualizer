@@ -36,9 +36,14 @@ const StyleAndRenovationPanel: React.FC = () => {
   const stylesToShow = showAll ? allStyles : allStyles.slice(0, 6);
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-6">
+    <div className="max-w-md mx-auto p-1 space-y-6">
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 justify-center mb-2">
+     
+
+      {/* Style Card */}
+      <div className="bg-white border rounded-xl p-4">
+
+ <div className="flex flex-wrap gap-2 justify-start mb-4">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -57,8 +62,7 @@ const StyleAndRenovationPanel: React.FC = () => {
         ))}
       </div>
 
-      {/* Style Card */}
-      <div className="bg-white border rounded-xl p-4">
+
         <div className="grid grid-cols-3 gap-4">
           {stylesToShow.map((style, i) => (
             <div key={i} className="flex flex-col items-center">

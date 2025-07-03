@@ -49,7 +49,7 @@ const ImageCard: React.FC = () => {
       <img
         src="https://images.renovateai.app/ren/resize:fit:600000:600000:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00"
         alt="Preview"
-        className="rounded-md object-contain max-h-[480px]"
+        className="rounded-md object-contain max-h-[480px] m-auto"
       />
     </div>
   );

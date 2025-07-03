@@ -16,6 +16,7 @@ interface WorkspaceState {
   isUploading: boolean;
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
+  isAddIspiration: boolean; // Flag to indicate if the user is adding inspiration
 }
 
 // Define the initial state
@@ -33,6 +34,9 @@ const initialState: WorkspaceState = {
   processingState: 'idle',
   error: null,
   isUploading: false,
+  
+  isAddIspiration: false, // Initialize to false
+
 };
 
 // Create the slice
@@ -122,6 +126,10 @@ const workspaceSlice = createSlice({
       state.isStepper = false;
       state.isVisual = true;
     },
+    // Set flag for adding inspiration
+    setIsAddInspiration: (state, action: PayloadAction<boolean>) => {
+      state.isAddIspiration = action.payload;
+    }
   },
 });
 
@@ -141,6 +149,7 @@ export const {
   addCurrentView,
   setIsContinue,
   setIsUploading,
+  setIsAddInspiration
 } = workspaceSlice.actions;
 
 // Export reducer
@@ -154,3 +163,6 @@ export const selectIsStepper = (state: { workspace: WorkspaceState }) => state.w
 
 export const selectProcessingState = (state: { workspace: WorkspaceState }) => state.workspace.processingState;
 export const selectError = (state: { workspace: WorkspaceState }) => state.workspace.error;
+
+
+export const getIsAddInspiration = (state: { workspace: WorkspaceState }) => state.workspace.isAddIspiration;

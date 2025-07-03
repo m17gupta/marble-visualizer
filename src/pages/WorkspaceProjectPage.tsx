@@ -14,10 +14,10 @@ const WorkspaceProjectPage: React.FC = () => {
         <InspirationSidebar />
       </div>
       {/* Middle: Main image preview and AI Guidance panel */}
-      <div className="w-3/4 p-4 flex flex-col bg-gray-50">
-        <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2>
+      <div className="w-3/4 p-4 flex flex-col bg-gray-100">
+        {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
         <ImagePreview  />
-        <div className="mt-4 border-t pt-4">
+        <div className="mt-4 ">
           <GuidancePanel />
         </div>
       </div>
