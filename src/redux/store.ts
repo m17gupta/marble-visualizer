@@ -7,7 +7,7 @@ import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
 import materialsSlice from './slices/materialSlices/materialsSlice';
 import materialSegmentSlice from './slices/materialSlices/materialSegmentSlice';
-import genAiSlice from './slices/genAiSlice'; // New GenAI slice
+import genAiSlice from './slices/visualizerSlice/genAiSlice'; // New GenAI slice
 
 import jobSlice from './slices/jobSlice'; // New job slice based on JobModel
 import activityLogsSlice from './slices/activityLogsSlice';

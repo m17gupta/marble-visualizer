@@ -1,9 +1,14 @@
 import React from "react";
 import { Download, Expand, X } from "lucide-react"; // Optional, or use inline SVGs
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 // import sampleImg from "@/assets/kitchen.jpg"; // Replace with your actual image path
 
 const ImageCard: React.FC = () => {
-  const handleFullscreen = () => {
+ 
+   const {list} = useSelector((state: RootState) => state.jobs);
+
+  const handleFullscreen = () => {  
     console.log("Fullscreen clicked");
   };
 
@@ -47,9 +52,9 @@ const ImageCard: React.FC = () => {
 
       {/* Image section */}
       <img
-        src="https://images.renovateai.app/ren/resize:fit:600000:600000:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00"
-        alt="Preview"
-        className="rounded-md object-contain max-h-[480px] m-auto"
+        src={list[0]?.full_image || "https://via.placeholder.com/800x600"} // Replace with actual image URL
+        alt={list[0]?.title || "Image Preview"}
+        className="rounded-md object-contain max-h-[480px]"
       />
     </div>
   );

@@ -33,7 +33,6 @@ import {
   Lock,
   LogIn,
 } from "lucide-react";
-import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -92,10 +91,17 @@ export function LoginPage() {
     }
   };
 
+  const handleHomeClick = () => {
+    console.log("Navigating to home");
+    navigate("/", { replace: false });
+  };
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-muted/20">
       {/* Left: Image */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block"
+   
+      >
         <img
           src="https://www.dzinly.org/img/login-img.jpg"
           alt="Login visual"
@@ -120,13 +126,20 @@ export function LoginPage() {
                 className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center"
               > */}
                 {/* <LogIn className="h-6 w-6 text-white" /> */}
-                <div className="w-12 flex items-center justify-center m-auto">
+                <div className="w-12 flex items-center justify-center m-auto"
+                 onClick={handleHomeClick}
+                >
                 
-                   <img  src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"></img>
+                   <img  
+                     src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
+                     title="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
+                     alt="Dzinly Logo"
+                   
+                   ></img>
                 </div>
               {/* </motion.div> */}
               <div className="text-center space-y-2">
-                <CardTitle className="text-2xl font-bold">Login</CardTitle>
+                <CardTitle className="text-2xl font-bold">Login </CardTitle>
                 <CardDescription className="text-muted-foreground">
                   Hello! let's join with us
                 </CardDescription>

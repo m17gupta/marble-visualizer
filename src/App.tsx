@@ -16,7 +16,7 @@ function App() {
 
   return (
     <Provider store={store}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <BrowserRouter>
           {/* Show connection status in development
           {import.meta.env.DEV && (

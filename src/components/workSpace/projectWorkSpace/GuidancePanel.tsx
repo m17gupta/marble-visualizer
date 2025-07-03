@@ -32,8 +32,8 @@ const GuidancePanel: React.FC = () =>{
     setIsModel(false);
   };
 
-  const handleSubmit = (data: any) => {
-    console.log("Submitted data:", data);
+  const handleSubmit = () => {
+    console.log("Submitted data:");
     
     // Handle the submitted data here
     // For example, you can dispatch an action to save the inspiration

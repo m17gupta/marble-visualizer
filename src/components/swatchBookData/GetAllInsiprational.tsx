@@ -10,7 +10,7 @@ import { fetchInspirationalImages } from '@/redux/slices/InspirationalSlice/insp
 
 const GetAllInspirational = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
+  // const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth);
   
   // Get inspirational colors state
   const {
@@ -25,7 +25,7 @@ const GetAllInspirational = () => {
   } = useSelector((state: RootState) => state.inspirationalImages);
 
   useEffect(() => {
-    if (isAuthenticated && isInitialized) {
+ 
       // Fetch initial data
        if(!colorsLoading && inspirational_colors.length === 0) {
          fetchInspirationalColorsData();
@@ -33,8 +33,8 @@ const GetAllInspirational = () => {
        if(!imagesLoading && Inspirational_images.length === 0) {
          fetchInspirationalImagesData();
        }
-    }
-  }, [isAuthenticated, isInitialized, dispatch,inspirational_colors,colorsLoading,Inspirational_images,imagesLoading]);
+
+  }, [inspirational_colors,colorsLoading,Inspirational_images,imagesLoading]);
 
 
   const fetchInspirationalColorsData = async () => {

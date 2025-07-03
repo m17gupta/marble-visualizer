@@ -6,6 +6,7 @@ import { AppDispatch } from "@/redux/store";
 import { logoutUser } from "@/redux/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import ShareModal from "@/components/ShareModal";
 import {
   BookOpen, 
   // CreditCard, 
@@ -20,7 +21,8 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Share2
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -65,7 +67,8 @@ const sidebarSections: {
   {
     title: 'TOOLS & FEATURES',
     items: [
-      { id: 'design-tools', label: 'Design Tools', icon: Palette, href: '/app/studio' }
+      { id: 'design-tools', label: 'Design Tools', icon: Palette, href: '/app/studio' },
+      { id: 'share-project', label: 'Share Project', icon: Share2, isAction: true }
     ],
   },
   {
@@ -84,9 +87,17 @@ const SideBarVisual = () => {
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
+  const handleLogin = () => {
+    // If the user is logged in, log them out, otherwise navigate to login
+    try {
+      dispatch(logoutUser());
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+    navigate('/login');
   };
 
   const isActivePath = (path: string) => {
@@ -100,6 +111,13 @@ const SideBarVisual = () => {
     if (item.isAction) {
       // Handle action items (like "Add Organization")
       console.log(`Action: ${item.label}`);
+      return;
+    }
+    
+    if (item.id === 'share-project') {
+      // Open share modal for the current project
+      setSelectedProjectId('current-project'); // Replace with actual project ID
+      setShareModalOpen(true);
       return;
     }
     
@@ -219,12 +237,12 @@ const SideBarVisual = () => {
         {(!sidebarCollapsed || mobile) && (
           <div className="space-y-2">
             <Button
-              onClick={handleLogout}
+              onClick={handleLogin}
               variant="ghost"
               className="w-full justify-start text-muted-foreground hover:text-foreground"
             >
               <Settings className="h-4 w-4 mr-3" />
-              Logout
+              Login
             </Button>
           </div>
         )}
@@ -234,6 +252,14 @@ const SideBarVisual = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Share Modal */}
+      <ShareModal 
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        projectId={selectedProjectId || ''}
+        projectName="Current Project"
+      />
+
       {/* Desktop Sidebar */}
       <motion.aside
         initial={false}

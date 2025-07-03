@@ -74,10 +74,9 @@ export const CreateJob = async (
       
       return true;
     }
-    
-    // If we get here, something went wrong but didn't throw an error
-    toast.error('Job creation failed. Please try again.');
+      
     return false;
+ 
   } catch (error) {
     console.error('Error creating job:', error);
     toast.error('Job creation failed. Please try again.');

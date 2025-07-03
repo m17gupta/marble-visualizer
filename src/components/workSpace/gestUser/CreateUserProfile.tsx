@@ -1,4 +1,5 @@
 import { UserProfile } from '@/models/userModel/UserModel'
+import { fetchProjects } from '@/redux/slices/projectSlice'
 import { createUserProfile, getUserProfileBySessionId } from '@/redux/slices/userProfileSlice'
 import { AppDispatch, RootState } from '@/redux/store'
 import { generateSessionId } from '@/utils/GenerateSessionId'
@@ -23,10 +24,8 @@ const CreateUserProfile = () => {
       status: true,
     }
     try{
-      const response= await dispatch(createUserProfile(userData)).unwrap();
-      if(response) {
-        console.log("User profile created successfully:", response);
-      }        
+       await dispatch(createUserProfile(userData)).unwrap();
+            
     }catch(error) {
       console.error("Error creating user profile:", error);
     }   
@@ -41,7 +40,8 @@ const CreateUserProfile = () => {
       }else if(response === "No user profile found for session ID") {
         handleCreateUserProfile(sessionId);
       }else {
-        console.log("User profile fetched successfully:", response);
+        // get all  projects
+         await dispatch(fetchProjects(response.user_id)).unwrap();
       }
       return response;
     } catch (error) {

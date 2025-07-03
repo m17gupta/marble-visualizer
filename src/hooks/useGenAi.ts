@@ -6,7 +6,7 @@ import {
   checkGenAiStatus, 
   clearCurrentRequest, 
   clearError 
-} from '@/redux/slices/genAiSlice';
+} from '@/redux/slices/visualizerSlice/genAiSlice';
 import { GenAiRequest, GenAiResponse } from '@/models/genAiModel/GenAiModel';
 
 export const useGenAi = () => {

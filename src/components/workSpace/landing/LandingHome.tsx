@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDispatch } from 'react-redux';
 import { setVisual, setWorkSpace } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
 
 // Data for different categories
 const categoryData = {
@@ -365,6 +366,8 @@ const LandingHome = () => {
           </div>
         </div>
       </div>
+
+      <GetAllInspirational/>
     </>
   )
 }

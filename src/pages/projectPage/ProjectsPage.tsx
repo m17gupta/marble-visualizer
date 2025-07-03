@@ -70,9 +70,9 @@ export function ProjectsPage() {
     }
   };
 
-  const handleShare = (project: ProjectModel) => {
-   // setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
-  };
+  // const handleShare = () => {
+  //  // setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
+  // };
 
   const handleCopyLink = (project: ProjectModel) => {
     const projectUrl = `${window.location.origin}/studio/${project.id}`;
@@ -80,19 +80,7 @@ export function ProjectsPage() {
     toast.success('Project link copied to clipboard!');
   };
 
-  // const handleCopyPublicLink = (project: any) => {
-  //   if (project.publicSlug) {
-  //     const publicUrl = `${window.location.origin}/project/public/${project.publicSlug}`;
-  //     navigator.clipboard.writeText(publicUrl);
-  //     toast.success('Public link copied to clipboard!');
-  //   }
-  // };
 
-  // const handleOpenPublic = (project: any) => {
-  //   if (project.publicSlug) {
-  //     window.open(`/project/public/${project.publicSlug}`, '_blank');
-  //   }
-  // };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -346,15 +334,7 @@ export function ProjectsPage() {
 
                   {/* Role badge */}
                   <div className="absolute top-2 left-2">
-                    {/* <Badge 
-                      variant="outline" 
-                      className={cn("text-xs", getRoleBadgeColor(project.currentUserRole || 'viewer'))}
-                    >
-                      {project.currentUserRole === 'admin' && <Crown className="h-3 w-3 mr-1" />}
-                      {project.currentUserRole === 'editor' && <Edit3 className="h-3 w-3 mr-1" />}
-                      {project.currentUserRole === 'viewer' && <Eye className="h-3 w-3 mr-1" />}
-                      {project.currentUserRole}
-                    </Badge> */}
+                    
                   </div>
                 </div>
 
@@ -379,13 +359,7 @@ export function ProjectsPage() {
                   {/* Access info */}
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="mr-2 h-4 w-4" />
-                    {/* <span>{project.accessList.length} member{project.accessList.length !== 1 ? 's' : ''}</span>
-                    {project.isPublic && (
-                      <>
-                        <span className="mx-1">•</span>
-                        <span className="text-green-600">Public</span>
-                      </>
-                    )} */}
+                  
                   </div>
 
                   <div className="space-y-2">
@@ -401,10 +375,10 @@ export function ProjectsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShare(project);
-                        }}
+                        // onClick={(e) => {
+                        //   e.stopPropagation();
+                        //   handleShare(project);
+                        // }}
                       >
                         <Share2 className="h-4 w-4" />
                       </Button>
@@ -437,25 +411,11 @@ export function ProjectsPage() {
                           <Copy className="h-4 w-4 mr-2" />
                           Copy Link
                         </DropdownMenuItem>
-                        {/* {project.isPublic && project.publicSlug && (
-                          <>
-                            <DropdownMenuItem 
-                           // onClick={() => handleCopyPublicLink(project)}
-                            >
-                              <Globe className="h-4 w-4 mr-2" />
-                              Copy Public Link
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                            // onClick={() => handleOpenPublic(project)}
-                              
-                              >
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              Open Public View
-                            </DropdownMenuItem>
-                          </>
-                        )} */}
+                       
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleShare(project)}>
+                        <DropdownMenuItem 
+                        // onClick={() => handleShare(project)}
+                          >
                           <Settings className="h-4 w-4 mr-2" />
                           Manage Access
                         </DropdownMenuItem>

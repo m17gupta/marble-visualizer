@@ -8,6 +8,7 @@ interface WorkspaceState {
   isWorkSpace: boolean;
   isVisual: boolean;
   isStepper: boolean;
+  jobImage: string; // Assuming this is a string to hold the job image URL
   currentView: {
     view: ViewType; // Current view type
     file: File | null; // File associated with the current view
@@ -29,7 +30,7 @@ const initialState: WorkspaceState = {
     view: 'front', // Default to front view
     file: null,
   },
-
+  jobImage: '', // Assuming this is an empty string by default
   isContinue: false,
   processingState: 'idle',
   error: null,
@@ -69,6 +70,9 @@ const workspaceSlice = createSlice({
     // Set uploading state
     setIsUploading: (state, action: PayloadAction<boolean>) => {
       state.isUploading = action.payload;
+    },
+    updateJobImage : (state, action) => {
+     state.jobImage = action.payload;
     },
 
     // Set processing state
@@ -136,6 +140,7 @@ const workspaceSlice = createSlice({
 // Export actions
 export const {
   setWorkSpace,
+  updateJobImage,
   setVisual,
   setStepper,
   setProcessingState,

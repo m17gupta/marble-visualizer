@@ -22,12 +22,12 @@ const stylesByTab: Record<string, { src: string; label: string }[]> = {
   ]
 };
 
-const renovationLevels = ['Tweak', 'Enhance', 'Renovate', 'Transform'];
+// const renovationLevels = ['Tweak', 'Enhance', 'Renovate', 'Transform'];
 
 const StyleAndRenovationPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Blacks');
   const [showAll, setShowAll] = useState(false);
-  const [level, setLevel] = useState(2); // Renovate
+  // const [level, setLevel] = useState(2); // Renovate
 
   const allStyles = activeTab === 'All'
     ? Object.values(stylesByTab).flat()

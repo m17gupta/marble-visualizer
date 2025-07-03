@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Clock, Home, ArrowLeft } from 'lucide-react';
 import { Button } from '../../ui/button';
 
 import ViewUploader from './ViewUploader';
-import { setIsContinue, setIsUploading, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import UploadingProgress from './UploadingProgress';
+import { setIsContinue, setIsUploading, setVisual, setWorkSpace, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
@@ -16,7 +17,7 @@ import { createProject } from '@/redux/slices/projectSlice';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { toast } from 'sonner';
 
-import { DirectS3UploadService } from '@/services/uploadImageService/directS3UploadService';
+import { DirectS3UploadService, UploadProgress } from '@/services/uploadImageService/directS3UploadService';
 import { CreateJob, CreateJobParams } from '@/utils/CreateJob';
 
 
@@ -25,10 +26,13 @@ const VisualToolHome = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
   const [typeView, setTypeView] = React.useState<string>("");
+  const [uploadProgress, setUploadProgress] = React.useState<number>(0);
+  const [isCreatingProject, setIsCreatingProject] = React.useState<boolean>(false);
+  const [isCreatingJob, setIsCreatingJob] = React.useState<boolean>(false);
   const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
-  const [createdProjectId, setCreatedProjectId] = useState<number | null>(null);
+  const createdProjectId = useRef<number | null>(null);
 
   // Upload a file for a given view
   const handleFileUpload = (file: File, view: ViewType) => {
@@ -46,12 +50,13 @@ const VisualToolHome = () => {
       // create project firstly
       dispatch(setIsContinue(true));
       handleCreateProject();
-      console.log('Creating project with ID:', createdProjectId);
+
     }
   };
 
   // create project firstly
   const handleCreateProject = async () => {
+    setIsCreatingProject(true);
     const projectData: ProjectModel = {
       name: "New Project",
       description: "This is a demo project",
@@ -64,17 +69,25 @@ const VisualToolHome = () => {
 
     try {
       const result = await dispatch(createProject(projectData)).unwrap();
-      setCreatedProjectId(result.id || null);
-      toast.success('Project created successfully!');
-      handleUpload();
+      if (result.id) {
+      
+        createdProjectId.current = result.id;
+        toast.success('Project created successfully!');
+        setIsCreatingProject(false);
+        handleUpload();
+      }
+
     } catch (error) {
       console.error('Project creation failed:', error);
       toast.error('Failed to create project');
+      setIsCreatingProject(false);
     }
   }
 
   const handleGoBack = () => {
-    navigate(-1);
+     dispatch(setWorkSpace(true))
+     dispatch(setVisual(false));
+    navigate("/workspace");
   };
 
   // Define view types and their display names
@@ -100,33 +113,43 @@ const VisualToolHome = () => {
       const result = await DirectS3UploadService.uploadFile(
         uploadedFile,
         profile.id,
-        (progress) => {
-          console.log('Upload progress:', progress);
-          // Progress tracking if needed in the future
+        (progress: UploadProgress) => {
+         
+          // Calculate percentage from the upload progress
+          setUploadProgress(progress.percentage || 0);
         }
       );
 
-      console.log('Upload result:', result.fileUrl);
+     
 
       if (result.success && result.fileUrl && result.key) {
         console.log('File uploaded successfully:', result.fileUrl);
 
         // create job with uploaded file
         const jobData: CreateJobParams = {
-              jobUrl: result.fileUrl,
-              projectId: createdProjectId,
-              jobType: "exterior",
-              dispatch: dispatch,
-            };
-             CreateJob(jobData, {
-                    resetForm: () =>{
-                      console.log('Form reset');
-                    },
-                    clearProjectId: () => setCreatedProjectId(null),
-                    clearImages: () => {  
-                    setUploadedFile(null);
-                    }
-                  });
+          jobUrl: result.fileUrl,
+          projectId: createdProjectId.current,
+          jobType: "living room",
+          dispatch: dispatch,
+        };
+        // console.log('Creating job with data:', jobData);
+        setIsCreatingJob(true);
+        CreateJob(jobData, {
+          resetForm: () => {
+            console.log('Form reset');
+            setIsCreatingJob(false);
+            // Navigate to the project page or workspace after job creation
+            navigate(`/workspace/project/${createdProjectId.current}`);
+          },
+          clearProjectId: () => {
+            createdProjectId.current = null;
+            setIsCreatingJob(false);
+          },
+          clearImages: () => {
+            setUploadedFile(null);
+            setIsCreatingJob(false);
+          }
+        });
         // Store URL for future use if needed
       } else {
         toast.error(result.error || 'Upload failed');
@@ -134,6 +157,8 @@ const VisualToolHome = () => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
       toast.error(errorMessage);
+      setIsCreatingProject(false);
+      setIsCreatingJob(false);
     } finally {
       dispatch(setIsUploading(false));
     }
@@ -141,6 +166,13 @@ const VisualToolHome = () => {
   return (
 
     <>
+      {/* Upload Progress Overlay */}
+      <UploadingProgress
+        fileName={uploadedFile?.name || null}
+        progress={uploadProgress}
+        isCreatingProject={isCreatingProject}
+        isCreatingJob={isCreatingJob}
+      />
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className=" border-b border-gray-200 py-6">
@@ -156,7 +188,7 @@ const VisualToolHome = () => {
                 <span>Back</span>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">Home View</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">Work Space View</h1>
                 <p className="text-lg text-gray-600 mb-1">
                   Select the initial view you want to work on
                 </p>
