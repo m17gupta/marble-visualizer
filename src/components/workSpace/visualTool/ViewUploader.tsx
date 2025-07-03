@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, X, Check } from 'lucide-react';
+import { Upload, Check } from 'lucide-react';
 
 interface ViewUploaderProps {
   viewType: string;
@@ -26,7 +26,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
       'Front View': 'https://dzinly.in/img/view-front.png',
       'Rear View': 'https://dzinly.in/img/view-rear.png',
       'Left View': 'https://dzinly.in/img/view-left.png',
-      'Right View': 'https://dzinly.in/img/view-rigth.png',
+      'Right View': 'https://dzinly.in/img/view-right.png',
     };
     return viewMap[view] || 'https://dzinly.in/img/view-front.png';
   };
@@ -85,12 +85,12 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
 
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${disabled
-            ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
-            : dragActive
-              ? 'border-blue-500 bg-blue-50'
-              : uploadedFile
-                ? 'border-green-500 bg-green-50'
-                : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
+          ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
+          : dragActive
+            ? 'border-blue-500 bg-blue-50'
+            : uploadedFile
+              ? 'border-green-500 bg-green-50'
+              : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
           }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -132,24 +132,20 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
             <div className="w-8 h-8 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-2">
               <Check className="h-4 w-4 text-green-600" />
             </div>
-            {/* <p className="text-xs font-medium truncate px-2 bg-black bg-opacity-50 rounded px-2 py-1">
-              {uploadedFile.name}
+            
+            <p className="text-xs font-medium text-white bg-black bg-opacity-50 rounded px-2 py-1">
+              Image Selected
             </p>
-            <p className="text-xs bg-black bg-opacity-50 rounded px-2 py-1 mt-1">
-              {(uploadedFile.size / 1024 / 1024).toFixed(1)} MB
-            </p> */}
-            {/* Remove button */}
 
-
-<button
-  onClick={(e) => {
-    e.stopPropagation();
-    onFileRemove();
-  }}
-  className="absolute top-2 right-2 w-10 h-10 rounded-full bg-white/80 hover:bg-gray-50 text-black hover:text-black flex items-center justify-center shadow-md transition-all"
->
-<span>X</span>
-</button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onFileRemove();
+              }}
+              className="absolute top-2 right-2 w-10 h-10 rounded-full bg-white/80 hover:bg-gray-50 text-black hover:text-black flex items-center justify-center shadow-md transition-all"
+            >
+              <span>X</span>
+            </button>
 
 
 
@@ -161,7 +157,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
               <Upload className="h-4 w-4 text-gray-600" />
             </div>
             <p className="text-xs font-medium text-gray-700 bg-white bg-opacity-80 rounded px-2 py-1">
-              {disabled ? 'Upload previous views first' : 'Select'}
+              {disabled ? 'Only one image allowed' : 'Select'}
             </p>
             <p className="text-xs text-gray-500 bg-white bg-opacity-80 rounded px-2 py-1 mt-1">
               {disabled ? '' : 'JPG, PNG'}

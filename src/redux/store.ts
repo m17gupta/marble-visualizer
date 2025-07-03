@@ -7,6 +7,7 @@ import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
 import materialsSlice from './slices/materialSlices/materialsSlice';
 import materialSegmentSlice from './slices/materialSlices/materialSegmentSlice';
+import genAiSlice from './slices/genAiSlice'; // New GenAI slice
 
 import jobSlice from './slices/jobSlice'; // New job slice based on JobModel
 import activityLogsSlice from './slices/activityLogsSlice';
@@ -28,6 +29,7 @@ export const store = configureStore({
     segments: segmentsSlice,
     materials: materialsSlice,
     materialSegments: materialSegmentSlice,
+    genAi: genAiSlice, // New GenAI slice
 
     jobs: jobSlice, // New job slice based on JobModel
     activityLogs: activityLogsSlice,

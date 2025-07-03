@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
   BookOpen, 
-  CreditCard, 
+  // CreditCard, 
   FolderOpen, 
   Layout, 
   Package, 
@@ -39,14 +39,14 @@ const sidebarSections: {
   title: string;
   items: SidebarItem[];
 }[] = [
-  {
-    title: 'ACCOUNT',
-    items: [
-      { id: 'profile', label: 'Profile', icon: User, href: '/app/profile' },
-      { id: 'settings', label: 'Settings', icon: Settings, href: '/app/settings' },
-      { id: 'billing', label: 'Billing', icon: CreditCard, href: '/app/billing' },
-    ],
-  },
+  // {
+  //   title: 'ACCOUNT',
+  //   items: [
+  //     { id: 'profile', label: 'Profile', icon: User, href: '/app/profile' },
+  //     { id: 'settings', label: 'Settings', icon: Settings, href: '/app/settings' },
+  //     { id: 'billing', label: 'Billing', icon: CreditCard, href: '/app/billing' },
+  //   ],
+  // },
   {
     title: 'ORGANIZATIONS',
     items: [

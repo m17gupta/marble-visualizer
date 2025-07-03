@@ -402,10 +402,15 @@ export class AuthAPI {
     session_id?: string;
   }): Promise<UserProfile> {
  
+    // Generate a UUID if user_id is empty or null
+    if (!profileData.user_id || profileData.user_id === "") {
+      profileData.user_id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+      console.log("Generated new user_id:", profileData.user_id);
+    }
   
     // For profiles table, we need to map the fields correctly
     const insertData = {
-      user_id: profileData.user_id || '',
+      user_id: profileData.user_id||"",
       role: profileData.role || '',
       full_name: profileData.full_name || '',
       profile_image: '',
@@ -427,16 +432,7 @@ export class AuthAPI {
     // If user_profiles table doesn't exist, use profiles table
     if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
       console.log("user_profiles table doesn't exist, using profiles table");
-      
-      // Get user email from auth
-      // const { data: authUser } = await supabase.auth.getUser();
-      // insertData.email = authUser?.user?.email || '';
-      
-      // response = await supabase
-      //   .from("profiles")
-      //   .insert(insertData)
-      //   .select()
-      //   .single();
+    
     }
 
     if (response.error) {

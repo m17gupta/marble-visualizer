@@ -13,11 +13,11 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from 'sonner';
-import { Plus, Loader2, Upload, X } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { UploadImage } from '@/components/uploadImageS3';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
-import { JobModel } from '@/models/jobModel/JobModel';
-import { createJob } from '@/redux/slices/jobSlice';
+
+import { CreateJob, CreateJobParams } from '@/utils/CreateJob';
 
 // Form validation schema
 const createProjectSchema = z.object({
@@ -109,18 +109,15 @@ export function CreateProjectDialog({ open,user_id, onOpenChange, onJobCreated }
   //   form.setValue('imageFile', file);
   // };
 
-  const removeImage = () => {
-    setUploadedImage(null);
-    setImagePreview(null);
-    form.setValue('imageFile', null);
-  };
+  // const removeImage = () => {
+  //   setUploadedImage(null);
+  //   setImagePreview(null);
+  //   form.setValue('imageFile', null);
+  // };
 
   const onCreateProject = async (values: CreateProjectFormValues) => {
    
-  //  if(!uploadedImage) {
-  //     toast.error('Please upload an image file');
-  //     return;
-  //   }
+
   if( !values.name || values.name.trim() === '') {
       toast.error('Project name is required');
       return;
@@ -174,36 +171,51 @@ export function CreateProjectDialog({ open,user_id, onOpenChange, onJobCreated }
         toast.error('Job creation failed. Please try again.');
         return;
       }
-
-      try{
-       const jobData:JobModel = {
-        project_id: createdProjectId,
+      // Create job data object
+      const jobData: CreateJobParams = {
+        jobUrl: jobUrl,
+        projectId: createdProjectId,
         jobType: form.getValues('jobType'),
-        full_image: jobUrl,
-        thumbnail:jobUrl,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-       }
+        dispatch: dispatch,
+      };
+  // create job
+      CreateJob(jobData, {
+        resetForm: () => form.reset(),
+        clearProjectId: () => setCreatedProjectId(null),
+        clearImages: () => {  
+          setImagePreview(null);
+          setUploadedImage(null);
+        }
+      });
+      // try{
+      //  const jobData:JobModel = {
+      //   project_id: createdProjectId,
+      //   jobType: form.getValues('jobType'),
+      //   full_image: jobUrl,
+      //   thumbnail:jobUrl,
+      //   created_at: new Date().toISOString(),
+      //   updated_at: new Date().toISOString(),
+      //  }
      
-       const jobResponse = await dispatch(createJob(jobData));
-       if (createJob.pending.match(jobResponse)) {
-         toast.loading('Creating job...');
-         return;
-       }
-       if (createJob.fulfilled.match(jobResponse)) {
-         toast.success('Job created successfully!');
-           form.reset();
-           setCreatedProjectId(null);
-           setImagePreview(null);
-           setUploadedImage(null);
-         onJobCreated?.();
+      //  const jobResponse = await dispatch(createJob(jobData));
+      //  if (createJob.pending.match(jobResponse)) {
+      //    toast.loading('Creating job...');
+      //    return;
+      //  }
+      //  if (createJob.fulfilled.match(jobResponse)) {
+      //    toast.success('Job created successfully!');
+      //      form.reset();
+      //      setCreatedProjectId(null);
+      //      setImagePreview(null);
+      //      setUploadedImage(null);
+      //    onJobCreated?.();
 
-       }
+      //  }
 
-      }catch(error) {
-        console.error('Error creating job:', error);
-        toast.error('Job creation failed. Please try again.');
-      }
+      // }catch(error) {
+      //   console.error('Error creating job:', error);
+      //   toast.error('Job creation failed. Please try again.');
+      // }
 
   }
   return (

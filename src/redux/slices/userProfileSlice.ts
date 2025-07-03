@@ -257,6 +257,22 @@ const userProfileSlice = createSlice({
         state.isUpdating = false;
         state.updateError = action.payload as string;
       });
+
+      //fetch usser profile by session ID
+      builder
+      .addCase(getUserProfileBySessionId.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getUserProfileBySessionId.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.profile = action.payload as UserProfile || {};
+        state.error = null;
+      })
+      .addCase(getUserProfileBySessionId.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
@@ -273,5 +289,7 @@ export const selectProfileLoading = (state: { userProfile: UserProfileState }) =
 export const selectProfileError = (state: { userProfile: UserProfileState }) => state.userProfile.error;
 export const selectProfileUpdating = (state: { userProfile: UserProfileState }) => state.userProfile.isUpdating;
 export const selectProfileUpdateError = (state: { userProfile: UserProfileState }) => state.userProfile.updateError;
+export const getUser_id = (state: { userProfile: UserProfileState }) => state.userProfile.profile?.user_id;
 
+ 
 export default userProfileSlice.reducer;

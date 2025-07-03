@@ -8,10 +8,12 @@ interface WorkspaceState {
   isWorkSpace: boolean;
   isVisual: boolean;
   isStepper: boolean;
-  currentStep: number;
-  uploadedFile: File | null; // Keep for backward compatibility
-  // Map of each view type to its uploaded file
-  viewFiles: { [key in ViewType]: File | null };
+  currentView: {
+    view: ViewType; // Current view type
+    file: File | null; // File associated with the current view
+  }
+  isContinue: boolean;
+  isUploading: boolean;
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
 }
@@ -21,16 +23,16 @@ const initialState: WorkspaceState = {
   isWorkSpace: true,
   isVisual: false,
   isStepper: false,
-  currentStep: 0,
-  uploadedFile: null,
-  viewFiles: {
-    front: null,
-    rear: null,
-    left: null,
-    right: null,
+
+  currentView: {
+    view: 'front', // Default to front view
+    file: null,
   },
+
+  isContinue: false,
   processingState: 'idle',
   error: null,
+  isUploading: false,
 };
 
 // Create the slice
@@ -47,59 +49,24 @@ const workspaceSlice = createSlice({
     setVisual: (state, action: PayloadAction<boolean>) => {
       state.isVisual = action.payload;
     },
-    
+
+    addCurrentView: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
+      const { view, file } = action.payload;
+      state.currentView = { view, file };
+    },
     // Toggle stepper mode
     setStepper: (state, action: PayloadAction<boolean>) => {
       state.isStepper = action.payload;
     },
-    
-    // Set current step in stepper
-    setCurrentStep: (state, action: PayloadAction<number>) => {
-      state.currentStep = action.payload;
-    },
-    
-    // Go to next step
-    nextStep: (state) => {
-      state.currentStep += 1;
-    },
-    
-    // Go to previous step
-    previousStep: (state) => {
-      if (state.currentStep > 0) {
-        state.currentStep -= 1;
-      }
-    },
-    
-    // Reset to first step
-    resetSteps: (state) => {
-      state.currentStep = 0;
-    },
-    
-    // Set uploaded file
-    setUploadedFile: (state, action: PayloadAction<File | null>) => {
-      state.uploadedFile = action.payload;
+    setIsContinue: (state, action: PayloadAction<boolean>) => {
+      state.isContinue = action.payload;
     },
 
-    // Set view file for specific view
-    setViewFile: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
-      state.viewFiles[action.payload.view] = action.payload.file;
+    // Set uploading state
+    setIsUploading: (state, action: PayloadAction<boolean>) => {
+      state.isUploading = action.payload;
     },
 
-    // Remove view file for specific view
-    removeViewFile: (state, action: PayloadAction<ViewType>) => {
-      state.viewFiles[action.payload] = null;
-    },
-
-    // Clear all view files
-    clearAllViewFiles: (state) => {
-      state.viewFiles = {
-        front: null,
-        rear: null,
-        left: null,
-        right: null,
-      };
-    },
-    
     // Set processing state
     setProcessingState: (state, action: PayloadAction<WorkspaceState['processingState']>) => {
       state.processingState = action.payload;
@@ -120,7 +87,7 @@ const workspaceSlice = createSlice({
       state.isWorkSpace = true;
       state.isVisual = false;
       state.isStepper = false;
-      state.currentStep = 0;
+    
       state.error = null;
     },
     
@@ -136,7 +103,7 @@ const workspaceSlice = createSlice({
       state.isStepper = true;
       state.isWorkSpace = false;
       state.isVisual = false;
-      state.currentStep = 0;
+     
     },
     
     // Reset all workspace state
@@ -144,14 +111,7 @@ const workspaceSlice = createSlice({
       state.isWorkSpace = false;
       state.isVisual = false;
       state.isStepper = false;
-      state.currentStep = 0;
-      state.uploadedFile = null;
-      state.viewFiles = {
-        front: null,
-        rear: null,
-        left: null,
-        right: null,
-      };
+    
       state.processingState = 'idle';
       state.error = null;
     },
@@ -170,14 +130,6 @@ export const {
   setWorkSpace,
   setVisual,
   setStepper,
-  setCurrentStep,
-  nextStep,
-  previousStep,
-  resetSteps,
-  setUploadedFile,
-  setViewFile,
-  removeViewFile,
-  clearAllViewFiles,
   setProcessingState,
   setError,
   clearError,
@@ -186,6 +138,9 @@ export const {
   enterStepperMode,
   resetWorkspace,
   completeWorkflow,
+  addCurrentView,
+  setIsContinue,
+  setIsUploading,
 } = workspaceSlice.actions;
 
 // Export reducer
@@ -196,13 +151,6 @@ export const selectWorkspace = (state: { workspace: WorkspaceState }) => state.w
 export const selectIsWorkSpace = (state: { workspace: WorkspaceState }) => state.workspace.isWorkSpace;
 export const selectIsVisual = (state: { workspace: WorkspaceState }) => state.workspace.isVisual;
 export const selectIsStepper = (state: { workspace: WorkspaceState }) => state.workspace.isStepper;
-export const selectCurrentStep = (state: { workspace: WorkspaceState }) => state.workspace.currentStep;
-export const selectUploadedFile = (state: { workspace: WorkspaceState }) => state.workspace.uploadedFile;
+
 export const selectProcessingState = (state: { workspace: WorkspaceState }) => state.workspace.processingState;
 export const selectError = (state: { workspace: WorkspaceState }) => state.workspace.error;
-export const selectViewFiles = (state: { workspace: WorkspaceState }) => state.workspace.viewFiles;
-
-export const selectHasAnyViewFile = (state: { workspace: WorkspaceState }) => 
-  Object.values(state.workspace.viewFiles).some(file => file !== null);
-export const selectViewFileCount = (state: { workspace: WorkspaceState }) => 
-  Object.values(state.workspace.viewFiles).filter(file => file !== null).length;
