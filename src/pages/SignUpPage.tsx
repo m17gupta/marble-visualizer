@@ -44,6 +44,7 @@ import {
   Phone,
 
 } from "lucide-react";
+import { setProfile } from "@/redux/slices/userProfileSlice";
 
 // Form validation schema
 const signUpSchema = z
@@ -152,6 +153,11 @@ export function SignUpPage() {
     const result = await dispatch(signUpUser(signUpData));
 
     if (signUpUser.fulfilled.match(result)) {
+      if (result.payload.profile) {
+        // Handle error from signUpUser
+        dispatch(setProfile(result.payload.profile));
+      }
+      
       navigate("/projects", { replace: true });
     }
   };

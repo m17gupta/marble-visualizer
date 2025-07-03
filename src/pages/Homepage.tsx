@@ -7,6 +7,7 @@ import TestimonialsSection from '@/components/homepage/TestimonialsSection';
 import PricingSection from '@/components/homepage/PricingSection';
 import CTASection from '@/components/homepage/CTASection';
 import Footer from '@/components/homepage/Footer';
+import UserSession from '@/components/session/UserSession';
 
 const Homepage = () => {
   return (
@@ -19,6 +20,8 @@ const Homepage = () => {
       <PricingSection />
       <CTASection />
       <Footer />
+
+      <UserSession />
     </div>
   );
 };

@@ -8,16 +8,18 @@ export interface User {
   last_login?: string;
   created_at: string;
   modified_at: string;
+   // UUID reference to session
 
 }
 
 export interface UserProfile {
-  id: number;
+  id?: number;
   user_id: string; // UUID reference to user
   full_name: string;
   role: string;
   profile_image?: string; // URL to profile image
   subscription_id?: string; // UUID reference to subscription
+  session_id?: string;
   status: boolean
   created_at?: string;
   updated_at?: string;

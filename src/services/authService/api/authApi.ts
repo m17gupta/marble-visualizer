@@ -113,8 +113,7 @@ export class AuthAPI {
       // First create the Supabase auth user
       const { data, error } = await supabase.auth.signUp(finalUser);
                
-      console.log("user Sign up authh",data, error);
-
+    
       if (error) {
         throw new AuthError({
           message: error.message,
@@ -145,7 +144,7 @@ export class AuthAPI {
       const userAuth: User = {
         id: data.user.id,
         email: data.user.email || '',
-        profile: profile.id,
+        profile: profile.id?? 0, // Use the created profile ID
         is_active: true,
         status: 'active',
         created_at: data.user.created_at || new Date().toISOString(),
@@ -392,70 +391,36 @@ export class AuthAPI {
     }
   }
 
-  /**
-   * Create user record in users table
-   */
-  // private static async createUser(
-  //   userData: CreateAuthUserRequest
-  // ): Promise<User> {
-  //   const { data, error } = await supabase
-  //     .from("users")
-  //     .insert({
-  //       id: userData.id,
-  //       email: userData.email,
-  //       role: userData.role,
-  //       profile: userData.profile,
-  //       is_active: userData.is_active,
-  //       status: userData.status,
-  //       version: 1,
-  //       created_at: new Date().toISOString(),
-  //       modified_at: new Date().toISOString(),
-  //     })
-  //     .select()
-  //     .single();
-
-  //   if (error) {
-  //     throw new AuthError({
-  //       message: `Failed to create user: ${error.message}`,
-  //       status: 400,
-  //       code: "USER_CREATE_ERROR",
-  //     });
-  //   }
-
-  //   return data;
-  // }
-
+  
   /**
    * Create user profile in profiles table
    */
-  private static async createUserProfile(profileData: {
+   static async createUserProfile(profileData: {
     user_id: string;
     role: string;
     full_name: string;
+    session_id?: string;
   }): Promise<UserProfile> {
  
-    // Validate role before insertion
-    const validatedRole = this.validateUserRole(profileData.role);
-   
+  
     // For profiles table, we need to map the fields correctly
     const insertData = {
-      id: profileData.user_id, // profiles table uses 'id' as the user reference
-      email: '', // This should be filled from auth data
-      full_name: profileData.full_name,
-      role: validatedRole,
+      user_id: profileData.user_id || '',
+      role: profileData.role || '',
+      full_name: profileData.full_name || '',
+      profile_image: '',
+      status: true,
+      session_id: profileData.session_id || '',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     console.log("createUserProfile - Insert data:", insertData);
 
     // Try user_profiles first, then fallback to profiles
-    let response = await supabase
+    const response = await supabase
       .from("user_profiles")
-      .insert({
-        user_id: profileData.user_id,
-        role: validatedRole,
-        full_name: profileData.full_name,
-        status: true,
-      })
+      .insert(insertData)
       .select()
       .single();
 
@@ -464,14 +429,14 @@ export class AuthAPI {
       console.log("user_profiles table doesn't exist, using profiles table");
       
       // Get user email from auth
-      const { data: authUser } = await supabase.auth.getUser();
-      insertData.email = authUser?.user?.email || '';
+      // const { data: authUser } = await supabase.auth.getUser();
+      // insertData.email = authUser?.user?.email || '';
       
-      response = await supabase
-        .from("profiles")
-        .insert(insertData)
-        .select()
-        .single();
+      // response = await supabase
+      //   .from("profiles")
+      //   .insert(insertData)
+      //   .select()
+      //   .single();
     }
 
     if (response.error) {
@@ -496,11 +461,12 @@ export class AuthAPI {
     if (!profileResult.user_id) {
       // If using profiles table, map the fields
       return {
-        id: 0,
-        user_id: profileResult.id,
-        full_name: profileResult.full_name,
-        role: profileResult.role,
-        profile_image: profileResult.avatar_url,
+        id: profileResult.id,
+        user_id: profileResult.user_id || '',
+        full_name: profileResult.full_name || '',
+        role: profileResult.role || '',
+        profile_image: profileResult.avatar_url || '',
+        session_id: profileResult.session_id || '',
         status: true,
         created_at: profileResult.created_at,
         updated_at: profileResult.updated_at,
@@ -634,6 +600,39 @@ export class AuthAPI {
         message: "Failed to update user profile",
         status: 500,
         code: "PROFILE_UPDATE_FAILED",
+      });
+    }
+  }
+
+  /**
+   * Get user profile based on user session ID
+   * Get user profile based on user session ID
+   */
+  static async getUserProfileBySessionId(sessionId: string): Promise<UserProfile | null> {
+    try {
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("*")
+        .eq("session_id", sessionId)
+        .single();
+
+      // if (error) {
+      //   throw new AuthError({
+      //     message: `Failed to get user profile: ${error.message}`,
+      //     status: 404,
+      //     code: "PROFILE_NOT_FOUND",
+      //   });
+      // }
+      // console.log("getUserProfileBySessionId - Found profile:", data);
+      return data;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to retrieve user profile",
+        status: 500,
+        code: "PROFILE_FETCH_ERROR",
       });
     }
   }

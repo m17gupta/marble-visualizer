@@ -31,6 +31,22 @@ export class AuthService {
   }
 
   /**
+   * Create user profile
+   */
+  static async createUserProfile(
+    profileData: UserProfile
+  ): Promise<UserProfile> {
+    return await AuthAPI.createUserProfile(profileData);
+  }
+
+  /**
+   * Get userProfile based on session Id
+   */
+  static async getUserProfileBySessionId(sessionId: string): Promise<UserProfile | null> {
+    return await AuthAPI.getUserProfileBySessionId(sessionId);
+  }
+
+  /**
    * Get current user session
    */
   static async getCurrentSession() {

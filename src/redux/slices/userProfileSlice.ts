@@ -18,6 +18,21 @@ const initialState: UserProfileState = {
   isUpdating: false,
   updateError: null,
 };
+//create a thunk to create user profile
+export const createUserProfile = createAsyncThunk(
+  "userProfile/createUserProfile",
+  async (profileData: UserProfile, { rejectWithValue }) => {
+    try {
+      const newProfile = await AuthService.createUserProfile(profileData);
+      return newProfile;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to create user profile");
+    }
+  }
+);
 
 // Async thunk to get user profile
 export const getUserProfile = createAsyncThunk(
@@ -31,8 +46,7 @@ export const getUserProfile = createAsyncThunk(
       }
       
       let profile = await AuthService.getUserProfileByUserId(userId);
-      console.log("Redux getUserProfile - Fetched user profile:", profile);
-      
+   
       // If no profile found, try to get user info and create a profile
       if (!profile) {
         console.log("Redux getUserProfile - No profile found, attempting to create one");
@@ -123,6 +137,27 @@ export const deleteProfileImage = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue("Failed to delete profile image");
+    }
+  }
+);
+
+// get userProfile based on sessionId
+export const getUserProfileBySessionId = createAsyncThunk(
+  "userProfile/getUserProfileBySessionId",
+  async (sessionId: string, { rejectWithValue }) => {
+    try {
+      const response = await AuthAPI.getUserProfileBySessionId(sessionId);
+      console.log("Fetched user profile by session ID: slice s", response);
+      if(response=== null ) {
+        return "No user profile found for session ID";
+      }
+      if (!response) {
+        throw new Error("Failed to fetch user profile");
+      }
+      return response as UserProfile;
+    } catch (error) {
+      console.error("Error fetching user profile by session ID:", error);
+      return rejectWithValue("Failed to fetch user profile");
     }
   }
 );

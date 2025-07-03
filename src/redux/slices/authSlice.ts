@@ -50,7 +50,7 @@ export const signUpUser = createAsyncThunk(
   async (credentials: SignUpCredentials, { rejectWithValue }) => {
     try {
       const response = await AuthService.signUp(credentials);
-      return response;
+        return response;
     } catch (error) {
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);

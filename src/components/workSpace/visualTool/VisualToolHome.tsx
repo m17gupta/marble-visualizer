@@ -6,7 +6,10 @@ import { useViewFiles } from '@/hooks/useWorkspace';
 import ViewUploader from './ViewUploader';
 import { ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { useNavigate } from 'react-router-dom';
-import Camera from '../../../../dist/assets/image/camera.png'; // Assuming you have a camera image in your assets
+// import Camera from '../../../../dist/assets/image/camera.png'; // Assuming you have a camera image in your assets
+
+import GestUserHome from '../gestUser/GestUserHome';
+
 const VisualToolHome = () => {
   const navigate = useNavigate();
   const { enterStepperMode } = useWorkspace();
@@ -43,7 +46,9 @@ const VisualToolHome = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-40">
+    
+    <>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className=" border-b border-gray-200 py-6">
         <div className="max-w-6xl mx-auto px-6">
@@ -107,7 +112,7 @@ const VisualToolHome = () => {
                   {/* <div className="w-10 h-8 bg-gray-800 rounded border-2 border-gray-600 relative"> */}
                     {/* <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div> */}
                   {/* </div> */}
-                  <img src={Camera} alt="Camera Icon" className="h-16 w-16 object-contain" />
+                  {/* <img src={Camera} alt="Camera Icon" className="h-16 w-16 object-contain" /> */}
                 </div>
                 <div>
                   <p className="text-sm text-gray-700">
@@ -197,6 +202,9 @@ const VisualToolHome = () => {
         </div>
       </div>
     </div>
+
+    <GestUserHome />
+    </>
   );
 };
 
