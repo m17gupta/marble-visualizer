@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { GenAiRequest, GenAiResponse } from '@/models/genAiModel/GenAiModel';
+import { GenAiChat, GenAiRequest, GenAiResponse } from '@/models/genAiModel/GenAiModel';
 import genAiService from '@/services/genAi/genAiService';
-// define the GenAiModel type
-import { GenAiModel } from '@/models/genAiModel/GenAiModel';
 
 interface GenAiState {
-  genAiImages: GenAiModel[];
+  genAiImages: GenAiChat[];
   requests: Record<string, GenAiRequest>;
   responses: Record<string, GenAiResponse>;
   loading: boolean;
@@ -36,12 +34,25 @@ export const submitGenAiRequest = createAsyncThunk(
   }
 );
 
-// Async thunk for checking the status of a GenAI request
-export const checkGenAiStatus = createAsyncThunk(
-  'genAi/checkStatus',
-  async (requestId: string, { rejectWithValue }) => {
+// async forfetch all get Ai chat from database
+export const fetchGenAiChat = createAsyncThunk(
+  'genAi/fetchChat',
+  async (jobId: number, { rejectWithValue }) => {
     try {
-      const response = await genAiService.checkStatus(requestId);
+      const response = await genAiService.getAllGenAiChats(jobId);
+      return response;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+// Async thunk for update the status of a GenAI request
+export const insertGenAiChatData = createAsyncThunk(
+  'genAi/updateStatus',
+  async (payload: GenAiChat, { rejectWithValue }) => {
+    try {
+      const response = await genAiService.insertGenAiChat(payload);
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -76,38 +87,54 @@ const genAiSlice = createSlice({
   },
   extraReducers: (builder) => {
     // Handle submitGenAiRequest
-    builder
-      .addCase(submitGenAiRequest.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(submitGenAiRequest.fulfilled, (state, action) => {
-        state.loading = false;
-        if(state.genAiImages.length === 0) {
-          state.genAiImages = [action.payload as GenAiModel];
-        } else {
-          state.genAiImages = [...state.genAiImages, action.payload as GenAiModel];
-        }
-      })
-      .addCase(submitGenAiRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string || 'Failed to submit GenAI request';
-      });
+    // builder
+    //   .addCase(submitGenAiRequest.pending, (state) => {
+    //     state.loading = true;
+    //     state.error = null;
+    //   })
+    //   .addCase(submitGenAiRequest.fulfilled, (state, action) => {
+    //     state.loading = false;
+    //     if(state.genAiImages.length === 0) {
+    //       state.genAiImages = [action.payload as GenAiChat];
+    //     } else {
+    //       state.genAiImages = [...state.genAiImages, action.payload as GenAiChat];
+    //     }
+    //   })
+    //   .addCase(submitGenAiRequest.rejected, (state, action) => {
+    //     state.loading = false;
+    //     state.error = action.payload as string || 'Failed to submit GenAI request';
+    //   });
 
     // Handle checkGenAiStatus
     builder
-      .addCase(checkGenAiStatus.pending, (state) => {
+      .addCase(fetchGenAiChat.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(checkGenAiStatus.fulfilled, (state, action: PayloadAction<GenAiResponse>) => {
-        const response = action.payload;
+      .addCase(fetchGenAiChat.fulfilled, (state, action) => {
         state.loading = false;
-        state.responses[response.id] = response;
+        const chats = action.payload as GenAiChat[];
+        state.genAiImages = chats;
       })
-      .addCase(checkGenAiStatus.rejected, (state, action) => {
+      .addCase(fetchGenAiChat.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || 'Failed to check GenAI status';
+        state.error = action.payload as string || 'Failed to fetch GenAI chats';
+      });
+
+      // Handle insertGenAiChatData
+    builder
+      .addCase(insertGenAiChatData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(insertGenAiChatData.fulfilled, (state, action) => {
+        state.loading = false;
+        const newChat = action.payload as GenAiChat;
+        state.genAiImages = [...state.genAiImages, newChat];
+      })
+      .addCase(insertGenAiChatData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Failed to insert GenAI chat';
       });
   },
 });

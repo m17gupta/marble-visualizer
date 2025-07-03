@@ -43,7 +43,7 @@ export class InspirationalImageApi {
         code,
         name,
         status = 1, // Default to active status
-        limit = 50,
+        limit = 180,
         offset = 0
       } = filters;
 

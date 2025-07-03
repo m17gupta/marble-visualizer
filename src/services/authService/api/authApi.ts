@@ -405,7 +405,8 @@ export class AuthAPI {
     // Generate a UUID if user_id is empty or null
     if (!profileData.user_id || profileData.user_id === "") {
       profileData.user_id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
-      console.log("Generated new user_id:", profileData.user_id);
+
+      console.log("Generated new user_id: updated ", response);
     }
   
     // For profiles table, we need to map the fields correctly
@@ -612,6 +613,7 @@ export class AuthAPI {
         .eq("session_id", sessionId)
         .single();
 
+        console.log("getUserProfileBySessionId - Data:", data);
       // if (error) {
       //   throw new AuthError({
       //     message: `Failed to get user profile: ${error.message}`,

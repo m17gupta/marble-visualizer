@@ -37,3 +37,47 @@ export interface GenAiState {
   error: string | null;
   currentRequestId: string | null;
 }
+
+export interface OpenAIMetadata {
+  usage: {
+    input_tokens: number;
+    input_tokens_details: {
+      image_tokens: number;
+      text_tokens: number;
+    };
+    output_tokens: number;
+    total_tokens: number;
+  };
+  background: string;
+  output_format: string;
+  quality: string;
+  size: string;
+}
+
+export interface GenAiChat {
+  id: string;
+  project_id: number
+  user_id: number;
+  job_id: number;
+  master_image_path: string;
+  palette_image_path: string;
+  reference_img: string;
+  user_input_text: string;
+  output_Image: string;
+  isCompleted: boolean;
+  isShow: boolean;
+  prompt: string;
+  task_id: string;
+  created: string;
+  updated: string;
+  openai_metadata?: OpenAIMetadata | string;
+}
+
+export interface GenAiChatHistory {
+  _id: string;
+  projectId: number;
+  userId: number;
+  chats: GenAiChat[];
+  created: string;
+  updated: string;
+}
