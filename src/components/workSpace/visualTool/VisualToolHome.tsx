@@ -8,8 +8,7 @@ import { setIsContinue, setIsUploading, setVisual, setWorkSpace, ViewType } from
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
-
-import useViewFiles from '@/hooks/useViewFiles';
+ import useViewFiles from '@/hooks/useViewFiles';
 
 import GestUserHome from '../gestUser/GestUserHome';
 import { RootState } from '@/redux/store';
@@ -19,6 +18,7 @@ import { toast } from 'sonner';
 
 import { DirectS3UploadService, UploadProgress } from '@/services/uploadImageService/directS3UploadService';
 import { CreateJob, CreateJobParams } from '@/utils/CreateJob';
+import { addHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 
 const VisualToolHome = () => {
@@ -29,7 +29,7 @@ const VisualToolHome = () => {
   const [uploadProgress, setUploadProgress] = React.useState<number>(0);
   const [isCreatingProject, setIsCreatingProject] = React.useState<boolean>(false);
   const [isCreatingJob, setIsCreatingJob] = React.useState<boolean>(false);
-  const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
+   const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
   const createdProjectId = useRef<number | null>(null);
@@ -123,8 +123,7 @@ const VisualToolHome = () => {
      
 
       if (result.success && result.fileUrl && result.key) {
-        console.log('File uploaded successfully:', result.fileUrl);
-
+         dispatch(addHouseImage(result.fileUrl));
         // create job with uploaded file
         const jobData: CreateJobParams = {
           jobUrl: result.fileUrl,

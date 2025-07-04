@@ -1,3 +1,4 @@
+import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
 import GuidancePanel from '@/components/workSpace/projectWorkSpace/GuidancePanel';
 import ImagePreview from '@/components/workSpace/projectWorkSpace/ImagePreview';
 import InspirationSidebar from '@/components/workSpace/projectWorkSpace/InspirationSidebar';
@@ -6,6 +7,8 @@ import React from 'react';
 const WorkspaceProjectPage: React.FC = () => {
 
   return (
+    <>
+   
     <div className="flex h-screen">
       {/* Left: Inspiration and uploads */}
       <div className="w-1/4 border-r">
@@ -28,6 +31,10 @@ const WorkspaceProjectPage: React.FC = () => {
         </div>
       </div>
     </div>
+
+    {/* get all inspiration images */}
+    <GetAllInspirational />
+     </>
   );
 };
 

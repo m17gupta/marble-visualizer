@@ -4,7 +4,7 @@ import genAiService from '@/services/genAi/genAiService';
 
 interface GenAiState {
   genAiImages: GenAiChat[];
-  requests:  GenAiRequest;
+  requests: GenAiRequest;
   responses: Record<string, GenAiResponse>;
   loading: boolean;
   error: string | null;
@@ -15,12 +15,12 @@ interface GenAiState {
 const initialState: GenAiState = {
   genAiImages: [],
   requests: {
-      houseUrl: [],
-      paletteUrl: [],
-      referenceImageUrl: [],
-      prompt: [],
-      imageQuality: 'high', // Assuming 'high' is a valid default value
-      annotationValue: {},
+    houseUrl: [],
+    paletteUrl: [],
+    referenceImageUrl: [],
+    prompt: [],
+    imageQuality: 'high', // Assuming 'high' is a valid default value
+    annotationValue: {},
   },
   responses: {},
   loading: false,
@@ -81,20 +81,35 @@ const genAiSlice = createSlice({
       state.error = null;
     },
     // Add a new request manuall
-     addInspirationImage:(state,action)=>{
-      state.requests.referenceImageUrl=[action.payload];
-      
-     },
-     addPaletteImage:(state,action)=>{
-      state.requests.paletteUrl=[action.payload];
-      },
-     addPrompt:(state,action)=>{
-      state.requests.prompt=[action.payload];
-      },
-      addHouseImage:(state,action)=>{
-      state.requests.houseUrl=[action.payload];
-      },
-     
+    addInspirationImage: (state, action) => {
+      // state.requests.referenceImageUrl=[action.payload];
+      const imageValue = action.payload instanceof File
+        ? URL.createObjectURL(action.payload) // Create a URL for the file
+        : action.payload; // Use the existing value if it's already a string
+
+      state.requests.referenceImageUrl = [imageValue];
+
+    },
+    resetInspirationImage: (state) => {
+      // Clear the reference image URL
+      state.requests.referenceImageUrl = [];
+    },
+
+    addPaletteImage: (state, action) => {
+      state.requests.paletteUrl = [action.payload];
+    },
+    addPrompt: (state, action) => {
+      if (!action.payload || action.payload.trim() === "") {
+        state.requests.prompt = []; // Do not add empty or whitespace-only prompts
+      } else {
+        state.requests.prompt = [action.payload];
+      }
+
+    },
+    addHouseImage: (state, action) => {
+      state.requests.houseUrl = [action.payload];
+    },
+
     // Update response manually
     updateResponse: (state, action: PayloadAction<GenAiResponse>) => {
       const response = action.payload;
@@ -137,7 +152,7 @@ const genAiSlice = createSlice({
         state.error = action.payload as string || 'Failed to fetch GenAI chats';
       });
 
-      // Handle insertGenAiChatData
+    // Handle insertGenAiChatData
     builder
       .addCase(insertGenAiChatData.pending, (state) => {
         state.loading = true;
@@ -157,15 +172,16 @@ const genAiSlice = createSlice({
 
 // Export actions
 export const {
-   clearCurrentRequest, 
-   clearError, 
-   updateResponse,
+  clearCurrentRequest,
+  clearError,
+  updateResponse,
   addHouseImage,
   addPaletteImage,
   addPrompt,
-  addInspirationImage
-  
-  } = genAiSlice.actions;
+  addInspirationImage,
+  resetInspirationImage
+
+} = genAiSlice.actions;
 
 // Export reducer
 export default genAiSlice.reducer;

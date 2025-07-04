@@ -1,8 +1,9 @@
 import { InspirationImageModel } from '@/models/inspirational/Inspirational';
 import { RootState } from '@/redux/store';
 import React, { useRef, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import SidebarObject from './SidebarObject';
+import { addInspirationImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 const tabs = [
   { id: 0, name: 'All' }
@@ -11,6 +12,8 @@ const tabs = [
 // const renovationLevels = ['Tweak', 'Enhance', 'Renovate', 'Transform'];
 
 const StyleAndRenovationPanel: React.FC = () => {
+
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState<number>(0);
   const [showAll, setShowAll] = useState(false);
   // const [level, setLevel] = useState(2); // Renovate
@@ -18,7 +21,7 @@ const StyleAndRenovationPanel: React.FC = () => {
 
   const { Inspirational_images } = useSelector((state: RootState) => state.inspirationalImages);
   
-  const stylesToShow = useRef<InspirationImageModel[]>([]);
+  const stylesToShow = useRef<InspirationImageModel[]>(Inspirational_images);
 
   const handleTabColor = (tabId: number) => {
     console.log('Tab ID:', tabId);
@@ -35,6 +38,11 @@ const StyleAndRenovationPanel: React.FC = () => {
     stylesToShow.current = Inspirational_images;
   }, [Inspirational_images]);
   
+
+  const handleInspirationImage = (image: string) => {
+    console.log('Selected Image:', image);
+  dispatch(addInspirationImage(image));
+  };
   return (
     <div className="max-w-md mx-auto p-1 space-y-6">
       {/* Tabs */}
@@ -80,7 +88,8 @@ const StyleAndRenovationPanel: React.FC = () => {
             stylesToShow.current
               .slice(0, showAll ? stylesToShow.current.length : 9)
               .map((style, i) => (
-                <div key={i} className="flex flex-col items-center">
+                <div key={i} className="flex flex-col items-center"
+                onClick={() => handleInspirationImage(style.image)}>
                   <img
                     src={style.image}
                     alt={style.name}
