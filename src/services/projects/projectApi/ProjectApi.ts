@@ -107,16 +107,13 @@ export class ProjectAPI {
   static async createProject(project: ProjectModel): Promise<ProjectApiResponse> {
     try {
       console.log("Creating project with data:", project);
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("projects")
         .insert(project)
         .select()   
         .single();
       console.log("data from supabase", data);
-      console.log("error from supabase", error);
-      if (error) {
-        throw error;
-      }
+    
       console.log("Project created successfully:", data);
       return {
         success: true,
