@@ -64,12 +64,14 @@ export interface GenAiChat {
   reference_img: string;
   user_input_text: string;
   output_Image: string;
+  output_urls?: string[];  // Array of output image URLs for multiple variants
   isCompleted: boolean;
   isShow: boolean;
   prompt: string;
   task_id: string;
   created: string;
   updated: string;
+  created_at?: string;  // Alternative date format
   openai_metadata?: OpenAIMetadata | string;
 }
 

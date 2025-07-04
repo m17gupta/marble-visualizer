@@ -17,7 +17,8 @@ interface WorkspaceState {
   isUploading: boolean;
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
-  isAddIspiration: boolean; // Flag to indicate if the user is adding inspiration
+  isAddIspiration: boolean; 
+  isGenerated:boolean
 }
 
 // Define the initial state
@@ -37,6 +38,7 @@ const initialState: WorkspaceState = {
   isUploading: false,
   
   isAddIspiration: false, // Initialize to false
+  isGenerated: false // Initialize to false
 
 };
 
@@ -134,6 +136,9 @@ const workspaceSlice = createSlice({
     setIsAddInspiration: (state, action: PayloadAction<boolean>) => {
       state.isAddIspiration = action.payload;
     }
+    , setIsGenerated: (state, action: PayloadAction<boolean>) => {
+      state.isGenerated = action.payload;
+    }
   },
 });
 
@@ -154,7 +159,8 @@ export const {
   addCurrentView,
   setIsContinue,
   setIsUploading,
-  setIsAddInspiration
+  setIsAddInspiration,
+  setIsGenerated
 } = workspaceSlice.actions;
 
 // Export reducer

@@ -6,15 +6,7 @@ import {
   getIsAddInspiration,
   setIsAddInspiration,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import ProjectHistory from "./ProjectHistory";
 import { HiOutlineSparkles } from "react-icons/hi";
@@ -25,12 +17,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { FcIdea } from "react-icons/fc";
+import { RootState } from "@/redux/store";
+import { addPrompt, resetInspirationImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import UserInputPopOver from "./userInputPopOver";
 const GuidancePanel: React.FC = () => {
   const dispatch = useDispatch();
 
+  const { requests } = useSelector((state: RootState) => state.genAi);
   const getIsAddInspirations = useSelector(getIsAddInspiration);
   const [isModel, setIsModel] = React.useState(false);
-
+  // Use separate state variables for each popover
+  const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
+  const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
+  
   // update the model open and closing
 
   useEffect(() => {
@@ -59,28 +58,76 @@ const GuidancePanel: React.FC = () => {
     // dispatch(saveInspiration(data));
   };
 
-  const [open, setOpen] = React.useState(false);
+
+
+  // add prompt
+  const handleAddPrompt = (value: string) => {
+    console.log("Prompt value:", value);
+    if (!value || value.trim() !== "") {
+      dispatch(addPrompt(value));
+    }
+  };
+
+  const handleDelete = (data: string) => {
+    if( data === "user-prompt") {
+    // Clear the prompt value
+    dispatch(addPrompt(""));
+    }
+    else if (data === "inspiration-image") {
+      // Clear the reference image URL
+      dispatch(resetInspirationImage());
+    }
+  };
+
+
+   
+  
   return (
     <>
 
-    <div className="bg-white border border-gray-50 p-4 rounded-md shadow-md mb-4">
+      <div className="bg-white border border-gray-50 p-4 rounded-md shadow-md mb-4">
 
-    </div>
+      </div>
       <div className="p-4 bg-white rounded-sm">
         <h2 className="text-lg font-semibold mb-2">AI Guidance</h2>
         <textarea
           className="w-full p-2 ps-0 pt-0 border-0 focus:outline-none focus:ring-0 rounded mb-1 resize-none"
           placeholder="Enter guidance..."
           rows={2}
+          value={requests.prompt}
+          onChange={(e) => {
+            handleAddPrompt((e.currentTarget as HTMLTextAreaElement).value);
+          }}
         />
 
         <div className="flex flex-wrap gap-2 mb-4">
-          {/* <span className="flex items-center gap-1 px-2 py-1 bg-[#f1f5f9] text-gray-800 rounded-md text-sm shadow-sm">
-   
-  
-  </span> */}
 
-          <Popover open={open} onOpenChange={setOpen}>
+          {/* Prompt Tag */}
+          {requests.prompt &&
+            requests.prompt.length > 0 &&
+            <UserInputPopOver
+              inputKey="user-prompt"
+              value={requests.prompt[0]}
+              open={isPromptPopoverOpen}
+              setOpen={setIsPromptPopoverOpen}
+              deleteData={handleDelete} // Clear prompt on delete
+            />
+          }
+
+          {/* inspiration Image Y  */}
+          {requests.referenceImageUrl && requests.referenceImageUrl.length > 0 && (
+
+            <UserInputPopOver
+              inputKey="inspiration-image"
+              value={requests.referenceImageUrl[0]}
+              open={isImagePopoverOpen}
+              setOpen={setIsImagePopoverOpen}
+              deleteData={handleDelete}
+            />
+
+          )}
+
+          {/* <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <div
                 onMouseEnter={() => setOpen(true)}
@@ -106,7 +153,7 @@ const GuidancePanel: React.FC = () => {
                 className="w-full   rounded-lg"
               />
             </PopoverContent>
-          </Popover>
+          </Popover> */}
         </div>
 
         <div className="flex justify-between items-between">

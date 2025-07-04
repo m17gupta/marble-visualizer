@@ -1,41 +1,57 @@
 import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
+import CompareGenAiHome from '@/components/workSpace/compareGenAiImages/CompareGenAiHome';
 import GuidancePanel from '@/components/workSpace/projectWorkSpace/GuidancePanel';
 import ImagePreview from '@/components/workSpace/projectWorkSpace/ImagePreview';
 import InspirationSidebar from '@/components/workSpace/projectWorkSpace/InspirationSidebar';
+import { RootState } from '@/redux/store';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 const WorkspaceProjectPage: React.FC = () => {
 
+  const { isGenerated } = useSelector((state: RootState) => state.workspace);
+
+  console.log("isGenerated", isGenerated);
   return (
     <>
-   
-    <div className="flex h-screen">
-      {/* Left: Inspiration and uploads */}
-      <div className="w-1/4 border-r">
-        <InspirationSidebar />
-      </div>
 
 
-      
-      {/* Middle: Main image preview and AI Guidance panel */}
-      <div className="w-3/4 p-4 flex flex-col bg-gray-100">
-
-
-        {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-        <ImagePreview  />
-
-
-        
-        <div className="mt-4 ">
-          <GuidancePanel />
+      <div className="flex h-screen">
+        {/* Left: Inspiration and uploads */}
+        <div className="w-1/4 border-r">
+          <InspirationSidebar />
         </div>
-      </div>
-    </div>
 
-    {/* get all inspiration images */}
-    <GetAllInspirational />
-     </>
+
+
+        {/* Middle: Main image preview and AI Guidance panel */}
+
+        {!isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-100">
+
+
+          {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
+          <ImagePreview />
+
+
+
+          <div className="mt-4 ">
+            <GuidancePanel />
+          </div>
+        </div>) : (
+          <CompareGenAiHome />
+        )}
+      </div>
+
+      {/* get all inspiration images */}
+      <div className="flex h-screen">
+        <GetAllInspirational />
+      </div>
+
+    </>
   );
 };
 
 export default WorkspaceProjectPage;
+
+
+//  
