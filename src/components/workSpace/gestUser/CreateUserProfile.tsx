@@ -3,7 +3,7 @@ import { fetchProjects } from '@/redux/slices/projectSlice'
 import { createUserProfile, getUserProfileBySessionId } from '@/redux/slices/userProfileSlice'
 import { AppDispatch, RootState } from '@/redux/store'
 import { generateSessionId } from '@/utils/GenerateSessionId'
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from '@/lib/utils'
 
@@ -11,9 +11,9 @@ const CreateUserProfile = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {isAuthenticated} = useSelector((state: RootState) => state.auth)
   const getSessionId = getCookie('session_id') || '';
-  const {isContinue} = useSelector((state: RootState) => state.workspace)
+
     
-  const handleCreateUserProfile = useCallback(async (sessionId:string) => {
+  const handleCreateUserProfile = async (sessionId:string) => {
     const userData:UserProfile={
       user_id: "",
       full_name: '',
@@ -29,10 +29,11 @@ const CreateUserProfile = () => {
     }catch(error) {
       console.error("Error creating user profile:", error);
     }   
-  }, [dispatch]);
-    
-  const getUserBaseOnSessionId = useCallback(async (sessionId:string) => {
+  }
+
+  const getUserBaseOnSessionId = async (sessionId:string) => {
     try {
+      console.log("Fetching user profile for session ID:", sessionId);
       const response= await dispatch(getUserProfileBySessionId(sessionId)).unwrap();
       if(!response) {
         console.error("No user profile found for session ID:", sessionId);
@@ -48,7 +49,7 @@ const CreateUserProfile = () => {
       console.error("Error fetching user by session ID:", error);
       return null;
     }
-  }, [dispatch, handleCreateUserProfile]);
+  }
     
   useEffect(() => {
     // Check if user is authenticated and session ID exists
@@ -62,7 +63,7 @@ const CreateUserProfile = () => {
       getUserBaseOnSessionId(getSessionId)
       console.log("User is not authenticated but session ID exists",getSessionId);
     }
-  }, [isAuthenticated, getSessionId, isContinue, getUserBaseOnSessionId, handleCreateUserProfile]);
+  }, [isAuthenticated, getSessionId]);
     // Render the user profile form
     return (
        null

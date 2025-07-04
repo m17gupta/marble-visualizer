@@ -611,18 +611,12 @@ export class AuthAPI {
         .from("user_profiles")
         .select("*")
         .eq("session_id", sessionId)
-        .single();
 
         console.log("getUserProfileBySessionId - Data:", data);
-      // if (error) {
-      //   throw new AuthError({
-      //     message: `Failed to get user profile: ${error.message}`,
-      //     status: 404,
-      //     code: "PROFILE_NOT_FOUND",
-      //   });
-      // }
-      // console.log("getUserProfileBySessionId - Found profile:", data);
-      return data;
+     if(!data || data.length === 0) {
+      return null;
+    }
+    return data[0] as UserProfile;
     } catch (error) {
       if (error instanceof AuthError) {
         throw error;

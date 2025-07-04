@@ -4,7 +4,7 @@ import genAiService from '@/services/genAi/genAiService';
 
 interface GenAiState {
   genAiImages: GenAiChat[];
-  requests: Record<string, GenAiRequest>;
+  requests:  GenAiRequest;
   responses: Record<string, GenAiResponse>;
   loading: boolean;
   error: string | null;
@@ -14,7 +14,14 @@ interface GenAiState {
 // Initial state
 const initialState: GenAiState = {
   genAiImages: [],
-  requests: {},
+  requests: {
+      houseUrl: [],
+      paletteUrl: [],
+      referenceImageUrl: [],
+      prompt: [],
+      imageQuality: 'high', // Assuming 'high' is a valid default value
+      annotationValue: {},
+  },
   responses: {},
   loading: false,
   error: null,
@@ -73,12 +80,21 @@ const genAiSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // Add a new request manually
-    addRequest: (state, action: PayloadAction<{ id: string; request: GenAiRequest }>) => {
-      const { id, request } = action.payload;
-      state.requests[id] = request;
-      state.currentRequestId = id;
-    },
+    // Add a new request manuall
+     addInspirationImage:(state,action)=>{
+      state.requests.referenceImageUrl=[action.payload];
+      
+     },
+     addPaletteImage:(state,action)=>{
+      state.requests.paletteUrl=[action.payload];
+      },
+     addPrompt:(state,action)=>{
+      state.requests.prompt=[action.payload];
+      },
+      addHouseImage:(state,action)=>{
+      state.requests.houseUrl=[action.payload];
+      },
+     
     // Update response manually
     updateResponse: (state, action: PayloadAction<GenAiResponse>) => {
       const response = action.payload;
@@ -140,7 +156,16 @@ const genAiSlice = createSlice({
 });
 
 // Export actions
-export const { clearCurrentRequest, clearError, addRequest, updateResponse } = genAiSlice.actions;
+export const {
+   clearCurrentRequest, 
+   clearError, 
+   updateResponse,
+  addHouseImage,
+  addPaletteImage,
+  addPrompt,
+  addInspirationImage
+  
+  } = genAiSlice.actions;
 
 // Export reducer
 export default genAiSlice.reducer;
