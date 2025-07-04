@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
 
 import { IoCheckmarkCircle } from "react-icons/io5";
@@ -15,19 +16,20 @@ const  genAiImages=[
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-xl font-semibold mb-4">Design Variations</h2>
+      <h2 className="text-md font-semibold mb-4">Design Variations</h2>
       
       {/* Generated images grid */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className="flex grid-cols-1 gap-6">
         {genAiImages.map((imageSet, index) => (
           <div key={imageSet || index} className="space-y-4">
           
-            <div className="relative group">
+            <div className="relative group rounded-md">
               <img 
                 src={imageSet} 
                 alt={`Generated Image ${index + 1}`} 
                 width={100}
                 height={100}
+                className='rounded-lg'
                 //className={`w-full h-64 object-cover rounded-lg cursor-pointer ${selectedImageId === `${imageSet.id}-${index}` ? 'border-2 border-blue-500' : ''}`}
                // onClick={() => handleImageSelect(imageSet, index)}
               />
@@ -68,18 +70,19 @@ const  genAiImages=[
       
       {/* Cancel and Save & Continue buttons */}
       <div className="mt-6 flex justify-between">
-        <button 
-          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+        <Button 
+          className="px-4 py-2 border border-gray-300 text-gray-700 bg-transparent rounded-lg hover:bg-gray-50"
         >
           Cancel
-        </button>
-        
-        <button 
-          className="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 disabled:bg-gray-300 disabled:text-gray-500"
-          disabled={!selectedImageId}
-        >
-          Save & Continue To Next Step
-        </button>
+        </Button>
+  
+
+          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:text-gray-500" 
+                // disabled={!selectedImageId}
+          >
+             Save & Continue To Next Step
+            </Button>
+
       </div>
     </div>
   );

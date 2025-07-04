@@ -16,7 +16,7 @@ const WorkspaceProjectPage: React.FC = () => {
     <>
 
 
-      <div className="flex h-screen">
+      <div className='flex'>
         {/* Left: Inspiration and uploads */}
         <div className="w-1/4 border-r">
           <InspirationSidebar />
@@ -26,7 +26,7 @@ const WorkspaceProjectPage: React.FC = () => {
 
         {/* Middle: Main image preview and AI Guidance panel */}
 
-        {!isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-100">
+        {isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50">
 
 
           {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
@@ -43,7 +43,7 @@ const WorkspaceProjectPage: React.FC = () => {
       </div>
 
       {/* get all inspiration images */}
-      <div className="flex h-screen">
+      <div className='aa'>
         <GetAllInspirational />
       </div>
 

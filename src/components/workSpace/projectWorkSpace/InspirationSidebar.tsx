@@ -3,7 +3,7 @@ import PreferredImageTab from './PreferredImageTab';
 
 
 const InspirationSidebar: React.FC = () => (
-  <div className="p-4 h-full overflow-auto">
+<div className="h-[calc(100vh-3px)] overflow-auto">
    
    
 

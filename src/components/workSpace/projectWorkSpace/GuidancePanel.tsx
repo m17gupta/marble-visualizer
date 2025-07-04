@@ -7,7 +7,6 @@ import {
   setIsAddInspiration,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
-
 import ProjectHistory from "./ProjectHistory";
 import { HiOutlineSparkles } from "react-icons/hi";
 import {
@@ -17,9 +16,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { FcIdea } from "react-icons/fc";
+
 import { RootState } from "@/redux/store";
-import { addPrompt, resetInspirationImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import UserInputPopOver from "./userInputPopOver";
+import {
+  addPrompt,
+  resetInspirationImage,
+} from "@/redux/slices/visualizerSlice/genAiSlice";
+import AiGuideance from "./AiGuideance";
+
 const GuidancePanel: React.FC = () => {
   const dispatch = useDispatch();
 
@@ -29,12 +34,11 @@ const GuidancePanel: React.FC = () => {
   // Use separate state variables for each popover
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
   const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
-  
+
   // update the model open and closing
 
   useEffect(() => {
     if (getIsAddInspirations) {
-
       setIsModel(getIsAddInspirations);
     } else {
       setIsModel(false);
@@ -43,7 +47,6 @@ const GuidancePanel: React.FC = () => {
   const handleAddInspirational = () => {
     dispatch(setIsAddInspiration(true));
   };
-
 
   const handleCloseModel = () => {
     dispatch(setIsAddInspiration(false));
@@ -58,8 +61,6 @@ const GuidancePanel: React.FC = () => {
     // dispatch(saveInspiration(data));
   };
 
-
-
   // add prompt
   const handleAddPrompt = (value: string) => {
     console.log("Prompt value:", value);
@@ -69,25 +70,21 @@ const GuidancePanel: React.FC = () => {
   };
 
   const handleDelete = (data: string) => {
-    if( data === "user-prompt") {
-    // Clear the prompt value
-    dispatch(addPrompt(""));
-    }
-    else if (data === "inspiration-image") {
+    if (data === "user-prompt") {
+      // Clear the prompt value
+      dispatch(addPrompt(""));
+    } else if (data === "inspiration-image") {
       // Clear the reference image URL
       dispatch(resetInspirationImage());
     }
   };
 
-
-   
-  
   return (
     <>
 
-      <div className="bg-white border border-gray-50 p-4 rounded-md shadow-md mb-4">
+       <AiGuideance/>
+  
 
-      </div>
       <div className="p-4 bg-white rounded-sm">
         <h2 className="text-lg font-semibold mb-2">AI Guidance</h2>
         <textarea
@@ -101,10 +98,8 @@ const GuidancePanel: React.FC = () => {
         />
 
         <div className="flex flex-wrap gap-2 mb-4">
-
           {/* Prompt Tag */}
-          {requests.prompt &&
-            requests.prompt.length > 0 &&
+          {requests.prompt && requests.prompt.length > 0 && (
             <UserInputPopOver
               inputKey="user-prompt"
               value={requests.prompt[0]}
@@ -112,48 +107,19 @@ const GuidancePanel: React.FC = () => {
               setOpen={setIsPromptPopoverOpen}
               deleteData={handleDelete} // Clear prompt on delete
             />
-          }
-
-          {/* inspiration Image Y  */}
-          {requests.referenceImageUrl && requests.referenceImageUrl.length > 0 && (
-
-            <UserInputPopOver
-              inputKey="inspiration-image"
-              value={requests.referenceImageUrl[0]}
-              open={isImagePopoverOpen}
-              setOpen={setIsImagePopoverOpen}
-              deleteData={handleDelete}
-            />
-
           )}
 
-          {/* <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <div
-                onMouseEnter={() => setOpen(true)}
-                onMouseLeave={() => setOpen(false)}>
-                <Button variant="outline" className="flex align-middle ">
-                  Spa{" "}
-                  <span className="ms-2 text-lg text-gray-500">&times;</span>
-                </Button>
-              </div>
-            </PopoverTrigger>
-
-            <PopoverContent
-              className="w-[240px] p-3 rounded-xl shadow-lg"
-              sideOffset={8}
-              onMouseEnter={() => setOpen(true)}
-              onMouseLeave={() => setOpen(false)}>
-              <h5 className="text-sm font-semibold mb-2">
-                Vintagebrick Alexandria Buff
-              </h5>
-              <img
-                src="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials/Vintagebrick_Alexandria_Buff_MTI5NjAy.jpg"
-                alt="seg-img"
-                className="w-full   rounded-lg"
+          {/* inspiration Image Y  */}
+          {requests.referenceImageUrl &&
+            requests.referenceImageUrl.length > 0 && (
+              <UserInputPopOver
+                inputKey="inspiration-image"
+                value={requests.referenceImageUrl[0]}
+                open={isImagePopoverOpen}
+                setOpen={setIsImagePopoverOpen}
+                deleteData={handleDelete}
               />
-            </PopoverContent>
-          </Popover> */}
+            )}
         </div>
 
         <div className="flex justify-between items-between">
@@ -188,17 +154,17 @@ const GuidancePanel: React.FC = () => {
             </button>
           </div>
           <div className="flex items-center gap-2">
+              
             <button className="btn bg-transparent rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 p-2">
               <FcIdea className="text-2xl" />
             </button>
+
             <button className="px-4 py-2 bg-blue-600 text-white rounded">
               Visualize
             </button>
           </div>
-
         </div>
       </div>
-
     </>
   );
 };

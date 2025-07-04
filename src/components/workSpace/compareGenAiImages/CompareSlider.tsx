@@ -110,30 +110,30 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                 <div className="flex items-center">
                     <button
                         onClick={onClose}
-                        className="text-white rounded-full p-1 hover:bg-black/20"
+                        className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
                     >
-                        <IoArrowBack size={24} />
+                        <IoArrowBack size={16} />
                     </button>
                 </div>
-                <div className="text-white font-medium">Side by Side</div>
+                {/* <div className="text-white font-medium">Side by Side 1</div> */}
                 <div className="flex gap-2">
                     <button
                         onClick={handleDownload}
-                        className="text-white rounded-full p-1 hover:bg-black/20"
+                        className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
                     >
-                        <FaDownload size={20} />
+                        <FaDownload size={16} />
                     </button>
                     <button
                         onClick={toggleFullscreen}
-                        className="text-white rounded-full p-1 hover:bg-black/20"
+                        className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
                     >
-                        {isFullscreen ? <FaCompress size={20} /> : <FaExpand size={20} />}
+                        {isFullscreen ? <FaCompress size={16} /> : <FaExpand size={16} />}
                     </button>
                     <button
                         onClick={onClose}
-                        className="text-white rounded-full p-1 hover:bg-black/20"
+                        className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
                     >
-                        <MdClose size={24} />
+                        <MdClose size={16} />
                     </button>
                 </div>
             </div>

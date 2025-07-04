@@ -39,11 +39,11 @@ const CompareGenAiHome: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full p-6 bg-gray-100">
       {/* View mode tabs */}
       {showCompareView && selectedGeneratedImage && (
-        <div className="flex justify-center mb-4">
-          <div className="inline-flex border border-gray-200 rounded-lg overflow-hidden">
+        <div className="flex justify-center mb-4 absolute top-8 left-96 right-0 z-40">
+          <div className="inline-flex gap-2 rounded-lg overflow-hidden">
             <button 
               className={`px-4 py-2 text-sm ${viewMode === 'side-by-side' ? 'bg-blue-50 text-blue-600 font-medium' : 'bg-white text-gray-700'}`}
               onClick={() => handleToggleViewMode('side-by-side')}
