@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarObject from './SidebarObject';
 import { addInspirationImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import ImageQuality from './ImageQuality';
 
 const tabs = [
   { id: 0, name: 'All' }
@@ -121,23 +122,11 @@ const StyleAndRenovationPanel: React.FC = () => {
 
       </div>
 
-      {/* Renovation Spectrum */}
+          {/* Renovation Spectrum */}
 
-      {/* Preserve Objects */}
-      <div className="bg-white border rounded-xl p-4 space-y-3">
-        <h3 className="font-semibold text-lg">3. Preserve Objects</h3>
-        <p className="text-sm text-gray-600">
-          If you want to preserve some parts of the original image, you can scan the objects and preserve the original image.
-        </p>
-        <button
-          className="w-full mt-3 py-2 border border-gray-300 rounded-xl text-sm text-blue-700 hover:bg-gray-50 transition"
-        >
-          Preserve Objects
-        </button>
-
-        <SidebarObject/>
-
-      </div>
+          <ImageQuality/>
+          <SidebarObject/>
+          
     </div>
   );
 };

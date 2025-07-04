@@ -7,7 +7,7 @@ const SidebarObject = () => {
   return (
     <>
       {/* Main Card */}
-      <div className="bg-white border rounded-xl p-4 space-y-3 w-80">
+      <div className="bg-white border rounded-xl p-4 space-y-3 w-100">
         <h3 className="font-semibold text-lg">3. Preserve Objects</h3>
         <p className="text-sm text-gray-600">
           If you want to preserve some parts of the original image, you can scan the objects and preserve the original image.
@@ -15,17 +15,18 @@ const SidebarObject = () => {
 
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full mt-3 py-2 border border-gray-300 rounded-xl text-sm text-white bg-black hover:bg-gray-800 transition"
+          className="w-full mt-3 py-2 border border-gray-300 rounded-xl text-sm text-blue-700 hover:bg-gray-50 transition"
         >
           Preserve Objects
         </button>
       </div>
 
-      {/* Offcanvas Panel */}
+      {/* Offcanvas Panel - LEFT aligned */}
       <div
-        className={`fixed inset-y-0 left-0 w-80 bg-white transform transition-transform duration-300 ease-in-out z-50 shadow-xl border-r ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed -top-6 h-full w-80 -mt-0 pt-0 bg-white shadow-xl border-r z-50 transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-[404px]' : '-translate-x-[100%]'
         }`}
+        style={{ left: 0 }}
       >
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center">
@@ -66,7 +67,7 @@ const SidebarObject = () => {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/30 z-40"
+          className="fixed inset-0 z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
