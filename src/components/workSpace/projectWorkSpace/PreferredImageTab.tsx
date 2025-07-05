@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SidebarObject from './SidebarObject';
 import { addInspirationImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 import ImageQuality from './ImageQuality';
+import ExteriorSeg from './ExteriorSeg';
 
 const tabs = [
   { id: 0, name: 'All' }
@@ -51,8 +52,8 @@ const StyleAndRenovationPanel: React.FC = () => {
 
       {/* Style Card */}
       <div className="bg-white border rounded-xl p-4">
-
-        <div className="flex flex-wrap gap-2 justify-start mb-4">
+           <h3 className="font-semibold text-lg mb-4">1. Choose Your Preferred Style</h3>
+          <div className="flex flex-wrap gap-2 justify-start mb-4">
 
           <button
             key={tabs[0].id}
@@ -89,16 +90,16 @@ const StyleAndRenovationPanel: React.FC = () => {
             stylesToShow.current
               .slice(0, showAll ? stylesToShow.current.length : 9)
               .map((style, i) => (
-                <div key={i} className="flex flex-col items-center"
+                <div key={i} className="flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-105 object-cover"
                 onClick={() => handleInspirationImage(style.image)}>
                   <img
                     src={style.image}
                     alt={style.name}
-                    className="w-full h-32 object-cover rounded-2xl shadow"
+                    className="w-24 h-24 object-cover rounded-xl "
                 />
-                <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
+                {/* <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
                   {style.name}
-                </span>
+                </span> */}
               </div>
             ))}
         </div>
@@ -126,6 +127,8 @@ const StyleAndRenovationPanel: React.FC = () => {
 
           <ImageQuality/>
           <SidebarObject/>
+          <ExteriorSeg/>
+     
           
     </div>
   );

@@ -26,7 +26,7 @@ const ImageCard: React.FC = () => {
   return (
     <div className="border rounded-md bg-white shadow-sm p-2 relative w-full mx-auto">
       {/* Action icons in top-right */}
-      <div className="absolute top-2 right-2 flex space-x-2 z-10">
+      <div className="absolute top-4 right-4 flex space-x-2 z-10">
         <button
           onClick={handleFullscreen}
           className="text-gray-700 hover:text-black"
@@ -54,7 +54,7 @@ const ImageCard: React.FC = () => {
       <img
         src={list[0]?.full_image || "https://via.placeholder.com/800x600"} // Replace with actual image URL
         alt={list[0]?.title || "Image Preview"}
-        className="rounded-md object-contain max-h-[480px]"
+        className="rounded-md object-contain "
       />
     </div>
   );

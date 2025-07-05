@@ -4,7 +4,7 @@ import React from 'react'
 const ImageQuality = () => {
       const ramExpansions = ["Low", "Medium", "High"];
   return (
-   <div className="bg-white p-4 rounded-xl border w-[360px] space-y-3">
+   <div className="bg-white p-4 rounded-xl border  space-y-3">
 
 <h3 className="font-semibold text-lg">2. Renovation Spectrum</h3>
   <p className="text-sm text-gray-600">

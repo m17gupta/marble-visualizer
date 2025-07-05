@@ -59,15 +59,15 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey, value, open, setOpen, del
                     <div
                         onMouseEnter={() => setOpen(true)}
                         onMouseLeave={() => setOpen(false)}>
-                        <div className="flex align-middle">
-                           
+                        <div className="inline-flex items-center bg-white border border-gray-300 rounded-xl px-2 py-1 gap-2 shadow-sm transition-transform duration-200 hover:scale-105 border-red-400">
                             <img src={value} alt="user-input"
-                                width={100}
-                                height={100}
+                                className='w-6 h-6 rounded-md object-cover'
                             />
-                             <span className="ms-2 text-lg text-gray-500"
-                             onClick={()=>handleDelete(inputKey)}
-                             >&times;</span>
+                             <p className='text-sm'>Inspiration </p>
+                               <span className="text-sm text-gray-500  hover:text-gray-700 cursor-pointer"
+                                onClick={()=>handleDelete(inputKey)}
+                                >&times;
+                             </span>
                         </div>
 
 
@@ -79,12 +79,11 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey, value, open, setOpen, del
                     sideOffset={8}
                     // onMouseEnter={() => setOpen(true)}
                     onMouseLeave={() => setOpen(false)}>
-
+              <h6 className='text-md font-semibold mb-2'>Inspiration </h6>
                     <img
                         src={value}
                         alt="seg-img"
-
-
+                        className='rounded-md'
                     />
 
                 </PopoverContent>
