@@ -4,7 +4,7 @@ import { Button } from '../../ui/button';
 
 import ViewUploader from './ViewUploader';
 import UploadingProgress from './UploadingProgress';
-import { setIsContinue, setIsUploading, setVisual, setWorkSpace, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { setIsContinue, setIsUploading,updateWorkspaceType, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
@@ -85,8 +85,7 @@ const VisualToolHome = () => {
   }
 
   const handleGoBack = () => {
-     dispatch(setWorkSpace(true))
-     dispatch(setVisual(false));
+      dispatch(updateWorkspaceType("workspace"));
     navigate("/workspace");
   };
 

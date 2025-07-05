@@ -8,20 +8,15 @@ import { Button } from "@/components/ui/button";
 
 type Props = {
     inputKey: string;
+    name?: string;
     open: boolean;
     value?: string;
     setOpen: (value: boolean) => void;
     deleteData: (data: string) => void;
 }
-const UserInputPopOver: React.FC<Props> = ({ inputKey, value, open, setOpen, deleteData }) => {
-
-    console.log("UserInputPopOver key:", inputKey);
-    console.log("UserInputPopOver value:", value);
-
-
+const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen, deleteData }) => {
     const handleDelete = (data:string ) => {
-        
-    deleteData(data)
+        deleteData(data);
     }
     return (
         <>
@@ -63,7 +58,7 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey, value, open, setOpen, del
                             <img src={value} alt="user-input"
                                 className='w-6 h-6 rounded-md object-cover'
                             />
-                             <p className='text-sm'>Inspiration </p>
+                             <p className='text-sm'>{name} </p>
                                <span className="text-sm text-gray-500  hover:text-gray-700 cursor-pointer"
                                 onClick={()=>handleDelete(inputKey)}
                                 >&times;
@@ -79,7 +74,7 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey, value, open, setOpen, del
                     sideOffset={8}
                     // onMouseEnter={() => setOpen(true)}
                     onMouseLeave={() => setOpen(false)}>
-              <h6 className='text-md font-semibold mb-2'>Inspiration </h6>
+              <h6 className='text-md font-semibold mb-2'>{name} </h6>
                     <img
                         src={value}
                         alt="seg-img"

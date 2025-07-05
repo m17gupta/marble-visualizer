@@ -5,27 +5,32 @@ import genAiService from '@/services/genAi/genAiService';
 interface GenAiState {
   genAiImages: GenAiChat[];
   requests: GenAiRequest;
+  inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
   loading: boolean;
   error: string | null;
   currentRequestId: string | null;
+  generatedImage: string; // Optional field for storing generated image URL
 }
 
 // Initial state
 const initialState: GenAiState = {
   genAiImages: [],
+  inspirationNames: "", // Optional field for storing inspiration names
   requests: {
     houseUrl: [],
     paletteUrl: [],
     referenceImageUrl: [],
     prompt: [],
-    imageQuality: 'high', // Assuming 'high' is a valid default value
+    imageQuality: 'medium', // Assuming 'medium' is a valid default value
     annotationValue: {},
   },
   responses: {},
   loading: false,
   error: null,
   currentRequestId: null,
+  generatedImage: "", // Optional field for storing generated image URL
+
 };
 
 // Async thunk for submitting a GenAI request
@@ -109,32 +114,36 @@ const genAiSlice = createSlice({
     addHouseImage: (state, action) => {
       state.requests.houseUrl = [action.payload];
     },
+    updateInspirationNames: (state, action: PayloadAction<string>) => {
+  
+      state.inspirationNames = action.payload;
+    },
 
+    updateGeneratedImage: (state, action: PayloadAction<string>) => {
+     
+      state.generatedImage = action.payload;
+    },
     // Update response manually
     updateResponse: (state, action: PayloadAction<GenAiResponse>) => {
-      const response = action.payload;
-      state.responses[response.id] = response;
+      // const response = action.payload;
+      // state.responses[response.id] = response;
     },
   },
   extraReducers: (builder) => {
     // Handle submitGenAiRequest
-    // builder
-    //   .addCase(submitGenAiRequest.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(submitGenAiRequest.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     if(state.genAiImages.length === 0) {
-    //       state.genAiImages = [action.payload as GenAiChat];
-    //     } else {
-    //       state.genAiImages = [...state.genAiImages, action.payload as GenAiChat];
-    //     }
-    //   })
-    //   .addCase(submitGenAiRequest.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload as string || 'Failed to submit GenAI request';
-    //   });
+    builder
+      .addCase(submitGenAiRequest.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitGenAiRequest.fulfilled, (state) => {
+        state.loading = false;
+       
+      })
+      .addCase(submitGenAiRequest.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Failed to submit GenAI request';
+      });
 
     // Handle checkGenAiStatus
     builder
@@ -161,6 +170,7 @@ const genAiSlice = createSlice({
       .addCase(insertGenAiChatData.fulfilled, (state, action) => {
         state.loading = false;
         const newChat = action.payload as GenAiChat;
+
         state.genAiImages = [...state.genAiImages, newChat];
       })
       .addCase(insertGenAiChatData.rejected, (state, action) => {
@@ -179,7 +189,9 @@ export const {
   addPaletteImage,
   addPrompt,
   addInspirationImage,
-  resetInspirationImage
+  resetInspirationImage,
+  updateGeneratedImage,
+  updateInspirationNames
 
 } = genAiSlice.actions;
 

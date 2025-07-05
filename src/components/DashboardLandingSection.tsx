@@ -5,15 +5,16 @@ import LandingHome from './workSpace/landing/LandingHome';
 
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { SideBar } from './sideBar/SideBar';
+
 import VisualToolHome from './workSpace/visualTool/VisualToolHome';
 import { cn } from '@/lib/utils';
 import SideBarHome from './sideBar/SideBarHome';
 
 
 export const DashboardLandingSection = () => {
-  const { isWorkSpace, isVisual } = useSelector((state: RootState) => state.workspace);
+ // const { isWorkSpace, isVisual } = useSelector((state: RootState) => state.workspace);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { workspace_type } = useSelector((state: RootState) => state.workspace);
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
@@ -29,9 +30,9 @@ export const DashboardLandingSection = () => {
           sidebarCollapsed && "lg:pl-20"
         )}
       >
-        {isWorkSpace && <LandingHome />}
+        {workspace_type=='workspace' && <LandingHome />}
 
-        {isVisual && <VisualToolHome />}
+        {workspace_type=='visual' && <VisualToolHome />}
 
       </div>
 

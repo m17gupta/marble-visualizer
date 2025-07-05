@@ -7,6 +7,7 @@ import {
   UserProfile,
   UpdateAuthUserProfileRequest,
 } from "@/models";
+import { toast } from "sonner";
 
 export class AuthService {
   /**
@@ -32,10 +33,27 @@ export class AuthService {
 
   /**
    * Create user profile
+   * Checks if a profile with the session ID already exists before creating
    */
   static async createUserProfile(
     profileData: UserProfile
   ): Promise<UserProfile> {
+    // Check if a user profile already exists with this session ID
+    if (profileData.session_id) {
+      try {
+        const existingProfile = await AuthAPI.getUserProfileBySessionId(profileData.session_id);
+        if (existingProfile) {
+          console.log('User profile already exists for this session ID:', profileData.session_id);
+          return existingProfile;
+        }
+      } catch (error) {
+        toast.error('Error checking for existing profile. Creating a new one.');
+        console.error('Error checking for existing profile:', error);
+       
+      }
+    }
+    
+    // No existing profile found, create a new one
     return await AuthAPI.createUserProfile(profileData);
   }
 

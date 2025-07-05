@@ -56,8 +56,8 @@ export const generateSessionId = async (length = 20): Promise<string> => {
   const sessionId = `${ipHash.substring(0, 8)}${randomPart}`;
   
   // Store the session ID and IP hash in cookies (30 days expiration)
-  setCookie('session_id', sessionId, 30);
-  setCookie('ip_hash', ipHash, 30);
+  setCookie('session_id', sessionId);
+  setCookie('ip_hash', ipHash);
   
   return sessionId;
 };

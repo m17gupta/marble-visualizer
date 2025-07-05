@@ -10,8 +10,8 @@ import { useSelector } from 'react-redux';
 const WorkspaceProjectPage: React.FC = () => {
 
   const { isGenerated } = useSelector((state: RootState) => state.workspace);
-
-  console.log("isGenerated", isGenerated);
+  
+  
   return (
     <>
 

@@ -25,13 +25,19 @@ export const getCookie = (name: string): string => {
  * Set a cookie with the given name and value
  * @param name The name of the cookie
  * @param value The value to store
- * @param days Optional number of days until the cookie expires
+ * @param days Optional number of days until the cookie expires. If not provided, cookie will have a very long expiration (100 years).
  */
 export const setCookie = (name: string, value: string, days?: number): void => {
   let expires = '';
   if (days) {
+    // Use the specified number of days
     const date = new Date();
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = `; expires=${date.toUTCString()}`;
+  } else {
+    // Set a very far future date (100 years) so cookie doesn't expire even when browser closes
+    const date = new Date();
+    date.setTime(date.getTime() + 100 * 365 * 24 * 60 * 60 * 1000);
     expires = `; expires=${date.toUTCString()}`;
   }
   document.cookie = `${name}=${value}${expires}; path=/`;

@@ -5,7 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDispatch } from 'react-redux';
-import { setVisual, setWorkSpace } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
 
 // Data for different categories
@@ -287,14 +287,15 @@ const LandingHome = () => {
         // Add your navigation logic here
         switch (pickId) {
           case 'renovate':
-              dispatch(setWorkSpace(false))
-              dispatch(setVisual(true))
+            dispatch(updateWorkspaceType('visual'))
+           
             // Navigate to renovation tool
             break;
           case 'virtual-staging':
             // Navigate to virtual staging
             break;
           case 'studio':
+            dispatch(updateWorkspaceType('studio'))
             // Navigate to studio
             break;
         }

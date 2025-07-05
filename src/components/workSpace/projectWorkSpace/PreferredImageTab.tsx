@@ -3,7 +3,7 @@ import { RootState } from '@/redux/store';
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarObject from './SidebarObject';
-import { addInspirationImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import { addInspirationImage, updateInspirationNames } from '@/redux/slices/visualizerSlice/genAiSlice';
 import ImageQuality from './ImageQuality';
 import ExteriorSeg from './ExteriorSeg';
 
@@ -22,7 +22,7 @@ const StyleAndRenovationPanel: React.FC = () => {
   const { inspirational_colors } = useSelector((state: RootState) => state.inspirationalColors);
 
   const { Inspirational_images } = useSelector((state: RootState) => state.inspirationalImages);
-  
+
   const stylesToShow = useRef<InspirationImageModel[]>(Inspirational_images);
 
   const handleTabColor = (tabId: number) => {
@@ -39,11 +39,11 @@ const StyleAndRenovationPanel: React.FC = () => {
   useEffect(() => {
     stylesToShow.current = Inspirational_images;
   }, [Inspirational_images]);
-  
 
-  const handleInspirationImage = (image: string) => {
-    console.log('Selected Image:', image);
-  dispatch(addInspirationImage(image));
+
+  const handleInspirationImage = (image: string, name: string) => {
+    dispatch(updateInspirationNames(name));
+    dispatch(addInspirationImage(image));
   };
   return (
     <div className="max-w-md mx-auto p-1 space-y-6">
@@ -52,15 +52,15 @@ const StyleAndRenovationPanel: React.FC = () => {
 
       {/* Style Card */}
       <div className="bg-white border rounded-xl p-4">
-           <h3 className="font-semibold text-lg mb-4">1. Choose Your Preferred Style</h3>
-          <div className="flex flex-wrap gap-2 justify-start mb-4">
+        <h3 className="font-semibold text-lg mb-4">1. Choose Your Preferred Style</h3>
+        <div className="flex flex-wrap gap-2 justify-start mb-4">
 
           <button
             key={tabs[0].id}
             onClick={handleAllTabImage}
             className={`px-4 py-1 rounded-full text-sm ${activeTab === 0
-                ? 'bg-purple-200 text-purple-900 font-semibold'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              ? 'bg-purple-200 text-purple-900 font-semibold'
+              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
               }`}
           >
             {tabs[0].name}
@@ -75,8 +75,8 @@ const StyleAndRenovationPanel: React.FC = () => {
                   handleTabColor(Number(tab.id));
                 }}
                 className={`px-4 py-1 rounded-full text-sm ${activeTab === Number(tab.id)
-                    ? 'bg-purple-200 text-purple-900 font-semibold'
-                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-purple-200 text-purple-900 font-semibold'
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                   }`}
               >
                 {tab.name}
@@ -91,17 +91,17 @@ const StyleAndRenovationPanel: React.FC = () => {
               .slice(0, showAll ? stylesToShow.current.length : 9)
               .map((style, i) => (
                 <div key={i} className="flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-105 object-cover"
-                onClick={() => handleInspirationImage(style.image)}>
+                  onClick={() => handleInspirationImage(style.image, style.name)}>
                   <img
                     src={style.image}
                     alt={style.name}
                     className="w-24 h-24 object-cover rounded-xl "
-                />
-                {/* <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
+                  />
+                  {/* <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
                   {style.name}
                 </span> */}
-              </div>
-            ))}
+                </div>
+              ))}
         </div>
 
         {/* Show More */}
@@ -123,13 +123,13 @@ const StyleAndRenovationPanel: React.FC = () => {
 
       </div>
 
-          {/* Renovation Spectrum */}
+      {/* Renovation Spectrum */}
 
-          <ImageQuality/>
-          <SidebarObject/>
-          <ExteriorSeg/>
-     
-          
+      <ImageQuality />
+      <SidebarObject />
+      <ExteriorSeg />
+
+
     </div>
   );
 };

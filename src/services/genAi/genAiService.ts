@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { GenAiChat, GenAiRequest } from '@/models/genAiModel/GenAiModel';
+import { GenAiChat, GenAiRequest, GenAiResponse } from '@/models/genAiModel/GenAiModel';
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:3000';
@@ -12,15 +12,15 @@ class GenAiService {
    * @param request The GenAI request data
    * @returns The response from the GenAI API
    */
-  async submitRequest(request: GenAiRequest)  {
+  async submitRequest(request: GenAiRequest): Promise<GenAiResponse> {
     try {
       const response= await axios.post(`${this.baseUrl}/openAI/apply-palette-openai`, request, {})
-
+      console.log('GenAI request submitted:', response);
       if (response.status !== 200) {
         throw new Error(response.data.message || 'Failed to submit GenAI request');
       }
 
-      return await response.data;
+      return  response;
     } catch (error) {
       console.error('Error submitting GenAI request:', error);
       throw error;

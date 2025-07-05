@@ -21,13 +21,27 @@ export interface GenAiModel {
   annotationValue: AnnotationValue;
 }
 
+export interface TaskApiModel {
+  taskId: string;
+  prompt: string;
+  outputImage: string;
+  openai_metadata?: OpenAIMetadata
+}
 export interface GenAiResponse {
-  id: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  result?: string;
-  error?: string;
-  createdAt: string;
-  updatedAt: string;
+  data: {
+    status: string;
+    task_id: string;
+    message: string;
+  }
+}
+
+export interface GenAiTaskIdResponse {
+  status: string;
+  result: { 
+    s3_url: string;
+    enhanced_prompt: string;
+    openai_metadata: OpenAIMetadata;
+  };
 }
 
 export interface GenAiState {
@@ -55,7 +69,7 @@ export interface OpenAIMetadata {
 }
 
 export interface GenAiChat {
-  id: string;
+  id: number;
   project_id: number
   user_id: number;
   job_id: number;

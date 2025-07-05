@@ -4,7 +4,7 @@ import { RootState } from '@/redux/store';
 import { 
   ViewType, 
   addCurrentView,
-  enterStepperMode
+  updateWorkspaceType,
 } from '@/redux/slices/visualizerSlice/workspaceSlice';
 
 interface ViewFiles {
@@ -62,7 +62,7 @@ export const useViewFiles = () => {
   
   // Enter stepper mode with current files
   const proceedToStepper = useCallback(() => {
-    dispatch(enterStepperMode());
+    // dispatch(updateWorkspaceType("stepper"));
   }, [dispatch]);
 
   // Check if any files have been uploaded
