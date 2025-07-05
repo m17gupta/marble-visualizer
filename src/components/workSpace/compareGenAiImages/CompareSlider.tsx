@@ -230,6 +230,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                 <div className="absolute bottom-16 right-4 bg-black/60 px-3 py-1 rounded-full text-white text-sm font-medium">
                     Renovated
                 </div>
+                
 
                 {/* Watermark button */}
                 <button

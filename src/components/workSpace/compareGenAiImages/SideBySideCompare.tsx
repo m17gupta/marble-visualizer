@@ -97,8 +97,8 @@ const SideBySideCompare: React.FC<SideBySideCompareProps> = ({
             alt="Original home" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
-            <p className="text-white text-center font-medium">Original</p>
+          <div className="absolute bottom-52 left-4 bg-black/60 px-3 py-1 rounded-full text-white text-sm font-medium">
+         Original
           </div>
         </div>
 
@@ -109,8 +109,8 @@ const SideBySideCompare: React.FC<SideBySideCompareProps> = ({
             alt="Renovated home" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
-            <p className="text-white text-center font-medium">Renovated</p>
+          <div className="absolute bottom-52 right-4 bg-black/60 px-3 py-1 rounded-full text-white text-sm font-medium">
+            Renovated
           </div>
         </div>
       </div>

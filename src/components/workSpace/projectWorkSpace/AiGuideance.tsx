@@ -1,12 +1,17 @@
 import React from 'react'
 import { IoIosCloseCircleOutline } from "react-icons/io";
-const AiGuideance = () => {
+interface AiGuidanceProps {
+  onClose: () => void;
+}
+
+const AiGuideance: React.FC<AiGuidanceProps> = ({ onClose }) => {
+
   return (
       <div className="bg-white border border-gray-50 p-4 rounded-md shadow-md mb-4">
         <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
           <h4 className="text-lg font-semibold mb-2">Suggested Next Steps</h4>
-          <span>
-            <IoIosCloseCircleOutline className="text-3xl" />
+          <span onClick={onClose}>
+            <IoIosCloseCircleOutline className="text-3xl cursor-pointer" />
           </span>
         </div>
 

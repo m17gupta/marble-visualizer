@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CiImageOn } from "react-icons/ci";
 import AddInspiration from "./AddInspiration";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +24,7 @@ import {
   resetInspirationImage,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
+import { IoIosHelpCircleOutline } from "react-icons/io";
 
 const GuidancePanel: React.FC = () => {
   const dispatch = useDispatch();
@@ -78,15 +79,38 @@ const GuidancePanel: React.FC = () => {
       dispatch(resetInspirationImage());
     }
   };
-
+  // const [showGuidance, setShowGuidance] = useState(false);
+  // const [showGuidance, setShowGuidance] =useState(false);
+     const [showGuide, setShowGuide] = useState(false);
   return (
     <>
-
-       <AiGuideance/>
-  
+      {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
       <div className="p-4 bg-white rounded-sm">
-        <h2 className="text-lg font-semibold mb-2">AI Guidance</h2>
+  <div className="flex items-center">
+  <h2 className="text-lg font-semibold ">AI Guidance</h2>
+
+  
+      <TooltipProvider delayDuration={0}>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <span tabIndex={0}>
+        <IoIosHelpCircleOutline className="ms-2 text-xl text-gray-500 cursor-pointer" />
+      </span>
+    </TooltipTrigger>
+    <TooltipContent
+      side="top"
+      sideOffset={6}
+      className="bg-white text-black border border-gray-200 shadow-lg text-xs px-3 py-1.5 rounded-md"
+    >
+      Provide specific instructions to the AI for better results.
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
+ 
+</div>
+
         <textarea
           className="w-full p-2 ps-0 pt-0 border-0 focus:outline-none focus:ring-0 rounded mb-1 resize-none"
           placeholder="Enter guidance..."
@@ -126,20 +150,22 @@ const GuidancePanel: React.FC = () => {
           <div className="flex items-center">
             <ProjectHistory />
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 px-3 py-2 rounded-md">
-                    <HiOutlineSparkles className="text-lg" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-black text-white text-xs px-2 py-1 rounded-md">
-                  Enhance Guidance
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 px-3 py-2 rounded-md">
+                  <HiOutlineSparkles className="text-lg" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black text-white text-xs px-2 py-1 rounded-md"
+              >
+                Enhance Guidance
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
 
             <AddInspiration
               isOpen={isModel}
@@ -152,12 +178,31 @@ const GuidancePanel: React.FC = () => {
               {" "}
               <CiImageOn className="text-lg" /> Add Inspiration
             </button>
+
+            
           </div>
           <div className="flex items-center gap-2">
               
-            <button className="btn bg-transparent rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 p-2">
+  
+
+               <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                      <button className="btn bg-transparent rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 p-2"
+              onClick={() => setShowGuide(true)}
+             >
               <FcIdea className="text-2xl" />
             </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="bg-black text-white text-xs px-2 py-1 rounded-md"
+              >
+                Suggested Next Steps
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
 
             <button className="px-4 py-2 bg-blue-600 text-white rounded">
               Visualize
