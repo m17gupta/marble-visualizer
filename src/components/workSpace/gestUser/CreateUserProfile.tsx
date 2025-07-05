@@ -3,7 +3,7 @@ import { fetchProjects } from '@/redux/slices/projectSlice'
 import { createUserProfile, getUserProfileBySessionId } from '@/redux/slices/userProfileSlice'
 import { AppDispatch, RootState } from '@/redux/store'
 import { generateSessionId } from '@/utils/GenerateSessionId'
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getCookie } from '@/lib/utils'
 
@@ -13,7 +13,7 @@ const CreateUserProfile = () => {
   const getSessionId = getCookie('session_id') || '';
 
     
-  const handleCreateUserProfile = async (sessionId:string) => {
+  const handleCreateUserProfile = useCallback(async (sessionId:string) => {
     const userData:UserProfile={
       user_id: "",
       full_name: '',
@@ -29,9 +29,9 @@ const CreateUserProfile = () => {
     }catch(error) {
       console.error("Error creating user profile:", error);
     }   
-  }
+  }, [dispatch]);
 
-  const getUserBaseOnSessionId = async (sessionId:string) => {
+  const getUserBaseOnSessionId = useCallback(async (sessionId:string) => {
     try {
       console.log("Fetching user profile for session ID:", sessionId);
       const response= await dispatch(getUserProfileBySessionId(sessionId)).unwrap();
@@ -49,21 +49,25 @@ const CreateUserProfile = () => {
       console.error("Error fetching user by session ID:", error);
       return null;
     }
-  }
+  }, [dispatch, handleCreateUserProfile]);
     
   useEffect(() => {
     // Check if user is authenticated and session ID exists
-    if (!isAuthenticated && !getSessionId) {
-        const sessionId = generateSessionId();
+    const initializeSession = async () => {
+      if (!isAuthenticated && !getSessionId) {
+        const sessionId = await generateSessionId();
         localStorage.setItem('session_id', sessionId);
         document.cookie = `session_id=${sessionId}; path=/; max-age=${30 * 24 * 60 * 60}`; // 30 days expiration
         console.log("Session ID created:", sessionId);
         handleCreateUserProfile(sessionId);
-    } else {
-      getUserBaseOnSessionId(getSessionId)
-      console.log("User is not authenticated but session ID exists",getSessionId);
-    }
-  }, [isAuthenticated, getSessionId]);
+      } else {
+        getUserBaseOnSessionId(getSessionId);
+        console.log("User is not authenticated but session ID exists", getSessionId);
+      }
+    };
+    
+    initializeSession();
+  }, [isAuthenticated, getSessionId, handleCreateUserProfile, getUserBaseOnSessionId]);
     // Render the user profile form
     return (
        null
