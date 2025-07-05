@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SegmentsList } from '@/components/SegmentsList';
+import { SegmentsList } from '@/components/segments';
 import { ActivityTimeline } from '@/components/ActivityTimeline';
 import { SwatchRecommendations } from '@/components/swatch/SwatchRecommendations';
 import { StudioDesignTab } from '@/components/studio/StudioDesignTab';

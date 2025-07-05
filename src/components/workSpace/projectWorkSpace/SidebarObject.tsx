@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { Badge } from "@/components/ui/badge";
-//import objectimg from "../../../../dist/assets/image/object-img.jpeg"; // Adjust the path as necessary
+import objectimg from "../../../../dist/assets/object-img-f9e-Kvp6.jpeg"; // Adjust the path as necessary
 const SidebarObject = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -45,7 +45,7 @@ const SidebarObject = () => {
 
        <div className="relative flex border border-gray-300 rounded-xl p-2 align-super justify-between">
 
-        {/* <img src={objectimg} alt="Object Image" className="object-cover"></img> */}
+        <img src={objectimg} alt="Object Image" className="object-cover"></img>
           <span className="absolute -top-3 -right-3 cursor-pointer">
             <IoIosCloseCircleOutline className="text-3xl" />
           </span>

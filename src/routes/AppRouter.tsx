@@ -7,7 +7,7 @@ import { ProjectsPage } from '@/pages/projectPage/ProjectsPage';
 import { StudioPage } from '@/pages/StudioPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 // import { MaterialsPage } from '@/pages/MaterialsPage';
- 
+
 import { SwatchDetailsPage } from '@/pages/SwatchDetailsPage';
 // import { SwatchCreatePage } from '@/pages/SwatchCreatePage';
 // import { SwatchImportPage } from '@/pages/SwatchImportPage';
@@ -18,10 +18,10 @@ import { SwatchBookPage } from '@/pages/SwatchBookPage';
 import MainLandingPage from '@/pages/MainLandingPage';
 import WorkspaceProjectPage from '@/pages/WorkspaceProjectPage';
 import Homepage from '@/pages/Homepage';
- 
+
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
- 
+
   return (
     <Routes>
       {/* Public routes */}
@@ -35,7 +35,7 @@ export function AppRouter() {
           )
         }
       />
-     
+
       <Route
         path="/login"
         element={
@@ -46,7 +46,7 @@ export function AppRouter() {
           )
         }
       />
-     
+
       <Route
         path="/signup"
         element={
@@ -57,7 +57,7 @@ export function AppRouter() {
           )
         }
       />
- 
+
       {/* Public project viewing - no authentication required */}
       <Route
         path="/project/public/:slug"
@@ -73,7 +73,8 @@ export function AppRouter() {
         path="/workspace/project/:projectId"
         element={<WorkspaceProjectPage />}
       />
- 
+      <Route path="/studio/project/:id" element={<StudioPage />} />
+
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}
       <Route
         path="/app"
@@ -91,12 +92,12 @@ export function AppRouter() {
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
         <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
-       
+
       </Route>
 
 
-      
- 
+
+
       {/* Catch all route */}
       <Route
         path="*"

@@ -32,6 +32,8 @@ const VisualToolHome = () => {
    const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
+
+  const {workspace_type} = useSelector((state: RootState) => state.workspace);
   const createdProjectId = useRef<number | null>(null);
 
   // Upload a file for a given view
@@ -127,7 +129,7 @@ const VisualToolHome = () => {
         const jobData: CreateJobParams = {
           jobUrl: result.fileUrl,
           projectId: createdProjectId.current,
-          jobType: "living room",
+          jobType: typeView,
           dispatch: dispatch,
         };
         // console.log('Creating job with data:', jobData);
@@ -137,7 +139,11 @@ const VisualToolHome = () => {
             console.log('Form reset');
             setIsCreatingJob(false);
             // Navigate to the project page or workspace after job creation
-            navigate(`/workspace/project/${createdProjectId.current}`);
+            if(workspace_type === 'visual') {
+              navigate(`/workspace/project/${createdProjectId.current}`);
+            }else if (workspace_type === 'studio') {
+              navigate(`/studio/project/${createdProjectId.current}`);
+            }
           },
           clearProjectId: () => {
             createdProjectId.current = null;

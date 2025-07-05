@@ -32,7 +32,7 @@ export const DashboardLandingSection = () => {
       >
         {workspace_type=='workspace' && <LandingHome />}
 
-        {workspace_type=='visual' && <VisualToolHome />}
+        {workspace_type=='visual' || workspace_type=='studio' && <VisualToolHome />}
 
       </div>
 
