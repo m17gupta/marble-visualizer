@@ -49,7 +49,7 @@ export const store = configureStore({
         ignoredPaths: ['studio.uploadedImageFile'],
       },
     }).concat(authMiddleware, errorMiddleware),
-  devTools: import.meta.env.DEV,
+  devTools: process.env.NODE_ENV !== 'production' || import.meta.env.DEV,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

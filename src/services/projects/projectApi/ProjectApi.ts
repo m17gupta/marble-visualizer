@@ -112,9 +112,7 @@ export class ProjectAPI {
         .insert(project)
         .select()   
         .single();
-      console.log("data from supabase", data);
-    
-      console.log("Project created successfully:", data);
+     
       return {
         success: true,
         data: data as ProjectModel,

@@ -26,7 +26,7 @@ const WorkspaceProjectPage: React.FC = () => {
 
         {/* Middle: Main image preview and AI Guidance panel */}
 
-        {isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50">
+        {!isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50">
 
 
           {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}

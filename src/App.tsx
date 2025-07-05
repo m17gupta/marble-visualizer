@@ -7,6 +7,7 @@ import { initializeAuth } from "./redux/slices/authSlice";
 import { AppRouter } from "./routes/AppRouter";
 // import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Toaster } from "@/components/ui/sonner";
+import ReduxDebugger from "./components/ui/ReduxDebugger";
 
 function App() {
   useEffect(() => {
@@ -27,6 +28,8 @@ function App() {
 
           <AppRouter />
           <Toaster />
+          {/* Redux State Debugger (only shown in development) */}
+          <ReduxDebugger />
         </BrowserRouter>
       </ThemeProvider>
     </Provider>
