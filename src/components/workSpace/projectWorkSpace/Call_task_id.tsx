@@ -11,10 +11,12 @@ type Props = {
 const Call_task_id = ({ taskId, resetChatTask, resetChatTaskFail }: Props) => {
   const isApi = React.useRef(true)
 
+  console.log("Call_task_id component rendered with taskId:", taskId);
+
   const handleTaskIdApi = useCallback(async (taskId: string) => {
     try {
       const response = await genAiService.getChatTaskId(taskId);
-
+    console.log("Response from getChatTaskId:", response);
       if (response.data && response.data.status === "completed") {
         // Task completed successfully
         isApi.current = true;
@@ -48,6 +50,7 @@ const Call_task_id = ({ taskId, resetChatTask, resetChatTaskFail }: Props) => {
       isApi.current = false;
       // Add a delay of 30 seconds before making the initial API call
       setTimeout(() => {
+        console.log("Calling handleTaskIdApi with taskId:", taskId);
         handleTaskIdApi(taskId);
       }, 30000);
     }

@@ -20,7 +20,7 @@ export interface UseS3UploadReturn {
 
 export const useS3Upload = (options: UseS3UploadOptions = {}): UseS3UploadReturn => {
   const {
-    maxSize = 10 * 1024 * 1024, // 10MB default
+    maxSize = 100 * 1024 * 1024, // Increased to 100MB default
     allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
     onSuccess,
     onError,

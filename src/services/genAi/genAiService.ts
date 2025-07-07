@@ -30,13 +30,14 @@ class GenAiService {
   // get task id from the response
  async getChatTaskId(request: string) {
     try {
-      const response = await axios.post(`${this.baseUrl}/apply-palette-status/${request}`, {});
+      const response = await axios.get(`${this.baseUrl}/openAI/apply-palette-status/${request}`, {});
 
+      console.log('GenAI task ID retrieved:', response);
       if (response.status !== 200) {
         throw new Error(response.data.message || 'Failed to submit GenAI request');
       }
 
-      return response.data;
+      return response;
     } catch (error) {
       console.error('Error getting task ID:', error);
       throw error;
