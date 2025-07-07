@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import CompareSlider from './CompareSlider';
@@ -6,14 +6,25 @@ import SideBySideCompare from './SideBySideCompare';
 import AllGenAiImages from './AllGenAiImages';
 
 const CompareGenAiHome: React.FC = () => {
-  const { requests } = useSelector((state: RootState) => state.genAi);
+  const { genAiImages } = useSelector((state: RootState) => state.genAi);
   
   const [showCompareView, setShowCompareView] = useState(true);
-  const [selectedGeneratedImage, setSelectedGeneratedImage] = useState<string>("https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/42/styled_output_52f90df66fb8433e91a6c746f98c9d67 (1)_1751621500813_0bpn0m.png");
+  const selectedGeneratedImage = useRef<string | null>(null);
   
   // Original house image from the request
-  const originalHouseImage = requests.houseUrl.length > 0 ? requests.houseUrl[0] : 'https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/2025/06/26/styled_output_52f90df66fb8433e91a6c746f98c9d67+(1)_1750935293877_qebgfh.png';
-  
+  const originalHouseImage = useRef<string | null>(null);
+
+  useEffect(() => {
+    if(genAiImages.length > 0) {
+
+      //  sort the genAiImages based on created at lasted come st first
+      genAiImages.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+      selectedGeneratedImage.current = genAiImages[0].output_image;
+      originalHouseImage.current = genAiImages[0].master_image_path;
+    
+    }
+  }, [genAiImages]);
+
   // Handle selecting an image from the generated variants
   // const handleSelectImage = (imageUrl: string) => {
   //   setSelectedGeneratedImage(imageUrl);
@@ -65,14 +76,14 @@ const CompareGenAiHome: React.FC = () => {
         <div className="h-[500px] mb-6">
           {viewMode === 'slider' ? (
             <CompareSlider
-              beforeImage={originalHouseImage}
-              afterImage={selectedGeneratedImage}
+              beforeImage={originalHouseImage.current ?? ""}
+              afterImage={selectedGeneratedImage.current ?? ""}
               onClose={handleCloseCompare}
             />
           ) : (
             <SideBySideCompare
-              beforeImage={originalHouseImage}
-              afterImage={selectedGeneratedImage}
+              beforeImage={originalHouseImage.current ?? ""}
+              afterImage={selectedGeneratedImage.current ?? ""}
               onClose={handleCloseCompare}
             />
           )}

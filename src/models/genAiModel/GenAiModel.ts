@@ -77,10 +77,10 @@ export interface GenAiChat {
   palette_image_path: string;
   reference_img: string;
   user_input_text: string;
-  output_Image: string;
+  output_image: string;
   output_urls?: string[];  // Array of output image URLs for multiple variants
-  isCompleted: boolean;
-  isShow: boolean;
+  is_completed: boolean;
+  is_show: boolean;
   prompt: string;
   task_id: string;
   created: string;

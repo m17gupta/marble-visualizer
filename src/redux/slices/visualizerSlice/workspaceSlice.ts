@@ -17,12 +17,15 @@ interface WorkspaceState {
   processingState: 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
   error: string | null;
   isAddIspiration: boolean;
-  isGenerated: boolean
+  isGenerated: boolean,
+  isGenLoading: boolean;
 }
 
 // Define the initial state
 const initialState: WorkspaceState = {
- 
+  isAddIspiration: false,
+  isGenerated: false,
+  isGenLoading: false,
   workspace_type: "workspace", // Default workspace type
   currentView: {
     view: 'front', // Default to front view
@@ -34,8 +37,6 @@ const initialState: WorkspaceState = {
   error: null,
   isUploading: false,
 
-  isAddIspiration: false, // Initialize to false
-  isGenerated: false // Initialize to false
 
 };
 
@@ -56,7 +57,9 @@ const workspaceSlice = createSlice({
     setIsContinue: (state, action: PayloadAction<boolean>) => {
       state.isContinue = action.payload;
     },
-
+  updateIsGenLoading: (state, action: PayloadAction<boolean>) => {
+      state.isGenLoading = action.payload;  
+  },
     // Set uploading state
     setIsUploading: (state, action: PayloadAction<boolean>) => {
       state.isUploading = action.payload;
@@ -119,6 +122,7 @@ export const {
   setIsUploading,
   setIsAddInspiration,
   setIsGenerated,
+  updateIsGenLoading,
   updateWorkspaceType
 } = workspaceSlice.actions;
 

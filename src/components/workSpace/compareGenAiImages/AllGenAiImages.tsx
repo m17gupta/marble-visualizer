@@ -1,16 +1,16 @@
 import { Button } from '@/components/ui/button';
+import { RootState } from '@/redux/store';
 import React, { useState } from 'react';
 
 import { IoCheckmarkCircle } from "react-icons/io5";
+import { useSelector } from 'react-redux';
 
 
 const AllGenAiImage = () => {
  
 //   
-const  genAiImages=[
-    "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/2025/06/26/styled_output_52f90df66fb8433e91a6c746f98c9d67+(1)_1750935293877_qebgfh.png",
-    "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/2025/06/26/styled_output_52f90df66fb8433e91a6c746f98c9d67+(1)_1750935293877_qebgfh.png"
-]
+  const { genAiImages } = useSelector((state: RootState) => state.genAi);
+  
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   
 
@@ -21,11 +21,11 @@ const  genAiImages=[
       {/* Generated images grid */}
       <div className="flex grid-cols-1 gap-6">
         {genAiImages.map((imageSet, index) => (
-          <div key={imageSet || index} className="space-y-4">
+          <div key={imageSet.id} className="space-y-4">
           
             <div className="relative group rounded-md">
               <img 
-                src={imageSet} 
+                src={imageSet.output_image} 
                 alt={`Generated Image ${index + 1}`} 
                 width={100}
                 height={100}

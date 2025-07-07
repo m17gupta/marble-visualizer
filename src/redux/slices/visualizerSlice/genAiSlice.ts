@@ -124,9 +124,19 @@ const genAiSlice = createSlice({
       state.generatedImage = action.payload;
     },
     // Update response manually
-    updateResponse: (state, action: PayloadAction<GenAiResponse>) => {
+    updateResponse: () => {
       // const response = action.payload;
       // state.responses[response.id] = response;
+    },
+    resetRequest:(state)=>{
+      state.requests = {
+        houseUrl: [],
+        paletteUrl: [],
+        referenceImageUrl: [],
+        prompt: [],
+        imageQuality: 'medium',
+        annotationValue: {},
+      };
     },
   },
   extraReducers: (builder) => {
@@ -170,8 +180,16 @@ const genAiSlice = createSlice({
       .addCase(insertGenAiChatData.fulfilled, (state, action) => {
         state.loading = false;
         const newChat = action.payload as GenAiChat;
-
-        state.genAiImages = [...state.genAiImages, newChat];
+        
+        // Check if the chat with this task_id already exists in the state
+        const chatExists = state.genAiImages.some(chat => chat.task_id === newChat.task_id);
+        
+        // Only add the chat if it doesn't already exist
+        if (!chatExists) {
+          state.genAiImages = [...state.genAiImages, newChat];
+        } else {
+          console.log('Chat with task_id', newChat.task_id, 'already exists in state, not adding duplicate');
+        }
       })
       .addCase(insertGenAiChatData.rejected, (state, action) => {
         state.loading = false;
@@ -191,7 +209,8 @@ export const {
   addInspirationImage,
   resetInspirationImage,
   updateGeneratedImage,
-  updateInspirationNames
+  updateInspirationNames,
+  resetRequest
 
 } = genAiSlice.actions;
 

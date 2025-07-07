@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getIsAddInspiration,
   setIsAddInspiration,
+  setIsGenerated,
+  updateIsGenLoading,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
 import ProjectHistory from "./ProjectHistory";
@@ -24,11 +26,13 @@ import {
   resetInspirationImage,
   submitGenAiRequest,
   insertGenAiChatData,
+  resetRequest,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { GenAiChat, GenAiRequest, TaskApiModel } from "@/models/genAiModel/GenAiModel";
 import Call_task_id from "./Call_task_id";
+import { toast } from "sonner";
 
 
 const GuidancePanel: React.FC = () => {
@@ -42,6 +46,7 @@ const GuidancePanel: React.FC = () => {
   // Use separate state variables for each popover
 
   const { requests, inspirationNames } = useSelector((state: RootState) => state.genAi);
+  const {isGenLoading}= useSelector((state: RootState) => state.workspace);
   const getIsAddInspirations = useSelector(getIsAddInspiration);
   // update the model open and closing
 
@@ -88,6 +93,8 @@ const GuidancePanel: React.FC = () => {
   const [isTask, setIsTask] = React.useState<boolean>(false)
 
   const handleGenerateAiImage = async () => {
+
+    dispatch(updateIsGenLoading(true));
     // Logic to generate AI image
     try {
       const resultAction = await dispatch(submitGenAiRequest(requests as GenAiRequest));
@@ -109,32 +116,45 @@ const GuidancePanel: React.FC = () => {
   const { list: jobList } = useSelector((state: RootState) => state.jobs);
   const { list: ProjectList } = useSelector((state: RootState) => state.projects);
   const handleResetStartApiCall = async (data: TaskApiModel) => {
-
+     setTaskId("")
+     setIsTask(false);
+    console.log("Reset start API call with data:", data);
     const genChat: GenAiChat = {
-      id: profile?.id || 0, 
-      // Fix for project_id - provide a default of 0 if undefined
+      // Remove the id field to let Supabase generate a UUID automatically
+     
       project_id: ProjectList[0]?.id || 0,
       // Fix for user_id - convert to number if string, and handle null profile
-      user_id: profile?.user_id ? Number(profile.user_id) : 0,
+      user_id: profile?.id ,
       job_id: jobList[0]?.id || 0,
       master_image_path: requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : "", 
       palette_image_path: requests.paletteUrl && requests.paletteUrl[0] ? requests.paletteUrl[0] : "", 
       reference_img: requests.referenceImageUrl && requests.referenceImageUrl[0] ? requests.referenceImageUrl[0] : "", 
       user_input_text: requests.prompt && requests.prompt[0] ? requests.prompt[0] : "", 
-      output_Image: data.outputImage,
-      isCompleted: true,
-      isShow: true,
+      output_image: data.outputImage,
+      is_completed: true,
+      is_show: true,
       prompt: data.prompt,
       task_id: data.taskId,
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
       // Fix openai_metadata type issue - convert null to undefined
       openai_metadata: data.openai_metadata ? JSON.stringify(data.openai_metadata) : undefined,
-    }
+    } as GenAiChat
+    console.log("GenAI chat data to be inserted:", genChat);
     try {
-      await dispatch(insertGenAiChatData(genChat));
+     const result = await dispatch(insertGenAiChatData(genChat));
       console.log("GenAI chat data inserted successfully");
+      if (result.meta.requestStatus === 'fulfilled') {
+        console.log("GenAI chat data inserted successfully:", result.payload);
+         dispatch(resetRequest())
+        dispatch(updateIsGenLoading(false));
+
+        dispatch(setIsGenerated(true))
+
+        
+      }
     } catch (error) {
+      toast.error("Error in reset start API call: " + (error as Error).message);
       console.error("Error in reset start API call:", error);
     }
 
@@ -281,18 +301,20 @@ const GuidancePanel: React.FC = () => {
               onClick={handleGenerateAiImage}
               disabled={isTask}
             >
-              {isTask ? 'Processing...' : 'Visualize'}
+              {isGenLoading ? 'Processing...' : 'Visualize'}
             </button>
           </div>
         </div>
       </div>
 
       {/* Only render Call_task_id when there's an active task */}
-      {taskId && <Call_task_id
-        taskId={taskId}
-        resetChatTask={handleResetStartApiCall}
-        resetChatTaskFail={handleResetFaiApiCall}
-      />}
+      {taskId && taskId !== "" && (
+        <Call_task_id
+          taskId={taskId}
+          resetChatTask={handleResetStartApiCall}
+          resetChatTaskFail={handleResetFaiApiCall}
+        />
+      )}
     </>
   );
 };

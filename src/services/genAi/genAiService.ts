@@ -65,19 +65,39 @@ async getAllGenAiChats(jobId: number): Promise<GenAiChat[]> {
 // update genAi _chat into table
 async insertGenAiChat(chatData: GenAiChat): Promise<GenAiChat> {
   try {
+    // First check if a record with the same task_id already exists
+    const { data: existingData } = await supabase
+      .from('genai_chat')
+      .select('*')
+      .eq('task_id', chatData.task_id)
+      .maybeSingle();
+
+    // If a record with this task_id already exists, return it and don't insert again
+    if (existingData) {
+      console.log('Record with this task_id already exists, returning existing record:', existingData);
+      return existingData as GenAiChat;
+    }
+
+    // Otherwise, proceed with insertion
     const { data, error } = await supabase
       .from('genai_chat')
       .insert(chatData)
+      .select()  // Add select() to retrieve the inserted data
 
+    console.log('Data to insert:', chatData);
     if (error) {
       throw new Error(error.message || 'Failed to insert GenAI chat');
     }
-    if (!data) {
-      throw new Error('No data returned from insert operation');
-    } 
-    console.log('Inserted GenAI chat:', data[0]);
-
-    return data[0];
+    
+    // If we have data, return the first inserted record, otherwise return the original chatData
+    // This ensures we always return a value even if Supabase doesn't return data
+    if (data && data.length > 0) {
+      console.log('Inserted GenAI chat:', data[0]);
+      return data[0] as GenAiChat;
+    } else {
+      console.log('No data returned from insert operation, returning original chatData');
+      return chatData;
+    }
   } catch (error) {
     console.error('Error inserting GenAI chat:', error);
     throw error;
