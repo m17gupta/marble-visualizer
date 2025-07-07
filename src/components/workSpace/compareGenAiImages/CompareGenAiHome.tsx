@@ -39,6 +39,7 @@ const CompareGenAiHome: React.FC = () => {
   
   // Handle close compare view
   const handleCloseCompare = () => {
+    console.log('Closing compare view');
     setShowCompareView(false);
   };
   
