@@ -8,7 +8,7 @@ import { fetchMaterialSegments } from '@/redux/slices/materialSlices/materialSeg
 const GetAllMaterialSegment = () => {
 
     const dispatch = useDispatch<AppDispatch>()
-    const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth)
+    // const { isAuthenticated, isInitialized } = useSelector((state: RootState) => state.auth)
 
     const { materials, isLoading: segmentLoading } = useSelector((state: RootState) => state.materials)
     const fetchAllMaterialSegments = useCallback(async () => {
@@ -29,14 +29,14 @@ const GetAllMaterialSegment = () => {
 
          useEffect(() => {
             // Only fetch data if user is authenticated and auth is initialized
-            if (!isAuthenticated || !isInitialized) {
-              console.log('User not authenticated or auth not initialized, skipping data fetch')
-              return
-            }
+            // if (!isAuthenticated || !isInitialized) {
+            //   console.log('User not authenticated or auth not initialized, skipping data fetch')
+            //   return
+            // }
             if (!segmentLoading && materials.length === 0) {
               fetchAllMaterialSegments()
             }
-          }, [isAuthenticated, isInitialized, fetchAllMaterialSegments,segmentLoading])
+          }, [ fetchAllMaterialSegments,segmentLoading])
 
   return (
     null

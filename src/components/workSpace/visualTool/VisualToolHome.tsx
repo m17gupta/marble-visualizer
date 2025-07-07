@@ -142,7 +142,7 @@ const VisualToolHome = () => {
             // Navigate to the project page or workspace after job creation
             if(workspace_type === 'renovate') {
               navigate(`/workspace/project/${createdProjectId.current}`);
-            }else if (workspace_type === 'studio') {
+            }else if (workspace_type === 'design-hub') {
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }
           },

@@ -7,7 +7,6 @@ import {
   startDrawing,
   addPoint,
   finishDrawing,
-  cancelDrawing,
   selectSegment,
   deleteSegment,
   // assignMaterialToSegment,
@@ -100,18 +99,22 @@ export function CanvasEditor({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const backgroundImageRef = useRef<fabric.Image | null>(null);
-  // const [activeTool, setActiveTool] = useState<DrawingTool>('select');
+
   const activeTool = useRef<DrawingTool>('select');
-  // const [isPolygonMode, setIsPolygonMode] = useState(false);
+ 
   const isPolygonMode = useRef(false);
-  // const [tempPoints, setTempPoints] = useState<fabric.Point[]>([]);
-  // const [tempLines, setTempLines] = useState<fabric.Line[]>([]>;
+;
 
   const tempPoints = useRef<fabric.Point[]>([]);
   const tempLines = useRef<fabric.Line[]>([]);
   const tempPointCircles = useRef<fabric.Circle[]>([]);
 
+  const allSegments = useRef<{[key: string]: fabric.Point[]}>({});
+  const allSegmentsCount = useRef<number>(0);
+
   const [hoveredSegmentId] = useState<string | null>(null);
+
+  console.log("allSegments", allSegments.current);
   // Canvas ready state now comes from Redux
 
   // Save canvas state to history
@@ -124,11 +127,44 @@ export function CanvasEditor({
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
-    if (historyIndex > 0) {
+    // Check if we're in polygon drawing mode
+    if (isPolygonMode.current && tempPoints.current.length > 0) {
+      // Remove last point from tempPoints
+      tempPoints.current.pop();
+      const lastLine = tempLines.current.pop();
+      if (lastLine && fabricCanvasRef.current) {
+        fabricCanvasRef.current.remove(lastLine);
+      }
+      const lastCircle = tempPointCircles.current.pop();
+      if (lastCircle && fabricCanvasRef.current) {
+        fabricCanvasRef.current.remove(lastCircle);
+      }
+      
+      // If there's a Redux action for removing the last point, use it
+      // If not, we're handling it with the local state
+      
+      // Render changes
+      fabricCanvasRef.current?.renderAll();
+      
+      // If we've removed all points, reset polygon mode to allow starting a new polygon
+      if (tempPoints.current.length === 0) {
+        isPolygonMode.current = false;
+        console.log('All points removed, resetting polygon mode');
+        toast.info('All points removed. Click to start a new polygon.');
+      }
+      
+      return;
+    } else if (isPolygonMode.current && tempPoints.current.length === 0) {
+      console.log('No points to undo in polygon mode');
+      isPolygonMode.current = false; // Reset polygon mode to allow starting a new polygon
+    }
+    
+    // Handle regular history undo if not in polygon mode or no points to undo
+    if (historyIndex > 0 && fabricCanvasRef.current) {
       dispatch(undo());
-      const previousState = canvasHistory[historyIndex - 1];
-      if (previousState && fabricCanvasRef.current) {
-        fabricCanvasRef.current.loadFromJSON(previousState, () => {
+      const prevState = canvasHistory[historyIndex - 1];
+      if (prevState) {
+        fabricCanvasRef.current.loadFromJSON(prevState, () => {
           fabricCanvasRef.current!.renderAll();
         });
       }
@@ -156,7 +192,7 @@ export function CanvasEditor({
     toast.success('Segment deleted');
   }, [activeSegmentId, dispatch, saveCanvasState]);
 
-  console.log('Current Zoom:', currentZoom*100);
+
   const handleCancelDrawing = useCallback(() => {
     if (fabricCanvasRef.current && isPolygonMode.current) {
       const canvas = fabricCanvasRef.current;
@@ -171,14 +207,16 @@ export function CanvasEditor({
       canvas.renderAll();
     }
 
+    // Reset polygon state to allow starting a new polygon
     isPolygonMode.current = false;
     tempPoints.current = [];
     tempLines.current = [];
     tempPointCircles.current = [];
-    dispatch(cancelDrawing());
     
+    // dispatch(cancelDrawing());
+    console.log('Polygon drawing cancelled. Ready to start a new one.');
     toast.info('Polygon drawing cancelled');
-  }, [dispatch]);
+  }, []);
 
   // Initialize Fabric.js canvas
   useEffect(() => {
@@ -215,8 +253,9 @@ export function CanvasEditor({
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
+      console.log('Key pressed:', e.key, 'Ctrl:', e.ctrlKey, 'Meta:', e.metaKey, 'Shift:', e.shiftKey);
       if (e.ctrlKey || e.metaKey) {
-        switch (e.key) {
+        switch (e.key.toLowerCase()) {  // Use toLowerCase to handle both uppercase and lowercase keys
           case 'c':
             e.preventDefault();
             if (activeSegmentId) {
@@ -235,8 +274,10 @@ export function CanvasEditor({
             e.preventDefault();
             if (e.shiftKey) {
               handleRedo();
+              console.log('Redo shortcut triggered');
             } else {
               handleUndo();
+              console.log('Undo shortcut triggered');
             }
             break;
         }
@@ -249,7 +290,7 @@ export function CanvasEditor({
             }
             break;
           case 'Escape':
-            if (isPolygonMode) {
+            if (isPolygonMode.current) {  // Fixed: Use isPolygonMode.current instead of isPolygonMode
               handleCancelDrawing();
             }
             break;
@@ -260,10 +301,10 @@ export function CanvasEditor({
     document.addEventListener('keydown', handleKeyDown);
 
     dispatch(setCanvasReady(true));
-    console.log('Canvas initialized successfully');
+  
 
     return () => {
-      console.log('Disposing canvas...');
+      
       document.removeEventListener('keydown', handleKeyDown);
       canvas.dispose();
       fabricCanvasRef.current = null;
@@ -620,7 +661,7 @@ export function CanvasEditor({
 
     const canvas = fabricCanvasRef.current;
     console.log('Finishing polygon with', tempPoints.current.length, 'points');
-
+    
     // Remove all temporary objects (lines, preview line, and point circles)
     const tempObjects = canvas.getObjects().filter(obj =>
       (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' || 
@@ -632,13 +673,16 @@ export function CanvasEditor({
     // Create the actual polygon
     const polygonPoints = tempPoints.current.map(p => new fabric.Point(p.x, p.y));
     const polygon = new fabric.Polygon(polygonPoints, {
-      fill: 'rgba(0, 123, 255, 0.3)', // Semi-transparent blue fill
-      stroke: '#007bff',
+      fill: 'rgba(255, 132, 0, 0.3)', // Semi-transparent orange fill
+      stroke: '#FF1493',
       strokeWidth: 2,
       selectable: true,
       evented: true,
+     
     });
 
+    allSegmentsCount.current += 1;
+    allSegments.current[`poly-${allSegmentsCount.current}`] = tempPoints.current;
     // Add custom data to the polygon for identification
     (polygon as fabric.Object & { data?: { type?: string; segmentId?: string } }).data = {
       type: 'segment',
@@ -649,7 +693,8 @@ export function CanvasEditor({
     canvas.renderAll();
 
     // Finish drawing in Redux
-    dispatch(finishDrawing({ name: `Segment ${segments.length + 1}` }));
+    // Uncomment if you want to dispatch an action
+    // dispatch(finishDrawing({ name: `Segment ${segments.length + 1}` }));
 
     // Clean up temporary state
     isPolygonMode.current = false;
@@ -658,15 +703,15 @@ export function CanvasEditor({
     tempPointCircles.current = [];
 
     // Save to history
-    const canvasState = JSON.stringify(canvas.toJSON());
-    dispatch(saveToHistory(canvasState));
+    // const canvasState = JSON.stringify(canvas.toJSON());
+    // dispatch(saveToHistory(canvasState));
 
     toast.success('Polygon created successfully! Ready to draw another.');
-  }, [dispatch, segments.length]);
+  }, []);
 
   // Handle mouse down events
   const handleMouseDown = useCallback((e: fabric.TEvent) => {
-    console.log('Mouse down event activeTool:', activeTool.current);
+
     if (!fabricCanvasRef.current || activeTool.current !== 'polygon') {
       return;
     }
@@ -696,7 +741,7 @@ export function CanvasEditor({
         const snapDistance = 15; // pixels
         
         if (distance <= snapDistance) {
-          console.log('Auto-completing polygon - clicked near first point');
+          // console.log('Auto-completing polygon - clicked near first point');
           finishPolygon();
           return;
         }
@@ -706,7 +751,6 @@ export function CanvasEditor({
       const newPoint = new fabric.Point(pointer.x, pointer.y);
       const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
-      console.log('Adding point to polygon:', newPoint);
 
       // Create line from last point to new point
       const line = new fabric.Line([lastPoint.x, lastPoint.y, pointer.x, pointer.y], {

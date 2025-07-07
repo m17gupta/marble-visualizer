@@ -32,7 +32,8 @@ export const DashboardLandingSection = () => {
           sidebarCollapsed && "lg:pl-20"
         )}
       >
-        {workspace_type=='workspace' && <LandingHome />}
+        {workspace_type=='workspace' &&
+         <LandingHome />}
 
           
           {
