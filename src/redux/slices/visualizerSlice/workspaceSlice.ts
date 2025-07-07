@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define view types
 export type ViewType = 'front' | 'rear' | 'left' | 'right';
-export type WorkSpaceType = 'visual' | 'workspace' | 'studio';
+export type WorkSpaceType = 'renovate' | 'workspace' | 'design-hub' | 'studio';
 // Define the state interface
 interface WorkspaceState {
   workspace_type: WorkSpaceType;

@@ -36,6 +36,7 @@ const VisualToolHome = () => {
   const {workspace_type} = useSelector((state: RootState) => state.workspace);
   const createdProjectId = useRef<number | null>(null);
 
+  console.log('Workspace Type:', workspace_type);
   // Upload a file for a given view
   const handleFileUpload = (file: File, view: ViewType) => {
     setViewFile(view, file);
@@ -139,10 +140,10 @@ const VisualToolHome = () => {
             console.log('Form reset');
             setIsCreatingJob(false);
             // Navigate to the project page or workspace after job creation
-            if(workspace_type === 'visual') {
+            if(workspace_type === 'renovate') {
               navigate(`/workspace/project/${createdProjectId.current}`);
             }else if (workspace_type === 'studio') {
-              navigate(`/studio/project/${createdProjectId.current}`);
+              navigate(`/design-hub/project/${createdProjectId.current}`);
             }
           },
           clearProjectId: () => {

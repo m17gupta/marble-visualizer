@@ -15,6 +15,8 @@ export const DashboardLandingSection = () => {
  // const { isWorkSpace, isVisual } = useSelector((state: RootState) => state.workspace);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { workspace_type } = useSelector((state: RootState) => state.workspace);
+
+  console.log('Workspace Type:', workspace_type);
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
@@ -32,9 +34,16 @@ export const DashboardLandingSection = () => {
       >
         {workspace_type=='workspace' && <LandingHome />}
 
-        {workspace_type=='visual' || workspace_type=='studio' && <VisualToolHome />}
+          
+          {
+          workspace_type=='renovate' && 
+           <VisualToolHome />}
+          {
+          workspace_type=='design-hub' && 
+           <VisualToolHome />}
 
-      </div>
+
+        </div>
 
 
     </div>

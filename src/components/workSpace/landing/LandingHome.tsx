@@ -287,7 +287,7 @@ const LandingHome = () => {
         // Add your navigation logic here
         switch (pickId) {
           case 'renovate':
-            dispatch(updateWorkspaceType('visual'))
+            dispatch(updateWorkspaceType('renovate'))
            
             // Navigate to renovation tool
             break;
@@ -295,7 +295,7 @@ const LandingHome = () => {
             // Navigate to virtual staging
             break;
           case 'studio':
-            dispatch(updateWorkspaceType('studio'))
+            dispatch(updateWorkspaceType('design-hub'))
             // Navigate to studio
             break;
         }
