@@ -39,7 +39,10 @@ interface SegmentsState {
   selectedSegmentIds: string[];
   copiedSegment: Segment | null;
   isDrawing: boolean;
-  currentPoints: SegmentPoint[];
+  segmentDrawn:{
+    [key: string]: fabric.Point[];
+  };
+  // currentPoints: SegmentPoint[];
   canvasHistory: string[];
   historyIndex: number;
   maxHistorySize: number;
@@ -52,7 +55,8 @@ const initialState: SegmentsState = {
   selectedSegmentIds: [],
   copiedSegment: null,
   isDrawing: false,
-  currentPoints: [],
+  // currentPoints: [],
+  segmentDrawn: {},
   canvasHistory: [],
   historyIndex: -1,
   maxHistorySize: 50,
@@ -112,42 +116,45 @@ const segmentsSlice = createSlice({
     // Drawing state management
     startDrawing: (state) => {
       state.isDrawing = true;
-      state.currentPoints = [];
-    },
-    addPoint: (state, action: PayloadAction<SegmentPoint>) => {
-      if (state.isDrawing) {
-        state.currentPoints.push(action.payload);
-      }
-    },
-    finishDrawing: (state, action: PayloadAction<{ name?: string; type?: string; projectId?: string }>) => {
-      if (state.isDrawing && state.currentPoints.length >= 3) {
-        const maxZIndex = Math.max(...state.segments.map(s => s.zIndex), 0);
-        
-        const newSegment: Segment = {
-          id: Date.now().toString(),
-          name: action.payload.name || `Segment ${state.segments.length + 1}`,
-          type: action.payload.type || 'walls', // Default to walls
-          points: [...state.currentPoints],
-          fillColor: generateRandomColor(),
-          strokeColor: '#000000',
-          strokeWidth: 2,
-          opacity: 0.7,
-          visible: true,
-          zIndex: maxZIndex + 1,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        
-        state.segments.push(newSegment);
-        state.activeSegmentId = newSegment.id;
-      }
       
-      state.isDrawing = false;
-      state.currentPoints = [];
     },
+    // addPoint: (state, action: PayloadAction<SegmentPoint>) => {
+    //   if (state.isDrawing) {
+    //     state.currentPoints.push(action.payload);
+    //   }
+    // },
+    updateSegmentDrawn: (state, action) => {
+      state.segmentDrawn = action.payload;
+    },
+    // finishDrawing: (state, action: PayloadAction<{ name?: string; type?: string; projectId?: string }>) => {
+    //   if (state.isDrawing && state.currentPoints.length >= 3) {
+    //     const maxZIndex = Math.max(...state.segments.map(s => s.zIndex), 0);
+        
+    //     const newSegment: Segment = {
+    //       id: Date.now().toString(),
+    //       name: action.payload.name || `Segment ${state.segments.length + 1}`,
+    //       type: action.payload.type || 'walls', // Default to walls
+    //       points: [...state.currentPoints],
+    //       fillColor: generateRandomColor(),
+    //       strokeColor: '#000000',
+    //       strokeWidth: 2,
+    //       opacity: 0.7,
+    //       visible: true,
+    //       zIndex: maxZIndex + 1,
+    //       createdAt: new Date().toISOString(),
+    //       updatedAt: new Date().toISOString(),
+    //     };
+        
+    //     state.segments.push(newSegment);
+    //     state.activeSegmentId = newSegment.id;
+    //   }
+      
+    //   state.isDrawing = false;
+    //   state.currentPoints = [];
+    // },
     cancelDrawing: (state) => {
       state.isDrawing = false;
-      state.currentPoints = [];
+      state.segmentDrawn = {}
     },
     
     // Segment management
@@ -369,7 +376,7 @@ const segmentsSlice = createSlice({
       state.activeSegmentId = null;
       state.selectedSegmentIds = [];
       state.isDrawing = false;
-      state.currentPoints = [];
+      state.segmentDrawn = {};
     },
     clearError: (state) => {
       state.error = null;
@@ -399,8 +406,8 @@ const segmentsSlice = createSlice({
 
 export const {
   startDrawing,
-  addPoint,
-  finishDrawing,
+  updateSegmentDrawn,
+  // finishDrawing,
   cancelDrawing,
   selectSegment,
   selectMultipleSegments,

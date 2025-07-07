@@ -5,11 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
 import {
   startDrawing,
-  addPoint,
-  finishDrawing,
   selectSegment,
   deleteSegment,
-  // assignMaterialToSegment,
   removeMaterialFromSegment,
   saveToHistory,
   undo,
@@ -18,6 +15,7 @@ import {
   pasteSegment,
   bringForward,
   sendBackward,
+  updateSegmentDrawn,
 } from '@/redux/slices/segmentsSlice';
 import {
   setZoom,
@@ -25,37 +23,35 @@ import {
   setCanvasReady,
   setMousePosition
 } from '@/redux/slices/canvasSlice';
-//import { MaterialPickerDialog } from './MaterialPickerDialog';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import {
-  MousePointer,
-  Pentagon,
-  Trash2,
-  Undo2,
-  Redo2,
-  Download,
-  // Eye,
-  // EyeOff,
-  Copy,
-  Palette,
-  Paintbrush,
-  X,
-  Clipboard,
-  ChevronUp,
+import { 
+  Palette, 
+  MousePointer, 
+  Pentagon, 
+  Trash2, 
+  Undo2, 
+  Redo2, 
+  Download, 
+  Copy, 
+  Paintbrush, 
+  X, 
+  Clipboard, 
+  ChevronUp, 
   ChevronDown,
   ZoomIn,
-  ZoomOut,
+  ZoomOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { animatePolygonCompletion, PointModel } from '@/utils/canvasAnimations';
 import { drawLines } from '../canvasUtil/DrawMouseLine';
+import CanvasToolbar from './CanvasToolbar';
 
-type DrawingTool = 'select' | 'polygon';
+export type DrawingTool = 'select' | 'polygon';
 
 
 interface CanvasEditorProps {
@@ -84,7 +80,7 @@ export function CanvasEditor({
     activeSegmentId,
     copiedSegment,
     isDrawing,
-    currentPoints,
+   segmentDrawn,
     canvasHistory,
     historyIndex
   } = useSelector((state: RootState) => state.segments);
@@ -186,6 +182,16 @@ export function CanvasEditor({
   // Delete selected segment
   const handleDeleteSelected = useCallback(() => {
     if (!activeSegmentId || !fabricCanvasRef.current) return;
+
+    // Also remove from allSegments if it exists there
+    if (allSegments.current && Object.keys(allSegments.current).includes(activeSegmentId)) {
+      const updatedSegments = { ...allSegments.current };
+      delete updatedSegments[activeSegmentId];
+      allSegments.current = updatedSegments;
+      
+      // Update Redux store with the modified segments
+      dispatch(updateSegmentDrawn(updatedSegments));
+    }
 
     dispatch(deleteSegment(activeSegmentId));
     saveCanvasState();
@@ -632,13 +638,24 @@ export function CanvasEditor({
 
   // Helper function to create a point circle
   const createPointCircle = useCallback((x: number, y: number, isFirst: boolean = false) => {
+    // Get current zoom level to adjust the circle size
+    const currentZoom = fabricCanvasRef.current?.getZoom() || 1;
+    
+    // Base size values that will be adjusted by zoom
+    const baseRadius = 4;
+    const baseStrokeWidth = 2;
+    
+    // Adjust size inversely proportional to zoom
+    const adjustedRadius = baseRadius / currentZoom;
+    const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
+    
     return new fabric.Circle({
-      left: x - 4,
-      top: y - 4,
-      radius: 4,
+      left: x - adjustedRadius,
+      top: y - adjustedRadius,
+      radius: adjustedRadius,
       fill: isFirst ? '#FF1493' : '#007bff', // Pink for first point, blue for others
       stroke: '#ffffff',
-      strokeWidth: 2,
+      strokeWidth: adjustedStrokeWidth,
       selectable: false,
       evented: false,
       data: { 
@@ -660,8 +677,8 @@ export function CanvasEditor({
     if (!fabricCanvasRef.current || tempPoints.current.length < 3) return;
 
     const canvas = fabricCanvasRef.current;
-    console.log('Finishing polygon with', tempPoints.current.length, 'points');
-    
+    const currentZoom = canvas.getZoom();
+  
     // Remove all temporary objects (lines, preview line, and point circles)
     const tempObjects = canvas.getObjects().filter(obj =>
       (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' || 
@@ -672,17 +689,24 @@ export function CanvasEditor({
 
     // Create the actual polygon
     const polygonPoints = tempPoints.current.map(p => new fabric.Point(p.x, p.y));
+    
+    // Base stroke width value
+    const baseStrokeWidth = 2;
+    // Adjust stroke width inversely proportional to zoom
+    const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
+    
     const polygon = new fabric.Polygon(polygonPoints, {
       fill: 'rgba(255, 132, 0, 0.3)', // Semi-transparent orange fill
       stroke: '#FF1493',
-      strokeWidth: 2,
+      strokeWidth: adjustedStrokeWidth,
       selectable: true,
       evented: true,
-     
     });
 
     allSegmentsCount.current += 1;
-    allSegments.current[`poly-${allSegmentsCount.current}`] = tempPoints.current;
+    const segmentId = `poly-${allSegmentsCount.current}`;
+    allSegments.current[segmentId] = tempPoints.current;
+    
     // Add custom data to the polygon for identification
     (polygon as fabric.Object & { data?: { type?: string; segmentId?: string } }).data = {
       type: 'segment',
@@ -692,22 +716,22 @@ export function CanvasEditor({
     canvas.add(polygon);
     canvas.renderAll();
 
-    // Finish drawing in Redux
-    // Uncomment if you want to dispatch an action
-    // dispatch(finishDrawing({ name: `Segment ${segments.length + 1}` }));
-
     // Clean up temporary state
     isPolygonMode.current = false;
     tempPoints.current = [];
     tempLines.current = [];
     tempPointCircles.current = [];
 
-    // Save to history
-    // const canvasState = JSON.stringify(canvas.toJSON());
-    // dispatch(saveToHistory(canvasState));
+    // Ensure we're not losing previously drawn segments when dispatching
+    // Create a fresh copy of the current segments to ensure Redux detects the change
+    const updatedSegments = { ...allSegments.current };
+    
+    // Dispatch updated segments to Redux store
+    console.log('Dispatching segments:', updatedSegments);
+    dispatch(updateSegmentDrawn(updatedSegments));
 
     toast.success('Polygon created successfully! Ready to draw another.');
-  }, []);
+  }, [dispatch]);
 
   // Handle mouse down events
   const handleMouseDown = useCallback((e: fabric.TEvent) => {
@@ -718,10 +742,10 @@ export function CanvasEditor({
 
     const canvas = fabricCanvasRef.current;
     const pointer = canvas.getPointer(e.e);
+    const currentZoom = canvas.getZoom();
 
     if (!isPolygonMode.current) {
-      // Start new polygon
-      console.log('Starting new polygon');
+     
       isPolygonMode.current = true;
       tempPoints.current = [new fabric.Point(pointer.x, pointer.y)];
       tempLines.current = [];
@@ -733,15 +757,29 @@ export function CanvasEditor({
       tempPointCircles.current.push(firstPointCircle);
       
       dispatch(startDrawing());
+      
+      // When starting a new polygon, make sure we preserve existing segments in Redux
+      if (Object.keys(segmentDrawn).length > 0 && Object.keys(allSegments.current).length === 0) {
+        // If segmentDrawn has data but allSegments doesn't, sync them
+        // Convert the Redux points to fabric.Point objects
+        const convertedSegments: {[key: string]: fabric.Point[]} = {};
+        
+        Object.entries(segmentDrawn).forEach(([key, points]) => {
+          // Convert each point to a fabric.Point
+          convertedSegments[key] = points.map(p => new fabric.Point(p.x, p.y));
+        });
+        
+        allSegments.current = convertedSegments;
+        console.log('Synced existing segments from Redux to local state:', allSegments.current);
+      }
     } else {
       // Check if we have at least 3 points and clicked near the first point
       if (tempPoints.current.length >= 3) {
         const firstPoint = tempPoints.current[0];
         const distance = calculateDistance(firstPoint, pointer);
-        const snapDistance = 15; // pixels
+        const snapDistance = 15 / currentZoom; // Adjust snap distance based on zoom
         
         if (distance <= snapDistance) {
-          // console.log('Auto-completing polygon - clicked near first point');
           finishPolygon();
           return;
         }
@@ -751,17 +789,19 @@ export function CanvasEditor({
       const newPoint = new fabric.Point(pointer.x, pointer.y);
       const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
+      // Base stroke width
+      const baseStrokeWidth = 2;
+      // Adjust stroke width inversely proportional to zoom
+      const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
 
-      // Create line from last point to new point
+      // Create line from last point to new point with zoom-adjusted stroke width
       const line = new fabric.Line([lastPoint.x, lastPoint.y, pointer.x, pointer.y], {
         stroke: '#FF1493',
-        strokeWidth: 2,
+        strokeWidth: adjustedStrokeWidth,
         selectable: false,
         evented: false,
+        data: { type: 'temp-line' }
       });
-
-      // Add custom data to the line for identification
-      (line as fabric.Object & { data?: { type?: string } }).data = { type: 'temp-line' };
 
       // Create point circle for the new point (blue color)
       const pointCircle = createPointCircle(pointer.x, pointer.y, false);
@@ -771,10 +811,8 @@ export function CanvasEditor({
       tempPoints.current.push(newPoint);
       tempLines.current.push(line);
       tempPointCircles.current.push(pointCircle);
-
-      dispatch(addPoint({ x: pointer.x, y: pointer.y }));
     }
-  }, [activeTool, dispatch, createPointCircle, calculateDistance, finishPolygon]);
+  }, [activeTool, dispatch, createPointCircle, calculateDistance, finishPolygon, segmentDrawn]);
 
   // Handle mouse move for preview line
   const handleMouseMove = useCallback((e: fabric.TEvent) => {
@@ -789,16 +827,10 @@ export function CanvasEditor({
     dispatch(setMousePosition({ x: Math.round(pointer.x), y: Math.round(pointer.y) }));
 
     // update the cursor line
-    console.log('Mouse move pointer:', pointer);
-    console.log('currentZoom:', currentZoom, 'fabricCanvasRef:', fabricCanvasRef);
     drawLines(pointer.x, pointer.y, fabricCanvasRef, currentZoom);
     if (!fabricCanvasRef.current || !isPolygonMode.current || tempPoints.current.length === 0) return;
 
-    // const canvas = fabricCanvasRef.current;
-    // const pointer = fabricCanvasRef.current.getPointer(e.e);
     const lastPoint = tempPoints.current[tempPoints.current.length - 1];
-
-    
 
     // Remove existing preview line
     const previewLine = canvas.getObjects().find(obj =>   
@@ -808,17 +840,23 @@ export function CanvasEditor({
       canvas.remove(previewLine);
     }
 
-    // Add new preview line
+    // Base values
+    const baseStrokeWidth = 1;
+    const baseDashArray = [5, 5];
+    
+    // Adjust stroke width and dash array inversely proportional to zoom
+    const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
+    const adjustedDashArray = baseDashArray.map(value => value / currentZoom);
+
+    // Add new preview line with zoom-adjusted properties
     const line = new fabric.Line([lastPoint.x, lastPoint.y, pointer.x, pointer.y], {
       stroke: '#007bff',
-      strokeWidth: 1,
-      strokeDashArray: [5, 5],
+      strokeWidth: adjustedStrokeWidth,
+      strokeDashArray: adjustedDashArray,
       selectable: false,
       evented: false,
+      data: { type: 'preview-line' }
     });
-
-    // Add custom data to the preview line for identification
-    (line as fabric.Object & { data?: { type?: string } }).data = { type: 'preview-line' };
 
     canvas.add(line);
 
@@ -827,8 +865,11 @@ export function CanvasEditor({
       const firstPoint = tempPoints.current[0];
       const mousePoint: PointModel = { x: pointer.x, y: pointer.y };
       
+      // Adjust snap distance based on zoom level
+      const snapDistance = 15 / currentZoom;
+      
       // Check if mouse is near first point and animate it
-      animatePolygonCompletion(mousePoint, canvas, firstPoint, 15);
+      animatePolygonCompletion(mousePoint, canvas, firstPoint, snapDistance);
     }
 
     canvas.renderAll();
@@ -842,57 +883,7 @@ export function CanvasEditor({
     finishPolygon();
   }, [finishPolygon]);
 
-  // Handle object selection
-  // const handleSelection = useCallback((e: any) => {
-  //   const activeObject = e.selected?.[0] || e.target;
-  //   console.log('Object selected:', activeObject?.data);
-  //   if (activeObject?.data?.segmentId) {
-  //     dispatch(selectSegment(activeObject.data.segmentId));
-  //   }
-  // }, [dispatch]);
-
-  // Handle object modification
-  // const handleObjectModified = useCallback((e: any) => {
-  //   const obj = e.target;
-  //   console.log('Object modified:', obj?.data);
-  //   if (obj?.data?.segmentId && obj.type === 'polygon') {
-  //     const polygon = obj as fabric.Polygon;
-  //     const points = polygon.points?.map(p => ({ x: p.x, y: p.y })) || [];
-
-  //     dispatch(updateSegment({
-  //       id: obj.data.segmentId,
-  //       updates: { points }
-  //     }));
-
-  //     saveCanvasState();
-  //   }
-  // }, [dispatch]);
-
-  // Handle mouse over for hover effects
-  // const handleMouseOver = useCallback((e: fabric.TEvent) => {
-  //   const obj = e.target;
-  //   if (obj?.data?.segmentId && activeTool.current === 'select') {
-  //     setHoveredSegmentId(obj.data.segmentId);
-  //     obj.set('stroke', '#007bff');
-  //     obj.set('strokeWidth', 3);
-  //     fabricCanvasRef.current?.renderAll();
-  //   }
-  // }, []);
-
-  // Handle mouse out for hover effects
-  // const handleMouseOut = useCallback((e: any) => {
-  //   const obj = e.target;
-  //   if (obj?.data?.segmentId && activeTool.current === 'select') {
-  //     setHoveredSegmentId(null);
-  //     const segment = segments.find(s => s.id === obj.data.segmentId);
-  //     if (segment) {
-  //       obj.set('stroke', segment.strokeColor);
-  //       obj.set('strokeWidth', segment.strokeWidth);
-  //       fabricCanvasRef.current?.renderAll();
-  //     }
-  //   }
-  // }, [segments]);
-  // Tool handlers
+ 
   const handleToolChange = (tool: DrawingTool) => {
     console.log('Changing tool to:', tool);
 
@@ -995,8 +986,7 @@ export function CanvasEditor({
     <TooltipProvider>
       <div className={cn('flex flex-col space-y-4', className)}>
         {/* Toolbar */}
-        <Card>
-          <CardContent className="p-4">
+        <CanvasToolbar>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 {/* Drawing Tools */}
@@ -1187,7 +1177,7 @@ export function CanvasEditor({
                 {/* Status */}
                 {isDrawing && (
                   <Badge variant="secondary">
-                    Drawing: {currentPoints.length} points
+                    segment drawn: {Object.keys(segmentDrawn).length}
                   </Badge>
                 )}
 
@@ -1206,7 +1196,6 @@ export function CanvasEditor({
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          // className="h-4 w-4 p-0"
                           onClick={() => {
                             if (fabricCanvasRef.current) {
                               // Reset zoom to 1 (100%)
@@ -1339,8 +1328,7 @@ export function CanvasEditor({
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+        </CanvasToolbar>
 
         {/* Canvas Container */}
         <motion.div
