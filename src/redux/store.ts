@@ -5,6 +5,7 @@ import userProfileSlice from './slices/userProfileSlice';
 import projectSlice from './slices/projectSlice';
 import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
+import canvasSlice from './slices/canvasSlice'; // New canvas slice
 import materialsSlice from './slices/materialSlices/materialsSlice';
 import materialSegmentSlice from './slices/materialSlices/materialSegmentSlice';
 import genAiSlice from './slices/visualizerSlice/genAiSlice'; // New GenAI slice
@@ -27,6 +28,7 @@ export const store = configureStore({
     projects: projectSlice,
     studio: studioSlice,
     segments: segmentsSlice,
+    canvas: canvasSlice, // New canvas slice
     materials: materialsSlice,
     materialSegments: materialSegmentSlice,
     genAi: genAiSlice, // New GenAI slice

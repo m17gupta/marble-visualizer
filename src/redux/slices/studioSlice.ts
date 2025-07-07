@@ -38,7 +38,7 @@ const initialState: StudioState = {
     tone: 'warm',
     intensity: 50,
   },
-  currentImageUrl: null,
+  currentImageUrl: "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/78/styled_output_ea735964574e45e2b1b08703074bba64_1751710399515_8f7guf.png",
   currentJob: null,
   jobHistory: [],
   isUploading: false,

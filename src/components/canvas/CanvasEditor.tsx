@@ -20,6 +20,12 @@ import {
   bringForward,
   sendBackward,
 } from '@/redux/slices/segmentsSlice';
+import {
+  setZoom,
+  toggleZoomMode,
+  setCanvasReady,
+  setMousePosition
+} from '@/redux/slices/canvasSlice';
 //import { MaterialPickerDialog } from './MaterialPickerDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,9 +49,12 @@ import {
   Clipboard,
   ChevronUp,
   ChevronDown,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { animatePolygonCompletion, PointModel } from '@/utils/canvasAnimations';
+import { drawLines } from '../canvasUtil/DrawMouseLine';
 
 type DrawingTool = 'select' | 'polygon';
 
@@ -57,6 +66,11 @@ interface CanvasEditorProps {
   className?: string;
   onImageLoad?: () => void;
 }
+
+ /**
+   * Handle mouse wheel events for zooming the canvas
+   * @param event - Fabric.js event object containing wheel event data
+   */
 
 export function CanvasEditor({
   imageUrl,
@@ -76,6 +90,13 @@ export function CanvasEditor({
     historyIndex
   } = useSelector((state: RootState) => state.segments);
 
+  const {
+    currentZoom,
+    zoomMode,
+    isCanvasReady,
+    mousePosition
+  } = useSelector((state: RootState) => state.canvas);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const backgroundImageRef = useRef<fabric.Image | null>(null);
@@ -91,7 +112,7 @@ export function CanvasEditor({
   const tempPointCircles = useRef<fabric.Circle[]>([]);
 
   const [hoveredSegmentId] = useState<string | null>(null);
-  const [canvasReady, setCanvasReady] = useState(false);
+  // Canvas ready state now comes from Redux
 
   // Save canvas state to history
   const saveCanvasState = useCallback(() => {
@@ -135,6 +156,7 @@ export function CanvasEditor({
     toast.success('Segment deleted');
   }, [activeSegmentId, dispatch, saveCanvasState]);
 
+  console.log('Current Zoom:', currentZoom*100);
   const handleCancelDrawing = useCallback(() => {
     if (fabricCanvasRef.current && isPolygonMode.current) {
       const canvas = fabricCanvasRef.current;
@@ -174,14 +196,19 @@ export function CanvasEditor({
 
     // Canvas event handlers
     canvas.on('mouse:down', handleMouseDown);
-    canvas.on('mouse:move', handleMouseMove);
+    canvas.on('mouse:move',(event)=>{ handleMouseMove(event); });
     canvas.on('mouse:dblclick', handleDoubleClick);
     // canvas.on('selection:created', handleSelection);
     // canvas.on('selection:updated', handleSelection);
     canvas.on('selection:cleared', () => {
-      console.log('Selection cleared');
+     
       dispatch(selectSegment(null));
     });
+
+     canvas.on("mouse:wheel", (event) => {
+        handleMouseWheel(event);
+        dispatch(setZoom(canvas.getZoom()));
+      });
     // canvas.on('object:modified', handleObjectModified);
    // canvas.on('mouse:over', handleMouseOver);
     // canvas.on('mouse:out', handleMouseOut);
@@ -232,7 +259,7 @@ export function CanvasEditor({
 
     document.addEventListener('keydown', handleKeyDown);
 
-    setCanvasReady(true);
+    dispatch(setCanvasReady(true));
     console.log('Canvas initialized successfully');
 
     return () => {
@@ -241,21 +268,20 @@ export function CanvasEditor({
       canvas.dispose();
       fabricCanvasRef.current = null;
       backgroundImageRef.current = null;
-      setCanvasReady(false);
+      dispatch(setCanvasReady(false));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [width, height, activeSegmentId, copiedSegment, dispatch]);
 
   // Load background image with comprehensive CORS and fallback handling
   useEffect(() => {
-    if (!fabricCanvasRef.current || !canvasReady || !imageUrl) {
-        console.log('Skipping image load:', { canvasReady, imageUrl: !!imageUrl });
+    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+        console.log('Skipping image load:', { isCanvasReady, imageUrl: !!imageUrl });
       return;
     }
 
     const canvas = fabricCanvasRef.current;
-    console.log('Loading background image:', imageUrl);
-
+  
     // Remove existing background image
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
@@ -263,7 +289,7 @@ export function CanvasEditor({
     }
 
     // Helper function to create and add fabric image to canvas
-    const addImageToCanvas = (imgElement: HTMLImageElement, loadMethod: string) => {
+    const addImageToCanvas = (imgElement: HTMLImageElement) => {
       const fabricImage = new fabric.Image(imgElement, {
         selectable: false,
         evented: false,
@@ -293,8 +319,8 @@ export function CanvasEditor({
       canvas.sendObjectToBack(fabricImage);
       canvas.renderAll();
 
-      console.log(`Background image loaded successfully via ${loadMethod}`);
-      toast.success('Background image loaded successfully');
+      // console.log(`Background image loaded successfully via ${loadMethod}`);
+      // toast.success('Background image loaded successfully');
 
       // Call the onImageLoad callback if provided
       if (onImageLoad) {
@@ -372,7 +398,8 @@ export function CanvasEditor({
         try {
           console.log(`Attempting to load image with CORS mode: ${corsMode || 'none'}`);
           const imgElement = await loadImageWithCORS(corsMode);
-          addImageToCanvas(imgElement, `CORS mode: ${corsMode || 'none'}`);
+          console.log(`Image loaded with CORS mode: ${corsMode || 'none'}`);
+          addImageToCanvas(imgElement);
           return; // Success, exit
         } catch (error) {
           console.warn(`Failed to load with CORS mode: ${corsMode || 'none'}`, error);
@@ -386,7 +413,8 @@ export function CanvasEditor({
         try {
           console.log(`Attempting to load image via fetch with mode: ${fetchMode}`);
           const imgElement = await loadImageWithFetch(fetchMode);
-          addImageToCanvas(imgElement, `Fetch mode: ${fetchMode}`);
+          console.log(`Image loaded with fetch mode: ${fetchMode}`);
+          addImageToCanvas(imgElement);
           return; // Success, exit
         } catch (error) {
           console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
@@ -413,11 +441,11 @@ export function CanvasEditor({
     };
 
     tryLoadImage();
-  }, [imageUrl, canvasReady, width, height, onImageLoad]);
+  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
   // Update tool behavior
   useEffect(() => {
-    if (!fabricCanvasRef.current || !canvasReady) return;
+    if (!fabricCanvasRef.current || !isCanvasReady) return;
 
     const canvas = fabricCanvasRef.current;
     console.log('Updating tool behavior:', activeTool);
@@ -436,7 +464,63 @@ export function CanvasEditor({
     // });
 
     canvas.renderAll();
-  }, [activeTool, canvasReady]);
+  }, [activeTool, isCanvasReady]);
+
+  // Control whether zoom is centered on mouse position or canvas center
+  const getIsCenterZooms = useRef(zoomMode === 'center');
+  
+ 
+  const handleMouseWheel = (event: fabric.TEvent) => {
+    // Cast the event to WheelEvent to access deltaY
+    const deltaE = event.e as WheelEvent;
+    const pointer = fabricCanvasRef.current?.getPointer(event.e);
+    
+    // Make sure we have all required objects
+    if (deltaE && fabricCanvasRef.current && pointer) {
+      // Prevent default browser behavior
+      event.e.stopPropagation();
+      event.e.preventDefault();
+      
+      const delta = deltaE.deltaY;
+      let zoom = fabricCanvasRef.current.getZoom();
+      
+      // Calculate new zoom level based on wheel direction
+      // Using 0.999^delta for smoother zooming
+      zoom *= 0.999 ** delta;
+      
+      // Enforce zoom boundaries
+      const wouldGoTooSmall = zoom < 1;
+      if (zoom > 20) zoom = 20; // Set maximum zoom level
+      if (zoom < 1) zoom = 1; // Set minimum zoom level
+      
+      // Optional: Draw reference lines for better visual feedback
+      drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
+      
+      // Apply the zoom based on mode preference
+      if (getIsCenterZooms.current || wouldGoTooSmall) {
+        // Always use center zoom when hitting minimum zoom level
+        const center = fabricCanvasRef.current.getCenter();
+        fabricCanvasRef.current.zoomToPoint(
+          new fabric.Point(center.left, center.top),
+          zoom
+        );
+        
+        // Show a notification if we're forcing center alignment at minimum zoom
+        if (wouldGoTooSmall && !getIsCenterZooms.current) {
+          toast.info('Minimum zoom reached - centering view', { id: 'zoom-min-center' });
+        }
+      } else {
+        // Zoom to the mouse position
+        fabricCanvasRef.current.zoomToPoint(
+          new fabric.Point(pointer.x, pointer.y),
+          zoom
+        );
+      }
+      
+      // Update the zoom state
+      dispatch(setZoom(zoom));
+    }
+  };
 
   // Sync segments with canvas
   // useEffect(() => {
@@ -650,14 +734,30 @@ export function CanvasEditor({
 
   // Handle mouse move for preview line
   const handleMouseMove = useCallback((e: fabric.TEvent) => {
-    if (!fabricCanvasRef.current || !isPolygonMode.current || tempPoints.current.length === 0) return;
+
+    if(!fabricCanvasRef.current) return;
 
     const canvas = fabricCanvasRef.current;
     const pointer = canvas.getPointer(e.e);
+    const currentZoom = canvas.getZoom();
+
+    // Update mouse position in Redux
+    dispatch(setMousePosition({ x: Math.round(pointer.x), y: Math.round(pointer.y) }));
+
+    // update the cursor line
+    console.log('Mouse move pointer:', pointer);
+    console.log('currentZoom:', currentZoom, 'fabricCanvasRef:', fabricCanvasRef);
+    drawLines(pointer.x, pointer.y, fabricCanvasRef, currentZoom);
+    if (!fabricCanvasRef.current || !isPolygonMode.current || tempPoints.current.length === 0) return;
+
+    // const canvas = fabricCanvasRef.current;
+    // const pointer = fabricCanvasRef.current.getPointer(e.e);
     const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
+    
+
     // Remove existing preview line
-    const previewLine = canvas.getObjects().find(obj => 
+    const previewLine = canvas.getObjects().find(obj =>   
       (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line'
     );
     if (previewLine) {
@@ -688,7 +788,7 @@ export function CanvasEditor({
     }
 
     canvas.renderAll();
-  }, []);
+  }, [dispatch]);
 
   // Handle double click to finish polygon
   const handleDoubleClick = useCallback(() => {
@@ -1057,6 +1157,137 @@ export function CanvasEditor({
                     )}
                   </Badge>
                 )}
+                 <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          // className="h-4 w-4 p-0"
+                          onClick={() => {
+                            if (fabricCanvasRef.current) {
+                              // Reset zoom to 1 (100%)
+                              const center = fabricCanvasRef.current.getCenter();
+                              fabricCanvasRef.current.zoomToPoint(
+                                new fabric.Point(center.left, center.top),
+                                1
+                              );
+                              dispatch(setZoom(1));
+                              toast.success("Zoom reset to 100%");
+                            }
+                          }}
+                        >
+                          <span className="text-xs font-bold">Reset </span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Reset zoom to 100%</TooltipContent>
+                    </Tooltip>
+
+                {/* Display current zoom level and mouse coordinates */}
+                <Badge variant="secondary" className="flex items-center gap-2">
+                  <span>Zoom: {Math.round(currentZoom * 100)}%</span>
+                  <div className="flex items-center gap-1">
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-4 w-4 p-0"
+                          onClick={() => {
+                            if (fabricCanvasRef.current) {
+                              const zoom = fabricCanvasRef.current.getZoom() * 1.1;
+                              const limitedZoom = Math.min(20, zoom);
+                              if (getIsCenterZooms.current) {
+                                const center = fabricCanvasRef.current.getCenter();
+                                fabricCanvasRef.current.zoomToPoint(
+                                  new fabric.Point(center.left, center.top),
+                                  limitedZoom
+                                );
+                              } else {
+                                const center = { x: mousePosition.x, y: mousePosition.y };
+                                fabricCanvasRef.current.zoomToPoint(
+                                  new fabric.Point(center.x, center.y),
+                                  limitedZoom
+                                );
+                              }
+                              dispatch(setZoom(limitedZoom));
+                            }
+                          }}
+                        >
+                          <ZoomIn className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Zoom in</TooltipContent>
+                    </Tooltip>
+                   
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-4 w-4 p-0"
+                          onClick={() => {
+                            if (fabricCanvasRef.current) {
+                              const zoom = fabricCanvasRef.current.getZoom() * 0.9;
+                              const limitedZoom = Math.max(1, zoom);
+                              
+                              // Check if we need to force center alignment due to minimum zoom
+                              const wouldGoTooSmall = zoom < 1;
+                              
+                              if (getIsCenterZooms.current || wouldGoTooSmall) {
+                                // Always use center zoom when hitting minimum zoom level
+                                const center = fabricCanvasRef.current.getCenter();
+                                fabricCanvasRef.current.zoomToPoint(
+                                  new fabric.Point(center.left, center.top),
+                                  limitedZoom
+                                );
+                                
+                                // Show a notification if we're forcing center alignment
+                                if (wouldGoTooSmall && !getIsCenterZooms.current) {
+                                  toast.info('Minimum zoom reached - centering view');
+                                }
+                              } else {
+                                const center = { x: mousePosition.x, y: mousePosition.y };
+                                fabricCanvasRef.current.zoomToPoint(
+                                  new fabric.Point(center.x, center.y),
+                                  limitedZoom
+                                );
+                              }
+                              dispatch(setZoom(limitedZoom));
+                            }
+                          }}
+                        >
+                          <ZoomOut className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Zoom out</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-4 w-4 p-0"
+                          onClick={() => {
+                            dispatch(toggleZoomMode());
+                            getIsCenterZooms.current = !getIsCenterZooms.current;
+                            toast.success(`Zoom mode: ${getIsCenterZooms.current ? 'Center' : 'Mouse'}`);
+                          }}
+                        >
+                          <span className="text-xs">{getIsCenterZooms.current ? 'C' : 'M'}</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {getIsCenterZooms.current 
+                          ? 'Zoom centered on canvas (click to change)' 
+                          : 'Zoom centered on mouse (click to change)'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <span className="w-px h-4 bg-gray-300"></span>
+                  <span>X: {mousePosition.x}</span>
+                  <span>Y: {mousePosition.y}</span>
+                </Badge>
 
                 <Button variant="outline" size="sm" onClick={handleExport}>
                   <Download className="h-4 w-4 mr-1" />
@@ -1097,7 +1328,7 @@ export function CanvasEditor({
                 )}
 
                 {/* Canvas Status */}
-                {!canvasReady && (
+                {!isCanvasReady && (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
