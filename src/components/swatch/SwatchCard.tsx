@@ -1,6 +1,6 @@
 import { useState } from 'react';
 // import { useDispatch } from 'react-redux';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 // import { AppDispatch } from '@/redux/store';
 
@@ -39,7 +39,7 @@ export function SwatchCard({
   className 
 }: SwatchCardProps) {
   // const dispatch = useDispatch<AppDispatch>();
-  // const navigate = useNavigate();
+   const navigate = useNavigate();
   // const { favorites } = useSelector((state: RootState) => state.swatches);
   
   const [isHovered, setIsHovered] = useState(false);
@@ -56,7 +56,8 @@ export function SwatchCard({
   };
 
   const handleViewDetails = () => {
-   // navigate(`/swatch/${swatch.slug}`);
+    console.log('Navigating to swatch details:', swatch.id);
+    navigate(`/swatch/${swatch.id}`);
   };
 
   const handleCopyColor = (e: React.MouseEvent) => {
@@ -101,8 +102,8 @@ export function SwatchCard({
               {/* Compact Color Preview */}
               <div className="w-12 h-12 flex-shrink-0 relative rounded-md overflow-hidden border border-border">
                 <img
-                  src={swatch.photo || '/placeholder-swatch.jpg'}
-                  alt={swatch.title}
+                   src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
+                alt={swatch.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -275,8 +276,8 @@ export function SwatchCard({
               {/* Color Preview */}
               <div className="w-24 h-24 flex-shrink-0 relative">
                 <img
-                  src={swatch.photo || '/placeholder-swatch.jpg'}
-                  alt={swatch.title}
+                   src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
+                alt={swatch.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -413,8 +414,8 @@ export function SwatchCard({
           {/* Color Preview */}
           <div className="relative aspect-square">
             <img
-              src={swatch.photo || '/placeholder-swatch.jpg'}
-              alt={swatch.title}
+               src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
+                alt={swatch.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;

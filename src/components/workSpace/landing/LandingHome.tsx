@@ -1,6 +1,5 @@
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
 import GetAllMaterialSegment from '@/components/swatchBookData/GetMaterialSegments';
+import RoomCard from '@/components/workSpace/landing/RoomCard';
 
 // Data for different categories
 const categoryData = {
@@ -15,26 +15,32 @@ const categoryData = {
     rooms: [
       {
         id: 'living-room',
-        title: 'Front View',
-        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        title: 'Existing Home Color/Material Ideas',
+        image: 'http://www.dzinly.in/files/dzinly-gallery/color-material-after.png',
+        beforeImage: 'http://www.dzinly.in/files/dzinly-gallery/rear-yard-living-space-design-before.png',
+        afterImage: 'http://www.dzinly.in/files/dzinly-gallery/rear-yard-living-space-design-after.png',
         alt: 'Modern living room with comfortable seating'
       },
       {
         id: 'kitchen',
-        title: 'Front View',
-        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        title: 'Existing Home Architectural Addition',
+        image: 'http://www.dzinly.in/files/dzinly-gallery/arc-addition-after.png',
+        beforeImage: 'http://www.dzinly.in/files/dzinly-gallery/arc-addition-before.png',
+        afterImage: 'http://www.dzinly.in/files/dzinly-gallery/arc-addition-after.png', // Added after image
         alt: 'Contemporary kitchen with modern appliances'
       },
       {
         id: 'bedroom',
-        title: 'Front View',
-        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        title: 'Turn Plans Into Renderings',
+        image: 'http://www.dzinly.in/files/dzinly-gallery/turn-plans-to-renderings-thumbnail.png',
         alt: 'Comfortable bedroom with natural lighting'
       },
       {
         id: 'bathroom',
-        title: 'Front View',
-        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        title: 'Front Yard Landscape Design',
+        image: 'http://www.dzinly.in/files/dzinly-gallery/turn-plans-to-renderings-thumbnail.png',
+        beforeImage: 'http://www.dzinly.in/files/dzinly-gallery/front-yard-landscape-design-before.png',
+        afterImage: 'http://www.dzinly.in/files/dzinly-gallery/front-yard-landscape-design-after.png', // Added after image
         alt: 'Modern bathroom with clean design'
       }
     ]
@@ -152,45 +158,6 @@ const topPicks = [
     ctaColor: 'bg-black hover:bg-gray-800'
   }
 ];
-
-interface RoomCardProps {
-  room: {
-    id: string;
-    title: string;
-    image: string;
-    alt: string;
-  };
-  onClick?: (roomId: string) => void;
-}
-
-const RoomCard: React.FC<RoomCardProps> = ({ room, onClick }) => {
-
-  return (
-    <div
-      className="relative flex-shrink-0 w-72 h-48 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group"
-      onClick={() => onClick?.(room.id)}
-    >
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
-        style={{ backgroundImage: `url(${room.image})` }}
-      />
-
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300" />
-
-      {/* Content */}
-      <div className="absolute inset-0 flex items-end p-6">
-        <div className="flex items-center justify-between w-full">
-          <h3 className="text-white text-xl font-semibold drop-shadow-lg">
-            {room.title}
-          </h3>
-          <ChevronRight className="text-white w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface TopPickCardProps {
   pick: {

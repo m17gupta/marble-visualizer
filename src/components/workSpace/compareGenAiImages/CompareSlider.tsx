@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IoArrowBack } from "react-icons/io5";
 import { FaDownload, FaExpand, FaCompress } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
 
 interface CompareSliderProps {
     beforeImage?: string;
@@ -16,13 +14,12 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     afterImage,
     onClose
 }) => {
-    const { requests } = useSelector((state: RootState) => state.genAi);
 
     // Default to the first house image if no beforeImage is provided
-    const originalImage = beforeImage || (requests.houseUrl.length > 0 ? requests.houseUrl[0] : 'https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/42/styled_output_52f90df66fb8433e91a6c746f98c9d67 (1)_1751621500813_0bpn0m.png');
+    const originalImage = beforeImage
 
     // Default to a placeholder if no afterImage is provided
-    const generatedImage = afterImage || 'https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/2025/06/26/styled_output_52f90df66fb8433e91a6c746f98c9d67+(1)_1750935293877_qebgfh.png';
+    const generatedImage = afterImage
 
     const [sliderPosition, setSliderPosition] = useState(50);
     const [isDragging, setIsDragging] = useState(false);
@@ -161,8 +158,8 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                         <div className="text-center p-4">
                             <p className="text-red-500 mb-2">Failed to load images</p>
-                            <button 
-                                onClick={() => window.location.reload()} 
+                            <button
+                                onClick={() => window.location.reload()}
                                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                             >
                                 Retry
@@ -222,7 +219,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                     className="absolute opacity-0 w-full"
                     style={{ height: '100%' }}
                 />
-                
+
                 {/* Labels for before and after */}
                 <div className="absolute bottom-16 left-4 bg-black/60 px-3 py-1 rounded-full text-white text-sm font-medium">
                     Original
@@ -230,7 +227,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                 <div className="absolute bottom-16 right-4 bg-black/60 px-3 py-1 rounded-full text-white text-sm font-medium">
                     Renovated
                 </div>
-                
+
 
                 {/* Watermark button */}
                 <button

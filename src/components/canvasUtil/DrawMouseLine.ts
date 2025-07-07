@@ -1,10 +1,10 @@
 import * as fabric from "fabric";
 
-export const  drawLines = (
+export const drawLines = (
   mouseX: number,
   mouseY: number,
   canvasRef: React.RefObject<fabric.Canvas>,
-   zoom:number
+  zoom: number
 ) => {
   const canvas = canvasRef.current;
 
@@ -13,18 +13,16 @@ export const  drawLines = (
   }
 
   // Remove previous lines
-   const existingObjects = canvas.getObjects();
-   const existingTempLines = existingObjects.filter(
-     (obj) => (obj as fabric.Object & { name?: string }).name === "horizontalLine" || 
-              (obj as fabric.Object & { name?: string }).name === "verticalLine"
-   );
+  const existingObjects = canvas.getObjects();
+  const existingTempLines = existingObjects.filter(
+    (obj) => (obj as fabric.Object & { name?: string }).name === "horizontalLine" ||
+      (obj as fabric.Object & { name?: string }).name === "verticalLine"
+  );
   existingTempLines.forEach((line) => {
     canvas.remove(line);
   });
-//  console.log("zoom",zoom)
- 
-  // Calculate cursor offset based on zoom level (unused variables removed)
-  //  console.log("cursorOffsetY",cursorOffsetY)  // Create horizontal dashed line
+  //  console.log("zoom",zoom)
+
   const horizontalLine = new fabric.Line(
     [0, mouseY, canvas.width ?? 0, mouseY],
     {
@@ -66,8 +64,8 @@ export const RemoveGridLine = (canvasRef: React.RefObject<fabric.Canvas>) => {
   // Remove previous lines
   const existingObjects = canvas.getObjects();
   const linesToRemove = existingObjects.filter(
-    (obj) => (obj as fabric.Object & { name?: string }).name === "horizontalLine" || 
-             (obj as fabric.Object & { name?: string }).name === "verticalLine"
+    (obj) => (obj as fabric.Object & { name?: string }).name === "horizontalLine" ||
+      (obj as fabric.Object & { name?: string }).name === "verticalLine"
   );
   linesToRemove.forEach((line) => {
     canvas.remove(line);

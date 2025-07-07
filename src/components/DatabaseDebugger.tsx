@@ -41,7 +41,7 @@ const DatabaseDebugger: React.FC = () => {
       if (currentUser?.user.id) {
         const profile = await AuthAPI.getUserProfileByUserId(currentUser.user.id);
         setResult({ profile, userId: currentUser.user.id });
-        console.log('User profile:', profile);
+        
       } else {
         setResult({ error: 'No current user found' });
       }

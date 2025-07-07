@@ -145,13 +145,13 @@ export function CanvasEditor({
       // If we've removed all points, reset polygon mode to allow starting a new polygon
       if (tempPoints.current.length === 0) {
         isPolygonMode.current = false;
-        console.log('All points removed, resetting polygon mode');
+       
         toast.info('All points removed. Click to start a new polygon.');
       }
       
       return;
     } else if (isPolygonMode.current && tempPoints.current.length === 0) {
-      console.log('No points to undo in polygon mode');
+     
       isPolygonMode.current = false; // Reset polygon mode to allow starting a new polygon
     }
     
@@ -220,7 +220,7 @@ export function CanvasEditor({
     tempPointCircles.current = [];
     
     // dispatch(cancelDrawing());
-    console.log('Polygon drawing cancelled. Ready to start a new one.');
+   
     toast.info('Polygon drawing cancelled');
   }, []);
 
@@ -259,7 +259,7 @@ export function CanvasEditor({
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log('Key pressed:', e.key, 'Ctrl:', e.ctrlKey, 'Meta:', e.metaKey, 'Shift:', e.shiftKey);
+     
       if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {  // Use toLowerCase to handle both uppercase and lowercase keys
           case 'c':
@@ -280,10 +280,10 @@ export function CanvasEditor({
             e.preventDefault();
             if (e.shiftKey) {
               handleRedo();
-              console.log('Redo shortcut triggered');
+            
             } else {
               handleUndo();
-              console.log('Undo shortcut triggered');
+            
             }
             break;
         }
@@ -323,7 +323,7 @@ export function CanvasEditor({
   // Load background image with comprehensive CORS and fallback handling
   useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-        console.log('Skipping image load:', { isCanvasReady, imageUrl: !!imageUrl });
+        
       return;
     }
 
@@ -443,9 +443,9 @@ export function CanvasEditor({
       
       for (const corsMode of corsOptions) {
         try {
-          console.log(`Attempting to load image with CORS mode: ${corsMode || 'none'}`);
+        
           const imgElement = await loadImageWithCORS(corsMode);
-          console.log(`Image loaded with CORS mode: ${corsMode || 'none'}`);
+        
           addImageToCanvas(imgElement);
           return; // Success, exit
         } catch (error) {
@@ -458,9 +458,9 @@ export function CanvasEditor({
       
       for (const fetchMode of fetchModes) {
         try {
-          console.log(`Attempting to load image via fetch with mode: ${fetchMode}`);
+         
           const imgElement = await loadImageWithFetch(fetchMode);
-          console.log(`Image loaded with fetch mode: ${fetchMode}`);
+          
           addImageToCanvas(imgElement);
           return; // Success, exit
         } catch (error) {
@@ -879,7 +879,7 @@ export function CanvasEditor({
   const handleDoubleClick = useCallback(() => {
     if (!fabricCanvasRef.current || !isPolygonMode.current || tempPoints.current.length < 3) return;
 
-    console.log('Double-click detected - finishing polygon');
+
     finishPolygon();
   }, [finishPolygon]);
 

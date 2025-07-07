@@ -91,7 +91,7 @@ export function AppRouter() {
         <Route path="studio/:id" element={<StudioPage />} />
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
-        <Route path="swatch/:slug" element={<SwatchDetailsPage />} />
+        <Route path="swatch/:id" element={<SwatchDetailsPage />} />
 
       </Route>
 
