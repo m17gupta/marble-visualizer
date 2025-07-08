@@ -17,30 +17,30 @@ const categoryData = {
         id: 'living-room',
         title: 'Existing Home Color/Material Ideas',
         image: 'http://www.dzinly.in/files/dzinly-gallery/color-material-after.png',
-        beforeImage: 'http://www.dzinly.in/files/dzinly-gallery/rear-yard-living-space-design-before.png',
-        afterImage: 'http://www.dzinly.in/files/dzinly-gallery/rear-yard-living-space-design-after.png',
+        beforeImage: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        afterImage: "https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg", // Added after image
         alt: 'Modern living room with comfortable seating'
       },
       {
         id: 'kitchen',
         title: 'Existing Home Architectural Addition',
         image: 'http://www.dzinly.in/files/dzinly-gallery/arc-addition-after.png',
-        beforeImage: 'http://www.dzinly.in/files/dzinly-gallery/arc-addition-before.png',
-        afterImage: 'http://www.dzinly.in/files/dzinly-gallery/arc-addition-after.png', // Added after image
+        beforeImage: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        afterImage: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg', // Added after image
         alt: 'Contemporary kitchen with modern appliances'
       },
       {
         id: 'bedroom',
         title: 'Turn Plans Into Renderings',
-        image: 'http://www.dzinly.in/files/dzinly-gallery/turn-plans-to-renderings-thumbnail.png',
+        image: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
         alt: 'Comfortable bedroom with natural lighting'
       },
       {
         id: 'bathroom',
         title: 'Front Yard Landscape Design',
-        image: 'http://www.dzinly.in/files/dzinly-gallery/turn-plans-to-renderings-thumbnail.png',
-        beforeImage: 'http://www.dzinly.in/files/dzinly-gallery/front-yard-landscape-design-before.png',
-        afterImage: 'http://www.dzinly.in/files/dzinly-gallery/front-yard-landscape-design-after.png', // Added after image
+        image: 'https://www.dzinly.com/files/dzinly-gallery/turn-plans-to-renderings-thumbnail.png',
+        beforeImage: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg',
+        afterImage: 'https://www.dzinly.com/files/dzinly-gallery/home/chris-after.jpg', // Added after image
         alt: 'Modern bathroom with clean design'
       }
     ]
