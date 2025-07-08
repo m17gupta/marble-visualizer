@@ -147,13 +147,13 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                 onTouchCancel={handleTouchEnd}
             >
                 {/* Loading indicator */}
-                {(!beforeImageLoaded || !afterImageLoaded) && !imageError && (
+                {/* {(!beforeImageLoaded || !afterImageLoaded)  && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                     </div>
-                )}
+                )} */}
 
-                {/* Error message */}
+                {/* Error message
                 {imageError && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                         <div className="text-center p-4">
@@ -166,15 +166,15 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                             </button>
                         </div>
                     </div>
-                )}
+                )} */}
 
                 {/* Before image (original house) */}
                 <img
-                    src={originalImage}
+                    src={generatedImage}
                     alt="Original House"
                     className="absolute top-0 left-0 w-full h-full object-cover"
-                    onLoad={() => setBeforeImageLoaded(true)}
-                    onError={() => setImageError(true)}
+                    // onLoad={() => setBeforeImageLoaded(true)}
+                    // onError={() => setImageError(true)}
                 />
 
                 {/* After image (renovated house) - controlled by slider */}
@@ -185,15 +185,15 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                     }}
                 >
                     <img
-                        src={generatedImage}
+                        src={originalImage}
                         alt="Renovated House"
                         className="absolute top-0 left-0 w-full h-full object-cover"
                         style={{
                             width: `${100 / sliderPosition * 100}%`,
                             maxWidth: 'none'
                         }}
-                        onLoad={() => setAfterImageLoaded(true)}
-                        onError={() => setImageError(true)}
+                        // onLoad={() => setAfterImageLoaded(true)}
+                        // onError={() => setImageError(true)}
                     />
                 </div>
 
@@ -230,11 +230,11 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
 
 
                 {/* Watermark button */}
-                <button
+                {/* <button
                     className="absolute left-1/2 bottom-6 transform -translate-x-1/2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded flex items-center gap-2 shadow-md"
                 >
                     <span className="text-lg">👑</span> Remove Watermark
-                </button>
+                </button> */}
             </div>
         </div>
     );

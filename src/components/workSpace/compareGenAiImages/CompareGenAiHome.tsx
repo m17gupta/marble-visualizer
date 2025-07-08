@@ -25,17 +25,7 @@ const CompareGenAiHome: React.FC = () => {
     }
   }, [genAiImages]);
 
-  // Handle selecting an image from the generated variants
-  // const handleSelectImage = (imageUrl: string) => {
-  //   setSelectedGeneratedImage(imageUrl);
-  //   setShowCompareView(true);
-  // };
-  
-  // // Handle generate more variants
-  // const handleGenerateMore = () => {
-  //   // Here you would dispatch an action to generate more variants
-  //   console.log('Generating more variants...');
-  // };
+
   
   // Handle close compare view
   const handleCloseCompare = () => {
@@ -75,10 +65,12 @@ const CompareGenAiHome: React.FC = () => {
       {/* Conditional rendering of compare view or image gallery */}
       {showCompareView && selectedGeneratedImage ? (
         <div className="h-[500px] mb-6">
-          {viewMode === 'slider' ? (
+          {originalHouseImage.current &&
+          selectedGeneratedImage.current  &&
+          viewMode === 'slider' ? (
             <CompareSlider
-              beforeImage={originalHouseImage.current ?? ""}
-              afterImage={selectedGeneratedImage.current ?? ""}
+              beforeImage={originalHouseImage.current }
+              afterImage={selectedGeneratedImage.current }
               onClose={handleCloseCompare}
             />
           ) : (

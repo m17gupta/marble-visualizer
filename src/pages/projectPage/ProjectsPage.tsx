@@ -6,7 +6,8 @@ import { AppDispatch, RootState } from '@/redux/store';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { 
   fetchProjects, 
-  clearError 
+  clearError, 
+  updateIsCreateDialog
 } from '@/redux/slices/projectSlice';
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 
@@ -33,9 +34,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UserProfileHome from '@/components/userProfile/UserProfileHome';
-import { CreateProjectDialog } from './CreateProject';
+// import { CreateProjectDialog } from './CreateProject';
 import JobHome from '@/components/job/JobHome';
 import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
+import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
+import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -43,8 +46,8 @@ export function ProjectsPage() {
   const navigate = useNavigate();
   const { list: projects, isLoading, error } = useSelector((state: RootState) => state.projects);
   const { user } = useSelector((state: RootState) => state.auth);
-  
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+   const { isCreateDialogOpen } = useSelector((state: RootState) => state.projects);
+  // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
@@ -168,13 +171,19 @@ export function ProjectsPage() {
   };
 
 
-  const handleCloseCreateDialog = () => {
-    setIsCreateDialogOpen(false);
+  // const handleCloseCreateDialog = () => {
+  //   setIsCreateDialogOpen(false);
     
-  };
+  // };
+
+  const handleCreateProject = () => {
+dispatch(updateWorkspaceType('renovate'))
+    dispatch(updateIsCreateDialog(true))
+   }
   return (
     <>
-    <motion.div
+   {!isCreateDialogOpen  &&
+   <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -190,7 +199,7 @@ export function ProjectsPage() {
         </div>
         <Button
          
-          onClick={() => setIsCreateDialogOpen(true)}
+          onClick={handleCreateProject}
           className="flex items-center space-x-2"
         >
           <Plus className="h-4 w-4" />
@@ -440,7 +449,7 @@ export function ProjectsPage() {
           <p className="text-muted-foreground mb-4">
             Create your first project to get started
           </p>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Button onClick={handleCreateProject}>
             <Plus className="mr-2 h-4 w-4" />
             Create Project
           </Button>
@@ -456,7 +465,7 @@ export function ProjectsPage() {
           projectName={shareDialogProject.name}
         />
       )} */}
-    </motion.div>
+    </motion.div>}
 
     <UserProfileHome/>
 
@@ -465,16 +474,17 @@ export function ProjectsPage() {
       
     />
 
-     { isCreateDialogOpen  &&
+     {/* { isCreateDialogOpen  &&
         user?.id && (
         <CreateProjectDialog
           open={isCreateDialogOpen}
           user_id={user?.id }
           onOpenChange={setIsCreateDialogOpen}
           onJobCreated={handleCloseCreateDialog}
-        />)}
+        />)} */}
 
-      <SwatchBookDataHome   />
+{isCreateDialogOpen && <VisualToolHome />}
+      <SwatchBookDataHome />
     </>
   );
 }

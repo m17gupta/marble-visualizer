@@ -4,15 +4,15 @@ import { Button } from '../../ui/button';
 
 import ViewUploader from './ViewUploader';
 import UploadingProgress from './UploadingProgress';
-import { setIsContinue, setIsUploading,updateWorkspaceType, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { setIsContinue, setIsUploading, updateWorkspaceType, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
- import useViewFiles from '@/hooks/useViewFiles';
+import useViewFiles from '@/hooks/useViewFiles';
 
 import GestUserHome from '../gestUser/GestUserHome';
 import { RootState } from '@/redux/store';
-import { createProject } from '@/redux/slices/projectSlice';
+import { createProject, updateIsCreateDialog } from '@/redux/slices/projectSlice';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { toast } from 'sonner';
 
@@ -22,6 +22,8 @@ import { addHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 
 const VisualToolHome = () => {
+
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
@@ -29,11 +31,12 @@ const VisualToolHome = () => {
   const [uploadProgress, setUploadProgress] = React.useState<number>(0);
   const [isCreatingProject, setIsCreatingProject] = React.useState<boolean>(false);
   const [isCreatingJob, setIsCreatingJob] = React.useState<boolean>(false);
-   const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
+  const [projectName, setProjectName] = React.useState<string>("New Project");
+  const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
 
-  const {workspace_type} = useSelector((state: RootState) => state.workspace);
+  const { workspace_type } = useSelector((state: RootState) => state.workspace);
   const createdProjectId = useRef<number | null>(null);
 
   console.log('Workspace Type:', workspace_type);
@@ -49,11 +52,12 @@ const VisualToolHome = () => {
   };
 
   const handleContinue = () => {
-    if (hasAnyFiles) {
+    if (hasAnyFiles && projectName.trim()) {
       // create project firstly
       dispatch(setIsContinue(true));
       handleCreateProject();
-
+    } else if (!projectName.trim()) {
+      toast.error('Please enter a project name');
     }
   };
 
@@ -61,7 +65,7 @@ const VisualToolHome = () => {
   const handleCreateProject = async () => {
     setIsCreatingProject(true);
     const projectData: ProjectModel = {
-      name: "New Project",
+      name: projectName,
       description: "This is a demo project",
       status: "active",
       created_at: new Date().toISOString(),
@@ -73,7 +77,7 @@ const VisualToolHome = () => {
     try {
       const result = await dispatch(createProject(projectData)).unwrap();
       if (result.id) {
-      
+
         createdProjectId.current = result.id;
         toast.success('Project created successfully!');
         setIsCreatingProject(false);
@@ -88,8 +92,13 @@ const VisualToolHome = () => {
   }
 
   const handleGoBack = () => {
+    if (isAuthenticated) {
+      dispatch(updateIsCreateDialog(false))
+    } else {
       dispatch(updateWorkspaceType("workspace"));
-    navigate("/workspace");
+      navigate("/workspace");
+    }
+
   };
 
   // Define view types and their display names
@@ -116,16 +125,16 @@ const VisualToolHome = () => {
         uploadedFile,
         profile.id,
         (progress: UploadProgress) => {
-         
+
           // Calculate percentage from the upload progress
           setUploadProgress(progress.percentage || 0);
         }
       );
 
-     
+
 
       if (result.success && result.fileUrl && result.key) {
-         dispatch(addHouseImage(result.fileUrl));
+        dispatch(addHouseImage(result.fileUrl));
         // create job with uploaded file
         const jobData: CreateJobParams = {
           jobUrl: result.fileUrl,
@@ -140,9 +149,9 @@ const VisualToolHome = () => {
             console.log('Form reset');
             setIsCreatingJob(false);
             // Navigate to the project page or workspace after job creation
-            if(workspace_type === 'renovate') {
+            if (workspace_type === 'renovate') {
               navigate(`/workspace/project/${createdProjectId.current}`);
-            }else if (workspace_type === 'design-hub') {
+            } else if (workspace_type === 'design-hub') {
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }
           },
@@ -194,6 +203,9 @@ const VisualToolHome = () => {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">Work Space View</h1>
+
+      
+
                 <p className="text-lg text-gray-600 mb-1">
                   Select the initial view you want to work on
                 </p>
@@ -204,7 +216,19 @@ const VisualToolHome = () => {
             </div>
           </div>
         </div>
-
+        <div>
+          <label htmlFor="projectName" className="block text-sm font-medium text-yellow-800 mb-1">
+            Project Name
+          </label>
+          <input
+            type="text"
+            id="projectName"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            className='w-full px-4 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white'
+            placeholder="Enter your project name"
+          />
+        </div>
         {/* Main Content */}
         <div className="max-w-6xl mx-auto px-6 py-12">
           {/* Instructions Section */}
@@ -315,13 +339,17 @@ const VisualToolHome = () => {
           <div className="text-center">
             <Button
               onClick={handleContinue}
-              disabled={!hasAnyFiles}
-              className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${hasAnyFiles
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              disabled={!hasAnyFiles || !projectName.trim()}
+              className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${hasAnyFiles && projectName.trim()
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
             >
-              {hasAnyFiles ? `Continue with ${typeView} view` : 'Upload at least one view to continue'}
+              {!projectName.trim()
+                ? 'Please enter a project name'
+                : hasAnyFiles
+                  ? `Continue with (${typeView} view)`
+                  : 'Upload at least one view to continue'}
             </Button>
           </div>
 
@@ -333,7 +361,7 @@ const VisualToolHome = () => {
         </div>
       </div>
 
-      <GestUserHome />
+      {!isAuthenticated && <GestUserHome />}
 
 
     </>

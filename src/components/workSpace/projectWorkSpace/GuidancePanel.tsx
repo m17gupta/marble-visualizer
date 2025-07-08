@@ -177,9 +177,7 @@ const GuidancePanel: React.FC = () => {
     console.log("Task failed:", errorMessage);
      taskId.current = "";
     isTask.current = false;
-    // isApiCall.current = true;
-    // dispatch(resetChatMarking())
-    // resetStartFailApiCall(data); // Reset the parent component's state
+
   }
   return (
     <>

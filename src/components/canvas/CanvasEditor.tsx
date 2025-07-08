@@ -109,7 +109,7 @@ export function CanvasEditor({
   const currentMousePositionRef = useRef<{ x: number; y: number } | null>(null);
 
   const activeTool = useRef<DrawingTool>('select');
-
+  const updatedZoomMode = useRef<string>("");
 
 
   const isPolygonMode = useRef(false);
@@ -124,6 +124,13 @@ export function CanvasEditor({
 
   // const [hoveredSegmentId] = useState<string | null>(null);
 
+  // update Zoom Mode
+  useEffect(() => {
+    if (zoomMode) {
+      console.log('Zoom mode updated:', zoomMode);
+      updatedZoomMode.current = zoomMode;
+    }
+  }, [zoomMode]);
 
   // update the canavasActiveTool
   useEffect(() => {
@@ -573,13 +580,13 @@ export function CanvasEditor({
 
       // Optional: Draw reference lines for better visual feedback
       drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
-        console.log("zoomMode", zoomMode)
+        console.log("zoomMode", zoomMode,updatedZoomMode.current)
       // Apply the zoom based on mode preference
-      if (zoomMode === 'center' && !wouldGoTooSmall) {
+      if (updatedZoomMode.current === 'center' && !wouldGoTooSmall) {
           ZoomCanvas(fabricCanvasRef, zoom);
         event.e.stopPropagation()
         event.e.preventDefault()
-      } else if(zoomMode === 'mouse' && !wouldGoTooSmall) {
+      } else if(updatedZoomMode.current  === 'mouse' && !wouldGoTooSmall) {
         ZoomCanvasMouse(fabricCanvasRef, zoom, mousePosition);
         event.e.stopPropagation()
         event.e.preventDefault();

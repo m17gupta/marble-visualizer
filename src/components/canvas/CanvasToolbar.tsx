@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
-import { setCanvasActiveTool, toggleZoomMode } from '@/redux/slices/canvasSlice';
+import { setCanvasActiveTool, setZoomMode, toggleZoomMode } from '@/redux/slices/canvasSlice';
 import { toast } from 'sonner';
 interface CanvasToolbarProps {
   fabricCanvasRef: React.MutableRefObject<fabric.Canvas | null>;
@@ -67,6 +67,16 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
   const handleZoomOut = () => {
     zoomOut()
   }
+
+  const changeZoomMode = () => {
+    
+    if(zoomMode === 'center') {
+      dispatch(setZoomMode('mouse'));
+    }else{
+      dispatch(setZoomMode('center'));
+    }
+    toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
+  };
   return (
     <Card>
       <CardContent className="p-4">
@@ -327,10 +337,11 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
                       variant="ghost"
                       size="icon"
                       className="h-4 w-4 p-0"
-                      onClick={() => {
-                        dispatch(toggleZoomMode());
-                        toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
-                      }}
+                      onClick={changeZoomMode}
+                      // onClick={() => {
+                      //   dispatch(toggleZoomMode());
+                      //   toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
+                      // }}
                     >
                       <span className="text-xs">{zoomMode === 'center' ? 'C' : 'M'}</span>
                     </Button>

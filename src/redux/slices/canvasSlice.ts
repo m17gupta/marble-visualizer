@@ -23,7 +23,7 @@ interface CanvasState {
 // Initial state
 const initialState: CanvasState = {
   currentZoom: 1,
-  zoomMode: 'center',
+  zoomMode: 'mouse',
   mousePosition: { x: 0, y: 0 },
   isCanvasReady: false,
   isBusy: false,

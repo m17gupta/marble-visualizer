@@ -20,6 +20,7 @@ interface ProjectState {
   isUpdating: boolean;
   isLoadingAccess: boolean;
   error: string | null;
+  isCreateDialogOpen: boolean;
 }
 
 const initialState: ProjectState = {
@@ -32,6 +33,7 @@ const initialState: ProjectState = {
   isUpdating: false,
   isLoadingAccess: false,
   error: null,
+  isCreateDialogOpen: false,
 };
 
 
@@ -214,6 +216,9 @@ const projectSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateIsCreateDialog: (state, action: PayloadAction<boolean>) => {
+      state.isCreateDialogOpen = action.payload;
+    }
   
   },
   extraReducers: (builder) => {
@@ -350,6 +355,7 @@ export const {
   setCurrentProject, 
   clearCurrentProject, 
   clearError, 
+  updateIsCreateDialog
   
 } = projectSlice.actions;
 
