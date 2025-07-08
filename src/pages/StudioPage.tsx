@@ -24,6 +24,7 @@ import { StudioSidebar, StudioMainCanvas } from '@/components/studio';
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { toast } from 'sonner';
 import InspirationSidebar from "@/components/workSpace/projectWorkSpace/InspirationSidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 //type DrawingTool = "select" | "polygon";
 
@@ -309,34 +310,46 @@ export function StudioPage() {
 
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
-       <div className="w-1/4 border-r">
+      <div className="w-1/4 border-r overflow-hidden">
+        <Tabs defaultValue="studio" className="w-full h-full flex flex-col">
+          <TabsList className="grid w-full grid-cols-2 mb-1">
+            <TabsTrigger value="design-hub">Design Hub</TabsTrigger>
+                <TabsTrigger value="inspiration">Inspiration</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="design-hub" className="flex-grow overflow-auto">
+                {/* Studio Sidebar */}
+                <StudioSidebar
+                  currentUserRole={currentUserRole}
+                  canEdit={canEdit}
+                  canAdmin={canAdmin}
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  onShareClick={() => setShareDialogOpen(true)}
+                  projectId={projectId}
+                  selectedSegmentType={selectedSegmentType}
+                  designSettings={designSettings}
+                  isJobRunning={isJobRunning}
+                  jobError={jobError}
+                  currentJob={currentJob}
+                  currentImageUrl={currentImageUrl}
+                  isUploading={isUploading}
+                  jobProgress={jobProgress}
+                  onStyleChange={handleStyleChange}
+                  onLevelChange={handleLevelChange}
+                  onPreserveToggle={handlePreserveToggle}
+                  onToneChange={handleToneChange}
+                  onIntensityChange={handleIntensityChange}
+                  onGenerate={handleGenerate}
+                  onCancelJob={handleCancelJob}
+                />
+              </TabsContent>
+              
+              <TabsContent value="inspiration" className="flex-grow overflow-auto">
                 <InspirationSidebar />
-              </div>
-      {/* Studio Sidebar */}
-      <StudioSidebar
-        currentUserRole={currentUserRole}
-        canEdit={canEdit}
-        canAdmin={canAdmin}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onShareClick={() => setShareDialogOpen(true)}
-        projectId={projectId}
-        selectedSegmentType={selectedSegmentType}
-        designSettings={designSettings}
-        isJobRunning={isJobRunning}
-        jobError={jobError}
-        currentJob={currentJob}
-        currentImageUrl={currentImageUrl}
-        isUploading={isUploading}
-        jobProgress={jobProgress}
-        onStyleChange={handleStyleChange}
-        onLevelChange={handleLevelChange}
-        onPreserveToggle={handlePreserveToggle}
-        onToneChange={handleToneChange}
-        onIntensityChange={handleIntensityChange}
-        onGenerate={handleGenerate}
-        onCancelJob={handleCancelJob}
-      />
+              </TabsContent>
+            </Tabs>
+          </div>
 
       {/* Main Canvas */}
       <StudioMainCanvas

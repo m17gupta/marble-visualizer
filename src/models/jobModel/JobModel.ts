@@ -84,5 +84,5 @@ export interface JobModel{
     project_id?: number;
     created_at?: string;
     updated_at?: string;
-    segements?: string;
+    segments?: JobSegmentModel;
 }

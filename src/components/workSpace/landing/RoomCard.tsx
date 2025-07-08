@@ -114,9 +114,9 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onClick }) => {
           style={{ backgroundImage: `url(${beforeImage})` }}
         >
           {/* Before Label */}
-          <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs font-semibold py-1 px-2 rounded">
+          {/* <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs font-semibold py-1 px-2 rounded">
             Before
-          </div>
+          </div> */}
         </div>
 
         {/* After Image - Clipped based on slider position */}
@@ -129,9 +129,9 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onClick }) => {
           }}
         >
           {/* After Label */}
-          <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs font-semibold py-1 px-2 rounded">
+          {/* <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs font-semibold py-1 px-2 rounded">
             After
-          </div>
+          </div> */}
         </div>
 
         {/* Slider Handle */}
@@ -164,16 +164,12 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onClick }) => {
         onTouchCancel={handleTouchEnd}
       >
         {/* Status badge - shows if this is a comparison card */}
-        {room.beforeImage && room.afterImage && (
-          <div className="absolute top-2 right-2 z-20 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-            Before/After
-          </div>
-        )}
+        
         
         {/* Title at the top */}
         <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-3 z-20">
           <h3 className="text-white text-sm font-medium truncate">{room.title}</h3>
-          <span className="text-white/70 text-xs">ID: {room.id}</span>
+        
         </div>
         
         {/* Loading indicator */}

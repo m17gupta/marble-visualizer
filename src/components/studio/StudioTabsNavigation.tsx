@@ -11,7 +11,9 @@ import {
   Target,
   History,
   Clock,
+  Square,
 } from "lucide-react";
+import SegmentHome from './segment/SegmentHome';
 
 interface StudioTabsNavigationProps {
   activeTab: string;
@@ -54,6 +56,10 @@ export function StudioTabsNavigation({
     >
       <div className="px-4 pt-2 flex-shrink-0">
         <TabsList className="grid w-full grid-cols-5 h-9">
+          <TabsTrigger value="segment" className="text-xs p-1">
+            <Square className="h-3 w-3" />
+            <span className="sr-only">Segment</span>
+          </TabsTrigger>
           <TabsTrigger value="design" className="text-xs p-1">
             <Palette className="h-3 w-3" />
           </TabsTrigger>
@@ -75,6 +81,10 @@ export function StudioTabsNavigation({
       {/* Scrollable Tab Content */}
       <ScrollArea className="flex-1 px-4">
         <div className="py-4 space-y-6">
+          <TabsContent value="segment" className="space-y-6 mt-0">
+            {/* Segment content goes here */}
+            <SegmentHome/>
+          </TabsContent>
           <TabsContent value="design" className="space-y-6 mt-0">
             <StudioDesignTab
               designSettings={designSettings}

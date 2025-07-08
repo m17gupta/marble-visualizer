@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
+import { JobModel } from '@/models/jobModel/JobModel';
 
 export interface SegmentPoint {
   x: number;
@@ -47,6 +48,7 @@ interface SegmentsState {
   historyIndex: number;
   maxHistorySize: number;
   error: string | null;
+  jobs:JobModel | null;
 }
 
 const initialState: SegmentsState = {
@@ -61,6 +63,7 @@ const initialState: SegmentsState = {
   historyIndex: -1,
   maxHistorySize: 50,
   error: null,
+  jobs: null,
 };
 
 // Generate random colors for new segments

@@ -67,12 +67,12 @@ export function StudioSidebar({
       className="sm:w-72 w-full bg-card border-r border-border flex flex-col h-[calc(100vh-150px)] overflow-y-scroll"
     >
       {/* Sidebar Header */}
-      <StudioSidebarHeader
+      {/* <StudioSidebarHeader
         currentUserRole={currentUserRole}
         canEdit={canEdit}
         canAdmin={canAdmin}
         onShareClick={onShareClick}
-      />
+      /> */}
 
       {/* Tabs Navigation */}
       <StudioTabsNavigation
