@@ -164,8 +164,8 @@ const jobSlice = createSlice({
     },
     updateCurrentJobSegments: (state, action: PayloadAction<string>) => {
       if (state.currentJob) {
-        state.currentJob.segements = action.payload;
-        state.currentJob.updated_at = new Date().toISOString();
+        // state.currentJob.segements = action.payload;
+        // state.currentJob.updated_at = new Date().toISOString();
       }
     },
   },
