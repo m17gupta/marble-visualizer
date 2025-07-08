@@ -65,7 +65,7 @@ const VisualToolHome = () => {
   const handleCreateProject = async () => {
     setIsCreatingProject(true);
     const projectData: ProjectModel = {
-      name: projectName,
+      name: projectName ?? "New Project",
       description: "This is a demo project",
       status: "active",
       created_at: new Date().toISOString(),
