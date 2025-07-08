@@ -35,6 +35,7 @@ import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 
 
+
 const GuidancePanel: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -43,10 +44,14 @@ const GuidancePanel: React.FC = () => {
   const [showGuide, setShowGuide] = useState(false);
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
   const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
+
+  const taskId = React.useRef<string>("")
+
+  const isTask = React.useRef<boolean>(false)
   // Use separate state variables for each popover
 
   const { requests, inspirationNames } = useSelector((state: RootState) => state.genAi);
-  const {isGenLoading}= useSelector((state: RootState) => state.workspace);
+  const { isGenLoading } = useSelector((state: RootState) => state.workspace);
   const getIsAddInspirations = useSelector(getIsAddInspiration);
   // update the model open and closing
 
@@ -88,9 +93,6 @@ const GuidancePanel: React.FC = () => {
     }
   };
 
-  const [taskId, setTaskId] = React.useState<string>("")
-
-  const [isTask, setIsTask] = React.useState<boolean>(false)
 
   const handleGenerateAiImage = async () => {
 
@@ -98,16 +100,22 @@ const GuidancePanel: React.FC = () => {
     // Logic to generate AI image
     try {
       const resultAction = await dispatch(submitGenAiRequest(requests as GenAiRequest));
-      
+
       if (submitGenAiRequest.fulfilled.match(resultAction)) {
         const response = resultAction.payload;
         if (response && response.data && response.data.message === "Palette styling task started.") {
           // isApiCall.current = true; // Reset the flag for future API calls
-          setTaskId(response.data.task_id);
-          setIsTask(true);
+          taskId.current = response.data.task_id; // Store the task ID
+          
+          isTask.current = true;
         }
       }
     } catch (error) {
+      toast.error("Error generating AI image: " + (error as Error).message);
+
+      taskId.current = ""; // Reset task ID on error
+      isTask.current = false; // Reset task status
+      dispatch(updateIsGenLoading(false));
       console.error("Error generating AI image:", error);
     }
   };
@@ -116,20 +124,20 @@ const GuidancePanel: React.FC = () => {
   const { list: jobList } = useSelector((state: RootState) => state.jobs);
   const { list: ProjectList } = useSelector((state: RootState) => state.projects);
   const handleResetStartApiCall = async (data: TaskApiModel) => {
-     setTaskId("")
-     setIsTask(false);
+    taskId.current = "";
+    isTask.current = false;
     console.log("Reset start API call with data:", data);
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
-     
+
       project_id: ProjectList[0]?.id || 0,
       // Fix for user_id - convert to number if string, and handle null profile
-      user_id: profile?.id ,
+      user_id: profile?.id,
       job_id: jobList[0]?.id || 0,
-      master_image_path: requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : "", 
-      palette_image_path: requests.paletteUrl && requests.paletteUrl[0] ? requests.paletteUrl[0] : "", 
-      reference_img: requests.referenceImageUrl && requests.referenceImageUrl[0] ? requests.referenceImageUrl[0] : "", 
-      user_input_text: requests.prompt && requests.prompt[0] ? requests.prompt[0] : "", 
+      master_image_path: requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : "",
+      palette_image_path: requests.paletteUrl && requests.paletteUrl[0] ? requests.paletteUrl[0] : "",
+      reference_img: requests.referenceImageUrl && requests.referenceImageUrl[0] ? requests.referenceImageUrl[0] : "",
+      user_input_text: requests.prompt && requests.prompt[0] ? requests.prompt[0] : "",
       output_image: data.outputImage,
       is_completed: true,
       is_show: true,
@@ -142,16 +150,16 @@ const GuidancePanel: React.FC = () => {
     } as GenAiChat
     console.log("GenAI chat data to be inserted:", genChat);
     try {
-     const result = await dispatch(insertGenAiChatData(genChat));
+      const result = await dispatch(insertGenAiChatData(genChat));
       console.log("GenAI chat data inserted successfully");
       if (result.meta.requestStatus === 'fulfilled') {
         console.log("GenAI chat data inserted successfully:", result.payload);
-         dispatch(resetRequest())
+        dispatch(resetRequest())
         dispatch(updateIsGenLoading(false));
 
         dispatch(setIsGenerated(true))
 
-        
+
       }
     } catch (error) {
       toast.error("Error in reset start API call: " + (error as Error).message);
@@ -167,7 +175,8 @@ const GuidancePanel: React.FC = () => {
   // Handle API call failure
   const handleResetFaiApiCall = (errorMessage: string) => {
     console.log("Task failed:", errorMessage);
-    setIsTask(false);
+     taskId.current = "";
+    isTask.current = false;
     // isApiCall.current = true;
     // dispatch(resetChatMarking())
     // resetStartFailApiCall(data); // Reset the parent component's state
@@ -296,10 +305,10 @@ const GuidancePanel: React.FC = () => {
             </TooltipProvider>
 
 
-            <button 
-              className={`px-4 py-2 ${isTask ? 'bg-gray-400' : 'bg-blue-600'} text-white rounded`}
+            <button
+              className={`px-4 py-2 ${isTask.current ? 'bg-gray-400' : 'bg-blue-600'} text-white rounded`}
               onClick={handleGenerateAiImage}
-              disabled={isTask}
+              disabled={isTask.current || isGenLoading}
             >
               {isGenLoading ? 'Processing...' : 'Visualize'}
             </button>
@@ -308,9 +317,11 @@ const GuidancePanel: React.FC = () => {
       </div>
 
       {/* Only render Call_task_id when there's an active task */}
-      {taskId && taskId !== "" && (
+      {taskId && taskId.current !== "" && 
+      isTask.current &&
+      (
         <Call_task_id
-          taskId={taskId}
+          taskId={taskId.current}
           resetChatTask={handleResetStartApiCall}
           resetChatTaskFail={handleResetFaiApiCall}
         />
