@@ -23,6 +23,7 @@ import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
 import { StudioSidebar, StudioMainCanvas } from '@/components/studio';
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { toast } from 'sonner';
+import InspirationSidebar from "@/components/workSpace/projectWorkSpace/InspirationSidebar";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -39,7 +40,7 @@ export function StudioPage() {
   
   const { segments, activeSegmentId } = useSelector((state: RootState) => state.segments);
   const { currentJob, error: jobError, isCreating: isJobRunning } = useSelector((state: RootState) => state.jobs);
-  const { currentProject, currentUserRole } = useSelector((state: RootState) => state.projects);
+  const {  currentUserRole } = useSelector((state: RootState) => state.projects);
   
   const [activeTab, setActiveTab] = useState("design");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -308,6 +309,9 @@ export function StudioPage() {
 
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
+       <div className="w-1/4 border-r">
+                <InspirationSidebar />
+              </div>
       {/* Studio Sidebar */}
       <StudioSidebar
         currentUserRole={currentUserRole}

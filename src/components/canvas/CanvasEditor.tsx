@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as fabric from 'fabric';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,49 +7,54 @@ import {
   startDrawing,
   selectSegment,
   deleteSegment,
-  removeMaterialFromSegment,
+  // removeMaterialFromSegment,
   saveToHistory,
   undo,
   redo,
   copySegment,
   pasteSegment,
-  bringForward,
-  sendBackward,
+  // bringForward,
+  // sendBackward,
   updateSegmentDrawn,
+  Segment
 } from '@/redux/slices/segmentsSlice';
 import {
   setZoom,
-  toggleZoomMode,
   setCanvasReady,
   setMousePosition
 } from '@/redux/slices/canvasSlice';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+// import { Button } from '@/components/ui/button';
+// import { Badge } from '@/components/ui/badge';
+// import { Separator } from '@/components/ui/separator';
+import {
+  TooltipProvider,
+  // Tooltip, TooltipContent, TooltipTrigger
+} from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import { 
-  Palette, 
-  MousePointer, 
-  Pentagon, 
-  Trash2, 
-  Undo2, 
-  Redo2, 
-  Download, 
-  Copy, 
-  Paintbrush, 
-  X, 
-  Clipboard, 
-  ChevronUp, 
-  ChevronDown,
-  ZoomIn,
-  ZoomOut
+import {
+  Palette,
+  // MousePointer, 
+  // Pentagon, 
+  // Trash2, 
+  // Undo2, 
+  // Redo2, 
+  // Download, 
+  // Copy, 
+  // Paintbrush, 
+  // X, 
+  // Clipboard, 
+  // ChevronUp, 
+  // ChevronDown,
+  // ZoomIn,
+  // ZoomOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { animatePolygonCompletion, PointModel } from '@/utils/canvasAnimations';
 import { drawLines } from '../canvasUtil/DrawMouseLine';
 import CanvasToolbar from './CanvasToolbar';
+import { handleCanvasAutoPan, cleanupAutoPan } from '@/components/canvasUtil/canvasAutoPan';
+import { ZoomCanvas, ZoomCanvasMouse } from '../canvasUtil/ZoomCanvas';
 
 export type DrawingTool = 'select' | 'polygon';
 
@@ -62,10 +67,10 @@ interface CanvasEditorProps {
   onImageLoad?: () => void;
 }
 
- /**
-   * Handle mouse wheel events for zooming the canvas
-   * @param event - Fabric.js event object containing wheel event data
-   */
+/**
+  * Handle mouse wheel events for zooming the canvas
+  * @param event - Fabric.js event object containing wheel event data
+  */
 
 export function CanvasEditor({
   imageUrl,
@@ -79,39 +84,53 @@ export function CanvasEditor({
     segments,
     activeSegmentId,
     copiedSegment,
-    isDrawing,
-   segmentDrawn,
+    // isDrawing,
+    segmentDrawn,
     canvasHistory,
     historyIndex
   } = useSelector((state: RootState) => state.segments);
 
   const {
-    currentZoom,
+    // currentZoom,
     zoomMode,
     isCanvasReady,
-    mousePosition
+    mousePosition,
+    canavasActiveTool
   } = useSelector((state: RootState) => state.canvas);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const backgroundImageRef = useRef<fabric.Image | null>(null);
 
+  // Auto-panning state
+  const [isAutoPanning, setIsAutoPanning] = useState(false);
+  const autoPanIntervalRef = useRef<number | null>(null);
+  const panStartPositionRef = useRef<{ x: number; y: number } | null>(null);
+  const currentMousePositionRef = useRef<{ x: number; y: number } | null>(null);
+
   const activeTool = useRef<DrawingTool>('select');
- 
+
+
+
   const isPolygonMode = useRef(false);
-;
+  ;
 
   const tempPoints = useRef<fabric.Point[]>([]);
   const tempLines = useRef<fabric.Line[]>([]);
   const tempPointCircles = useRef<fabric.Circle[]>([]);
 
-  const allSegments = useRef<{[key: string]: fabric.Point[]}>({});
+  const allSegments = useRef<{ [key: string]: fabric.Point[] }>({});
   const allSegmentsCount = useRef<number>(0);
 
-  const [hoveredSegmentId] = useState<string | null>(null);
+  // const [hoveredSegmentId] = useState<string | null>(null);
 
-  console.log("allSegments", allSegments.current);
-  // Canvas ready state now comes from Redux
+
+  // update the canavasActiveTool
+  useEffect(() => {
+    if (canavasActiveTool != "") {
+      activeTool.current = canavasActiveTool as DrawingTool;
+    }
+  }, [canavasActiveTool])
 
   // Save canvas state to history
   const saveCanvasState = useCallback(() => {
@@ -135,26 +154,26 @@ export function CanvasEditor({
       if (lastCircle && fabricCanvasRef.current) {
         fabricCanvasRef.current.remove(lastCircle);
       }
-      
+
       // If there's a Redux action for removing the last point, use it
       // If not, we're handling it with the local state
-      
+
       // Render changes
       fabricCanvasRef.current?.renderAll();
-      
+
       // If we've removed all points, reset polygon mode to allow starting a new polygon
       if (tempPoints.current.length === 0) {
         isPolygonMode.current = false;
-       
+
         toast.info('All points removed. Click to start a new polygon.');
       }
-      
+
       return;
     } else if (isPolygonMode.current && tempPoints.current.length === 0) {
-     
+
       isPolygonMode.current = false; // Reset polygon mode to allow starting a new polygon
     }
-    
+
     // Handle regular history undo if not in polygon mode or no points to undo
     if (historyIndex > 0 && fabricCanvasRef.current) {
       dispatch(undo());
@@ -188,7 +207,7 @@ export function CanvasEditor({
       const updatedSegments = { ...allSegments.current };
       delete updatedSegments[activeSegmentId];
       allSegments.current = updatedSegments;
-      
+
       // Update Redux store with the modified segments
       dispatch(updateSegmentDrawn(updatedSegments));
     }
@@ -202,10 +221,10 @@ export function CanvasEditor({
   const handleCancelDrawing = useCallback(() => {
     if (fabricCanvasRef.current && isPolygonMode.current) {
       const canvas = fabricCanvasRef.current;
-      
+
       // Remove all temporary objects (lines, preview line, and point circles)
       const tempObjects = canvas.getObjects().filter(obj =>
-        (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' || 
+        (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' ||
         (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line' ||
         (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-point'
       );
@@ -218,9 +237,9 @@ export function CanvasEditor({
     tempPoints.current = [];
     tempLines.current = [];
     tempPointCircles.current = [];
-    
+
     // dispatch(cancelDrawing());
-   
+
     toast.info('Polygon drawing cancelled');
   }, []);
 
@@ -240,26 +259,26 @@ export function CanvasEditor({
 
     // Canvas event handlers
     canvas.on('mouse:down', handleMouseDown);
-    canvas.on('mouse:move',(event)=>{ handleMouseMove(event); });
+    canvas.on('mouse:move', (event) => { handleMouseMove(event); });
     canvas.on('mouse:dblclick', handleDoubleClick);
     // canvas.on('selection:created', handleSelection);
     // canvas.on('selection:updated', handleSelection);
     canvas.on('selection:cleared', () => {
-     
+
       dispatch(selectSegment(null));
     });
 
-     canvas.on("mouse:wheel", (event) => {
-        handleMouseWheel(event);
-        dispatch(setZoom(canvas.getZoom()));
-      });
+    canvas.on("mouse:wheel", (event) => {
+      handleMouseWheel(event);
+      dispatch(setZoom(canvas.getZoom()));
+    });
     // canvas.on('object:modified', handleObjectModified);
-   // canvas.on('mouse:over', handleMouseOver);
+    // canvas.on('mouse:over', handleMouseOver);
     // canvas.on('mouse:out', handleMouseOut);
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
-     
+
       if (e.ctrlKey || e.metaKey) {
         switch (e.key.toLowerCase()) {  // Use toLowerCase to handle both uppercase and lowercase keys
           case 'c':
@@ -280,10 +299,10 @@ export function CanvasEditor({
             e.preventDefault();
             if (e.shiftKey) {
               handleRedo();
-            
+
             } else {
               handleUndo();
-            
+
             }
             break;
         }
@@ -307,11 +326,15 @@ export function CanvasEditor({
     document.addEventListener('keydown', handleKeyDown);
 
     dispatch(setCanvasReady(true));
-  
+
 
     return () => {
-      
+
       document.removeEventListener('keydown', handleKeyDown);
+
+      // Clean up auto-panning
+      cleanupAutoPan(autoPanIntervalRef, setIsAutoPanning);
+
       canvas.dispose();
       fabricCanvasRef.current = null;
       backgroundImageRef.current = null;
@@ -323,12 +346,12 @@ export function CanvasEditor({
   // Load background image with comprehensive CORS and fallback handling
   useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-        
+
       return;
     }
 
     const canvas = fabricCanvasRef.current;
-  
+
     // Remove existing background image
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
@@ -379,7 +402,7 @@ export function CanvasEditor({
     const loadImageWithCORS = (corsMode: string | null = 'anonymous') => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const imgElement = new Image();
-        
+
         if (corsMode) {
           imgElement.crossOrigin = corsMode;
         }
@@ -407,30 +430,30 @@ export function CanvasEditor({
             'Accept': 'image/*'
           }
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
+
         const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
-        
+
         return new Promise<HTMLImageElement>((resolve, reject) => {
           const imgElement = new Image();
-          
+
           imgElement.onload = () => {
             URL.revokeObjectURL(objectUrl);
             resolve(imgElement);
           };
-          
+
           imgElement.onerror = () => {
             URL.revokeObjectURL(objectUrl);
             reject(new Error('Failed to load image from blob'));
           };
-          
+
           imgElement.src = objectUrl;
         });
-        
+
       } catch (error) {
         throw new Error(`Fetch failed with mode ${fetchMode}: ${error}`);
       }
@@ -440,12 +463,12 @@ export function CanvasEditor({
     const tryLoadImage = async () => {
       // Strategy 1: Try different CORS modes
       const corsOptions = ['anonymous', null, 'use-credentials'];
-      
+
       for (const corsMode of corsOptions) {
         try {
-        
+
           const imgElement = await loadImageWithCORS(corsMode);
-        
+
           addImageToCanvas(imgElement);
           return; // Success, exit
         } catch (error) {
@@ -455,12 +478,12 @@ export function CanvasEditor({
 
       // Strategy 2: Try different fetch modes
       const fetchModes: RequestMode[] = ['cors', 'no-cors', 'same-origin'];
-      
+
       for (const fetchMode of fetchModes) {
         try {
-         
+
           const imgElement = await loadImageWithFetch(fetchMode);
-          
+
           addImageToCanvas(imgElement);
           return; // Success, exit
         } catch (error) {
@@ -470,17 +493,17 @@ export function CanvasEditor({
 
       // All strategies failed
       console.error('All image loading strategies failed for URL:', imageUrl);
-      
+
       // Provide detailed error message with suggestions
-      const errorMessage = imageUrl.includes('s3.') 
+      const errorMessage = imageUrl.includes('s3.')
         ? 'Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain.'
         : 'Failed to load background image. The image server may not allow cross-origin requests.';
-      
-      toast.error(errorMessage, { 
+
+      toast.error(errorMessage, {
         duration: 6000,
         description: 'Check browser console for detailed error information.'
       });
-      
+
       // Call the onImageLoad callback even on error to clear loading state
       if (onImageLoad) {
         onImageLoad();
@@ -495,10 +518,12 @@ export function CanvasEditor({
     if (!fabricCanvasRef.current || !isCanvasReady) return;
 
     const canvas = fabricCanvasRef.current;
-    console.log('Updating tool behavior:', activeTool);
-
+  
     // Update canvas selection mode
-    canvas.selection = activeTool.current === 'select';
+    canvas.selection =  activeTool.current === 'select';
+
+    // Reset auto-panning when tool changes
+    cleanupAutoPan(autoPanIntervalRef, setIsAutoPanning);
 
     // Update object selectability
     // const objects = canvas.getObjects();
@@ -511,59 +536,55 @@ export function CanvasEditor({
     // });
 
     canvas.renderAll();
-  }, [activeTool, isCanvasReady]);
+  }, [ activeTool, isCanvasReady]);
 
   // Control whether zoom is centered on mouse position or canvas center
   const getIsCenterZooms = useRef(zoomMode === 'center');
-  
- 
+
+  // Update zoom mode ref when zoomMode changes
+  useEffect(() => {
+    getIsCenterZooms.current = zoomMode === 'center';
+    console.log('Zoom mode updated:', zoomMode, 'isCenterZooms:', getIsCenterZooms.current);
+  }, [zoomMode]);
+
+
   const handleMouseWheel = (event: fabric.TEvent) => {
     // Cast the event to WheelEvent to access deltaY
     const deltaE = event.e as WheelEvent;
     const pointer = fabricCanvasRef.current?.getPointer(event.e);
-    
+
     // Make sure we have all required objects
     if (deltaE && fabricCanvasRef.current && pointer) {
       // Prevent default browser behavior
       event.e.stopPropagation();
       event.e.preventDefault();
-      
+
       const delta = deltaE.deltaY;
       let zoom = fabricCanvasRef.current.getZoom();
-      
+
       // Calculate new zoom level based on wheel direction
       // Using 0.999^delta for smoother zooming
       zoom *= 0.999 ** delta;
-      
+
       // Enforce zoom boundaries
       const wouldGoTooSmall = zoom < 1;
       if (zoom > 20) zoom = 20; // Set maximum zoom level
       if (zoom < 1) zoom = 1; // Set minimum zoom level
-      
+
       // Optional: Draw reference lines for better visual feedback
       drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
-      
+        console.log("zoomMode", zoomMode)
       // Apply the zoom based on mode preference
-      if (getIsCenterZooms.current || wouldGoTooSmall) {
-        // Always use center zoom when hitting minimum zoom level
-        const center = fabricCanvasRef.current.getCenter();
-        fabricCanvasRef.current.zoomToPoint(
-          new fabric.Point(center.left, center.top),
-          zoom
-        );
-        
-        // Show a notification if we're forcing center alignment at minimum zoom
-        if (wouldGoTooSmall && !getIsCenterZooms.current) {
-          toast.info('Minimum zoom reached - centering view', { id: 'zoom-min-center' });
-        }
-      } else {
-        // Zoom to the mouse position
-        fabricCanvasRef.current.zoomToPoint(
-          new fabric.Point(pointer.x, pointer.y),
-          zoom
-        );
+      if (zoomMode === 'center' && !wouldGoTooSmall) {
+          ZoomCanvas(fabricCanvasRef, zoom);
+        event.e.stopPropagation()
+        event.e.preventDefault()
+      } else if(zoomMode === 'mouse' && !wouldGoTooSmall) {
+        ZoomCanvasMouse(fabricCanvasRef, zoom, mousePosition);
+        event.e.stopPropagation()
+        event.e.preventDefault();
       }
-      
+
       // Update the zoom state
       dispatch(setZoom(zoom));
     }
@@ -640,15 +661,15 @@ export function CanvasEditor({
   const createPointCircle = useCallback((x: number, y: number, isFirst: boolean = false) => {
     // Get current zoom level to adjust the circle size
     const currentZoom = fabricCanvasRef.current?.getZoom() || 1;
-    
+
     // Base size values that will be adjusted by zoom
     const baseRadius = 4;
     const baseStrokeWidth = 2;
-    
+
     // Adjust size inversely proportional to zoom
     const adjustedRadius = baseRadius / currentZoom;
     const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
-    
+
     return new fabric.Circle({
       left: x - adjustedRadius,
       top: y - adjustedRadius,
@@ -658,9 +679,9 @@ export function CanvasEditor({
       strokeWidth: adjustedStrokeWidth,
       selectable: false,
       evented: false,
-      data: { 
+      data: {
         type: 'temp-point',
-        isFirst: isFirst 
+        isFirst: isFirst
       },
     });
   }, []);
@@ -678,10 +699,10 @@ export function CanvasEditor({
 
     const canvas = fabricCanvasRef.current;
     const currentZoom = canvas.getZoom();
-  
+
     // Remove all temporary objects (lines, preview line, and point circles)
     const tempObjects = canvas.getObjects().filter(obj =>
-      (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' || 
+      (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-line' ||
       (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line' ||
       (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'temp-point'
     );
@@ -689,12 +710,12 @@ export function CanvasEditor({
 
     // Create the actual polygon
     const polygonPoints = tempPoints.current.map(p => new fabric.Point(p.x, p.y));
-    
+
     // Base stroke width value
     const baseStrokeWidth = 2;
     // Adjust stroke width inversely proportional to zoom
     const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
-    
+
     const polygon = new fabric.Polygon(polygonPoints, {
       fill: 'rgba(255, 132, 0, 0.3)', // Semi-transparent orange fill
       stroke: '#FF1493',
@@ -706,7 +727,7 @@ export function CanvasEditor({
     allSegmentsCount.current += 1;
     const segmentId = `poly-${allSegmentsCount.current}`;
     allSegments.current[segmentId] = tempPoints.current;
-    
+
     // Add custom data to the polygon for identification
     (polygon as fabric.Object & { data?: { type?: string; segmentId?: string } }).data = {
       type: 'segment',
@@ -725,7 +746,7 @@ export function CanvasEditor({
     // Ensure we're not losing previously drawn segments when dispatching
     // Create a fresh copy of the current segments to ensure Redux detects the change
     const updatedSegments = { ...allSegments.current };
-    
+
     // Dispatch updated segments to Redux store
     console.log('Dispatching segments:', updatedSegments);
     dispatch(updateSegmentDrawn(updatedSegments));
@@ -735,8 +756,8 @@ export function CanvasEditor({
 
   // Handle mouse down events
   const handleMouseDown = useCallback((e: fabric.TEvent) => {
-
-    if (!fabricCanvasRef.current || activeTool.current !== 'polygon') {
+ 
+    if (!fabricCanvasRef.current ||  activeTool.current !== 'polygon') {
       return;
     }
 
@@ -745,30 +766,30 @@ export function CanvasEditor({
     const currentZoom = canvas.getZoom();
 
     if (!isPolygonMode.current) {
-     
+
       isPolygonMode.current = true;
       tempPoints.current = [new fabric.Point(pointer.x, pointer.y)];
       tempLines.current = [];
       tempPointCircles.current = [];
-      
+
       // Create and add the first point circle (pink color)
       const firstPointCircle = createPointCircle(pointer.x, pointer.y, true);
       canvas.add(firstPointCircle);
       tempPointCircles.current.push(firstPointCircle);
-      
+
       dispatch(startDrawing());
-      
+
       // When starting a new polygon, make sure we preserve existing segments in Redux
       if (Object.keys(segmentDrawn).length > 0 && Object.keys(allSegments.current).length === 0) {
         // If segmentDrawn has data but allSegments doesn't, sync them
         // Convert the Redux points to fabric.Point objects
-        const convertedSegments: {[key: string]: fabric.Point[]} = {};
-        
+        const convertedSegments: { [key: string]: fabric.Point[] } = {};
+
         Object.entries(segmentDrawn).forEach(([key, points]) => {
           // Convert each point to a fabric.Point
           convertedSegments[key] = points.map(p => new fabric.Point(p.x, p.y));
         });
-        
+
         allSegments.current = convertedSegments;
         console.log('Synced existing segments from Redux to local state:', allSegments.current);
       }
@@ -778,7 +799,7 @@ export function CanvasEditor({
         const firstPoint = tempPoints.current[0];
         const distance = calculateDistance(firstPoint, pointer);
         const snapDistance = 15 / currentZoom; // Adjust snap distance based on zoom
-        
+
         if (distance <= snapDistance) {
           finishPolygon();
           return;
@@ -812,19 +833,33 @@ export function CanvasEditor({
       tempLines.current.push(line);
       tempPointCircles.current.push(pointCircle);
     }
-  }, [activeTool, dispatch, createPointCircle, calculateDistance, finishPolygon, segmentDrawn]);
+  }, [ activeTool, dispatch, createPointCircle, calculateDistance, finishPolygon, segmentDrawn]);
 
   // Handle mouse move for preview line
   const handleMouseMove = useCallback((e: fabric.TEvent) => {
 
-    if(!fabricCanvasRef.current) return;
+    if (!fabricCanvasRef.current) return;
 
     const canvas = fabricCanvasRef.current;
     const pointer = canvas.getPointer(e.e);
     const currentZoom = canvas.getZoom();
 
-    // Update mouse position in Redux
+    // Update mouse position in Redux and in our ref for auto-panning
     dispatch(setMousePosition({ x: Math.round(pointer.x), y: Math.round(pointer.y) }));
+    currentMousePositionRef.current = { x: pointer.x, y: pointer.y };
+
+    // Handle auto-panning
+    // handleCanvasAutoPan(e, fabricCanvasRef, {
+    //   isAutoPanning,
+    //   setIsAutoPanning,
+    //   autoPanIntervalRef,
+    //   panStartPositionRef,
+    //   currentMousePosition: currentMousePositionRef
+    // }, {
+    //   edgeThreshold: 50,
+    //   panSpeed: 15,
+    //   minZoomLevel: 1.2 // Only enable auto-panning when zoomed in
+    // });
 
     // update the cursor line
     drawLines(pointer.x, pointer.y, fabricCanvasRef, currentZoom);
@@ -833,7 +868,7 @@ export function CanvasEditor({
     const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
     // Remove existing preview line
-    const previewLine = canvas.getObjects().find(obj =>   
+    const previewLine = canvas.getObjects().find(obj =>
       (obj as fabric.Object & { data?: { type?: string } }).data?.type === 'preview-line'
     );
     if (previewLine) {
@@ -843,7 +878,7 @@ export function CanvasEditor({
     // Base values
     const baseStrokeWidth = 1;
     const baseDashArray = [5, 5];
-    
+
     // Adjust stroke width and dash array inversely proportional to zoom
     const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
     const adjustedDashArray = baseDashArray.map(value => value / currentZoom);
@@ -864,10 +899,10 @@ export function CanvasEditor({
     if (tempPoints.current.length >= 3) {
       const firstPoint = tempPoints.current[0];
       const mousePoint: PointModel = { x: pointer.x, y: pointer.y };
-      
+
       // Adjust snap distance based on zoom level
       const snapDistance = 15 / currentZoom;
-      
+
       // Check if mouse is near first point and animate it
       animatePolygonCompletion(mousePoint, canvas, firstPoint, snapDistance);
     }
@@ -883,16 +918,16 @@ export function CanvasEditor({
     finishPolygon();
   }, [finishPolygon]);
 
- 
-  const handleToolChange = (tool: DrawingTool) => {
-    console.log('Changing tool to:', tool);
 
-    if (isPolygonMode && tool !== 'polygon') {
-      handleCancelDrawing();
-    }
+  // const handleToolChange = (tool: DrawingTool) => {
+  //   console.log('Changing tool to:', tool);
 
-    activeTool.current = tool;
-  };
+  //   if (isPolygonMode && tool !== 'polygon') {
+  //     handleCancelDrawing();
+  //   }
+
+  //   activeTool.current = tool;
+  // };
 
   // Material assignment handlers
   // const handleAssignMaterial = () => {
@@ -915,420 +950,152 @@ export function CanvasEditor({
   //   saveCanvasState();
   // };
 
-  const handleRemoveMaterial = () => {
-    if (!activeSegmentId) return;
+  // const handleRemoveMaterial = () => {
+  //   if (!activeSegmentId) return;
 
-    dispatch(removeMaterialFromSegment(activeSegmentId));
-    toast.success('Material removed from segment');
-    saveCanvasState();
-  };
+  //   dispatch(removeMaterialFromSegment(activeSegmentId));
+  //   toast.success('Material removed from segment');
+  //   saveCanvasState();
+  // };
 
   // Delete selected segment
 
   // Copy/Paste handlers
-  const handleCopySelected = () => {
-    if (!activeSegmentId) return;
+  // const handleCopySelected = () => {
+  //   if (!activeSegmentId) return;
 
-    dispatch(copySegment(activeSegmentId));
-    toast.success('Segment copied');
-  };
+  //   dispatch(copySegment(activeSegmentId));
+  //   toast.success('Segment copied');
+  // };
 
-  const handlePasteSegment = () => {
-    if (!copiedSegment) return;
+  // const handlePasteSegment = () => {
+  //   if (!copiedSegment) return;
 
-    dispatch(pasteSegment());
-    saveCanvasState();
-    toast.success('Segment pasted');
-  };
+  //   dispatch(pasteSegment());
+  //   saveCanvasState();
+  //   toast.success('Segment pasted');
+  // };
 
   // Layer order handlers
-  const handleBringForward = () => {
-    if (!activeSegmentId) return;
+  // const handleBringForward = () => {
+  //   if (!activeSegmentId) return;
 
-    dispatch(bringForward(activeSegmentId));
-    saveCanvasState();
-    toast.success('Segment moved forward');
-  };
+  //   dispatch(bringForward(activeSegmentId));
+  //   saveCanvasState();
+  //   toast.success('Segment moved forward');
+  // };
 
-  const handleSendBackward = () => {
-    if (!activeSegmentId) return;
+  // const handleSendBackward = () => {
+  //   if (!activeSegmentId) return;
 
-    dispatch(sendBackward(activeSegmentId));
-    saveCanvasState();
-    toast.success('Segment moved backward');
-  };
+  //   dispatch(sendBackward(activeSegmentId));
+  //   saveCanvasState();
+  //   toast.success('Segment moved backward');
+  // };
 
-  // Export canvas as image
-  const handleExport = () => {
-    if (!fabricCanvasRef.current) return;
+  //Export canvas as image
+  // const handleExport = () => {
+  //   if (!fabricCanvasRef.current) return;
 
-    const dataURL = fabricCanvasRef.current.toDataURL({
-      format: 'png',
-      quality: 1,
-      multiplier: 2,
-    });
+  //   const dataURL = fabricCanvasRef.current.toDataURL({
+  //     format: 'png',
+  //     quality: 1,
+  //     multiplier: 2,
+  //   });
 
-    const link = document.createElement('a');
-    link.download = 'canvas-export.png';
-    link.href = dataURL;
-    link.click();
+  //   const link = document.createElement('a');
+  //   link.download = 'canvas-export.png';
+  //   link.href = dataURL;
+  //   link.click();
 
-    toast.success('Canvas exported successfully!');
-  };
+  //   toast.success('Canvas exported successfully!');
+  // };
 
-  const canUndo = historyIndex > 0;
-  const canRedo = historyIndex < canvasHistory.length - 1;
-  const activeSegment = segments.find(s => s.id === activeSegmentId);
-  const hoveredSegment = segments.find(s => s.id === hoveredSegmentId);
-  const canPaste = copiedSegment !== null;
+  // const canUndo = historyIndex > 0;
+  // const canRedo = historyIndex < canvasHistory.length - 1;
+  // const activeSegment = segments.find(s => s.id === activeSegmentId);
+  const hoveredSegment = segments.find((s: Segment) => s.id === activeSegmentId);
+  // const canPaste = copiedSegment !== null;
 
+
+  const handleResetCanvas = () => {
+    if (fabricCanvasRef.current) {
+      // Reset zoom to 1 (100%)
+      const center = fabricCanvasRef.current.getCenter();
+
+      fabricCanvasRef.current.zoomToPoint(
+        new fabric.Point(center.left, center.top),
+        1
+      );
+      dispatch(setZoom(1));
+      toast.success("Zoom reset to 100%");
+    }
+  }
+
+
+  const handleZoomIn = () => {
+    if (fabricCanvasRef.current) {
+      const zoom = fabricCanvasRef.current.getZoom() * 1.1;
+      const limitedZoom = Math.min(20, zoom);
+      if (zoomMode === 'center') {
+        const center = fabricCanvasRef.current.getCenter();
+        fabricCanvasRef.current.zoomToPoint(
+          new fabric.Point(center.left, center.top),
+          limitedZoom
+        );
+      } else {
+        const center = { x: mousePosition.x, y: mousePosition.y };
+        fabricCanvasRef.current.zoomToPoint(
+          new fabric.Point(center.x, center.y),
+          limitedZoom
+        );
+      }
+      dispatch(setZoom(limitedZoom));
+    }
+  }
+
+  const handleZoomOut = () => {
+    if (fabricCanvasRef.current) {
+      const zoom = fabricCanvasRef.current.getZoom() * 0.9;
+      const limitedZoom = Math.max(1, zoom);
+
+      // Check if we need to force center alignment due to minimum zoom
+      const wouldGoTooSmall = zoom < 1;
+
+      if (zoomMode === 'center' || wouldGoTooSmall) {
+        // Always use center zoom when hitting minimum zoom level
+        const center = fabricCanvasRef.current.getCenter();
+        fabricCanvasRef.current.zoomToPoint(
+          new fabric.Point(center.left, center.top),
+          limitedZoom
+        );
+
+        // Show a notification if we're forcing center alignment
+        if (wouldGoTooSmall && zoomMode !== 'center') {
+          toast.info('Minimum zoom reached - centering view');
+        }
+      } else {
+        const center = { x: mousePosition.x, y: mousePosition.y };
+        fabricCanvasRef.current.zoomToPoint(
+          new fabric.Point(center.x, center.y),
+          limitedZoom
+        );
+      }
+      dispatch(setZoom(limitedZoom));
+    }
+  }
   return (
     <TooltipProvider>
       <div className={cn('flex flex-col space-y-4', className)}>
         {/* Toolbar */}
-        <CanvasToolbar>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                {/* Drawing Tools */}
-                <div className="flex items-center space-x-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={activeTool.current === 'select' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handleToolChange('select')}
-                      >
-                        <MousePointer className="h-4 w-4 mr-1" />
-                        Select
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Select and move segments</TooltipContent>
-                  </Tooltip>
+        <CanvasToolbar
+          fabricCanvasRef={fabricCanvasRef}
+          cancelDrawing={handleCancelDrawing}
+          resetCanvas={handleResetCanvas}
+          zoomIn={handleZoomIn}
+          zoomOut={handleZoomOut}
+        />
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={activeTool.current === 'polygon' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handleToolChange('polygon')}
-                      >
-                        <Pentagon className="h-4 w-4 mr-1" />
-                        Polygon
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Draw polygon segments</TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <Separator orientation="vertical" className="h-6" />
-
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleUndo}
-                        disabled={!canUndo}
-                      >
-                        <Undo2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Undo (Ctrl+Z)</TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRedo}
-                        disabled={!canRedo}
-                      >
-                        <Redo2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent>
-                  </Tooltip>
-                </div>
-
-                {/* Copy/Paste Tools */}
-                <Separator orientation="vertical" className="h-6" />
-                <div className="flex items-center space-x-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleCopySelected}
-                        disabled={!activeSegmentId}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Copy segment (Ctrl+C)</TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handlePasteSegment}
-                        disabled={!canPaste}
-                      >
-                        <Clipboard className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Paste segment (Ctrl+V)</TooltipContent>
-                  </Tooltip>
-                </div>
-
-                {/* Layer Controls */}
-                {activeSegmentId && (
-                  <>
-                    <Separator orientation="vertical" className="h-6" />
-                    <div className="flex items-center space-x-1">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleBringForward}
-                          >
-                            <ChevronUp className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Bring forward</TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleSendBackward}
-                          >
-                            <ChevronDown className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Send backward</TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </>
-                )}
-
-                {/* Material Tools */}
-                {activeSegmentId && (
-                  <>
-                    <Separator orientation="vertical" className="h-6" />
-                    <div className="flex items-center space-x-1">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                           // onClick={handleAssignMaterial}
-                          >
-                            <Paintbrush className="h-4 w-4 mr-1" />
-                            Material
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Apply material to selected segment</TooltipContent>
-                      </Tooltip>
-
-                      {activeSegment?.material && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={handleRemoveMaterial}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Remove material</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                <Separator orientation="vertical" className="h-6" />
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleDeleteSelected}
-                      disabled={!activeSegmentId}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete selected segment (Delete)</TooltipContent>
-                </Tooltip>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                {/* Status */}
-                {isDrawing && (
-                  <Badge variant="secondary">
-                    segment drawn: {Object.keys(segmentDrawn).length}
-                  </Badge>
-                )}
-
-                {activeSegmentId && (
-                  <Badge variant="outline">
-                    Selected: {activeSegment?.name}
-                    {activeSegment?.material && (
-                      <span className="ml-1 text-xs">
-                        • {activeSegment.material.materialName}
-                      </span>
-                    )}
-                  </Badge>
-                )}
-                 <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => {
-                            if (fabricCanvasRef.current) {
-                              // Reset zoom to 1 (100%)
-                              const center = fabricCanvasRef.current.getCenter();
-                              fabricCanvasRef.current.zoomToPoint(
-                                new fabric.Point(center.left, center.top),
-                                1
-                              );
-                              dispatch(setZoom(1));
-                              toast.success("Zoom reset to 100%");
-                            }
-                          }}
-                        >
-                          <span className="text-xs font-bold">Reset </span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Reset zoom to 100%</TooltipContent>
-                    </Tooltip>
-
-                {/* Display current zoom level and mouse coordinates */}
-                <Badge variant="secondary" className="flex items-center gap-2">
-                  <span>Zoom: {Math.round(currentZoom * 100)}%</span>
-                  <div className="flex items-center gap-1">
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-4 w-4 p-0"
-                          onClick={() => {
-                            if (fabricCanvasRef.current) {
-                              const zoom = fabricCanvasRef.current.getZoom() * 1.1;
-                              const limitedZoom = Math.min(20, zoom);
-                              if (getIsCenterZooms.current) {
-                                const center = fabricCanvasRef.current.getCenter();
-                                fabricCanvasRef.current.zoomToPoint(
-                                  new fabric.Point(center.left, center.top),
-                                  limitedZoom
-                                );
-                              } else {
-                                const center = { x: mousePosition.x, y: mousePosition.y };
-                                fabricCanvasRef.current.zoomToPoint(
-                                  new fabric.Point(center.x, center.y),
-                                  limitedZoom
-                                );
-                              }
-                              dispatch(setZoom(limitedZoom));
-                            }
-                          }}
-                        >
-                          <ZoomIn className="h-3 w-3" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Zoom in</TooltipContent>
-                    </Tooltip>
-                   
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-4 w-4 p-0"
-                          onClick={() => {
-                            if (fabricCanvasRef.current) {
-                              const zoom = fabricCanvasRef.current.getZoom() * 0.9;
-                              const limitedZoom = Math.max(1, zoom);
-                              
-                              // Check if we need to force center alignment due to minimum zoom
-                              const wouldGoTooSmall = zoom < 1;
-                              
-                              if (getIsCenterZooms.current || wouldGoTooSmall) {
-                                // Always use center zoom when hitting minimum zoom level
-                                const center = fabricCanvasRef.current.getCenter();
-                                fabricCanvasRef.current.zoomToPoint(
-                                  new fabric.Point(center.left, center.top),
-                                  limitedZoom
-                                );
-                                
-                                // Show a notification if we're forcing center alignment
-                                if (wouldGoTooSmall && !getIsCenterZooms.current) {
-                                  toast.info('Minimum zoom reached - centering view');
-                                }
-                              } else {
-                                const center = { x: mousePosition.x, y: mousePosition.y };
-                                fabricCanvasRef.current.zoomToPoint(
-                                  new fabric.Point(center.x, center.y),
-                                  limitedZoom
-                                );
-                              }
-                              dispatch(setZoom(limitedZoom));
-                            }
-                          }}
-                        >
-                          <ZoomOut className="h-3 w-3" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Zoom out</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-4 w-4 p-0"
-                          onClick={() => {
-                            dispatch(toggleZoomMode());
-                            getIsCenterZooms.current = !getIsCenterZooms.current;
-                            toast.success(`Zoom mode: ${getIsCenterZooms.current ? 'Center' : 'Mouse'}`);
-                          }}
-                        >
-                          <span className="text-xs">{getIsCenterZooms.current ? 'C' : 'M'}</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {getIsCenterZooms.current 
-                          ? 'Zoom centered on canvas (click to change)' 
-                          : 'Zoom centered on mouse (click to change)'}
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <span className="w-px h-4 bg-gray-300"></span>
-                  <span>X: {mousePosition.x}</span>
-                  <span>Y: {mousePosition.y}</span>
-                </Badge>
-
-                <Button variant="outline" size="sm" onClick={handleExport}>
-                  <Download className="h-4 w-4 mr-1" />
-                  Export
-                </Button>
-              </div>
-            </div>
-        </CanvasToolbar>
 
         {/* Canvas Container */}
         <motion.div
@@ -1347,7 +1114,7 @@ export function CanvasEditor({
                 />
 
                 {/* Drawing Instructions */}
-                {activeTool.current === 'polygon' && !isPolygonMode.current && (
+                { activeTool.current === 'polygon' && !isPolygonMode.current && (
                   <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
                     Click to start drawing a polygon
                   </div>
@@ -1356,6 +1123,13 @@ export function CanvasEditor({
                 {isPolygonMode.current && (
                   <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
                     Click to add points • Click near first point or double-click to finish • Esc to cancel
+                  </div>
+                )}
+
+                {/* Auto-panning indicator */}
+                {isAutoPanning && (
+                  <div className="absolute top-20 left-4 bg-amber-500 text-white px-3 py-2 rounded-lg text-sm animate-pulse">
+                    Auto-panning active
                   </div>
                 )}
 
@@ -1380,7 +1154,7 @@ export function CanvasEditor({
                     >
                       <div className="flex items-center space-x-2">
                         <Palette className="h-3 w-3" />
-                        <span>{hoveredSegment.material.materialName}</span>
+                        {/* <span>{hoveredSegment.material.materialName}</span> */}
                       </div>
                     </motion.div>
                   )}

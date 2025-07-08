@@ -17,6 +17,7 @@ interface CanvasState {
   isCanvasReady: boolean;
   isBusy: boolean;
   error: string | null;
+  canavasActiveTool?: string; // Optional field for active tool
 }
 
 // Initial state
@@ -27,6 +28,7 @@ const initialState: CanvasState = {
   isCanvasReady: false,
   isBusy: false,
   error: null,
+  canavasActiveTool:"", // Optional field for active tool, initialized as empty string
 };
 
 // Create the canvas slice
@@ -54,6 +56,9 @@ const canvasSlice = createSlice({
     // Set canvas readiness state
     setCanvasReady(state, action: PayloadAction<boolean>) {
       state.isCanvasReady = action.payload;
+    },
+    setCanvasActiveTool(state, action: PayloadAction<string>) {
+      state.canavasActiveTool = action.payload;
     },
 
     // Update mouse position
@@ -92,6 +97,7 @@ export const {
   setCanvasBusy,
   setCanvasError,
   resetCanvas,
+  setCanvasActiveTool
 } = canvasSlice.actions;
 
 // Export reducer

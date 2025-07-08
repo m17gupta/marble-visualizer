@@ -73,7 +73,8 @@ export function AppRouter() {
         path="/workspace/project/:projectId"
         element={<WorkspaceProjectPage />}
       />
-      <Route path="/design-hub/project/:id" element={<StudioPage />} />
+      <Route path="/design-hub/project/:id" 
+      element={<StudioPage />} />
 
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}
       <Route

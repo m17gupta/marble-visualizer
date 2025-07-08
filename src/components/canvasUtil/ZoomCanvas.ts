@@ -1,37 +1,37 @@
- export const ZoomCanvas=(
-    canvasRef: React.RefObject<fabric.Canvas>,
+import * as fabric from 'fabric';
+
+export const ZoomCanvas=(
+    canvasRef: React.MutableRefObject<fabric.Canvas | null>,
     zoom:number,
-    canvasZoom:(data:number)=>void
  )=>{
  // console.log("zoom-->",zoom)
     if(canvasRef.current){
         const center = canvasRef.current.getCenter();
         canvasRef.current.zoomToPoint(
-            { x: center.left, y: center.top },
+            new fabric.Point(center.left, center.top),
             zoom
           );
     }
     
-    canvasZoom(zoom)
+    
     
  }
 
 
 
  export const ZoomCanvasMouse = (
-   canvasRef: React.RefObject<fabric.Canvas>,
+  canvasRef: React.MutableRefObject<fabric.Canvas | null>,
    zoom: number,
-   canvasZoom: (data: number) => void,
    mousePosition: { x: number, y: number }
 ) => {
   
    if (canvasRef.current) {
        canvasRef.current.zoomToPoint(
-           { x: mousePosition.x, y: mousePosition.y },
+           new fabric.Point(mousePosition.x, mousePosition.y),
            zoom
        );
    }
    
-   canvasZoom(zoom);
+  
 }
  
