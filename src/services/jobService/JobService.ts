@@ -5,7 +5,7 @@ export class JobService {
 
   
     // get mask segment jobs
-    static async getMaskSegmentJobs(url:string) {
+    static async getMaskSegmentJobs(urlpaths:string) {
         try {
             const apiPath = "beta/beta-object-url";
             const modelData = await axios.post(
