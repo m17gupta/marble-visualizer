@@ -7,6 +7,10 @@ const SegmentHome = () => {
 
     const {list: jobs} = useSelector((state: RootState) => state.jobs);
     console.log("SegmentHome jobs", jobs);
+
+
+    const handleGetMaskSegment = async () => {
+        console.log("Get mask segment clicked");}
   return (
    <>
    <h1 className="text-lg font-bold">Segment Jobs</h1>
@@ -19,7 +23,9 @@ const SegmentHome = () => {
         
         </>
        ) : (
-         <Button>Get mask segment</Button>
+         <Button
+         onClick={handleGetMaskSegment}
+         >Get mask segment</Button>
        )}
      </>
    

@@ -76,6 +76,7 @@ export const fetchJobById = createAsyncThunk(
   }
 );
 
+// 
 // Async thunk to create a new job
 export const createJob = createAsyncThunk(
   'jobs/createJob',
