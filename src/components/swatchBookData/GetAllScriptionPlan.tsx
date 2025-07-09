@@ -20,10 +20,8 @@ import { toast } from 'sonner';
 
     const GetAllSubscriptionPlanData = async () => {
       try {
-        const response= await dispatch(fetchAllSubscriptionPlans({})).unwrap();
-        if(response && response.length > 0) {
-          console.log('Fetched Subscription Plans:', response);
-        }
+         await dispatch(fetchAllSubscriptionPlans({})).unwrap();
+       
       }catch (error) {
         console.error('Error fetching subscription plans:', error);
         toast.error('Failed to fetch subscription plans. Please try again later.');

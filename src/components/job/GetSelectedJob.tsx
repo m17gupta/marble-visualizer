@@ -21,10 +21,8 @@ const GetSelectedJob = ({ selectedProjectId }: Props) => {
   const fetchJob = async () => {
     try {
       // Replace with your API call to fetch jobs
-      const response = await dispatch(fetchJobsByProject(selectedProjectId));
-      if (fetchJobsByProject.fulfilled.match(response)) {
-        console.log('Fetched jobs:', response.payload);
-      }
+     await dispatch(fetchJobsByProject(selectedProjectId));
+     
     } catch (error) {
       console.error('Error fetching jobs:', error);
     }

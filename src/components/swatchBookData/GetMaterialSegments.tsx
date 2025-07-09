@@ -18,7 +18,7 @@ const GetAllMaterialSegment = () => {
             if (fetchMaterialSegments.fulfilled.match(response)) {
 
                if( response.payload && Array.isArray(response.payload)) {
-                 console.log('Material segments fetched successfully:', response.payload)
+               //  console.log('Material segments fetched successfully:', response.payload)
                }
             }
           } catch (error) {

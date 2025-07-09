@@ -26,11 +26,8 @@ const SwatchBookDataHome = () => {
 
 
     try {
-      const response = await dispatch(fetchCategories())
-      if (fetchCategories.fulfilled.match(response)) {
-
-        console.log('Categories fetched successfully:', response.payload)
-      }
+       await dispatch(fetchCategories())
+      
     } catch (error) {
       console.error('Error fetching categories:', error)
     }
@@ -38,10 +35,8 @@ const SwatchBookDataHome = () => {
 
   const fetchAllStyles = useCallback(async () => {
     try {
-      const response = await dispatch(fetchStyles())
-      if (fetchStyles.fulfilled.match(response)) {
-        console.log('Styles fetched successfully:', response.payload)
-      }
+       await dispatch(fetchStyles())
+    
     } catch (error) {
       console.error('Error fetching styles:', error)
     }
@@ -53,11 +48,8 @@ const SwatchBookDataHome = () => {
 
 
     try {
-      const response = await dispatch(fetchBrands())
-      if (fetchBrands.fulfilled.match(response)) {
-
-        console.log('Brands fetched successfully:', response.payload)
-      }
+       await dispatch(fetchBrands())
+    
     } catch (error) {
       console.error('Error fetching brands:', error)
     }
@@ -68,11 +60,8 @@ const SwatchBookDataHome = () => {
   const fetchAllMaterials = useCallback(async () => {
 
     try {
-      const response = await dispatch(fetchMaterials({ page: 1, limit: 100 }))
-      if (fetchMaterials.fulfilled.match(response)) {
-
-        console.log('Materials fetched successfully:', response.payload)
-      }
+       dispatch(fetchMaterials({ page: 1, limit: 100 }))
+      
     } catch (error) {
       console.error('Error fetching materials:', error)
     }
@@ -87,35 +76,26 @@ const SwatchBookDataHome = () => {
 
     // Fetch categories only if not already loaded and not currently loading
     if (categories.length === 0 && !categoriesLoading) {
-      console.log('Fetching categories...')
+      
       fetchAllCategories()
-    } else if (categories.length > 0) {
-      console.log('Categories already loaded, skipping fetch')
-    }
-
+    } 
     // Fetch brands only if not already loaded and not currently loading  
     if (brands.length === 0 && !brandsLoading) {
-      console.log('Fetching brands...')
+      
       fetchAllBrands()
-    } else if (brands.length > 0) {
-      console.log('Brands already loaded, skipping fetch')
-    }
+    } 
 
     // Fetch materials only if not already loaded and not currently loading
     if (materials.length === 0 && !materialsLoading) {
-      console.log('Fetching materials...')
+      
       fetchAllMaterials()
-    } else if (materials.length > 0) {
-      console.log('Materials already loaded, skipping fetch')
-    }
+    } 
 
 
     if (styles.length === 0 && !stylesLoading) {
-      console.log('Fetching styles...')
+      
       fetchAllStyles()
-    } else {
-      console.log('Styles already loaded, skipping fetch')
-    }
+    } 
   }, [
     isAuthenticated,
     isInitialized,

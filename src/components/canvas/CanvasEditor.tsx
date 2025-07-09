@@ -111,6 +111,8 @@ export function CanvasEditor({
   const activeTool = useRef<DrawingTool>('select');
   const updatedZoomMode = useRef<string>("");
 
+  // Store original viewport transform
+  const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
 
   const isPolygonMode = useRef(false);
   ;
@@ -127,7 +129,7 @@ export function CanvasEditor({
   // update Zoom Mode
   useEffect(() => {
     if (zoomMode) {
-      console.log('Zoom mode updated:', zoomMode);
+    
       updatedZoomMode.current = zoomMode;
     }
   }, [zoomMode]);
@@ -275,6 +277,7 @@ export function CanvasEditor({
       dispatch(selectSegment(null));
     });
 
+   
     canvas.on("mouse:wheel", (event) => {
       handleMouseWheel(event);
       dispatch(setZoom(canvas.getZoom()));
@@ -551,7 +554,7 @@ export function CanvasEditor({
   // Update zoom mode ref when zoomMode changes
   useEffect(() => {
     getIsCenterZooms.current = zoomMode === 'center';
-    console.log('Zoom mode updated:', zoomMode, 'isCenterZooms:', getIsCenterZooms.current);
+   
   }, [zoomMode]);
 
 
@@ -580,7 +583,7 @@ export function CanvasEditor({
 
       // Optional: Draw reference lines for better visual feedback
       drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
-        console.log("zoomMode", zoomMode,updatedZoomMode.current)
+      
       // Apply the zoom based on mode preference
       if (updatedZoomMode.current === 'center' && !wouldGoTooSmall) {
           ZoomCanvas(fabricCanvasRef, zoom);
@@ -597,73 +600,7 @@ export function CanvasEditor({
     }
   };
 
-  // Sync segments with canvas
-  // useEffect(() => {
-  //   if (!fabricCanvasRef.current || !canvasReady) return;
-
-  //   const canvas = fabricCanvasRef.current;
-  //   console.log('Syncing segments with canvas:', segments.length);
-
-  //   // Remove existing segments (keep background image)
-  //   const objects = canvas.getObjects().filter(obj => (obj as any).data?.type === 'segment');
-  //   objects.forEach(obj => canvas.remove(obj));
-
-  //   // Add segments to canvas (sorted by zIndex)
-  //   const sortedSegments = [...segments].sort((a, b) => a.zIndex - b.zIndex);
-
-  //   sortedSegments.forEach(segment => {
-  //     const points = segment.points.map(p => new fabric.Point(p.x, p.y));
-
-  //     let fillPattern: fabric.Pattern | string = segment.fillColor;
-
-  //     // Apply material if assigned
-  //     if (segment.material) {
-  //       if (segment.material.materialType === 'color' && segment.material.color) {
-  //         fillPattern = segment.material.color;
-  //       } else if (segment.material.materialType === 'texture' && segment.material.textureUrl) {
-  //         // Load texture pattern
-  //         const imgElement = new Image();
-  //         imgElement.crossOrigin = 'anonymous';
-  //         imgElement.onload = () => {
-  //           const pattern = new fabric.Pattern({
-  //             source: imgElement,
-  //             repeat: 'repeat',
-  //           });
-
-  //           const polygon = canvas.getObjects().find(obj =>
-  //             obj.data?.segmentId === segment.id
-  //           ) as fabric.Polygon;
-
-  //           if (polygon) {
-  //             polygon.set('fill', pattern);
-  //             canvas.renderAll();
-  //           }
-  //         };
-  //         imgElement.src = segment.material.textureUrl;
-  //       }
-  //     }
-
-  //     const polygon = new fabric.Polygon(points, {
-  //       fill: fillPattern,
-  //       stroke: segment.strokeColor,
-  //       strokeWidth: segment.strokeWidth,
-  //       opacity: segment.opacity,
-  //       visible: segment.visible !== false,
-  //       selectable: activeTool.current === 'select',
-  //       evented: activeTool.current === 'select',
-  //       data: {
-  //         type: 'segment',
-  //         segmentId: segment.id,
-  //       },
-  //     });
-
-  //     canvas.add(polygon);
-  //   });
-
-  //   canvas.renderAll();
-  //   console.log('Segments synced successfully');
-  // }, [segments, activeTool, canvasReady]);
-
+ 
   // Helper function to create a point circle
   const createPointCircle = useCallback((x: number, y: number, isFirst: boolean = false) => {
     // Get current zoom level to adjust the circle size
@@ -755,7 +692,7 @@ export function CanvasEditor({
     const updatedSegments = { ...allSegments.current };
 
     // Dispatch updated segments to Redux store
-    console.log('Dispatching segments:', updatedSegments);
+   
     dispatch(updateSegmentDrawn(updatedSegments));
 
     toast.success('Polygon created successfully! Ready to draw another.');
@@ -798,7 +735,7 @@ export function CanvasEditor({
         });
 
         allSegments.current = convertedSegments;
-        console.log('Synced existing segments from Redux to local state:', allSegments.current);
+        
       }
     } else {
       // Check if we have at least 3 points and clicked near the first point
@@ -1026,16 +963,13 @@ export function CanvasEditor({
 
 
   const handleResetCanvas = () => {
-    if (fabricCanvasRef.current) {
-      // Reset zoom to 1 (100%)
-      const center = fabricCanvasRef.current.getCenter();
-
-      fabricCanvasRef.current.zoomToPoint(
-        new fabric.Point(center.left, center.top),
-        1
-      );
+    if (fabricCanvasRef.current && originalViewportTransform.current) {
+      // Reset to original viewport transform
+      fabricCanvasRef.current.setViewportTransform(originalViewportTransform.current);
+      fabricCanvasRef.current.setZoom(1);
+      fabricCanvasRef.current.requestRenderAll();
       dispatch(setZoom(1));
-      toast.success("Zoom reset to 100%");
+      toast.success("Canvas reset to original state");
     }
   }
 

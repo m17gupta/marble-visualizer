@@ -28,6 +28,7 @@ const StyleAndRenovationPanel: React.FC = () => {
   const handleTabColor = (tabId: number) => {
     console.log('Tab ID:', tabId);
     setActiveTab(tabId);
+    stylesToShow.current=[]
     stylesToShow.current = Inspirational_images.filter((item) => item.color_family_id === tabId);
   }
   const handleAllTabImage = () => {

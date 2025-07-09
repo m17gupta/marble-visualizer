@@ -13,15 +13,12 @@ const JobHome = ({ selectedProjectId }: Props) => {
     const getAllJob= useSelector(getAllJobs)
      const [isFetchJob, setIsFetchJob] = React.useState(false);
 
-    console.log(getAllJob);
-    console.log("selectedProjectId:", selectedProjectId);
   
     useEffect(() => {
       if(selectedProjectId &&
         getAllJob && getAllJob.length===0
       ) {
-        // Fetch jobs for the selected project
-        console.log("Fetching jobs for project:", selectedProjectId);
+       
         setIsFetchJob(true);
       
 

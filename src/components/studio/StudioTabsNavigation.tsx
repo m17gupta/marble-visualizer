@@ -50,6 +50,7 @@ export function StudioTabsNavigation({
 }: StudioTabsNavigationProps) {
   return (
     <Tabs
+    defaultValue='design'
       value={activeTab}
       onValueChange={onTabChange}
       className="flex-1 flex flex-col"

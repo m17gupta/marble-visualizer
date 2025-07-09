@@ -38,7 +38,7 @@ export function StudioMainCanvas({
   // update the canvas image
   useEffect(() => {
     if(currentCanvasImage && currentCanvasImage !== "") { 
-      console.log("currentCanvasImage changed:", currentCanvasImage);
+     
       setImageLoading(true);
       setCanvasImage(currentCanvasImage);
     } else {

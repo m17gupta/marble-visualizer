@@ -47,13 +47,13 @@ export const handleCanvasAutoPan = (
 
   // We'll use currentMousePosition for calculations
   const zoom = canvas.getZoom();
-  console.log("Zoom level:", zoom);
-  console.log("Minimum zoom level:", minZoomLevel);
-  console.log("Auto-pan active:", zoom >= minZoomLevel);
+  // console.log("Zoom level:", zoom);
+  // console.log("Minimum zoom level:", minZoomLevel);
+  // console.log("Auto-pan active:", zoom >= minZoomLevel);
 
   // Only enable auto-panning when zoom level is at or above the minimum (e.g., 1.2)
   if (zoom < minZoomLevel) {
-    console.log("Auto-panning disabled - zoom too low");
+    // console.log("Auto-panning disabled - zoom too low");
     if (autoPanIntervalRef.current !== null) {
       cancelAnimationFrame(autoPanIntervalRef.current);
       autoPanIntervalRef.current = null;
@@ -71,10 +71,10 @@ export const handleCanvasAutoPan = (
 
   // Get current viewport transform to check hidden content
   const vpt = canvas.viewportTransform!;
-  console.log("canvasWidth-->", canvasWidth);
-  console.log("canvasHeight-->", canvasHeight);
+  // console.log("canvasWidth-->", canvasWidth);
+  // console.log("canvasHeight-->", canvasHeight);
 
-  console.log("currentMousePosition.current-->", currentMousePosition.current);
+  // console.log("currentMousePosition.current-->", currentMousePosition.current);
 
   if (!vpt) return;
 
@@ -82,7 +82,7 @@ export const handleCanvasAutoPan = (
     currentMousePosition.current.x === undefined ||
     currentMousePosition.current.y === undefined) return;
 
-  console.log("vpt-->", vpt);
+  // console.log("vpt-->", vpt);
 
   // Get mouse position relative to the DOM element, not the canvas content
   // This is critical - we need to know if the mouse is near the edge of the visible area
@@ -109,9 +109,7 @@ export const handleCanvasAutoPan = (
     mouseY = pointer.y * zoom;
   }
   
-  console.log("Mouse DOM position:", { x: mouseX, y: mouseY });
-  console.log("Canvas DOM rect:", { width: rect.width, height: rect.height });
-  console.log("Edge threshold:", edgeThreshold);
+
   
   // Calculate distance from each edge
   const distanceFromLeft = mouseX;
@@ -119,15 +117,11 @@ export const handleCanvasAutoPan = (
   const distanceFromTop = mouseY;
   const distanceFromBottom = rect.height - mouseY;
   
-  console.log("Distance from left edge:", distanceFromLeft, "px", distanceFromLeft < edgeThreshold ? "(NEAR)" : "");
-  console.log("Distance from right edge:", distanceFromRight, "px", distanceFromRight < edgeThreshold ? "(NEAR)" : "");
-  console.log("Distance from top edge:", distanceFromTop, "px", distanceFromTop < edgeThreshold ? "(NEAR)" : "");
-  console.log("Distance from bottom edge:", distanceFromBottom, "px", distanceFromBottom < edgeThreshold ? "(NEAR)" : "");
+
 
   // Left edge: Pan if near left edge AND canvas is scrolled to the right (vpt[4] < 0)
   const isNearLeftEdge = (mouseX < edgeThreshold) && vpt[4] < 0;
-  console.log("isNearLeftEdge:", isNearLeftEdge);
-  
+
   // Right edge: Pan if near right edge AND there's more content to the right
   const isNearRightEdge = ((rect.width - mouseX) < edgeThreshold) &&
     (vpt[4] + canvasWidth < zoomedWidth - canvasWidth / zoom);
@@ -153,12 +147,11 @@ export const handleCanvasAutoPan = (
 
   // If already auto-panning, don't start another interval
   if (isAutoPanning) {
-    console.log("Auto-panning already active, skipping");
+   
     return;
   }
 
-  // We should start auto-panning now
-  console.log("Starting auto-panning");
+
 
   // Save the initial viewport position
   if (!panStartPositionRef.current) {

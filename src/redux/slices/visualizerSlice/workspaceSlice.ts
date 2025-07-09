@@ -19,6 +19,7 @@ interface WorkspaceState {
   isAddIspiration: boolean;
   isGenerated: boolean,
   isGenLoading: boolean;
+  activeTab?: string ; // Optional active tab for UI purposes
 }
 
 // Define the initial state
@@ -75,6 +76,9 @@ const workspaceSlice = createSlice({
     setProcessingState: (state, action: PayloadAction<WorkspaceState['processingState']>) => {
       state.processingState = action.payload;
     },
+    updateActiveTab: (state, action: PayloadAction<string | undefined>) => {
+      state.activeTab = action.payload;
+    },
 
     // Set error
     setError: (state, action: PayloadAction<string | null>) => {
@@ -123,7 +127,8 @@ export const {
   setIsAddInspiration,
   setIsGenerated,
   updateIsGenLoading,
-  updateWorkspaceType
+  updateWorkspaceType,
+  updateActiveTab
 } = workspaceSlice.actions;
 
 // Export reducer

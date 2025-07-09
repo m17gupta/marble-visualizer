@@ -28,7 +28,7 @@ import {
   Sun,
   Moon,
   Bell,
-  Search,
+  // Search,
   ChevronLeft,
   ChevronRight,
   Paintbrush,
@@ -70,9 +70,16 @@ export function MainLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Check if current route is studio page to hide sidebar
+  const isStudioPage = location.pathname.startsWith("/app/studio");
+
   const handleLogout = () => {
     dispatch(logoutUser());
     // Navigation is handled within the thunk
+  };
+
+  const handleBackToProjects = () => {
+    navigate('/app/projects');
   };
 
   const isActivePath = (path: string) => {
@@ -167,17 +174,19 @@ export function MainLayout() {
     </div>
   );
 
+  console.log("isStudioPage", isStudioPage);
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ width: sidebarCollapsed ? 80 : 280 }}
-        // className="hidden lg:flex bg-card border-r border-border"
-        className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border"
-      >
-        <SidebarContent />
-      </motion.aside>
+      {!isStudioPage && (
+        <motion.aside
+          initial={false}
+          animate={{ width: sidebarCollapsed ? 80 : 280 }}
+          className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border"
+        >
+          <SidebarContent />
+        </motion.aside>
+      )}
 
       {/* Mobile Sidebar */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -190,7 +199,8 @@ export function MainLayout() {
       <div
         className={cn(
           "transition-all w-screen duration-300 lg:pl-80",
-          sidebarCollapsed && "lg:pl-20"
+          sidebarCollapsed && "lg:pl-20",
+          isStudioPage && "lg:pl-0"
         )}
       >
         {/* Header */}
@@ -210,14 +220,33 @@ export function MainLayout() {
                 </SheetTrigger>
               </Sheet>
 
+              {/* Mobile back button for studio pages */}
+              {isStudioPage && (
+                <Button 
+                  onClick={handleBackToProjects}
+                  variant="outline"
+                  size="sm"
+                  className="md:hidden flex items-center space-x-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span>Projects</span>
+                </Button>
+              )}
+
               <div className="hidden md:flex items-center space-x-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="pl-10 pr-4 py-2 w-64 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
-                  />
+                  {/* Show back to projects button when on studio pages */}
+                  {isStudioPage && (
+                    <Button 
+                      onClick={handleBackToProjects}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span>Back to Projects</span>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ interface JobState {
   isUpdating: boolean;
   isDeleting: boolean;
   error: string | null;
+  isSidebarHeaderCollapsed?: boolean;
 }
 
 const initialState: JobState = {
@@ -20,6 +21,7 @@ const initialState: JobState = {
   isUpdating: false,
   isDeleting: false,
   error: null,
+  isSidebarHeaderCollapsed: true,
 };
 
 // Async thunk to fetch jobs by project ID
@@ -162,6 +164,10 @@ const jobSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+
+    updateSidebarHeaderCollapse: (state, action: PayloadAction<boolean>) => {
+      state.isSidebarHeaderCollapsed = action.payload;
+    },
     updateCurrentJobSegments: (state, action: PayloadAction<string>) => {
       if (state.currentJob) {
         // state.currentJob.segements = action.payload;
@@ -293,10 +299,13 @@ export const {
   setCurrentJob, 
   clearCurrentJob, 
   clearError,
-  updateCurrentJobSegments
+  updateCurrentJobSegments,
+  updateSidebarHeaderCollapse
 } = jobSlice.actions;
 
 
 export const getAllJobs = (state: { jobs: JobState }) => state.jobs.list;
+export const getIsSideBarHeader = (state: { jobs: JobState }) => state.jobs.isSidebarHeaderCollapsed;
 
 export default jobSlice.reducer;
+  

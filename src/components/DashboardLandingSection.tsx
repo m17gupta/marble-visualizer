@@ -16,7 +16,6 @@ export const DashboardLandingSection = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { workspace_type } = useSelector((state: RootState) => state.workspace);
 
-  console.log('Workspace Type:', workspace_type);
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}

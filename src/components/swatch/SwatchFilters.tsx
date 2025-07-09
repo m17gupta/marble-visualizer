@@ -124,7 +124,7 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
   useEffect(() => {
     if( filters.brand && styles.length > 0) {
       const filteredStyles = styles.filter(s => s.material_brand_id.toString() === filters.brand);
-      console.log("Filtered styles based on brand:", filteredStyles);
+     
       setAllStyles(filteredStyles);
     } else {
       setAllStyles(styles); 

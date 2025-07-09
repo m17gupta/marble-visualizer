@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
 import useViewFiles from '@/hooks/useViewFiles';
 
-import GestUserHome from '../gestUser/GestUserHome';
 import { RootState } from '@/redux/store';
 import { createProject, updateIsCreateDialog } from '@/redux/slices/projectSlice';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
@@ -150,7 +149,12 @@ const VisualToolHome = () => {
             setIsCreatingJob(false);
             // Navigate to the project page or workspace after job creation
             if (workspace_type === 'renovate') {
-              navigate(`/workspace/project/${createdProjectId.current}`);
+              // if (isAuthenticated) {
+              //   navigate(`/app/studio/project/${createdProjectId.current}`);
+              // } else {
+                navigate(`/workspace/project/${createdProjectId.current}`);
+             // }
+
             } else if (workspace_type === 'design-hub') {
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }
@@ -204,7 +208,7 @@ const VisualToolHome = () => {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">Work Space View</h1>
 
-      
+
 
                 <p className="text-lg text-gray-600 mb-1">
                   Select the initial view you want to work on
@@ -341,8 +345,8 @@ const VisualToolHome = () => {
               onClick={handleContinue}
               disabled={!hasAnyFiles || !projectName.trim()}
               className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${hasAnyFiles && projectName.trim()
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
             >
               {!projectName.trim()
@@ -361,7 +365,7 @@ const VisualToolHome = () => {
         </div>
       </div>
 
-      {!isAuthenticated && <GestUserHome />}
+    
 
 
     </>

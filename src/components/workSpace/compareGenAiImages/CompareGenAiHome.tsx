@@ -63,7 +63,7 @@ const CompareGenAiHome: React.FC = () => {
       )}
 
       {/* Conditional rendering of compare view or image gallery */}
-      {showCompareView && selectedGeneratedImage ? (
+      {showCompareView && selectedGeneratedImage.current ? (
         <div className="h-[500px] mb-6">
           {originalHouseImage.current &&
           selectedGeneratedImage.current  &&

@@ -3,11 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
 import GetAllMaterialSegment from '@/components/swatchBookData/GetMaterialSegments';
 import RoomCard from '@/components/workSpace/landing/RoomCard';
+import GestUserHome from '../gestUser/GestUserHome';
+import { RootState } from '@/redux/store';
 
 // Data for different categories
 const categoryData = {
@@ -244,7 +246,7 @@ const TopPickCard: React.FC<TopPickCardProps> = ({ pick, onClick }) => {
 };
 const LandingHome = () => {
   const dispatch = useDispatch();
-
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const handleRoomClick = (roomId: string) => {
     console.log('Room clicked:', roomId);
     // Add your navigation logic here
@@ -339,6 +341,8 @@ const LandingHome = () => {
       <GetAllInspirational/>
 
       <GetAllMaterialSegment/>
+      
+        {!isAuthenticated && <GestUserHome />}
     </>
   )
 }

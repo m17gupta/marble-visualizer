@@ -11,7 +11,7 @@ const DatabaseDebugger: React.FC = () => {
     try {
       const result = await AuthAPI.debugDatabaseTables();
       setResult(result);
-      console.log('Debug result:', result);
+    
     } catch (error) {
       console.error('Debug error:', error);
       setResult({ error: error instanceof Error ? error.message : String(error) });
@@ -25,7 +25,7 @@ const DatabaseDebugger: React.FC = () => {
     try {
       const currentUser = await AuthAPI.getCurrentUser();
       setResult({ currentUser });
-      console.log('Current user:', currentUser);
+     
     } catch (error) {
       console.error('Current user error:', error);
       setResult({ error: error instanceof Error ? error.message : String(error) });

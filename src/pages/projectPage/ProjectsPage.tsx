@@ -39,6 +39,7 @@ import JobHome from '@/components/job/JobHome';
 import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
 import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -50,11 +51,12 @@ export function ProjectsPage() {
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
 
-  useEffect(() => {
-    if (user?.id) {
-      dispatch(fetchProjects(user.id));
-    }
-  }, [dispatch, user?.id]);
+useEffect(() => {
+  // Only fetch if user exists and projects list is empty
+  if (user?.id && projects.length === 0 && !isLoading) {
+    dispatch(fetchProjects(user.id));
+  }
+}, [dispatch, user?.id, projects.length, isLoading]);
 
   useEffect(() => {
     if (error) {
@@ -68,6 +70,7 @@ export function ProjectsPage() {
   const handleProjectClick = (projectId: number | undefined) => {
 
     if (projectId) {
+      dispatch(updateSidebarHeaderCollapse(false));
       setSelectedProjectId(projectId);
       navigate(`/app/studio/${projectId}`);
     }

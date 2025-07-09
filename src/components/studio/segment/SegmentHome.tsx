@@ -10,7 +10,8 @@ const SegmentHome = () => {
 
 
     const handleGetMaskSegment = async () => {
-        console.log("Get mask segment clicked");}
+        
+      }
   return (
    <>
    <h1 className="text-lg font-bold">Segment Jobs</h1>
