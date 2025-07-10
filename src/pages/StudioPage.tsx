@@ -84,6 +84,8 @@ export function StudioPage() {
     ) {
 
       dispatch(updateCurentImage(getAllJob[0].full_image || ""));
+    }else{
+  dispatch(updateCurentImage(""));
     }
   }, [getAllJob, dispatch, currentImageUrl]);
 

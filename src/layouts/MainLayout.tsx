@@ -35,6 +35,7 @@ import {
   User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { resetRequest } from "@/redux/slices/visualizerSlice/genAiSlice";
 
 const navigation = [
   {
@@ -79,6 +80,7 @@ export function MainLayout() {
   };
 
   const handleBackToProjects = () => {
+     dispatch(resetRequest())
     navigate('/app/projects');
   };
 

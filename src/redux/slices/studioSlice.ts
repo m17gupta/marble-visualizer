@@ -143,7 +143,7 @@ const studioSlice = createSlice({
       state.designSettings.level = action.payload;
     },
     updateCurentImage: (state, action: PayloadAction<string | null>) => {
-      console.log('Redux updateCurentImage action called:', { previous: state.currentImageUrl, new: action.payload });
+     
       state.currentImageUrl = action.payload;
     },
     togglePreserveObject: (state, action: PayloadAction<string>) => {

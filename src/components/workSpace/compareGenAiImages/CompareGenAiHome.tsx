@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import CompareSlider from './CompareSlider';
 import SideBySideCompare from './SideBySideCompare';
 import AllGenAiImages from './AllGenAiImages';
+import { setIsGenerated } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { resetRequest } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 const CompareGenAiHome: React.FC = () => {
+   const dispatch= useDispatch()
+
   const { genAiImages } = useSelector((state: RootState) => state.genAi);
   
   const [showCompareView, setShowCompareView] = useState(true);
@@ -40,6 +44,10 @@ const CompareGenAiHome: React.FC = () => {
     setViewMode(mode);
   };
 
+  const handleInspirationSection=()=>{
+      dispatch(setIsGenerated(false));
+      dispatch(resetRequest())
+  }
   return (
     <div className="flex flex-col h-full w-full p-6 bg-gray-100">
       <button
