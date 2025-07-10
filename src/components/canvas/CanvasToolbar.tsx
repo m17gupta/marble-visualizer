@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
-import { setCanvasActiveTool, setZoomMode, toggleZoomMode } from '@/redux/slices/canvasSlice';
+import { setCanvasActiveTool, setZoomMode } from '@/redux/slices/canvasSlice';
 import { toast } from 'sonner';
 interface CanvasToolbarProps {
   fabricCanvasRef: React.MutableRefObject<fabric.Canvas | null>;

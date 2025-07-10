@@ -24,9 +24,7 @@ import {
   setMousePosition
 } from '@/redux/slices/canvasSlice';
 import { Card, CardContent } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
-// import { Separator } from '@/components/ui/separator';
+
 import {
   TooltipProvider,
   // Tooltip, TooltipContent, TooltipTrigger
@@ -34,20 +32,7 @@ import {
 import { toast } from 'sonner';
 import {
   Palette,
-  // MousePointer, 
-  // Pentagon, 
-  // Trash2, 
-  // Undo2, 
-  // Redo2, 
-  // Download, 
-  // Copy, 
-  // Paintbrush, 
-  // X, 
-  // Clipboard, 
-  // ChevronUp, 
-  // ChevronDown,
-  // ZoomIn,
-  // ZoomOut
+ 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { animatePolygonCompletion, PointModel } from '@/utils/canvasAnimations';
@@ -105,7 +90,7 @@ export function CanvasEditor({
   // Auto-panning state
   const [isAutoPanning, setIsAutoPanning] = useState(false);
   const autoPanIntervalRef = useRef<number | null>(null);
-  const panStartPositionRef = useRef<{ x: number; y: number } | null>(null);
+
   const currentMousePositionRef = useRef<{ x: number; y: number } | null>(null);
 
   const activeTool = useRef<DrawingTool>('select');
@@ -265,6 +250,9 @@ export function CanvasEditor({
     });
 
     fabricCanvasRef.current = canvas;
+    
+    // Store the original viewport transform
+    originalViewportTransform.current = canvas.viewportTransform ? [...canvas.viewportTransform] as fabric.TMat2D : null;
 
     // Canvas event handlers
     canvas.on('mouse:down', handleMouseDown);
@@ -276,7 +264,6 @@ export function CanvasEditor({
 
       dispatch(selectSegment(null));
     });
-
    
     canvas.on("mouse:wheel", (event) => {
       handleMouseWheel(event);
@@ -687,14 +674,15 @@ export function CanvasEditor({
     tempLines.current = [];
     tempPointCircles.current = [];
 
-    // Ensure we're not losing previously drawn segments when dispatching
-    // Create a fresh copy of the current segments to ensure Redux detects the change
+
     const updatedSegments = { ...allSegments.current };
 
     // Dispatch updated segments to Redux store
    
     dispatch(updateSegmentDrawn(updatedSegments));
-
+  
+     // reset the canvas
+     handleResetCanvas()
     toast.success('Polygon created successfully! Ready to draw another.');
   }, [dispatch]);
 
@@ -725,8 +713,7 @@ export function CanvasEditor({
 
       // When starting a new polygon, make sure we preserve existing segments in Redux
       if (Object.keys(segmentDrawn).length > 0 && Object.keys(allSegments.current).length === 0) {
-        // If segmentDrawn has data but allSegments doesn't, sync them
-        // Convert the Redux points to fabric.Point objects
+   
         const convertedSegments: { [key: string]: fabric.Point[] } = {};
 
         Object.entries(segmentDrawn).forEach(([key, points]) => {
@@ -788,25 +775,19 @@ export function CanvasEditor({
     const pointer = canvas.getPointer(e.e);
     const currentZoom = canvas.getZoom();
 
+
+    // Handle auto-panning if enabled
+    handleCanvasAutoPan(e, fabricCanvasRef);
+
     // Update mouse position in Redux and in our ref for auto-panning
     dispatch(setMousePosition({ x: Math.round(pointer.x), y: Math.round(pointer.y) }));
     currentMousePositionRef.current = { x: pointer.x, y: pointer.y };
 
-    // Handle auto-panning
-    // handleCanvasAutoPan(e, fabricCanvasRef, {
-    //   isAutoPanning,
-    //   setIsAutoPanning,
-    //   autoPanIntervalRef,
-    //   panStartPositionRef,
-    //   currentMousePosition: currentMousePositionRef
-    // }, {
-    //   edgeThreshold: 50,
-    //   panSpeed: 15,
-    //   minZoomLevel: 1.2 // Only enable auto-panning when zoomed in
-    // });
+  
 
     // update the cursor line
     drawLines(pointer.x, pointer.y, fabricCanvasRef, currentZoom);
+
     if (!fabricCanvasRef.current || !isPolygonMode.current || tempPoints.current.length === 0) return;
 
     const lastPoint = tempPoints.current[tempPoints.current.length - 1];
@@ -852,7 +833,7 @@ export function CanvasEditor({
     }
 
     canvas.renderAll();
-  }, [dispatch]);
+  }, [dispatch, isAutoPanning, setIsAutoPanning]);
 
   // Handle double click to finish polygon
   const handleDoubleClick = useCallback(() => {

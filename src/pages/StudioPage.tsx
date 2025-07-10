@@ -30,6 +30,7 @@ import ImagePreview from "@/components/workSpace/projectWorkSpace/ImagePreview";
 import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
 import AllSegments from "@/components/studio/segment/AllSegments";
+import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -512,6 +513,7 @@ export function StudioPage() {
           projectName={currentProject.name || ''}
         />
       )} */}
+      <SwatchBookDataHome/>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { StudioSidebarHeader } from './StudioSidebarHeader';
+
 import { StudioTabsNavigation } from './StudioTabsNavigation';
 import { DesignSettings, Job } from './types';
 import {
@@ -36,12 +36,11 @@ interface StudioSidebarProps {
 }
 
 export function StudioSidebar({
-  currentUserRole,
+
   canEdit,
-  canAdmin,
+
   activeTab,
   onTabChange,
-  onShareClick,
   projectId,
   selectedSegmentType,
   designSettings,
