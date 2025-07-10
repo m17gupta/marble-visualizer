@@ -1,4 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { MaterialSegmentModel } from '@/models/materialSegment/MaterialSegmentModel';
+import { CategoryModel } from '@/models/swatchBook/category/CategoryModel';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
 
 export interface CreateMaterialRequest {
@@ -254,7 +256,39 @@ export class MaterialApi {
     }
   }
 
-  // get material based on category Id
+
+  /**
+   * Get all Wall materials
+   * @deprecated Use getMaterials with filters instead
+   */
+  // static async getAllWallMaterials(): Promise<MaterialApiResponse<MaterialModel[]>> {
+  //  const {data, error} = await supabase
+  //     .from('material_segments')
+  //     .select('*')
+  //     .eq('title', 'Wall')
+  //     .single();
+  //     if(error) {
+  //       console.error('Error fetching wall materials:', error);
+  //       return {
+  //         success: false,
+  //         error: error.message || 'Failed to fetch wall materials',
+  //       };
+  //     }
+  //     if(data && data.length > 0) {
+  //       const allCategories= data as MaterialSegmentModel;
+  //       const categoryIds = allCategories.categories;
+  //       if(categoryIds && categoryIds.length > 0) {
+  //         // Fetch materials for each category
+  //         const materials = await Promise.all(
+  //           categoryIds.map(categoryId => this.getMaterialsByCategoryId(categoryId))
+  //         );
+  //         return materials.flat();
+  //       }
+  //     }
+
+  //     return []
+  // }
+
 
   /**
    * Get material by ID

@@ -6,6 +6,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 interface MaterialsState {
   materials: MaterialModel[];
+  wallMaterials: MaterialModel[];
+  doorMaterials: MaterialModel[];
+  roofMaterials: MaterialModel[];
+  windowMaterials: MaterialModel[];
+  trimMaterials: MaterialModel[];
   pagination: {
     page: number;
     limit: number;
@@ -21,6 +26,11 @@ interface MaterialsState {
 
 const initialState: MaterialsState = {
   materials: [],
+  wallMaterials: [],
+  doorMaterials: [],  
+  roofMaterials: [],
+  windowMaterials: [],
+  trimMaterials: [],  
   pagination: {
     page: 0,
     limit: 0,

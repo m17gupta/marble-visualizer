@@ -1,4 +1,4 @@
-import { Segment } from '@/redux/slices/segmentsSlice';
+import { Segment } from "@/redux/slices/segmentsSlice";
 
 interface SegmentWithMeasurements extends Segment {
   // Additional properties from your sample data

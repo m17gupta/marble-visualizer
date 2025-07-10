@@ -40,6 +40,7 @@ import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
 import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
+import { addHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -67,12 +68,14 @@ useEffect(() => {
 
 
   const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(undefined);
-  const handleProjectClick = (projectId: number | undefined) => {
+  const handleProjectClick = (project: ProjectModel) => {
 
-    if (projectId) {
+    if (project.id && project.jobData && project.jobData.length > 0) {
+       const projectImage = project.jobData[0]?.full_image;
+       dispatch(addHouseImage(projectImage || ''));
       dispatch(updateSidebarHeaderCollapse(false));
-      setSelectedProjectId(projectId);
-      navigate(`/app/studio/${projectId}`);
+      setSelectedProjectId(project.id);
+      navigate(`/app/studio/${project.id}`);
     }
   };
 
@@ -306,7 +309,7 @@ dispatch(updateWorkspaceType('renovate'))
               <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden">
                 <div 
                   className="relative"
-                  onClick={() => handleProjectClick(project.id)}
+                  onClick={() => handleProjectClick(project)}
                 >
                   {project.jobData &&
                    project.jobData.length > 0 ? (
@@ -397,10 +400,10 @@ dispatch(updateWorkspaceType('renovate'))
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleProjectClick(project.id);
-                        }}
+                        // onClick={(e) => {
+                        //   e.stopPropagation();
+                        //   handleProjectClick(project.id);
+                        // }}
                       >
                         <Edit3 className="h-4 w-4" />
                       </Button>

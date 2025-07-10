@@ -5,18 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppDispatch, RootState } from '@/redux/store';
 import {
   startDrawing,
-  selectSegment,
-  deleteSegment,
-  // removeMaterialFromSegment,
-  saveToHistory,
   undo,
   redo,
-  copySegment,
-  pasteSegment,
-  // bringForward,
-  // sendBackward,
   updateSegmentDrawn,
-  Segment
+
 } from '@/redux/slices/segmentsSlice';
 import {
   setZoom,
@@ -30,10 +22,7 @@ import {
   // Tooltip, TooltipContent, TooltipTrigger
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import {
-  Palette,
- 
-} from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { animatePolygonCompletion, PointModel } from '@/utils/canvasAnimations';
 import { drawLines } from '../canvasUtil/DrawMouseLine';
@@ -66,10 +55,7 @@ export function CanvasEditor({
 }: CanvasEditorProps) {
   const dispatch = useDispatch<AppDispatch>();
   const {
-    segments,
-    activeSegmentId,
-    copiedSegment,
-    // isDrawing,
+    activeSegment,
     segmentDrawn,
     canvasHistory,
     historyIndex
@@ -130,8 +116,8 @@ export function CanvasEditor({
   const saveCanvasState = useCallback(() => {
     if (!fabricCanvasRef.current) return;
 
-    const canvasState = JSON.stringify(fabricCanvasRef.current.toJSON());
-    dispatch(saveToHistory(canvasState));
+    // const canvasState = JSON.stringify(fabricCanvasRef.current.toJSON());
+    // dispatch(saveToHistory(canvasState));
   }, [dispatch]);
 
   // Undo/Redo handlers
@@ -194,22 +180,21 @@ export function CanvasEditor({
 
   // Delete selected segment
   const handleDeleteSelected = useCallback(() => {
-    if (!activeSegmentId || !fabricCanvasRef.current) return;
+    // if (!activeSegmentId || !fabricCanvasRef.current) return;
 
-    // Also remove from allSegments if it exists there
-    if (allSegments.current && Object.keys(allSegments.current).includes(activeSegmentId)) {
-      const updatedSegments = { ...allSegments.current };
-      delete updatedSegments[activeSegmentId];
-      allSegments.current = updatedSegments;
+    // // Also remove from allSegments if it exists there
+    // if (allSegments.current && Object.keys(allSegments.current).includes(activeSegmentId)) {
+    //   const updatedSegments = { ...allSegments.current };
+    //   delete updatedSegments[activeSegmentId];
+    //   allSegments.current = updatedSegments;
 
-      // Update Redux store with the modified segments
-      dispatch(updateSegmentDrawn(updatedSegments));
-    }
+    //   // Update Redux store with the modified segments
+    //   dispatch(updateSegmentDrawn(updatedSegments));
+    // }
 
-    dispatch(deleteSegment(activeSegmentId));
-    saveCanvasState();
-    toast.success('Segment deleted');
-  }, [activeSegmentId, dispatch, saveCanvasState]);
+    // saveCanvasState();
+    // toast.success('Segment deleted');
+  }, [activeSegment, dispatch, saveCanvasState]);
 
 
   const handleCancelDrawing = useCallback(() => {
@@ -262,7 +247,7 @@ export function CanvasEditor({
     // canvas.on('selection:updated', handleSelection);
     canvas.on('selection:cleared', () => {
 
-      dispatch(selectSegment(null));
+      // dispatch(selectSegment(null));
     });
    
     canvas.on("mouse:wheel", (event) => {
@@ -280,17 +265,17 @@ export function CanvasEditor({
         switch (e.key.toLowerCase()) {  // Use toLowerCase to handle both uppercase and lowercase keys
           case 'c':
             e.preventDefault();
-            if (activeSegmentId) {
-              dispatch(copySegment(activeSegmentId));
-              toast.success('Segment copied');
+            if (activeSegment) {
+              // dispatch(copySegment(activeSegmentId));
+              // toast.success('Segment copied');
             }
             break;
           case 'v':
             e.preventDefault();
-            if (copiedSegment) {
-              dispatch(pasteSegment());
-              toast.success('Segment pasted');
-            }
+            // if (copiedSegment) {
+            //   // dispatch(pasteSegment());
+            //   // toast.success('Segment pasted');
+            // }
             break;
           case 'z':
             e.preventDefault();
@@ -307,7 +292,7 @@ export function CanvasEditor({
         switch (e.key) {
           case 'Delete':
           case 'Backspace':
-            if (activeSegmentId) {
+            if (activeSegment) {
               handleDeleteSelected();
             }
             break;
@@ -338,7 +323,7 @@ export function CanvasEditor({
       dispatch(setCanvasReady(false));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [width, height, activeSegmentId, copiedSegment, dispatch]);
+  }, [width, height, activeSegment, dispatch]);
 
   // Load background image with comprehensive CORS and fallback handling
   useEffect(() => {
@@ -939,7 +924,7 @@ export function CanvasEditor({
   // const canUndo = historyIndex > 0;
   // const canRedo = historyIndex < canvasHistory.length - 1;
   // const activeSegment = segments.find(s => s.id === activeSegmentId);
-  const hoveredSegment = segments.find((s: Segment) => s.id === activeSegmentId);
+  // const hoveredSegment = segments.find((s: Segment) => s.id === activeSegmentId);
   // const canPaste = copiedSegment !== null;
 
 
@@ -1067,7 +1052,7 @@ export function CanvasEditor({
 
                 {/* Hover Material Info */}
                 <AnimatePresence>
-                  {hoveredSegment?.material && (
+                  {/* {hoveredSegment?.material && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1076,10 +1061,10 @@ export function CanvasEditor({
                     >
                       <div className="flex items-center space-x-2">
                         <Palette className="h-3 w-3" />
-                        {/* <span>{hoveredSegment.material.materialName}</span> */}
+                      
                       </div>
                     </motion.div>
-                  )}
+                  )} */}
                 </AnimatePresence>
               </div>
             </CardContent>

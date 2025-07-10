@@ -86,6 +86,8 @@ export function StudioTabsNavigation({
             {/* Segment content goes here */}
             <SegmentHome/>
           </TabsContent>
+
+          
           <TabsContent value="design" className="space-y-6 mt-0">
             <StudioDesignTab
               designSettings={designSettings}

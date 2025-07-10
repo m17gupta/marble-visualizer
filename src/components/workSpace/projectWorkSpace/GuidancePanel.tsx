@@ -35,8 +35,7 @@ import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 
 
-
-const GuidancePanel: React.FC = () => {
+const   GuidancePanel: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -45,9 +44,11 @@ const GuidancePanel: React.FC = () => {
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
   const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
 
-  const taskId = React.useRef<string>("")
+  // const taskId = React.useRef<string>("")
 
-  const isTask = React.useRef<boolean>(false)
+  // const isTask = React.useRef<boolean>(false)'
+  const [taskId, setTaskId] = React.useState<string>("");
+  const [isTask, setIsTask] = React.useState<boolean>(false);
   // Use separate state variables for each popover
 
   const { requests, inspirationNames } = useSelector((state: RootState) => state.genAi);
@@ -100,21 +101,23 @@ const GuidancePanel: React.FC = () => {
     // Logic to generate AI image
     try {
       const resultAction = await dispatch(submitGenAiRequest(requests as GenAiRequest));
-
-      if (submitGenAiRequest.fulfilled.match(resultAction)) {
-        const response = resultAction.payload;
-        if (response && response.data && response.data.message === "Palette styling task started.") {
+      console.log("Result action:", resultAction);
+      if (resultAction.type === "genAi/submitRequest/fulfilled") {
+        const response = resultAction.payload as { data: { message: string; task_id: string } };
+        console.log("Response:--->", response);
+        if (response && response.data && response.data.message === "Image generation task started.") {
+          console.log("AI image generation started successfully:", response.data);
           // isApiCall.current = true; // Reset the flag for future API calls
-          taskId.current = response.data.task_id; // Store the task ID
-          
-          isTask.current = true;
+          setTaskId(response.data.task_id); // Store the task ID
+
+          setIsTask(true);
         }
       }
     } catch (error) {
       toast.error("Error generating AI image: " + (error as Error).message);
 
-      taskId.current = ""; // Reset task ID on error
-      isTask.current = false; // Reset task status
+      setTaskId(""); // Reset task ID on error
+      setIsTask(false); // Reset task status
       dispatch(updateIsGenLoading(false));
       console.error("Error generating AI image:", error);
     }
@@ -124,8 +127,8 @@ const GuidancePanel: React.FC = () => {
   const { list: jobList } = useSelector((state: RootState) => state.jobs);
   const { list: ProjectList } = useSelector((state: RootState) => state.projects);
   const handleResetStartApiCall = async (data: TaskApiModel) => {
-    taskId.current = "";
-    isTask.current = false;
+    setTaskId("");
+    setIsTask(false);
     console.log("Reset start API call with data:", data);
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
@@ -175,8 +178,9 @@ const GuidancePanel: React.FC = () => {
   // Handle API call failure
   const handleResetFaiApiCall = (errorMessage: string) => {
     console.log("Task failed:", errorMessage);
-     taskId.current = "";
-    isTask.current = false;
+    toast.error("Task failed: " + errorMessage);
+    setTaskId(""); // Reset task ID on error
+    setIsTask(false); // Reset task status
 
   }
   return (
@@ -304,9 +308,9 @@ const GuidancePanel: React.FC = () => {
 
 
             <button
-              className={`px-4 py-2 ${isTask.current ? 'bg-gray-400' : 'bg-blue-600'} text-white rounded`}
+              className={`px-4 py-2 ${isTask ? 'bg-gray-400' : 'bg-blue-600'} text-white rounded`}
               onClick={handleGenerateAiImage}
-              disabled={isTask.current || isGenLoading}
+              disabled={isTask || isGenLoading}
             >
               {isGenLoading ? 'Processing...' : 'Visualize'}
             </button>
@@ -315,11 +319,11 @@ const GuidancePanel: React.FC = () => {
       </div>
 
       {/* Only render Call_task_id when there's an active task */}
-      {taskId && taskId.current !== "" && 
-      isTask.current &&
+      {taskId && taskId !== "" && 
+      isTask &&
       (
         <Call_task_id
-          taskId={taskId.current}
+          taskId={taskId}
           resetChatTask={handleResetStartApiCall}
           resetChatTaskFail={handleResetFaiApiCall}
         />

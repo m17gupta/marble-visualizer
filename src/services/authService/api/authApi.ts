@@ -39,23 +39,7 @@ export class AuthAPI {
       // Update last login
       await this.updateLastLogin(data.user.id);
 
-      // Get user and profile data
-      // const [user, profile] = await Promise.all([
-      //   this.getUserById(data.user.id),
-      //   this.getUserProfile(data.user.id),
-      // ]);
-
-      // console.log(data.user, data.session)
-
-      // return {
-      //   user,
-      //   profile,
-      //   session: {
-      //     access_token: data.session.access_token,
-      //     refresh_token: data.session.refresh_token,
-      //     expires_at: data.session.expires_at!,
-      //   },
-      // };
+      
 
       const userAuth: User = {
         id: data.user.id,

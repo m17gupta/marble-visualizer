@@ -4,10 +4,6 @@ import { motion } from 'framer-motion';
 import { RootState, AppDispatch } from '@/redux/store';
 import {
   fetchMaterialSegments,
-  createMaterialSegment,
-  updateMaterialSegment,
-  deleteMaterialSegment,
-  selectSegment,
   setFilters,
   clearFilters,
 } from '@/redux/slices/materialSlices/materialSegmentSlice';
@@ -35,7 +31,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from '@/hooks/use-toast';
 
 interface MaterialSegmentListProps {
   className?: string;
@@ -45,7 +40,6 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { 
     segments, 
-    selectedSegmentId, 
     segmentLoading, 
     error, 
     filters 
@@ -75,72 +69,72 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
 
   // Handle segment selection
   const handleSelectSegment = (segmentId: number) => {
-    dispatch(selectSegment(segmentId));
+   
   };
 
   // Handle segment creation
-  const handleCreateSegment = async () => {
-    try {
-      const newSegment = {
-        name: 'New Material Segment',
-        color: '#3B82F6',
-        color_code: '#3B82F6',
-        short_code: 'NMS',
-        index: segments.length,
-        is_active: true,
-        is_visible: true,
-        description: 'A new material segment',
-        categories: ['default'],
-        gallery: [],
-      };
+  // const handleCreateSegment = async () => {
+  //   try {
+  //     const newSegment = {
+  //       name: 'New Material Segment',
+  //       color: '#3B82F6',
+  //       color_code: '#3B82F6',
+  //       short_code: 'NMS',
+  //       index: segments.length,
+  //       is_active: true,
+  //       is_visible: true,
+  //       description: 'A new material segment',
+  //       categories: ['default'],
+  //       gallery: [],
+  //     };
 
-      await dispatch(createMaterialSegment(newSegment)).unwrap();
-      toast({
-        title: 'Success',
-        description: 'Material segment created successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to create material segment',
-        variant: 'destructive',
-      });
-    }
-  };
+  //     await dispatch(createMaterialSegment(newSegment)).unwrap();
+  //     toast({
+  //       title: 'Success',
+  //       description: 'Material segment created successfully',
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Failed to create material segment',
+  //       variant: 'destructive',
+  //     });
+  //   }
+  // };
 
   // Handle segment update
-  const handleUpdateSegment = async (segmentId: number, updates: any) => {
-    try {
-      await dispatch(updateMaterialSegment({ id: segmentId, ...updates })).unwrap();
-      toast({
-        title: 'Success',
-        description: 'Material segment updated successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update material segment',
-        variant: 'destructive',
-      });
-    }
-  };
+  // const handleUpdateSegment = async (segmentId: number, updates: any) => {
+  //   try {
+  //     await dispatch(updateMaterialSegment({ id: segmentId, ...updates })).unwrap();
+  //     toast({
+  //       title: 'Success',
+  //       description: 'Material segment updated successfully',
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Failed to update material segment',
+  //       variant: 'destructive',
+  //     });
+  //   }
+  // };
 
   // Handle segment deletion
-  const handleDeleteSegment = async (segmentId: number) => {
-    try {
-      await dispatch(deleteMaterialSegment(segmentId)).unwrap();
-      toast({
-        title: 'Success',
-        description: 'Material segment deleted successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete material segment',
-        variant: 'destructive',
-      });
-    }
-  };
+  // const handleDeleteSegment = async (segmentId: number) => {
+  //   try {
+  //     await dispatch(deleteMaterialSegment(segmentId)).unwrap();
+  //     toast({
+  //       title: 'Success',
+  //       description: 'Material segment deleted successfully',
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Failed to delete material segment',
+  //       variant: 'destructive',
+  //     });
+  //   }
+  // };
 
   // Clear all filters
   const handleClearFilters = () => {
@@ -178,7 +172,9 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
             Manage your material segments and their properties
           </p>
         </div>
-        <Button onClick={handleCreateSegment}>
+        <Button 
+        //onClick={handleCreateSegment}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Segment
         </Button>
@@ -281,7 +277,9 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
             <p className="text-gray-600 mb-4">
               Create your first material segment to get started
             </p>
-            <Button onClick={handleCreateSegment}>
+            <Button 
+            //onClick={handleCreateSegment}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Create Segment
             </Button>
@@ -301,9 +299,7 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
               transition={{ duration: 0.3 }}
             >
               <Card 
-                className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                  selectedSegmentId === segment.id ? 'ring-2 ring-blue-500' : ''
-                }`}
+                className={`cursor-pointer transition-all duration-200 hover:shadow-lg`}
                 onClick={() => handleSelectSegment(segment.id)}
               >
                 <CardHeader className="pb-3">
@@ -325,9 +321,11 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleUpdateSegment(segment.id, { 
-                          is_visible: !segment.is_visible 
-                        })}>
+                        <DropdownMenuItem 
+                        // onClick={() => handleUpdateSegment(segment.id, { 
+                        //   is_visible: !segment.is_visible 
+                        // })}
+                        >
                           {segment.is_visible ? (
                             <>
                               <EyeOff className="h-4 w-4 mr-2" />
@@ -345,7 +343,7 @@ export function MaterialSegmentList({ className }: MaterialSegmentListProps) {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          onClick={() => handleDeleteSegment(segment.id)}
+                          // onClick={() => handleDeleteSegment(segment.id)}
                           className="text-red-600"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />

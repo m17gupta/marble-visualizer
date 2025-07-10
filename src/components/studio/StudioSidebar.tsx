@@ -126,7 +126,7 @@ export function StudioSidebar({
               exit={{ opacity: 0, y: -20 }}
             >
               <Button
-                onClick={onGenerate}
+                // onClick={onGenerate}
                 disabled={!currentImageUrl || isUploading || !canEdit}
                 className="w-full h-12 text-base font-medium"
                 size="lg"

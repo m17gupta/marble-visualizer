@@ -6,7 +6,6 @@ export type WorkSpaceType = 'renovate' | 'workspace' | 'design-hub' | 'studio';
 // Define the state interface
 interface WorkspaceState {
   workspace_type: WorkSpaceType;
- 
   jobImage: string; // Assuming this is a string to hold the job image URL
   currentView: {
     view: ViewType; // Current view type
@@ -37,6 +36,7 @@ const initialState: WorkspaceState = {
   processingState: 'idle',
   error: null,
   isUploading: false,
+  activeTab:"design-hub", // Default active tab
 
 
 };

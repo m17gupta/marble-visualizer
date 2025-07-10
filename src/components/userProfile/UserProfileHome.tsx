@@ -12,10 +12,11 @@ const UserProfileHome = () => {
   const [userId, setUserId] = React.useState<string | null>(null);
   const getUserDatas = useSelector(getUserData)
    const {profile}= useSelector((state: RootState) => state.userProfile);
+   console.log("UserProfileHome profile",profile);
   useEffect(() => {
     if (getUserDatas &&
       getUserDatas.id &&
-      profile ===undefined
+      profile ===null
     ) {
       isUserProfile.current = true;
       setUserId(getUserDatas.id);

@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/redux/store';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { MaterialSegmentModel } from '@/models/materialSegment/MaterialSegmentModel';
+import { selectMaterialSegment } from '@/redux/slices/materialSlices/materialSegmentSlice';
 
 const AllSegments = () => {
   const { segments } = useSelector((state: RootState) => state.materialSegments);
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [activeSegment, setActiveSegment] = useState<number | null>(null);
 
-  const handleSegmentClick = (segment: MaterialSegmentModel) => {
-    // Toggle segment selection
-    const newActiveId = activeSegment === segment.id ? null : segment.id;
-    setActiveSegment(newActiveId);
-    console.log('Segment clicked:', segment);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const handleSegmentClick = (selectedSeg: MaterialSegmentModel) => {
+     if(selectedSeg){
+      setActiveSegment(selectedSeg.id);
+      dispatch(selectMaterialSegment(selectedSeg));
+      console.log('Selected Segment:', selectedSeg);
+     }
   };
 
   const handleMouseEnter = (segmentId: number, color: string) => {
-    setHoveredSegment(segmentId);
+   
     console.log('Segment hovered:', segmentId, color);
   };
 
   const handleMouseLeave = (segmentId: number) => {
-    setHoveredSegment(null);
-    console.log('Segment hover removed:', segmentId);
+   
   };
 
   return (

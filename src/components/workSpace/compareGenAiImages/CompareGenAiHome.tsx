@@ -42,6 +42,10 @@ const CompareGenAiHome: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full p-6 bg-gray-100">
+      <button
+      onClick={handleInspirationSection}>
+        back to Inspiration
+      </button>
       {/* View mode tabs */}
       {showCompareView && selectedGeneratedImage && (
         <div className="flex justify-center mb-4 absolute top-8 left-96 right-0 z-40">

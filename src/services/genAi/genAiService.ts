@@ -14,7 +14,13 @@ class GenAiService {
    */
   async submitRequest(request: GenAiRequest): Promise<GenAiResponse> {
     try {
-      const response= await axios.post(`${this.baseUrl}/openAI/apply-palette-openai`, request, {})
+      const response= await axios.post(`${this.baseUrl}/generate-image`, request, {
+        headers: {
+          'Accept': 'application/json',
+          'X-API-Key': 'dorg_sk_ioLOcqR2HTPtXNv44ItBW3RCL4NjLeuWitgP-vJuO3s',
+          'Content-Type': 'application/json'
+        }
+      })
       console.log('GenAI request submitted:', response);
       if (response.status !== 200) {
         throw new Error(response.data.message || 'Failed to submit GenAI request');
@@ -30,7 +36,13 @@ class GenAiService {
   // get task id from the response
  async getChatTaskId(request: string) {
     try {
-      const response = await axios.get(`${this.baseUrl}/openAI/apply-palette-status/${request}`, {});
+      const response = await axios.get(`${this.baseUrl}/generate-image/status/${request}`, {
+         headers: {
+          'Accept': 'application/json',
+          'X-API-Key': 'dorg_sk_ioLOcqR2HTPtXNv44ItBW3RCL4NjLeuWitgP-vJuO3s',
+          'Content-Type': 'application/json'
+        }
+      });
 
       console.log('GenAI task ID retrieved:', response);
       if (response.status !== 200) {

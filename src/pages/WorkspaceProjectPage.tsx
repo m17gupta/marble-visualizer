@@ -10,8 +10,8 @@ import { useSelector } from 'react-redux';
 const WorkspaceProjectPage: React.FC = () => {
 
   const { isGenerated } = useSelector((state: RootState) => state.workspace);
-  
-  
+
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   return (
     <>
 

@@ -14,11 +14,7 @@ import {
   Redo2,
   Download,
   Copy,
-  Paintbrush,
-  X,
   Clipboard,
-  ChevronUp,
-  ChevronDown,
   ZoomIn,
   ZoomOut
 } from 'lucide-react';
@@ -39,14 +35,13 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
   const dispatch = useDispatch<AppDispatch>();
   // Control whether zoom is centered on mouse position or canvas center
   const {
-    segments,
-    activeSegmentId,
+ 
     isDrawing,
     segmentDrawn
   } = useSelector((state: RootState) => state.segments)
 
   const { canavasActiveTool, currentZoom, zoomMode, mousePosition } = useSelector((state: RootState) => state.canvas);
-  const activeSegment = segments.find(s => s.id === activeSegmentId);
+
   const handleToolChange = (tool: string) => {
     // Dispatch action to set the active tool in the canvas state
     dispatch(setCanvasActiveTool(tool));
@@ -180,76 +175,8 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
               </Tooltip>
             </div>
 
-            {/* Layer Controls */}
-            {activeSegmentId && (
-              <>
-                <Separator orientation="vertical" className="h-6" />
-                <div className="flex items-center space-x-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      //  onClick={handleBringForward}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Bring forward</TooltipContent>
-                  </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      // onClick={handleSendBackward}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Send backward</TooltipContent>
-                  </Tooltip>
-                </div>
-              </>
-            )}
-
-            {/* Material Tools */}
-            {activeSegmentId && (
-              <>
-                <Separator orientation="vertical" className="h-6" />
-                <div className="flex items-center space-x-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                      // onClick={handleAssignMaterial}
-                      >
-                        <Paintbrush className="h-4 w-4 mr-1" />
-                        Material
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Apply material to selected segment</TooltipContent>
-                  </Tooltip>
-
-                  {activeSegment?.material && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                        // onClick={handleRemoveMaterial}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Remove material</TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-              </>
-            )}
+        
 
             <Separator orientation="vertical" className="h-6" />
 
@@ -276,16 +203,7 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
               </Badge>
             )}
 
-            {activeSegmentId && (
-              <Badge variant="outline">
-                Selected: {activeSegment?.name}
-                {activeSegment?.material && (
-                  <span className="ml-1 text-xs">
-                    • {activeSegment.material.materialName}
-                  </span>
-                )}
-              </Badge>
-            )}
+      
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
