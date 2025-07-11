@@ -301,15 +301,22 @@ export function StudioPage() {
     console.log("Tab changed to:", value);
   };
 
+  useEffect(() => {
+  if (!activeTabFromStore) {
+    dispatch(updateActiveTab("inspiration"));
+  }
+}, [dispatch, activeTabFromStore]);
+
+
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
       <div className="w-1/4 border-r overflow-hidden">
-        <Tabs defaultValue="inspiration" className="w-full h-full flex flex-col">
+      <Tabs value={activeTabFromStore ?? "inspiration"} onValueChange={handleChangeTab} className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2" >
              <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
               Inspiration
             </TabsTrigger>
-            
+
             <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
               Design Hub
             </TabsTrigger>
