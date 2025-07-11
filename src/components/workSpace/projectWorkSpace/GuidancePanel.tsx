@@ -27,6 +27,9 @@ import {
   submitGenAiRequest,
   insertGenAiChatData,
   resetRequest,
+  updateGeneratedImage,
+  updateOriginalHouseImage,
+  resetIsGenAiSumitFailed,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
@@ -35,7 +38,7 @@ import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 
 
-const   GuidancePanel: React.FC = () => {
+const GuidancePanel: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -51,7 +54,7 @@ const   GuidancePanel: React.FC = () => {
   const [isTask, setIsTask] = React.useState<boolean>(false);
   // Use separate state variables for each popover
 
-  const { requests, inspirationNames } = useSelector((state: RootState) => state.genAi);
+  const { requests, inspirationNames , isSubmitGenAiFailed} = useSelector((state: RootState) => state.genAi);
   const { isGenLoading } = useSelector((state: RootState) => state.workspace);
   const getIsAddInspirations = useSelector(getIsAddInspiration);
   // update the model open and closing
@@ -63,6 +66,16 @@ const   GuidancePanel: React.FC = () => {
       setIsModel(false);
     }
   }, [getIsAddInspirations]);
+
+  // check if the genAi submit failed
+  useEffect(() => {
+    if (isSubmitGenAiFailed) {
+      toast.error("Failed to submit GenAI request. Please try again.");
+    dispatch(resetIsGenAiSumitFailed(false))
+      dispatch(updateIsGenLoading(false));
+      dispatch(setIsGenerated(false));
+    }
+  }, [isSubmitGenAiFailed, dispatch]);
   const handleAddInspirational = () => {
     dispatch(setIsAddInspiration(true));
   };
@@ -130,6 +143,10 @@ const   GuidancePanel: React.FC = () => {
     setTaskId("");
     setIsTask(false);
     console.log("Reset start API call with data:", data);
+
+    dispatch(updateGeneratedImage(requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : ""));
+    dispatch(updateOriginalHouseImage(data.outputImage));
+
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
 
@@ -319,15 +336,15 @@ const   GuidancePanel: React.FC = () => {
       </div>
 
       {/* Only render Call_task_id when there's an active task */}
-      {taskId && taskId !== "" && 
-      isTask &&
-      (
-        <Call_task_id
-          taskId={taskId}
-          resetChatTask={handleResetStartApiCall}
-          resetChatTaskFail={handleResetFaiApiCall}
-        />
-      )}
+      {taskId && taskId !== "" &&
+        isTask &&
+        (
+          <Call_task_id
+            taskId={taskId}
+            resetChatTask={handleResetStartApiCall}
+            resetChatTaskFail={handleResetFaiApiCall}
+          />
+        )}
     </>
   );
 };

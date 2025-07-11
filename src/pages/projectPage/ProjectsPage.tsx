@@ -41,7 +41,7 @@ import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
 import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
-import { addHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import { addHouseImage, updateRequestJobId } from '@/redux/slices/visualizerSlice/genAiSlice';
 import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
 
 export function ProjectsPage() {
@@ -75,12 +75,15 @@ useEffect(() => {
 
     if (project.id && project.jobData && project.jobData.length > 0) {
        const projectImage = project.jobData[0]?.full_image;
+       const jobId = project.jobData[0]?.id;
+       if(jobId) {
        dispatch(addHouseImage(projectImage || ''));
       dispatch(updateSidebarHeaderCollapse(false));
       setSelectedProjectId(project.id);
-
+      dispatch(updateRequestJobId(jobId?.toString()));
       dispatch(setCurrentProject(project));
       navigate(`/app/studio/${project.id}`);
+       }
     }
   };
 

@@ -12,7 +12,8 @@ interface GenAiState {
   currentRequestId: string | null;
   generatedImage: string; // Optional field for storing generated image URL
   originalHouseImage: string; // Optional field for storing original house image URL
-} 
+  isSubmitGenAiFailed?: boolean; // Optional field to track if the submission failed
+}
 
 // Initial state
 const initialState: GenAiState = {
@@ -25,6 +26,9 @@ const initialState: GenAiState = {
     prompt: [],
     imageQuality: 'medium', // Assuming 'medium' is a valid default value
     annotationValue: {},
+    externalUserId: "dzinly-prod",
+    jobId: "", // Assuming jobId is a number, set to 0 as default
+
   },
   responses: {},
   loading: false,
@@ -32,6 +36,7 @@ const initialState: GenAiState = {
   currentRequestId: null,
   generatedImage: "",
   originalHouseImage: "",
+  isSubmitGenAiFailed: false, // Optional field to track if the submission failed
 
 };
 
@@ -43,6 +48,7 @@ export const submitGenAiRequest = createAsyncThunk(
       const response = await genAiService.submitRequest(request);
       return response;
     } catch (error) {
+      console.error('Error submitting GenAI request:', error);
       return rejectWithValue((error as Error).message);
     }
   }
@@ -117,26 +123,32 @@ const genAiSlice = createSlice({
       state.requests.houseUrl = [action.payload];
     },
     updateInspirationNames: (state, action: PayloadAction<string>) => {
-  
+
       state.inspirationNames = action.payload;
     },
 
     updateGeneratedImage: (state, action: PayloadAction<string>) => {
-     
+
       state.generatedImage = action.payload;
     },
     updateOriginalHouseImage: (state, action: PayloadAction<string>) => {
       state.originalHouseImage = action.payload;
+    },
+    updateRequestJobId: (state, action: PayloadAction<string>) => {
+      state.requests.jobId = action.payload;
     },
     // Update response manually
     updateResponse: () => {
       // const response = action.payload;
       // state.responses[response.id] = response;
     },
-    resetGenAiState: () => {
-     return initialState
+    resetIsGenAiSumitFailed: (state, action) => {
+      state.isSubmitGenAiFailed = action.payload; // Reset the flag when needed
     },
-    resetRequest:(state)=>{
+    resetGenAiState: () => {
+      return initialState
+    },
+    resetRequest: (state) => {
       state.requests = {
         houseUrl: [],
         paletteUrl: [],
@@ -144,6 +156,8 @@ const genAiSlice = createSlice({
         prompt: [],
         imageQuality: 'medium',
         annotationValue: {},
+        externalUserId: "dzinly-prod",
+        jobId: "",
       };
     },
   },
@@ -153,14 +167,16 @@ const genAiSlice = createSlice({
       .addCase(submitGenAiRequest.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.isSubmitGenAiFailed = false; // Reset the flag when starting a new request
       })
       .addCase(submitGenAiRequest.fulfilled, (state) => {
         state.loading = false;
-       
+        state.isSubmitGenAiFailed = false; // Reset the flag on successful submission
       })
       .addCase(submitGenAiRequest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || 'Failed to submit GenAI request';
+        state.isSubmitGenAiFailed = true; // Set the flag to true if submission fails
       });
 
     // Handle checkGenAiStatus
@@ -188,10 +204,10 @@ const genAiSlice = createSlice({
       .addCase(insertGenAiChatData.fulfilled, (state, action) => {
         state.loading = false;
         const newChat = action.payload as GenAiChat;
-        
+
         // Check if the chat with this task_id already exists in the state
         const chatExists = state.genAiImages.some(chat => chat.task_id === newChat.task_id);
-        
+
         // Only add the chat if it doesn't already exist
         if (!chatExists) {
           state.genAiImages = [...state.genAiImages, newChat];
@@ -220,7 +236,9 @@ export const {
   updateOriginalHouseImage,
   updateInspirationNames,
   resetRequest,
-  resetGenAiState
+  updateRequestJobId,
+  resetGenAiState,
+  resetIsGenAiSumitFailed
 
 } = genAiSlice.actions;
 
