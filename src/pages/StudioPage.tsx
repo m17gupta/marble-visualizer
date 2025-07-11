@@ -33,8 +33,7 @@ import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 import ImagePreview from "@/components/workSpace/projectWorkSpace/ImagePreview";
 import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
-import GetGenAiImageJobId from "@/components/workSpace/compareGenAiImages/GetGEnAiImageJobId";
-import GenAiImages from "@/components/workSpace/compareGenAiImages/GenAiImages";
+import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -451,7 +450,7 @@ export function StudioPage() {
       <SwatchBookDataHome />
 
       {/* get all GenAi Image based on job ID */}
-      <GetGenAiImageJobId />
+      <GetGenAiImageJobIdBased />
     </div>
   );
 }
