@@ -2,6 +2,8 @@ import { AppDispatch } from '@/redux/store';
 import { createJob } from '@/redux/slices/jobSlice';
 import { JobModel } from '@/models/jobModel/JobModel';
 import { toast } from 'sonner';
+import { updateNewProjectCreated } from '@/redux/slices/projectSlice';
+import { updateRequestJobId } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 export interface CreateJobParams {
   jobUrl: string;
@@ -59,6 +61,11 @@ export const CreateJob = async (
     // Handle success state
     if (createJob.fulfilled.match(jobResponse)) {
       toast.success('Job created successfully!');
+       dispatch(updateNewProjectCreated(jobResponse.payload))
+       if( jobResponse.payload.id) {
+        console.log("Job created with ID:", jobResponse.payload.id);
+         dispatch(updateRequestJobId(jobResponse.payload.id.toString()));
+      } 
       
       // Reset form and state if reset options are provided
       if (resetOptions) {

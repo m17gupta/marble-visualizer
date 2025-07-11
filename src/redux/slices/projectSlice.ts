@@ -1,3 +1,4 @@
+import { JobModel } from '@/models/jobModel/JobModel';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { ProjectService } from '@/services/projects/ProjectsService';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
@@ -70,6 +71,22 @@ export const createProject = createAsyncThunk(
       return newProject;
     } catch (error: unknown) {
       return rejectWithValue((error as Error)?.message || 'Failed to create project');
+    }
+  }
+);
+
+// delete project based on projectId
+export const deleteProject = createAsyncThunk(
+  'projects/deleteProject',
+  async (projectId: number, { rejectWithValue }) => {
+    try {
+      const response = await ProjectService.deleteProjectById(projectId);
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to delete project');
+      }
+      return projectId;
+    } catch (error: unknown) {
+      return rejectWithValue((error as Error)?.message || 'Failed to delete project');
     }
   }
 );
@@ -151,55 +168,7 @@ export const inviteUserToProject = createAsyncThunk(
   }
 );
 
-// Async thunk to update user role
-export const updateUserRole = createAsyncThunk(
-  'projects/updateUserRole',
-  async ({  userId, role }: { projectId: number; userId: string; role: string }, { rejectWithValue }) => {
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // In a real app, this would be: return await projectsAPI.updateUserRole(projectId, userId, role);
-      return { userId, role };
-    } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to update user role');
-    }
-  }
-);
 
-// Async thunk to remove user from project
-export const removeUserFromProject = createAsyncThunk(
-  'projects/removeUserFromProject',
-  async ({  userId }: { projectId: number; userId: string }, { rejectWithValue }) => {
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // In a real app, this would be: return await projectsAPI.removeUser(projectId, userId);
-      return userId;
-    } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to remove user from project');
-    }
-  }
-);
-
-// Async thunk to toggle project public status
-export const toggleProjectPublic = createAsyncThunk(
-  'projects/toggleProjectPublic',
-  async ({ projectId, isPublic }: { projectId: number; isPublic: boolean }, { rejectWithValue }) => {
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const visibility = isPublic ? 'public' : 'private';
-      
-      // In a real app, this would be: return await projectsAPI.updateVisibility(projectId, visibility);
-      return { projectId, visibility, updated_at: new Date().toISOString() };
-    } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to update project visibility');
-    }
-  }
-);
 
 const projectSlice = createSlice({
   name: 'projects',
@@ -218,6 +187,17 @@ const projectSlice = createSlice({
     },
     updateIsCreateDialog: (state, action: PayloadAction<boolean>) => {
       state.isCreateDialogOpen = action.payload;
+    }, 
+    updateNewProjectCreated:(state, action)=>{
+     const newProject = state.currentProject;
+     const newJob = action.payload as JobModel;
+     const data:ProjectModel= {
+        ...newProject,
+        jobData: [newJob],
+     }
+   state.list=[...state.list, data]
+   state.currentProject={}
+
     }
   
   },
@@ -230,7 +210,16 @@ const projectSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.list = action.payload as ProjectModel[];
+        // before adding sort based on updated_at
+        const allProjects = action.payload as ProjectModel[];
+        // Sort projects by updated_at in descending order
+        allProjects.sort((a, b) => {
+          const aTime = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+          const bTime = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+          return bTime - aTime;
+        });
+
+        state.list = allProjects;
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.isLoading = false;
@@ -249,6 +238,8 @@ const projectSlice = createSlice({
       })
       .addCase(createProject.fulfilled, (state, action) => {
         state.isCreating = false;
+        state.currentProject = action.payload;
+
         state.list.unshift(action.payload); // Add to beginning of list
       })
       .addCase(createProject.rejected, (state, action) => {
@@ -299,55 +290,20 @@ const projectSlice = createSlice({
         state.error = action.payload as string;
       })
       
-      // Update user role
-      .addCase(updateUserRole.pending, (state) => {
-        state.error = null;
+     // Delete project
+      .addCase(deleteProject.pending, (state) => {
+        state.isLoading = true; 
       })
-      .addCase(updateUserRole.fulfilled, (state, action) => {
-        const { userId, role } = action.payload;
-        const userIndex = state.projectAccess.findIndex(access => access.userId === userId);
-        if (userIndex !== -1) {
-          state.projectAccess[userIndex].role = role as 'admin' | 'editor' | 'viewer' | 'guest' | 'user';
-        }
+      .addCase(deleteProject.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        const projectId = action.payload;
+        state.list = state.list.filter(project => project.id !== projectId);
       })
-      .addCase(updateUserRole.rejected, (state, action) => {
+      .addCase(deleteProject.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload as string;
-      })
-      
-      // Remove user from project
-      .addCase(removeUserFromProject.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(removeUserFromProject.fulfilled, (state, action) => {
-        const userId = action.payload;
-        state.projectAccess = state.projectAccess.filter(access => access.userId !== userId);
-      })
-      .addCase(removeUserFromProject.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-      
-      // Toggle project public status
-      .addCase(toggleProjectPublic.pending, (state) => {
-        state.isUpdating = true;
-        state.error = null;
-      })
-      .addCase(toggleProjectPublic.fulfilled, (state, action) => {
-        state.isUpdating = false;
-        const { projectId, visibility, updated_at } = action.payload;
-        const projectIndex = state.list.findIndex(p => p.id === projectId);
-        if (projectIndex !== -1) {
-          state.list[projectIndex].visibility = visibility as 'public' | 'private';
-          state.list[projectIndex].updated_at = updated_at;
-        }
-        if (state.currentProject && state.currentProject.id === projectId) {
-          state.currentProject.visibility = visibility as 'public' | 'private';
-          state.currentProject.updated_at = updated_at;
-        }
-      })
-      .addCase(toggleProjectPublic.rejected, (state, action) => {
-        state.isUpdating = false;
-        state.error = action.payload as string;
-      })
+      });
   },
 });
 
@@ -355,7 +311,8 @@ export const {
   setCurrentProject, 
   clearCurrentProject, 
   clearError, 
-  updateIsCreateDialog
+  updateIsCreateDialog,
+  updateNewProjectCreated
   
 } = projectSlice.actions;
 

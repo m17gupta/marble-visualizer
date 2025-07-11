@@ -30,7 +30,10 @@ import {
 import { CreateJob, CreateJobParams } from "@/utils/CreateJob";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 
-const VisualToolHome = () => {
+type Props={
+  resetProjectCreated: () => void;
+}
+const VisualToolHome = ({resetProjectCreated}: Props) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -94,7 +97,7 @@ const VisualToolHome = () => {
       const result = await dispatch(createProject(projectData)).unwrap();
       if (result.id) {
         createdProjectId.current = result.id;
-        toast.success("Project created successfully!");
+        //toast.success("Project created successfully!");
         setIsCreatingProject(false);
         handleUpload();
       }
@@ -159,13 +162,15 @@ const VisualToolHome = () => {
           resetForm: () => {
             console.log("Form reset");
             setIsCreatingJob(false);
+            console.log("Project ID cleared");
             // Navigate to the project page or workspace after job creation
             if (workspace_type === "renovate") {
-              // if (isAuthenticated) {
-              //   navigate(`/app/studio/project/${createdProjectId.current}`);
-              // } else {
+              if (isAuthenticated) {
+                resetProjectCreated();
+                // navigate(`/app/studio/project/${createdProjectId.current}`);
+              } else {
               navigate(`/workspace/project/${createdProjectId.current}`);
-              // }
+              }
             } else if (workspace_type === "design-hub") {
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }

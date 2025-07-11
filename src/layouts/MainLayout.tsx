@@ -77,6 +77,7 @@ export function MainLayout() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    navigate("/")
     // Navigation is handled within the thunk
   };
 

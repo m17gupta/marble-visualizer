@@ -18,4 +18,9 @@ export class ProjectService {
     return await ProjectAPI.createProject(project);
   }
 
+
+  //delete project based on projectId
+  static async deleteProjectById(projectId: number) {
+    return await ProjectAPI.deleteProject(projectId);
+}
 }

@@ -68,7 +68,7 @@ export const logoutUser = createAsyncThunk(
       await AuthService.signOut();
 
       // Force a route change - add this if needed in your setup
-      window.location.href = "/login"; // Force full page refresh to ensure clean state
+      //window.location.href = "/"; // Force full page refresh to ensure clean state
 
       return null;
     } catch (error) {

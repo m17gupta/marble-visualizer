@@ -226,6 +226,7 @@ const jobSlice = createSlice({
       })
       .addCase(createJob.fulfilled, (state, action) => {
         state.isCreating = false;
+        state.currentJob = action.payload;
         state.list = [action.payload, ...state.list]; // Add to beginning of list
       })
       .addCase(createJob.rejected, (state, action) => {

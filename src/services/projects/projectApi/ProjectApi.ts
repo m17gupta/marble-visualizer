@@ -121,5 +121,42 @@ export class ProjectAPI {
       return handleError(error, 'Failed to create project') as ProjectApiResponse;
     }
   }
+
+  // delete project based on projectId
+  static async deleteProject(projectId: number): Promise<ProjectApiResponse> {
+    try { 
+      const { data, error } = await supabase
+        .from("projects")
+       .delete()
+       .eq("id", projectId)
+       .select();
+
+      if (error) {
+        console.error(`Failed to delete project ${projectId}:`, error);
+        throw error;
+      }
+  console.log(`Project with ID ${projectId} deleted successfully`, data);
+  
+      // Check if any rows were deleted
+      if (!data || data.length === 0) {
+        return {
+          success: false,
+          data: undefined,
+          error: `Project with ID ${projectId} not found`,
+        };
+      }
+
+  
+
+      return {
+        success: true,
+        data: data[0] as ProjectModel,
+        message: 'Project deleted successfully',
+      };
+    } catch (error: unknown) {
+      return handleError(error, 'Failed to delete project') as ProjectApiResponse;
+    }
+}
+
 }
 

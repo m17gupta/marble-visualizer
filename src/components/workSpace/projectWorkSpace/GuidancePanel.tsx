@@ -144,8 +144,8 @@ const GuidancePanel: React.FC = () => {
     setIsTask(false);
     console.log("Reset start API call with data:", data);
 
-    dispatch(updateGeneratedImage(requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : ""));
-    dispatch(updateOriginalHouseImage(data.outputImage));
+    dispatch(updateOriginalHouseImage(requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : ""));
+    dispatch(updateGeneratedImage(data.outputImage));
 
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
