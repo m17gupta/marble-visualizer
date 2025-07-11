@@ -30,12 +30,14 @@ import {
   updateGeneratedImage,
   updateOriginalHouseImage,
   resetIsGenAiSumitFailed,
+  updateTaskId,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import { GenAiChat, GenAiRequest, TaskApiModel } from "@/models/genAiModel/GenAiModel";
 import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
+import WebhookEventsListener from "@/components/webBook/WebBook";
 
 
 const GuidancePanel: React.FC = () => {
@@ -122,7 +124,7 @@ const GuidancePanel: React.FC = () => {
           console.log("AI image generation started successfully:", response.data);
           // isApiCall.current = true; // Reset the flag for future API calls
           setTaskId(response.data.task_id); // Store the task ID
-
+           dispatch(updateTaskId(response.data.task_id)); // Update the task ID in the state
           setIsTask(true);
         }
       }
@@ -345,6 +347,9 @@ const GuidancePanel: React.FC = () => {
             resetChatTaskFail={handleResetFaiApiCall}
           />
         )}
+
+        {/* <WebhookEventsListener /> */}
+        <WebhookEventsListener />
     </>
   );
 };

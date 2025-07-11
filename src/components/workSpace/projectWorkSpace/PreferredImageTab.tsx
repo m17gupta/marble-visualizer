@@ -18,6 +18,7 @@ const StyleAndRenovationPanel: React.FC = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState<number>(0);
   const [showAll, setShowAll] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   // const [level, setLevel] = useState(2); // Renovate
   const { inspirational_colors } = useSelector((state: RootState) => state.inspirationalColors);
 
@@ -25,15 +26,28 @@ const StyleAndRenovationPanel: React.FC = () => {
 
   const stylesToShow = useRef<InspirationImageModel[]>(Inspirational_images);
 
-  const handleTabColor = (tabId: number) => {
-    console.log('Tab ID:', tabId);
+  const handleTabColor = async (tabId: number) => {
+    setIsLoading(true);
     setActiveTab(tabId);
-    stylesToShow.current=[]
+    
+    // Add a small delay to show loading state
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    stylesToShow.current = [];
     stylesToShow.current = Inspirational_images.filter((item) => item.color_family_id === tabId);
+    
+    setIsLoading(false);
   }
-  const handleAllTabImage = () => {
+  const handleAllTabImage = async () => {
+    setIsLoading(true);
     setActiveTab(0);
+    
+    // Add a small delay to show loading state
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     stylesToShow.current = Inspirational_images;
+    
+    setIsLoading(false);
   };
 
   // Initialize images when component mounts
@@ -87,7 +101,14 @@ const StyleAndRenovationPanel: React.FC = () => {
 
 
         <div className="grid grid-cols-3 gap-4">
-          {
+          {isLoading ? (
+            // Loading skeleton
+            Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center">
+                <div className="w-24 h-24 bg-gray-200 rounded-xl animate-pulse"></div>
+              </div>
+            ))
+          ) : (
             stylesToShow.current
               .slice(0, showAll ? stylesToShow.current.length : 9)
               .map((style, i) => (
@@ -98,15 +119,14 @@ const StyleAndRenovationPanel: React.FC = () => {
                     alt={style.name}
                     className="w-24 h-24 object-cover rounded-xl "
                   />
-                  {/* <span className="text-sm text-gray-800 mt-1 text-center truncate w-full">
-                  {style.name}
-                </span> */}
+               
                 </div>
-              ))}
+              ))
+          )}
         </div>
 
         {/* Show More */}
-        {stylesToShow.current.length > 9 && (
+        {!isLoading && stylesToShow.current.length > 9 && (
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setShowAll(!showAll)}

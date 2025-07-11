@@ -9,7 +9,6 @@ import { RootState } from '@/redux/store';
 import VisualToolHome from './workSpace/visualTool/VisualToolHome';
 import { cn } from '@/lib/utils';
 import SideBarHome from './sideBar/SideBarHome';
-import MaterialData from './swatchBookData/materialData/MaterialData';
 
 
 export const DashboardLandingSection = () => {
@@ -17,6 +16,9 @@ export const DashboardLandingSection = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { workspace_type } = useSelector((state: RootState) => state.workspace);
 
+  const handleResetProjectCreated = () => {
+    // Reset logic for project created state
+  };
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
@@ -38,10 +40,14 @@ export const DashboardLandingSection = () => {
           
           {
           workspace_type=='renovate' && 
-           <VisualToolHome />}
+           <VisualToolHome
+            resetProjectCreated={handleResetProjectCreated}
+           />}
           {
           workspace_type=='design-hub' && 
-           <VisualToolHome />}
+           <VisualToolHome
+            resetProjectCreated={handleResetProjectCreated}
+           />}
 
             
         </div>

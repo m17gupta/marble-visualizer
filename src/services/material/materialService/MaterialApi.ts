@@ -278,7 +278,7 @@ export class MaterialApi {
         };
       }
 
-      console.log('Wall materials data:', data);
+     
 
       // Check if data exists (data is a single object, not an array)
       if (!data) {
@@ -304,7 +304,7 @@ export class MaterialApi {
       );
       
       const materialsCategoryResults = await Promise.all(materialsCategoryPromises);
-      console.log('Material categories:', materialsCategoryResults);
+     
       
       // Extract successful category results and filter out errors
       const allCategories = materialsCategoryResults
@@ -330,7 +330,6 @@ export class MaterialApi {
           return [];
         }
         
-        console.log(`Materials for category ${category.title}:`, materialsData);
         return materialsData.slice(0, 10) as MaterialModel[];
       });
 
@@ -338,7 +337,7 @@ export class MaterialApi {
       
       // Flatten the results to get all materials in a single array
       const allMaterials = materialsResults.flat();
-      console.log('All wall materials:', allMaterials);
+     
       return {
         success: true,
         data: allMaterials,

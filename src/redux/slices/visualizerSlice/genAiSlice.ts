@@ -12,7 +12,8 @@ interface GenAiState {
   currentRequestId: string | null;
   generatedImage: string; // Optional field for storing generated image URL
   originalHouseImage: string; // Optional field for storing original house image URL
-  isSubmitGenAiFailed?: boolean; // Optional field to track if the submission failed
+  isSubmitGenAiFailed?: boolean;
+  task_id?: string; // Optional field for storing task ID
 }
 
 // Initial state
@@ -37,7 +38,7 @@ const initialState: GenAiState = {
   generatedImage: "",
   originalHouseImage: "",
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
-
+  task_id: "", // Optional field for storing task ID
 };
 
 // Async thunk for submitting a GenAI request
@@ -148,18 +149,23 @@ const genAiSlice = createSlice({
     resetGenAiState: () => {
       return initialState
     },
+
+    updateTaskId: (state, action: PayloadAction<string>) => {
+      state.task_id = action.payload; // Update the task_id in the state
+    },
     resetRequest: (state) => {
       state.requests = {
-        houseUrl: [],
+        houseUrl: state.requests.houseUrl, 
         paletteUrl: [],
         referenceImageUrl: [],
         prompt: [],
         imageQuality: 'medium',
         annotationValue: {},
         externalUserId: "dzinly-prod",
-        jobId: "",
+        jobId: state.requests.jobId, // Reset jobId to its current value
       };
     },
+   
   },
   extraReducers: (builder) => {
     // Handle submitGenAiRequest
@@ -238,7 +244,8 @@ export const {
   resetRequest,
   updateRequestJobId,
   resetGenAiState,
-  resetIsGenAiSumitFailed
+  resetIsGenAiSumitFailed,
+  updateTaskId
 
 } = genAiSlice.actions;
 
