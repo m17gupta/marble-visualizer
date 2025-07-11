@@ -154,9 +154,6 @@ export function StudioMainCanvas({
                     className="mb-6"
                     onImageLoad={handleImageLoad}
                   />
-
-                  {/* generated genAi images  */}
-                  <GenAiImages />
                 </motion.div>
               ) : (
                 <motion.div
@@ -240,6 +237,11 @@ export function StudioMainCanvas({
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Generated GenAi Images - Always show regardless of canvas state */}
+            <div className="mt-6">
+              <GenAiImages />
+            </div>
 
             {/* Hidden file input */}
             {canEdit && (

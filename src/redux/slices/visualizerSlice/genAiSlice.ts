@@ -11,7 +11,8 @@ interface GenAiState {
   error: string | null;
   currentRequestId: string | null;
   generatedImage: string; // Optional field for storing generated image URL
-}
+  originalHouseImage: string; // Optional field for storing original house image URL
+} 
 
 // Initial state
 const initialState: GenAiState = {
@@ -29,7 +30,8 @@ const initialState: GenAiState = {
   loading: false,
   error: null,
   currentRequestId: null,
-  generatedImage: "", // Optional field for storing generated image URL
+  generatedImage: "",
+  originalHouseImage: "",
 
 };
 
@@ -123,6 +125,9 @@ const genAiSlice = createSlice({
      
       state.generatedImage = action.payload;
     },
+    updateOriginalHouseImage: (state, action: PayloadAction<string>) => {
+      state.originalHouseImage = action.payload;
+    },
     // Update response manually
     updateResponse: () => {
       // const response = action.payload;
@@ -212,6 +217,7 @@ export const {
   addInspirationImage,
   resetInspirationImage,
   updateGeneratedImage,
+  updateOriginalHouseImage,
   updateInspirationNames,
   resetRequest,
   resetGenAiState

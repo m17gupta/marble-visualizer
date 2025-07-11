@@ -2,24 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IoArrowBack } from "react-icons/io5";
 import { FaDownload, FaExpand, FaCompress } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
 
 interface CompareSliderProps {
-    beforeImage?: string;
-    afterImage?: string;
+    // beforeImage?: string;
+    // afterImage?: string;
     onClose?: () => void;
 }
 
 const CompareSlider: React.FC<CompareSliderProps> = ({
-    beforeImage,
-    afterImage,
+    // beforeImage,
+    // afterImage,
     onClose
 }) => {
 
-    // Default to the first house image if no beforeImage is provided
-    const originalImage = beforeImage
-
-    // Default to a placeholder if no afterImage is provided
-    const generatedImage = afterImage
+    
 
     const [sliderPosition, setSliderPosition] = useState(50);
     const [isDragging, setIsDragging] = useState(false);
@@ -28,7 +26,9 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     const [afterImageLoaded, setAfterImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-
+   const[beforeImage, setBeforeImage] = useState<string>('');
+   const[afterImage, setAfterImage] = useState<string>('');
+    const { generatedImage, originalHouseImage } = useSelector((    state: RootState) => state.genAi);
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSliderPosition(Number(e.target.value));
     };
@@ -40,6 +40,16 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     const handleMouseUp = () => {
         setIsDragging(false);
     };
+
+    useEffect(() => {
+         if(generatedImage!=="" && originalHouseImage !=="") {
+            setBeforeImage(originalHouseImage);
+            setAfterImage(generatedImage);
+            // setBeforeImageLoaded(true);
+            // setAfterImageLoaded(true);
+            // setImageError(false);
+        }
+    }, [generatedImage, originalHouseImage]);
 
     const handleMouseMove = (e: React.MouseEvent) => {
         if (isDragging && containerRef.current) {
@@ -170,10 +180,10 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
 
                 {/* Before image (original house) */}
                 <img
-                    src={generatedImage}
+                    src={afterImage}
                     alt="Original House"
                     className="absolute top-0 left-0 w-full h-full object-cover"
-                    // onLoad={() => setBeforeImageLoaded(true)}
+                     onLoad={() => setBeforeImageLoaded(true)}
                     // onError={() => setImageError(true)}
                 />
 
@@ -185,14 +195,14 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                     }}
                 >
                     <img
-                        src={originalImage}
+                        src={beforeImage}
                         alt="Renovated House"
                         className="absolute top-0 left-0 w-full h-full object-cover"
                         style={{
                             width: `${100 / sliderPosition * 100}%`,
                             maxWidth: 'none'
                         }}
-                        // onLoad={() => setAfterImageLoaded(true)}
+                         onLoad={() => setAfterImageLoaded(true)}
                         // onError={() => setImageError(true)}
                     />
                 </div>
