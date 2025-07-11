@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import {
   setCurrentProject,
-
   setStyle,
   setLevel,
   togglePreserveObject,
@@ -14,17 +13,23 @@ import {
   clearCurrentImage,
   clearError,
   updateCurentImage,
+} from "@/redux/slices/studioSlice";
 
-} from '@/redux/slices/studioSlice';
-
-import {  fetchJobsByProject, clearError as clearJobError, clearCurrentJob } from '@/redux/slices/jobSlice';
-import { fetchActivityLogs, logActivity } from '@/redux/slices/activityLogsSlice';
-import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
-import { StudioSidebar, StudioMainCanvas } from '@/components/studio';
+import {
+  fetchJobsByProject,
+  clearError as clearJobError,
+  clearCurrentJob,
+} from "@/redux/slices/jobSlice";
+import {
+  fetchActivityLogs,
+  logActivity,
+} from "@/redux/slices/activityLogsSlice";
+import { canEditProject, canAdminProject } from "@/middlewares/authMiddleware";
+import { StudioSidebar, StudioMainCanvas } from "@/components/studio";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import InspirationSidebar from "@/components/workSpace/projectWorkSpace/InspirationSidebar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
 import AllSegments from "@/components/studio/segment/AllSegments";
@@ -49,19 +54,25 @@ export function StudioPage() {
     error,
   } = useSelector((state: RootState) => state.studio);
 
-
-  const { currentJob, error: jobError, isCreating: isJobRunning } = useSelector((state: RootState) => state.jobs);
+  const {
+    currentJob,
+    error: jobError,
+    isCreating: isJobRunning,
+  } = useSelector((state: RootState) => state.jobs);
   const { currentUserRole } = useSelector((state: RootState) => state.projects);
-  const { activeTab: activeTabFromStore } = useSelector((state: RootState) => state.workspace);
+  const { activeTab: activeTabFromStore } = useSelector(
+    (state: RootState) => state.workspace
+  );
 
   // const activeTab = useRef<string>("inspiration");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
-  const [rightPanelContent, setRightPanelContent] = useState<string | null>(null);
+  const [rightPanelContent, setRightPanelContent] = useState<string | null>(
+    null
+  );
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
 
   const { isGenerated } = useSelector((state: RootState) => state.workspace);
-
 
   // Check permissions
   const canEdit = projectId ? canEditProject(projectId) : false;
@@ -69,50 +80,23 @@ export function StudioPage() {
 
   const getAllJob = useSelector((state: RootState) => state.jobs.list);
 
-
-  // update active tab from store
-  // useEffect(() => {
-  //   if (activeTabFromStore) {
-  //     console.log("Updating active tab from store:", activeTabFromStore);
-  //     activeTab.current = activeTabFromStore;
-  //   }
-  // }, [activeTabFromStore]);
-  // console.log("StudioPage activeTab", activeTabFromStore);
-  // update the current job
   useEffect(() => {
-    console.log("getAllJob effect triggered", { getAllJob, length: getAllJob?.length });
-    if (getAllJob &&
-      getAllJob.length > 0
-    ) {
-
+    console.log("getAllJob effect triggered", {
+      getAllJob,
+      length: getAllJob?.length,
+    });
+    if (getAllJob && getAllJob.length > 0) {
       dispatch(updateCurentImage(getAllJob[0].full_image || ""));
-    }else{
-  dispatch(updateCurentImage(""));
+    } else {
+      dispatch(updateCurentImage(""));
     }
   }, [getAllJob, dispatch, currentImageUrl]);
 
-
-
-
-  // Add debugging for currentImageUrl changes
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
-
-      setCurrentCanvasImage(currentImageUrl)
+      setCurrentCanvasImage(currentImageUrl);
     }
   }, [currentImageUrl]);
-
-  // Update selected segment type when active segment changes
-  // useEffect(() => {
-  //   if (activeSegmentId) {
-  //     const activeSegment = segments.find((s) => s.id === activeSegmentId);
-  //     if (activeSegment?.type) {
-  //       dispatch(setSelectedSegmentType(activeSegment.type));
-  //     }
-  //   } else {
-  //     dispatch(setSelectedSegmentType(null));
-  //   }
-  // }, [activeSegmentId, segments, dispatch]);
 
   useEffect(() => {
     if (projectId) {
@@ -205,15 +189,13 @@ export function StudioPage() {
       toast.error("No project selected");
       return;
     }
-
-  
   };
 
   const handleCancelJob = () => {
     if (currentJob) {
       dispatch(clearCurrentJob());
     }
-    toast.info('Job cancelled');
+    toast.info("Job cancelled");
 
     if (projectId) {
       dispatch(
@@ -315,7 +297,6 @@ export function StudioPage() {
   };
 
   const handleChangeTab = (value: string) => {
-    
     dispatch(updateActiveTab(value));
     console.log("Tab changed to:", value);
   };
@@ -324,18 +305,20 @@ export function StudioPage() {
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
       <div className="w-1/4 border-r overflow-hidden">
         <Tabs defaultValue="design-hub" className="w-full h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-2 mb-1">
-            <TabsTrigger value="design-hub"
-              onClick={handleDesignHubClick}
-            >Design Hub</TabsTrigger>
-            <TabsTrigger value="inspiration"
-              onClick={handleInspirationClick}
-            >Inspiration</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2" >
+            <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
+              Design Hub
+            </TabsTrigger>
+            <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
+              Inspiration
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="design-hub" className="flex-grow overflow-auto flex">
+          <TabsContent
+            value="design-hub"
+            className="flex-grow overflow-auto flex">
             {/* All Segments - Left Side */}
-            <div className="flex-1 border-r">
+            <div className="flex border-r">
               <AllSegments />
             </div>
 
@@ -376,7 +359,7 @@ export function StudioPage() {
 
       {/* Main Canvas */}
 
-      { activeTabFromStore=== "design-hub" ?
+      {activeTabFromStore === "design-hub" ? (
         <StudioMainCanvas
           currentCanvasImage={currentCanvasImage}
           isUploading={isUploading}
@@ -385,11 +368,12 @@ export function StudioPage() {
           onFileUpload={handleFileUpload}
           onClearImage={() => dispatch(clearCurrentImage())}
         />
-        : (
-          <>
-           {!isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-          {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-          <ImagePreview />
+      ) : (
+        <>
+          {!isGenerated ? (
+            <div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+              {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
+              <ImagePreview />
 
 
 

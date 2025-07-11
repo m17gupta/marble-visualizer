@@ -84,10 +84,10 @@ export function StudioMainCanvas({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="p-6 space-y-6"
+          className="p-6 pt-0 pe-0 ps-0"
         >
           {/* Canvas Header */}
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
                 Design Canvas
@@ -111,7 +111,7 @@ export function StudioMainCanvas({
                 </Button>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Canvas Content */}
           <div className="relative">

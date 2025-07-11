@@ -210,7 +210,7 @@ export function MainLayout() {
       >
         {/* Header */}
         <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center justify-between px-6 py-2">
             <div className="flex items-center space-x-4">
               <Sheet>
                 <SheetTrigger asChild>
@@ -334,7 +334,7 @@ export function MainLayout() {
         </header>
 
         {/* Main Content Area */}
-        <main className="p-6">
+        <main className="p-6 pt-0 ps-0 pe-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

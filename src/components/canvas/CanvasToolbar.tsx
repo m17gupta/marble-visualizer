@@ -74,7 +74,7 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
   };
   return (
     <Card>
-      <CardContent className="p-4">
+      <CardContent className="py-2 px-4">
         {/* {children} */}
 
         <div className="flex items-center justify-between">

@@ -139,7 +139,7 @@ export function MaterialsPage() {
           <TabsTrigger value="icons">Icons</TabsTrigger>
         </TabsList>
 
-        <TabsContent value={activeTab} className="mt-6">
+        <TabsContent value={activeTab} className="mt-6 1">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMaterials.map((material, index) => (
               <motion.div

@@ -63,7 +63,7 @@ export function StudioSidebar({
       initial={{ x: -288, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sm:w-72 w-full bg-card border-r border-border flex flex-col h-[calc(100vh-150px)] overflow-y-scroll"
+      className="sm:w-80 w-full bg-card border-r border-border flex flex-col"
     >
       {/* Sidebar Header */}
       {/* <StudioSidebarHeader

@@ -912,7 +912,7 @@ export function CanvasEditor({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="relative"
+          className="relative px-4"
         >
           <Card className="overflow-hidden">
             <CardContent className="p-0">

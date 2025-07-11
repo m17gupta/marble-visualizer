@@ -322,7 +322,7 @@ dispatch(updateWorkspaceType('renovate'))
                       <img
                         src={project.jobData[0]?.thumbnail || '/placeholder-image.png'}
                         alt={project.name}
-                        className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>

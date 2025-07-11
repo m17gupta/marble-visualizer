@@ -47,7 +47,7 @@ const AllSegments = () => {
                       variant={isActive ? "default" : "outline"}
                       size="icon"
                       className={cn(
-                        "w-12 h-12 transition-all duration-200 border-2",
+                        "w-12 h-12 transition-all duration-200 border-2 p-0",
                         isActive && "ring-2 ring-offset-2 ring-primary",
                         isHovered && "scale-105 shadow-md"
                       )}
@@ -64,18 +64,19 @@ const AllSegments = () => {
                       onMouseEnter={() => handleMouseEnter(segment.id, segment.color_code || '')}
                       onMouseLeave={() => handleMouseLeave(segment.id)}
                     >
-                     <span className="icon w-6 h-6 flex items-center justify-center">
+                     <span className="icon w-100 h-100 flex items-center justify-center">
                         {segment.icon && segment.icon.trim() !== '' ? ( 
-                            <img
+                           <img
                               src={segment.icon}
                               alt={segment.name || 'Segment Icon'}
-                              className="w-10 h-10"
                               style={{ 
+                                width: '24px',      // ya '100%' for full fit
+                                height: '24px',
                                 display: 'block', 
                                 objectFit: 'contain',
                                 filter: 'brightness(0) saturate(100%)'
                               }}  
-                            />  
+                            />
                         ) : (
                           // Fallback icon based on segment name or default icon
                           <div className="w-10 h-10 rounded-sm flex items-center justify-center text-white text-sm font-bold"
@@ -85,6 +86,7 @@ const AllSegments = () => {
                         )}
                       </span>
                     </Button>
+
                   </TooltipTrigger>
                   <TooltipContent side="right">
                     <p>{segment.name}</p>
