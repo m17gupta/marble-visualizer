@@ -1,87 +1,123 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AppDispatch, RootState } from '@/redux/store';
-import {  Swatch } from '@/redux/slices/swatchSlice';
+import { useSelector } from 'react-redux';
+import { AnimatePresence } from 'framer-motion';
+import { RootState } from '@/redux/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Palette,
-  Sparkles,
-  ExternalLink,
-  Target,
-  Lightbulb,
-  ArrowRight,
-  Layers,
-  Info,
-} from 'lucide-react';
+import { Target } from 'lucide-react';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
 
 
-interface SwatchRecommendationsProps {
-  selectedSegmentType: string | null;
-  className?: string;
-}
 
-export function SwatchRecommendations({ selectedSegmentType, className }: SwatchRecommendationsProps) {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+export function SwatchRecommendations() {
+const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
+  const newPath="https://betadzinly.s3.us-east-2.amazonaws.com/material/"
+  const { materials, wallMaterials, doorMaterials, roofMaterials, windowMaterials, trimMaterials } = useSelector((state: RootState) => state.materials)
   const { selectedMaterialSegment } = useSelector((state: RootState) => state.materialSegments);
-
-  const { materials } = useSelector((state: RootState) => state.materials)
-  const { categories } = useSelector((state: RootState) => state.categories);
-
-  const [recommendedSwatches, setRecommendedSwatches] = useState<Swatch[]>([]);
-  const [groupedSwatches, setGroupedSwatches] = useState<Record<string, Swatch[]>>({});
+  const [recommendedSwatches, setRecommendedSwatches] = useState<MaterialModel[]>([]);
 
 
+  // update the selected Swatch recommentation
   useEffect(() => {
+    if (selectedMaterialSegment &&
+      wallMaterials && wallMaterials.length > 0 &&
+      doorMaterials && doorMaterials.length > 0 &&
+      roofMaterials && roofMaterials.length > 0 &&
+      windowMaterials && windowMaterials.length > 0 &&
+      trimMaterials && trimMaterials.length > 0
+    ) {
+      // Fetch recommended swatches based on the selected segment type
+      const fetchRecommendedSwatches = async () => {
+        // Here you would typically call an API to get the recommended swatches
+        // For now, we will just filter the materials based on the selected segment type
+        let filteredMaterials: MaterialModel[] = [];
+        const title = selectedMaterialSegment.name
+        switch (title) {
+          case 'Wall':
+            filteredMaterials = wallMaterials;
+            console.log('Wall Materials:', filteredMaterials);
+            break;
+          case 'Door':
+            filteredMaterials = doorMaterials;
+            break;
+          case 'Roof':
+            filteredMaterials = roofMaterials;
+            break;
+          case 'Window':
+            filteredMaterials = windowMaterials;
+            break;
+          case 'Trim':
+            filteredMaterials = trimMaterials;
+            break;
+          default:
+            filteredMaterials = materials; // Fallback to all materials
+        }
+        setRecommendedSwatches(filteredMaterials);
+      };
 
-    if( selectedMaterialSegment &&
-      selectedMaterialSegment.name &&
-      selectedMaterialSegment.categories &&
-        selectedMaterialSegment.categories.length > 0 &&
-       materials && materials.length > 0 &&
-       categories && categories.length > 0) {
-      const allData:MaterialModel[]= materials.filter((material) => {
-        return selectedMaterialSegment.categories.some((cat) => 
-          material.title.includes(cat)
-        );
-      });
-      console.log('Filtered Materials:', allData);
+      fetchRecommendedSwatches();
     }
+  }, [selectedMaterialSegment, wallMaterials, doorMaterials, roofMaterials, windowMaterials, trimMaterials, materials]);
 
-  }, [selectedMaterialSegment, materials,categories]);
-
-;
+  console.log('Recommended Swatches:', recommendedSwatches);
 
   return (
-    <Card className={className}>
+    <Card >
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Target className="h-5 w-5 mr-2" />
-            Recommended for
-             {/* {getSegmentTypeDisplayName(selectedSegmentType)} */}
+            Recommended for {selectedMaterialSegment?.name || 'All Materials'}
           </CardTitle>
           <Badge variant="secondary" className="text-xs">
             {recommendedSwatches.length} swatches
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">
-          {/* {getSegmentTypeDescription(selectedSegmentType)} */}
+          Choose from curated materials for your {selectedMaterialSegment?.name?.toLowerCase() || 'project'}
         </p>
       </CardHeader>
-      
-      <CardContent className="space-y-4">
-       
 
-      
+      <CardContent className="space-y-4">
+        {recommendedSwatches &&
+          recommendedSwatches.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <AnimatePresence>
+              {recommendedSwatches.map((swatch) => (
+                <Card
+                  key={swatch.id}
+                  className="cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden bg-card border-border"
+                >
+                  {/* Image/Color Preview */}
+                  <div className="aspect-square relative overflow-hidden">
+                    <img
+                      src={swatch.bucket_path === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}`}
+                      alt={swatch.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.backgroundColor = swatch.color || '#cccccc';
+                        target.style.display = 'block';
+                        target.src = '';
+                        target.alt = 'Color swatch';
+                      }}
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-2">
+                    <h3 className="font-medium text-xs truncate text-foreground mb-1">{swatch.title}</h3>
+                    <code className="text-xs bg-muted px-1 py-0.5 rounded text-muted-foreground block">
+                      {swatch.color ?? "#000000"}
+                    </code>
+                  </div>
+                </Card>
+              ))}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <p className="text-muted-foreground">No recommended swatches available.</p>
+        )}
       </CardContent>
     </Card>
   );

@@ -64,69 +64,7 @@ export interface CategoryQueryParams {
 export class CategoryApi {
     private static readonly TABLE_NAME = 'material_categories';
 
-    /**
-     * Create a new category
-     */
-    static async create(categoryData: CreateCategoryRequest): Promise<CategoryApiResponse> {
-        try {
-            const { data, error } = await supabase
-                .from(this.TABLE_NAME)
-                .insert(categoryData)
-                .select()
-                .single();
-            if (error) {
-                console.error('Error creating category:', error);
-                return {
-                    success: false,
-                    error: error.message,
-                };
-            }
-
-            return {
-                data: data as CategoryModel,
-                success: true,
-            };
-        } catch (error: unknown) {
-            const apiError = error as ApiError;
-            return {
-                success: false,
-                error: apiError.response?.data?.message || apiError.message || 'Failed to create category'
-            };
-        }
-    }
-
-    /**
-     * Update an existing category
-     */
-    static async update(id: number, categoryData: UpdateCategoryRequest): Promise<CategoryApiResponse> {
-        try {
-            const { data, error } = await supabase
-                .from(this.TABLE_NAME)
-                .update(categoryData)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error updating category:', error);
-                return {
-                    success: false,
-                    error: error.message,
-                };
-            }
-
-            return {
-                data: data as CategoryModel,
-                success: true,
-            };
-        } catch (error: unknown) {
-            const apiError = error as ApiError;
-            return {
-                success: false,
-                error: apiError.response?.data?.message || apiError.message || 'Failed to update category'
-            };
-        }
-    }
+   
 
     /**
      * Get all categories with optional filtering and pagination
@@ -191,6 +129,38 @@ export class CategoryApi {
         }
     }
 
+
+     /**
+     * Get category by slug or title
+     */
+    static async findByName(identifier: string, searchBy: 'slug' | 'title' = 'slug'): Promise<CategoryApiResponse> {
+        try {
+            const { data, error } = await supabase
+                .from(this.TABLE_NAME)
+                .select('*')
+                .eq("title", identifier)
+                .single();
+
+            if (error) {
+                console.error('Error fetching category:', error);
+                return {
+                    success: false,
+                    error: error.message,
+                };
+            }
+    console.log('Category data:', data);
+            return {
+                data: data as CategoryModel,
+                success: true,
+            };
+        } catch (error: unknown) {
+            const apiError = error as ApiError;
+            return {
+                success: false,
+                error: apiError.response?.data?.message || apiError.message || 'Failed to fetch category'
+            };
+        }
+    }
     /**
      * Get category by ID
      */
@@ -223,19 +193,21 @@ export class CategoryApi {
         }
     }
 
-    /**
-     * Get category by slug or title
+   
+
+
+     /**
+     * Create a new category
      */
-    static async findByName(identifier: string, searchBy: 'slug' | 'title' = 'slug'): Promise<CategoryApiResponse> {
+    static async create(categoryData: CreateCategoryRequest): Promise<CategoryApiResponse> {
         try {
             const { data, error } = await supabase
                 .from(this.TABLE_NAME)
-                .select('*')
-                .eq(searchBy, identifier)
+                .insert(categoryData)
+                .select()
                 .single();
-
             if (error) {
-                console.error('Error fetching category:', error);
+                console.error('Error creating category:', error);
                 return {
                     success: false,
                     error: error.message,
@@ -250,7 +222,40 @@ export class CategoryApi {
             const apiError = error as ApiError;
             return {
                 success: false,
-                error: apiError.response?.data?.message || apiError.message || 'Failed to fetch category'
+                error: apiError.response?.data?.message || apiError.message || 'Failed to create category'
+            };
+        }
+    }
+
+    /**
+     * Update an existing category
+     */
+    static async update(id: number, categoryData: UpdateCategoryRequest): Promise<CategoryApiResponse> {
+        try {
+            const { data, error } = await supabase
+                .from(this.TABLE_NAME)
+                .update(categoryData)
+                .eq('id', id)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error updating category:', error);
+                return {
+                    success: false,
+                    error: error.message,
+                };
+            }
+
+            return {
+                data: data as CategoryModel,
+                success: true,
+            };
+        } catch (error: unknown) {
+            const apiError = error as ApiError;
+            return {
+                success: false,
+                error: apiError.response?.data?.message || apiError.message || 'Failed to update category'
             };
         }
     }

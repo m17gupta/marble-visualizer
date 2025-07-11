@@ -16,6 +16,121 @@ interface ServiceResult<T> {
 }
 
 export class MaterialService {
+
+  // serve for get wall materials
+  static async getWallMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+    try {
+      const result = await MaterialApi.getAllSegmentMaterials("Wall");
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch wall materials',
+      };
+    } catch (error) {
+      console.error('Error in MaterialService.getWallMaterials:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+  // serve for get door materials
+  static async getDoorMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+    try {
+      const result = await MaterialApi.getAllSegmentMaterials("Door");
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch wall materials',
+      };
+    } catch (error) {
+      console.error('Error in MaterialService.getWallMaterials:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  // roof material
+  static async getRoofMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+    try {
+      const result = await MaterialApi.getAllSegmentMaterials("Roof");
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch roof materials',
+      };
+    } catch (error) {
+      console.error('Error in MaterialService.getRoofMaterials:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  // fetch window materials
+  static async getWindowMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+    try {
+      const result = await MaterialApi.getAllSegmentMaterials("Window");
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch window materials',
+      };
+    } catch (error) {
+      console.error('Error in MaterialService.getWindowMaterials:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
+  // fetch trim materials
+  static async getTrimMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+    try {
+      const result = await MaterialApi.getAllSegmentMaterials("Trim");
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
+      return {
+        success: false,
+        error: result.error || 'Failed to fetch trim materials',
+      };
+    } catch (error) {
+      console.error('Error in MaterialService.getTrimMaterials:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
   /**
    * Create a new material with validation
    */

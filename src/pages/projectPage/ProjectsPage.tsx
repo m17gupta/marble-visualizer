@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -42,6 +42,7 @@ import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
 import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
 import { addHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -52,13 +53,14 @@ export function ProjectsPage() {
    const { isCreateDialogOpen } = useSelector((state: RootState) => state.projects);
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
-
+ const isProject=useRef( true);
 useEffect(() => {
   // Only fetch if user exists and projects list is empty
-  if (user?.id && projects.length === 0 && !isLoading) {
+  if (user?.id && projects.length === 0 && !isLoading && isProject.current) {
+    isProject.current = false;
     dispatch(fetchProjects(user.id));
   }
-}, [dispatch, user?.id, projects.length, isLoading]);
+}, [ user?.id, projects.length, isLoading]);
 
   useEffect(() => {
     if (error) {
@@ -494,6 +496,9 @@ dispatch(updateWorkspaceType('renovate'))
 
 {isCreateDialogOpen && <VisualToolHome />}
       <SwatchBookDataHome />
+
+      <MaterialData/>
+      
     </>
   );
 }

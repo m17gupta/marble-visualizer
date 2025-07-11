@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { MaterialSegmentModel } from '@/models/materialSegment/MaterialSegmentModel';
 import { CategoryModel } from '@/models/swatchBook/category/CategoryModel';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
+import { categoryService } from '../categoryService';
 
 export interface CreateMaterialRequest {
   user_id: number;
@@ -261,33 +262,96 @@ export class MaterialApi {
    * Get all Wall materials
    * @deprecated Use getMaterials with filters instead
    */
-  // static async getAllWallMaterials(): Promise<MaterialApiResponse<MaterialModel[]>> {
-  //  const {data, error} = await supabase
-  //     .from('material_segments')
-  //     .select('*')
-  //     .eq('title', 'Wall')
-  //     .single();
-  //     if(error) {
-  //       console.error('Error fetching wall materials:', error);
-  //       return {
-  //         success: false,
-  //         error: error.message || 'Failed to fetch wall materials',
-  //       };
-  //     }
-  //     if(data && data.length > 0) {
-  //       const allCategories= data as MaterialSegmentModel;
-  //       const categoryIds = allCategories.categories;
-  //       if(categoryIds && categoryIds.length > 0) {
-  //         // Fetch materials for each category
-  //         const materials = await Promise.all(
-  //           categoryIds.map(categoryId => this.getMaterialsByCategoryId(categoryId))
-  //         );
-  //         return materials.flat();
-  //       }
-  //     }
+  static async getAllSegmentMaterials(segName:string ): Promise<MaterialApiResponse<MaterialModel[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('material_segments')
+        .select('*')
+        .eq('name', segName)
+        .single();
 
-  //     return []
-  // }
+      if (error) {
+        console.error('Error fetching wall materials:', error);
+        return {
+          success: false,
+          error: error.message || 'Failed to fetch wall materials',
+        };
+      }
+
+      console.log('Wall materials data:', data);
+
+      // Check if data exists (data is a single object, not an array)
+      if (!data) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      const materialSegment = data as MaterialSegmentModel;
+      const categoryIds = materialSegment.categories;
+
+      if (!categoryIds || categoryIds.length === 0) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      // Fetch materials for each category
+      const materialsCategoryPromises = categoryIds.map(categoryName => 
+        categoryService.getCategoryByName(categoryName)
+      );
+      
+      const materialsCategoryResults = await Promise.all(materialsCategoryPromises);
+      console.log('Material categories:', materialsCategoryResults);
+      
+      // Extract successful category results and filter out errors
+      const allCategories = materialsCategoryResults
+        .filter(result => result.success && result.data)
+        .map(result => result.data as CategoryModel);
+
+      if (allCategories.length === 0) {
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      // Get all materials based on category IDs
+      const materialPromises = allCategories.map(async (category: CategoryModel) => {
+        const { data: materialsData, error: materialsError } = await supabase
+          .from('materials')
+          .select('*')
+          .eq('material_category_id', category.id);
+
+        if (materialsError) {
+          console.error(`Error fetching materials for category ${category.title}:`, materialsError);
+          return [];
+        }
+        
+        console.log(`Materials for category ${category.title}:`, materialsData);
+        return materialsData.slice(0, 10) as MaterialModel[];
+      });
+
+      const materialsResults = await Promise.all(materialPromises);
+      
+      // Flatten the results to get all materials in a single array
+      const allMaterials = materialsResults.flat();
+      console.log('All wall materials:', allMaterials);
+      return {
+        success: true,
+        data: allMaterials,
+      };
+
+    } catch (error) {
+      console.error('Error in getAllWallMaterials:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
 
 
   /**

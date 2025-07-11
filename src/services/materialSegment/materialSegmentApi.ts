@@ -29,6 +29,38 @@ export interface PaginatedMaterialSegmentResponse {
 export class MaterialSegmentApi {
   private static tableName = 'material_segments';
 
+    /**
+   * Get material segments by category
+   */
+  static async getMaterialSegmentsByCategory(category: string): Promise<MaterialSegmentApiResponse<MaterialSegmentModel[]>> {
+    try {
+      const { data, error } = await supabase
+        .from(this.tableName)
+        .select('*')
+        .contains('categories', [category])
+        .order('index', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching segments by category:', error);
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+
+      return {
+        success: true,
+        data: data as MaterialSegmentModel[],
+      };
+    } catch (error) {
+      console.error('Error fetching segments by category:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
   /**
    * Create a new material segment
    */
@@ -590,37 +622,6 @@ export class MaterialSegmentApi {
     }
   }
 
-  /**
-   * Get material segments by category
-   */
-  static async getMaterialSegmentsByCategory(category: string): Promise<MaterialSegmentApiResponse<MaterialSegmentModel[]>> {
-    try {
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .select('*')
-        .contains('categories', [category])
-        .order('index', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching segments by category:', error);
-        return {
-          success: false,
-          error: error.message,
-        };
-      }
-
-      return {
-        success: true,
-        data: data as MaterialSegmentModel[],
-      };
-    } catch (error) {
-      console.error('Error fetching segments by category:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-      };
-    }
-  }
 
   /**
    * Get all available categories

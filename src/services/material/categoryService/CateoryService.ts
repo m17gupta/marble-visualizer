@@ -11,6 +11,7 @@ interface ServiceResult<T> {
 
 // Service Class
 export class CategoryService {
+
   private static instance: CategoryService;
 
   // Singleton pattern
@@ -130,35 +131,6 @@ export class CategoryService {
   }
 
   /**
-   * Get category by ID
-   * @param id - Category ID
-   * @returns Promise with category data
-   */
-  async getCategoryById(id: number): Promise<ServiceResult<CategoryModel>> {
-    try {
-      const response = await CategoryApi.findById(id);
-      
-      if (response.success && response.data) {
-        return {
-          success: true,
-          data: response.data,
-          message: 'Category retrieved successfully'
-        };
-      }
-
-      return {
-        success: false,
-        error: response.error || 'Category not found'
-      };
-    } catch (error: unknown) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
-    }
-  }
-
-  /**
    * Get category by slug or title
    * @param identifier - Slug or title to search for
    * @param searchBy - Field to search by ('slug' or 'title')
@@ -187,6 +159,38 @@ export class CategoryService {
       };
     }
   }
+
+
+  /**
+   * Get category by ID
+   * @param id - Category ID
+   * @returns Promise with category data
+   */
+  async getCategoryById(id: number): Promise<ServiceResult<CategoryModel>> {
+    try {
+      const response = await CategoryApi.findById(id);
+      
+      if (response.success && response.data) {
+        return {
+          success: true,
+          data: response.data,
+          message: 'Category retrieved successfully'
+        };
+      }
+
+      return {
+        success: false,
+        error: response.error || 'Category not found'
+      };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      };
+    }
+  }
+
+
 
   /**
    * Delete a category

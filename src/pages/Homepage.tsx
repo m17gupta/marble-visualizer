@@ -7,6 +7,7 @@ import TestimonialsSection from '@/components/homepage/TestimonialsSection';
 import PricingSection from '@/components/homepage/PricingSection';
 import CTASection from '@/components/homepage/CTASection';
 import Footer from '@/components/homepage/Footer';
+import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
 
 
 const Homepage = () => {
@@ -17,11 +18,11 @@ const Homepage = () => {
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
-      <PricingSection />
+      <PricingSection />c
       <CTASection />
       <Footer />
+      <MaterialData />
 
-     
     </div>
   );
 };

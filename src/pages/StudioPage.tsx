@@ -34,6 +34,7 @@ import ImagePreview from "@/components/workSpace/projectWorkSpace/ImagePreview";
 import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
+import GenAiImages from "@/components/workSpace/compareGenAiImages/GenAiImages";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -205,50 +206,7 @@ export function StudioPage() {
       return;
     }
 
-    // // Prepare job data for the new job slice
-    // const jobData = {
-    //   title: `Design Generation - ${new Date().toLocaleString()}`,
-    //   jobType: designSettings.style,
-    //   full_image: currentImageUrl,
-    //   thumbnail: currentImageUrl,
-    //   project_id: parseInt(projectId),
-    //   segements: JSON.stringify({
-    //     style: designSettings.style,
-    //     level: designSettings.level,
-    //     preserve: designSettings.preserve,
-    //     tone: designSettings.tone,
-    //     intensity: designSettings.intensity,
-    //     segments: segments.map(segment => ({
-    //       id: segment.id,
-    //       points: segment.points,
-    //       materialId: segment.material?.materialId,
-    //     })),
-    //   }),
-    // };
-
-    // // Log activity
-    // dispatch(
-    //   logActivity({
-    //     projectId,
-    //     type: "ai_job_started",
-    //     action: "AI Job Started",
-    //     detail: `Design generation started with ${designSettings.style} style`,
-    //     metadata: {
-    //       style: designSettings.style,
-    //       level: designSettings.level,
-    //       tone: designSettings.tone,
-    //       intensity: designSettings.intensity,
-    //       segmentCount: segments.length,
-    //     },
-    //   })
-    // );
-
-    // const result = await dispatch(createJob(jobData));
-    // if (createJob.fulfilled.match(result)) {
-    //   toast.success('AI job started! Processing your design...');
-    //   // Fetch updated jobs for the project
-    //   dispatch(fetchJobsByProject(parseInt(projectId)));
-    // }
+  
   };
 
   const handleCancelJob = () => {
@@ -437,7 +395,7 @@ export function StudioPage() {
 
           <div className="mt-4 ">
             <GuidancePanel />
-           
+            <GenAiImages />
           </div>
         </div>) : (
           <CompareGenAiHome />

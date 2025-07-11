@@ -109,7 +109,7 @@ export function StudioTabsNavigation({
 
           <TabsContent value="swatches" className="mt-0">
             <SwatchRecommendations
-              selectedSegmentType={selectedSegmentType}
+              
             />
           </TabsContent>
 

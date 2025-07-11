@@ -9,6 +9,7 @@ import { RootState } from '@/redux/store';
 import VisualToolHome from './workSpace/visualTool/VisualToolHome';
 import { cn } from '@/lib/utils';
 import SideBarHome from './sideBar/SideBarHome';
+import MaterialData from './swatchBookData/materialData/MaterialData';
 
 
 export const DashboardLandingSection = () => {
@@ -42,7 +43,7 @@ export const DashboardLandingSection = () => {
           workspace_type=='design-hub' && 
            <VisualToolHome />}
 
-
+            
         </div>
 
 
