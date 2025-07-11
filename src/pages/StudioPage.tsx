@@ -304,7 +304,7 @@ export function StudioPage() {
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
       <div className="w-1/4 border-r overflow-hidden">
-        <Tabs defaultValue="design-hub" className="w-full h-full flex flex-col">
+        <Tabs defaultValue="inspiration" className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2" >
              <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
               Inspiration

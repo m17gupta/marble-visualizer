@@ -36,7 +36,7 @@ const initialState: WorkspaceState = {
   processingState: 'idle',
   error: null,
   isUploading: false,
-  activeTab:"design-hub", // Default active tab
+  activeTab:"inspiration", // Default active tab
 
 
 };
