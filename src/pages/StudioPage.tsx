@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import {
   setCurrentProject,
-  setSelectedSegmentType,
+
   setStyle,
   setLevel,
   togglePreserveObject,
@@ -17,7 +17,7 @@ import {
 
 } from '@/redux/slices/studioSlice';
 
-import { createJob, fetchJobsByProject, clearError as clearJobError, clearCurrentJob } from '@/redux/slices/jobSlice';
+import {  fetchJobsByProject, clearError as clearJobError, clearCurrentJob } from '@/redux/slices/jobSlice';
 import { fetchActivityLogs, logActivity } from '@/redux/slices/activityLogsSlice';
 import { canEditProject, canAdminProject } from '@/middlewares/authMiddleware';
 import { StudioSidebar, StudioMainCanvas } from '@/components/studio';
@@ -29,10 +29,12 @@ import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
 import AllSegments from "@/components/studio/segment/AllSegments";
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
-import WorkspaceProjectPage from "./WorkspaceProjectPage";
+
 import ImagePreview from "@/components/workSpace/projectWorkSpace/ImagePreview";
 import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
+import GetGenAiImageJobId from "@/components/workSpace/compareGenAiImages/GetGEnAiImageJobId";
+import GenAiImages from "@/components/workSpace/compareGenAiImages/GenAiImages";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -436,6 +438,7 @@ export function StudioPage() {
 
           <div className="mt-4 ">
             <GuidancePanel />
+           
           </div>
         </div>) : (
           <CompareGenAiHome />
@@ -443,32 +446,12 @@ export function StudioPage() {
           </>
 
         )}
-      {/* 
-      {activeTab === "inspiration" &&
-        !isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+      
 
-          <ImagePreview />
-
-
-
-          <div className="mt-4 ">
-            <GuidancePanel />
-          </div>
-        </div>) : (
-        <CompareGenAiHome />
-      )} */}
-
-
-      {/* Share Project Dialog */}
-      {/* {shareDialogOpen && currentProject && (
-        <ShareProjectDialog
-          open={shareDialogOpen}
-          onOpenChange={setShareDialogOpen}
-          projectId={currentProject.id?.toString() || ''}
-          projectName={currentProject.name || ''}
-        />
-      )} */}
       <SwatchBookDataHome />
+
+      {/* get all GenAi Image based on job ID */}
+      <GetGenAiImageJobId />
     </div>
   );
 }

@@ -1,54 +1,19 @@
 import { Button } from '@/components/ui/button';
-import { RootState } from '@/redux/store';
-import React, { useState } from 'react';
-
-import { IoCheckmarkCircle } from "react-icons/io5";
-import { useSelector } from 'react-redux';
+import GenAiImages from './GenAiImages';
 
 
 const AllGenAiImage = () => {
- 
-//   
-  const { genAiImages } = useSelector((state: RootState) => state.genAi);
-  
-  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-  
+
+  //   
+
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <h2 className="text-md font-semibold mb-4">Design Variations</h2>
-      
+
       {/* Generated images grid */}
-      <div className="flex grid-cols-1 gap-6">
-        {genAiImages.map((imageSet, index) => (
-          <div key={imageSet.id} className="space-y-4">
-          
-            <div className="relative group rounded-md">
-              <img 
-                src={imageSet.output_image} 
-                alt={`Generated Image ${index + 1}`} 
-                width={100}
-                height={100}
-                className='rounded-lg'
-                //className={`w-full h-64 object-cover rounded-lg cursor-pointer ${selectedImageId === `${imageSet.id}-${index}` ? 'border-2 border-blue-500' : ''}`}
-               // onClick={() => handleImageSelect(imageSet, index)}
-              />
-              
-              {/* Checkmark overlay for selected image */}
-              {selectedImageId === `${imageSet}-${index}` && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
-                  <IoCheckmarkCircle className="text-white text-3xl" />
-                </div>
-              )}
-            </div>
-            
-            
-                               
-           
-          </div>
-        ))}
-      </div>
-      
+      <GenAiImages />
+
       {/* Empty state */}
       {/* {genAiImages.length === 0 && !loading && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -59,7 +24,7 @@ const AllGenAiImage = () => {
           </p>
         </div>
       )} */}
-      
+
       {/* Loading state */}
       {/* {loading && (
         <div className="flex flex-col items-center justify-center py-12">
@@ -67,21 +32,21 @@ const AllGenAiImage = () => {
           <p className="text-gray-600">Generating designs...</p>
         </div>
       )} */}
-      
+
       {/* Cancel and Save & Continue buttons */}
       <div className="mt-6 flex justify-between">
-        <Button 
+        <Button
           className="px-4 py-2 border border-gray-300 text-gray-700 bg-transparent rounded-lg hover:bg-gray-50"
         >
           Cancel
         </Button>
-  
 
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:text-gray-500" 
-                // disabled={!selectedImageId}
-          >
-             Save & Continue To Next Step
-            </Button>
+
+        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:text-gray-500"
+        // disabled={!selectedImageId}
+        >
+          Save & Continue To Next Step
+        </Button>
 
       </div>
     </div>

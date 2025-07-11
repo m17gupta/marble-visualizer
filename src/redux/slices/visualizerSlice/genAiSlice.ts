@@ -128,6 +128,9 @@ const genAiSlice = createSlice({
       // const response = action.payload;
       // state.responses[response.id] = response;
     },
+    resetGenAiState: () => {
+     return initialState
+    },
     resetRequest:(state)=>{
       state.requests = {
         houseUrl: [],
@@ -210,7 +213,8 @@ export const {
   resetInspirationImage,
   updateGeneratedImage,
   updateInspirationNames,
-  resetRequest
+  resetRequest,
+  resetGenAiState
 
 } = genAiSlice.actions;
 

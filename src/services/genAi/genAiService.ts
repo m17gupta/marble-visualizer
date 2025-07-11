@@ -66,7 +66,7 @@ async getAllGenAiChats(jobId: number): Promise<GenAiChat[]> {
       if (error) {
         throw new Error(error.message || 'Failed to fetch GenAI chats');
       }
-
+    console.log('Fetched GenAI chats:', data);
       return data;
   } catch (error) {
     console.error('Error fetching GenAI chats:', error);
@@ -86,7 +86,7 @@ async insertGenAiChat(chatData: GenAiChat): Promise<GenAiChat> {
 
     // If a record with this task_id already exists, return it and don't insert again
     if (existingData) {
-      console.log('Record with this task_id already exists, returning existing record:', existingData);
+    
       return existingData as GenAiChat;
     }
 
@@ -96,18 +96,16 @@ async insertGenAiChat(chatData: GenAiChat): Promise<GenAiChat> {
       .insert(chatData)
       .select()  // Add select() to retrieve the inserted data
 
-    console.log('Data to insert:', chatData);
     if (error) {
       throw new Error(error.message || 'Failed to insert GenAI chat');
     }
     
-    // If we have data, return the first inserted record, otherwise return the original chatData
-    // This ensures we always return a value even if Supabase doesn't return data
+
     if (data && data.length > 0) {
-      console.log('Inserted GenAI chat:', data[0]);
+   
       return data[0] as GenAiChat;
     } else {
-      console.log('No data returned from insert operation, returning original chatData');
+
       return chatData;
     }
   } catch (error) {

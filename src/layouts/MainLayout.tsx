@@ -35,7 +35,8 @@ import {
   User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { resetRequest } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { resetGenAiState, resetRequest } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { clearCurrentProject } from "@/redux/slices/projectSlice";
 
 const navigation = [
   {
@@ -80,7 +81,9 @@ export function MainLayout() {
   };
 
   const handleBackToProjects = () => {
-     dispatch(resetRequest())
+    dispatch(resetGenAiState());  // Reset GenAI state
+     dispatch(resetRequest())    // Reset request state
+     dispatch(clearCurrentProject())
     navigate('/app/projects');
   };
 

@@ -207,7 +207,7 @@ const projectSlice = createSlice({
   reducers: {
     setCurrentProject: (state, action: PayloadAction<ProjectModel>) => {
       state.currentProject = action.payload;
-      state.currentUserRole = 'admin'; // Set default role, in real app this would come from the payload
+      
     },
     clearCurrentProject: (state) => {
       state.currentProject = null;

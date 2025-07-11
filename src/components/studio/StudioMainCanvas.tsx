@@ -12,6 +12,7 @@ import {
   Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import GenAiImages from "../workSpace/compareGenAiImages/GenAiImages";
 
 interface StudioMainCanvasProps {
   currentCanvasImage: string;
@@ -37,15 +38,15 @@ export function StudioMainCanvas({
 
   // update the canvas image
   useEffect(() => {
-    if(currentCanvasImage && currentCanvasImage !== "") { 
-     
+    if (currentCanvasImage && currentCanvasImage !== "") {
+
       setImageLoading(true);
       setCanvasImage(currentCanvasImage);
     } else {
       setCanvasImage(null);
       setImageLoading(false);
     }
-  },[currentCanvasImage]);
+  }, [currentCanvasImage]);
 
   // Handle image load completion
   const handleImageLoad = useCallback(() => {
@@ -120,7 +121,7 @@ export function StudioMainCanvas({
                 Debug: currentCanvasImage = {currentCanvasImage || 'null'}
               </div>
             )} */}
-            
+
             <AnimatePresence mode="wait">
               {canvasImage ? (
                 <motion.div
@@ -144,7 +145,7 @@ export function StudioMainCanvas({
                       </div>
                     </motion.div>
                   )}
-                  
+                  {/* canvas  */}
                   <CanvasEditor
                     key={`canvas-editor-${canvasImage}`}
                     imageUrl={canvasImage}
@@ -153,6 +154,9 @@ export function StudioMainCanvas({
                     className="mb-6"
                     onImageLoad={handleImageLoad}
                   />
+
+                  {/* generated genAi images  */}
+                  <GenAiImages />
                 </motion.div>
               ) : (
                 <motion.div

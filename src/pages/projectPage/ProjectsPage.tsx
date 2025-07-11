@@ -7,7 +7,8 @@ import { ProjectModel } from '@/models/projectModel/ProjectModel';
 import { 
   fetchProjects, 
   clearError, 
-  updateIsCreateDialog
+  updateIsCreateDialog,
+  setCurrentProject
 } from '@/redux/slices/projectSlice';
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 
@@ -75,6 +76,8 @@ useEffect(() => {
        dispatch(addHouseImage(projectImage || ''));
       dispatch(updateSidebarHeaderCollapse(false));
       setSelectedProjectId(project.id);
+
+      dispatch(setCurrentProject(project));
       navigate(`/app/studio/${project.id}`);
     }
   };
