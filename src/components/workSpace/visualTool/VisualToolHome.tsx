@@ -1,44 +1,60 @@
-import React, { useRef } from 'react';
-import { Clock, Home, ArrowLeft } from 'lucide-react';
-import { Button } from '../../ui/button';
+import React, { useRef } from "react";
+import { Clock, Home, ArrowLeft } from "lucide-react";
+import { Button } from "../../ui/button";
 
-import ViewUploader from './ViewUploader';
-import UploadingProgress from './UploadingProgress';
-import { setIsContinue, setIsUploading, updateWorkspaceType, ViewType } from '@/redux/slices/visualizerSlice/workspaceSlice';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '@/redux/store';
-import useViewFiles from '@/hooks/useViewFiles';
+import ViewUploader from "./ViewUploader";
+import UploadingProgress from "./UploadingProgress";
+import {
+  setIsContinue,
+  setIsUploading,
+  updateWorkspaceType,
+  ViewType,
+} from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import useViewFiles from "@/hooks/useViewFiles";
 
-import { RootState } from '@/redux/store';
-import { createProject, updateIsCreateDialog } from '@/redux/slices/projectSlice';
-import { ProjectModel } from '@/models/projectModel/ProjectModel';
-import { toast } from 'sonner';
+import { RootState } from "@/redux/store";
+import {
+  createProject,
+  updateIsCreateDialog,
+} from "@/redux/slices/projectSlice";
+import { ProjectModel } from "@/models/projectModel/ProjectModel";
+import { toast } from "sonner";
 
-import { DirectS3UploadService, UploadProgress } from '@/services/uploadImageService/directS3UploadService';
-import { CreateJob, CreateJobParams } from '@/utils/CreateJob';
-import { addHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
-
+import {
+  DirectS3UploadService,
+  UploadProgress,
+} from "@/services/uploadImageService/directS3UploadService";
+import { CreateJob, CreateJobParams } from "@/utils/CreateJob";
+import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 
 const VisualToolHome = () => {
-
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
   const [typeView, setTypeView] = React.useState<string>("");
   const [uploadProgress, setUploadProgress] = React.useState<number>(0);
-  const [isCreatingProject, setIsCreatingProject] = React.useState<boolean>(false);
+  const [isCreatingProject, setIsCreatingProject] =
+    React.useState<boolean>(false);
   const [isCreatingJob, setIsCreatingJob] = React.useState<boolean>(false);
   const [projectName, setProjectName] = React.useState<string>("New Project");
-  const { viewFiles, setViewFile, removeViewFile, hasAnyFiles, isAllViewsUploaded } = useViewFiles();
+  const {
+    viewFiles,
+    setViewFile,
+    removeViewFile,
+    hasAnyFiles,
+    isAllViewsUploaded,
+  } = useViewFiles();
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
 
   const { workspace_type } = useSelector((state: RootState) => state.workspace);
   const createdProjectId = useRef<number | null>(null);
 
-  console.log('Workspace Type:', workspace_type);
+  console.log("Workspace Type:", workspace_type);
   // Upload a file for a given view
   const handleFileUpload = (file: File, view: ViewType) => {
     setViewFile(view, file);
@@ -56,7 +72,7 @@ const VisualToolHome = () => {
       dispatch(setIsContinue(true));
       handleCreateProject();
     } else if (!projectName.trim()) {
-      toast.error('Please enter a project name');
+      toast.error("Please enter a project name");
     }
   };
 
@@ -70,49 +86,48 @@ const VisualToolHome = () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       user_id: profile?.user_id,
-      thumbnail: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2",
+      thumbnail:
+        "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2",
     };
 
     try {
       const result = await dispatch(createProject(projectData)).unwrap();
       if (result.id) {
-
         createdProjectId.current = result.id;
-        toast.success('Project created successfully!');
+        toast.success("Project created successfully!");
         setIsCreatingProject(false);
         handleUpload();
       }
-
     } catch (error) {
-      console.error('Project creation failed:', error);
-      toast.error('Failed to create project');
+      console.error("Project creation failed:", error);
+      toast.error("Failed to create project");
       setIsCreatingProject(false);
     }
-  }
+  };
 
   const handleGoBack = () => {
     if (isAuthenticated) {
-      dispatch(updateIsCreateDialog(false))
+      dispatch(updateIsCreateDialog(false));
     } else {
       dispatch(updateWorkspaceType("workspace"));
       navigate("/workspace");
     }
-
   };
 
   // Define view types and their display names
   const viewTypes: { key: ViewType; label: string }[] = [
-    { key: 'front', label: 'Front View' },
-    { key: 'rear', label: 'Rear View' },
-    { key: 'left', label: 'Left View' },
-    { key: 'right', label: 'Right View' },
+    { key: "front", label: "Front View" },
+    { key: "rear", label: "Rear View" },
+    { key: "left", label: "Left View" },
+    { key: "right", label: "Right View" },
   ];
   const handleUpload = async () => {
     if (!uploadedFile || !profile?.id) return;
 
     // Check if AWS credentials are configured
     if (!DirectS3UploadService.isConfigured()) {
-      const configError = 'AWS credentials not configured. Please set your environment variables.';
+      const configError =
+        "AWS credentials not configured. Please set your environment variables.";
       toast.error(configError);
       return;
     }
@@ -124,13 +139,10 @@ const VisualToolHome = () => {
         uploadedFile,
         profile.id,
         (progress: UploadProgress) => {
-
           // Calculate percentage from the upload progress
           setUploadProgress(progress.percentage || 0);
         }
       );
-
-
 
       if (result.success && result.fileUrl && result.key) {
         dispatch(addHouseImage(result.fileUrl));
@@ -145,17 +157,16 @@ const VisualToolHome = () => {
         setIsCreatingJob(true);
         CreateJob(jobData, {
           resetForm: () => {
-            console.log('Form reset');
+            console.log("Form reset");
             setIsCreatingJob(false);
             // Navigate to the project page or workspace after job creation
-            if (workspace_type === 'renovate') {
+            if (workspace_type === "renovate") {
               // if (isAuthenticated) {
               //   navigate(`/app/studio/project/${createdProjectId.current}`);
               // } else {
-                navigate(`/workspace/project/${createdProjectId.current}`);
-             // }
-
-            } else if (workspace_type === 'design-hub') {
+              navigate(`/workspace/project/${createdProjectId.current}`);
+              // }
+            } else if (workspace_type === "design-hub") {
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }
           },
@@ -166,14 +177,15 @@ const VisualToolHome = () => {
           clearImages: () => {
             setUploadedFile(null);
             setIsCreatingJob(false);
-          }
+          },
         });
         // Store URL for future use if needed
       } else {
-        toast.error(result.error || 'Upload failed');
+        toast.error(result.error || "Upload failed");
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Upload failed";
       toast.error(errorMessage);
       setIsCreatingProject(false);
       setIsCreatingJob(false);
@@ -182,7 +194,6 @@ const VisualToolHome = () => {
     }
   };
   return (
-
     <>
       {/* Upload Progress Overlay */}
       <UploadingProgress
@@ -200,15 +211,14 @@ const VisualToolHome = () => {
               <Button
                 onClick={handleGoBack}
                 variant="outline"
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900"
-              >
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900">
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back</span>
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">Work Space View</h1>
-
-
+                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">
+                  Work Space View
+                </h1>
 
                 <p className="text-lg text-gray-600 mb-1">
                   Select the initial view you want to work on
@@ -220,21 +230,25 @@ const VisualToolHome = () => {
             </div>
           </div>
         </div>
-        <div>
-          <label htmlFor="projectName" className="block text-sm font-medium text-yellow-800 mb-1">
-            Project Name
-          </label>
-          <input
-            type="text"
-            id="projectName"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            className='w-full px-4 py-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white'
-            placeholder="Enter your project name"
-          />
-        </div>
+
         {/* Main Content */}
         <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="mb-8">
+            <label
+              htmlFor="projectName"
+              className="block text-sm font-medium text-gray-900 mb-2">
+              Project Name
+            </label>
+            <input
+              type="text"
+              id="projectName"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              placeholder="Enter your project name"
+            />
+          </div>
+
           {/* Instructions Section */}
           <div className="grid md:grid-cols-2 gap-12 mb-12">
             {/* Photo Instructions */}
@@ -244,12 +258,12 @@ const VisualToolHome = () => {
                 <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
                   1
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">Photo Instruction</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Photo Instruction
+                </h2>
               </div>
 
-
-              <div className="bg-white rounded-xl p-8 shadow-sm">
-
+              <div className="bg-white rounded-xl p-8 shadow-sm border">
                 <div className="space-y-6">
                   {/* Time Recommendation */}
                   <div className="flex items-center space-x-3">
@@ -258,8 +272,11 @@ const VisualToolHome = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-700">
-                        For the best results, we recommend taking your photo between 10am and 4pm.{' '}
-                        <span className="font-semibold">Overcast conditions are best.</span>
+                        For the best results, we recommend taking your photo
+                        between 10am and 4pm.{" "}
+                        <span className="font-semibold">
+                          Overcast conditions are best.
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -274,8 +291,11 @@ const VisualToolHome = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-700">
-                        Project images need to be a min. of 1MB in landscape orientation.{' '}
-                        <span className="font-semibold">We can only render what is visible in image.</span>
+                        Project images need to be a min. of 1MB in landscape
+                        orientation.{" "}
+                        <span className="font-semibold">
+                          We can only render what is visible in image.
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -287,7 +307,8 @@ const VisualToolHome = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-700">
-                        Be sure to avoid pictures that are blurry, far-away or obstructed by objects.
+                        Be sure to avoid pictures that are blurry, far-away or
+                        obstructed by objects.
                       </p>
                     </div>
                   </div>
@@ -305,19 +326,21 @@ const VisualToolHome = () => {
                 <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
                   2
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">Photo Upload</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Photo Upload
+                </h2>
               </div>
 
-              <div className="bg-white rounded-xl p-8 shadow-sm">
-
-
+              <div className="bg-white rounded-xl p-8 shadow-sm border">
                 <div className="grid grid-cols-2 gap-4">
                   {viewTypes.map((viewType) => (
                     <ViewUploader
                       key={viewType.key}
                       viewType={viewType.label}
                       uploadedFile={viewFiles[viewType.key]}
-                      onFileUpload={(file) => handleFileUpload(file, viewType.key)}
+                      onFileUpload={(file) =>
+                        handleFileUpload(file, viewType.key)
+                      }
                       onFileRemove={() => handleFileRemove(viewType.key)}
                       disabled={hasAnyFiles && !viewFiles[viewType.key]}
                     />
@@ -328,9 +351,12 @@ const VisualToolHome = () => {
                 {hasAnyFiles && (
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <span className="font-semibold">{typeView}</span>  views selected
+                      <span className="font-semibold">{typeView}</span> views
+                      selected
                       {isAllViewsUploaded && (
-                        <span className="ml-2 text-green-700 font-medium">✓ All views ready!</span>
+                        <span className="ml-2 text-green-700 font-medium">
+                          ✓ All views ready!
+                        </span>
                       )}
                     </p>
                   </div>
@@ -344,30 +370,30 @@ const VisualToolHome = () => {
             <Button
               onClick={handleContinue}
               disabled={!hasAnyFiles || !projectName.trim()}
-              className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${hasAnyFiles && projectName.trim()
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-            >
+              className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${
+                hasAnyFiles && projectName.trim()
+                  ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}>
               {!projectName.trim()
-                ? 'Please enter a project name'
+                ? "Please enter a project name"
                 : hasAnyFiles
-                  ? `Continue with (${typeView} view)`
-                  : 'Upload at least one view to continue'}
+                ? `Continue with (${typeView} view)`
+                : "Upload at least one view to continue"}
             </Button>
           </div>
 
           {/* Additional Info */}
           <div className="mt-8 text-center text-sm text-gray-500">
-            <p>Supported formats: JPG, PNG • Maximum file size: 10MB per image</p>
-            <p className="mt-1">You can upload additional views after the initial project delivery</p>
+            <p>
+              Supported formats: JPG, PNG • Maximum file size: 10MB per image
+            </p>
+            <p className="mt-1">
+              You can upload additional views after the initial project delivery
+            </p>
           </div>
         </div>
       </div>
-
-    
-
-
     </>
   );
 };

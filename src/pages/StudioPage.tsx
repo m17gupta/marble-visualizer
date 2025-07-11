@@ -306,12 +306,14 @@ export function StudioPage() {
       <div className="w-1/4 border-r overflow-hidden">
         <Tabs defaultValue="design-hub" className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2" >
+             <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
+              Inspiration
+            </TabsTrigger>
+            
             <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
               Design Hub
             </TabsTrigger>
-            <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
-              Inspiration
-            </TabsTrigger>
+           
           </TabsList>
 
           <TabsContent

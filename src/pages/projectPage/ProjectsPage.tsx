@@ -311,23 +311,23 @@ dispatch(updateWorkspaceType('renovate'))
               transition={{ duration: 0.5, delay: index * 0.1 }}
               layout
             >
-              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden">
+              <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden rounded-lg">
                 <div 
                   className="relative"
                   onClick={() => handleProjectClick(project)}
                 >
                   {project.jobData &&
                    project.jobData.length > 0 ? (
-                    <div className="relative overflow-hidden">
+                    <div className="relative overflow-hidden rounded-lg rounded-b-none ">
                       <img
                         src={project.jobData[0]?.thumbnail || '/placeholder-image.png'}
                         alt={project.name}
-                        className="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   ) : (
-                    <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                    <div className="w-full h-52 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
                       <FolderOpen className="h-8 w-8 text-primary/50" />
                     </div>
                   )}
