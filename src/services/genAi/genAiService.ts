@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { GenAiChat, GenAiRequest, GenAiResponse } from '@/models/genAiModel/GenAiModel';
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_APP_BACKEND_URL || 'https://nexus.dzinly.org/api/v1/ai/ai';
 class GenAiService {
   // Base URL for the GenAI API
   private baseUrl = BASE_URL;
