@@ -241,7 +241,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
 
         {/* Main Content */}
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <label
               htmlFor="projectName"
               className="block text-sm font-medium text-gray-900 mb-2">
@@ -255,7 +255,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               placeholder="Enter your project name"
             />
-          </div>
+          </div> */}
 
           {/* Instructions Section */}
           <div className="grid md:grid-cols-2 gap-12 mb-12">

@@ -26,8 +26,8 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen
                         <div
                             onMouseEnter={() => setOpen(true)}
                             onMouseLeave={() => setOpen(false)}>
-                            <Button variant="outline" className="flex align-middle ">
-                                {value && value.length > 5 ? `${value.substring(0, 5)}...` : value}
+                            <Button variant="outline" className="flex align-middle w-40">
+                                {value && value.length > 5 ? `${value.substring(0, 15)}...` : value}
                                 <span className="ms-2 text-lg text-gray-500"
                                     onClick={() => handleDelete(inputKey)}
                                 >&times;</span>

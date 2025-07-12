@@ -54,15 +54,22 @@ const ProjectHistory = () => {
               </div>
             ) : (
               genAiImages.map((image, index) => (
-                <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-100 rounded-md"
-                  onClick={() => handleGenAiImageClick(image)}
-                >
-                  <div className="flex items-center gap-2">
-                    <IoTimerOutline className="text-lg" />
-                    <p>{image.prompt}</p>
+                <div
+                    key={index}
+                    onClick={() => handleGenAiImageClick(image)}
+                    className="flex items-center justify-between p-3 rounded-md cursor-pointer 
+                              transition-all duration-150 
+                              hover:bg-gray-100 hover:shadow-md 
+                              active:bg-gray-200 active:shadow-md"
+                  >
+                    <div className="flex items-start gap-2 w-full max-w-[calc(100%-2rem)]">
+                      <IoTimerOutline className="text-2xl shrink-0 mt-1 text-gray-600" />
+                      <p className="text-sm text-gray-800 break-words line-clamp-3">{image.prompt}</p>
+                    </div>
+                    <span className="ms-2 text-lg text-gray-500 cursor-pointer">&times;</span>
                   </div>
-                  <span className="ms-2 text-lg text-gray-500">&times;</span>
-                </div>
+
+
               ))
             )
           }

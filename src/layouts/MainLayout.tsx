@@ -212,13 +212,13 @@ export function MainLayout() {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all w-screen duration-300 lg:pl-80",
+          "transition-all w-screen duration-300 lg:pl-72",
           sidebarCollapsed && "lg:pl-20",
           isStudioPage && "lg:pl-0"
         )}
       >
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+       
+        {/* <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="flex items-center justify-between px-6 py-2">
             <div className="flex items-center space-x-4">
               <Sheet>
@@ -233,8 +233,6 @@ export function MainLayout() {
                   </Button>
                 </SheetTrigger>
               </Sheet>
-
-              {/* Mobile back button for studio pages */}
               {isStudioPage && (
                 <Button 
                   onClick={handleBackToProjects}
@@ -249,7 +247,6 @@ export function MainLayout() {
 
               <div className="hidden md:flex items-center space-x-4">
                 <div className="relative">
-                  {/* Show back to projects button when on studio pages */}
                   {isStudioPage && (
                     <Button 
                       onClick={handleBackToProjects}
@@ -340,10 +337,13 @@ export function MainLayout() {
               </DropdownMenu>
             </div>
           </div>
-        </header>
+        </header> */}
+
+
+
 
         {/* Main Content Area */}
-        <main className="p-6 pt-0 ps-0 pe-0">
+        <main>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

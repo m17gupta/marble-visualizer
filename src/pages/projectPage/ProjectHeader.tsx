@@ -12,7 +12,7 @@ const ProjectHeader = ({ createProject }: Props) => {
     }
   return (
    <>
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center 1">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
               <p className="text-muted-foreground">

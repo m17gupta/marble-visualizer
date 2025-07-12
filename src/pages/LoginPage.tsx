@@ -25,14 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Loader2,
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  LogIn,
-} from "lucide-react";
+import { Loader2, Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -97,11 +90,9 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-muted/20">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[60%_40%] bg-muted/20">
       {/* Left: Image */}
-      <div className="hidden lg:block"
-   
-      >
+     <div className="hidden lg:block h-full w-full">
         <img
           src="https://www.dzinly.org/img/login-img.jpg"
           alt="Login visual"
@@ -115,32 +106,21 @@ export function LoginPage() {
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
+          className="w-full max-w-md">
           <Card className="border-0 bg-card/50 shadow-none backdrop-blur-sm">
             <CardHeader className="space-y-4 pb-8 pt-8">
-              {/* <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center"
-              > */}
-                {/* <LogIn className="h-6 w-6 text-white" /> */}
-                <div className="w-12 flex items-center justify-center m-auto"
-                 onClick={handleHomeClick}
-                >
-                
-                   <img  
-                     src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
-                     title="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
-                     alt="Dzinly Logo"
-                   
-                   ></img>
-                </div>
+              <div
+                className="w-12 flex items-center justify-center m-auto cursor-pointer"
+                onClick={handleHomeClick}>
+                <img
+                  src="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
+                  title="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
+                  alt="Dzinly Logo"></img>
+              </div>
               {/* </motion.div> */}
               <div className="text-center space-y-2">
                 <CardTitle className="text-2xl font-bold">Login </CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardDescription className="text-muted-foreground ">
                   Hello! let's join with us
                 </CardDescription>
               </div>
@@ -151,16 +131,19 @@ export function LoginPage() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
+                  transition={{ duration: 0.3 }}>
                   <Alert variant="destructive">
-                    <AlertDescription className="text-sm">{error}</AlertDescription>
+                    <AlertDescription className="text-sm">
+                      {error}
+                    </AlertDescription>
                   </Alert>
                 </motion.div>
               )}
 
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4">
                   {/* Email */}
                   <FormField
                     control={form.control}
@@ -208,8 +191,7 @@ export function LoginPage() {
                               size="sm"
                               className="absolute right-0 top-0 h-11 px-3"
                               onClick={() => setShowPassword(!showPassword)}
-                              disabled={isLoading}
-                            >
+                              disabled={isLoading}>
                               {showPassword ? (
                                 <EyeOff className="h-4 w-4 text-muted-foreground" />
                               ) : (
@@ -224,12 +206,13 @@ export function LoginPage() {
                   />
 
                   {/* Submit */}
-                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}>
                     <Button
                       type="submit"
                       className="w-full h-11 text-sm font-medium"
-                      disabled={isLoading}
-                    >
+                      disabled={isLoading}>
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -248,13 +231,17 @@ export function LoginPage() {
 
               {/* Forgot + Create */}
               <div className="text-center text-sm">
-                <Link to="/forgot-password" className="text-blue-600 hover:underline">
+                <Link
+                  to="/forgot-password"
+                  className="text-blue-600 hover:underline">
                   Forgot Password?
                 </Link>
               </div>
               <div className="text-center text-sm text-muted-foreground">
                 Don’t have an account?{" "}
-                <Link to="/signup" className="text-primary hover:underline font-medium">
+                <Link
+                  to="/signup"
+                  className="text-primary hover:underline font-medium">
                   Create Account
                 </Link>
               </div>
