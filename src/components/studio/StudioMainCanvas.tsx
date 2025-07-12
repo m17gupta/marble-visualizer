@@ -242,23 +242,7 @@ export function StudioMainCanvas({
             </div>
 
             {/* Green Section - Additional Workspace */}
-            <div className="w-80 min-h-[600px]">
-              <Card className="h-full border-2 border-green-400 bg-green-50/50">
-                <CardContent className="p-4 h-full">
-                  <div className="flex flex-col h-full">
-                    <h3 className="text-lg font-semibold text-green-800 mb-4">
-                      Workspace Panel
-                    </h3>
-                    <div className="flex-1 bg-white/50 rounded-lg p-4 border border-green-200">
-                      <p className="text-green-700 text-sm">
-                        Additional workspace content can be added here
-                      </p>
-                      {/* You can add more content here as needed */}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+           
           </div>
 
           {/* Generated GenAi Images - Always show regardless of canvas state */}

@@ -18,7 +18,8 @@ interface WorkspaceState {
   isAddIspiration: boolean;
   isGenerated: boolean,
   isGenLoading: boolean;
-  activeTab?: string ; // Optional active tab for UI purposes
+  activeTab?: string ;
+  subActiveTab:string; // Default sub-active tab
 }
 
 // Define the initial state
@@ -36,7 +37,9 @@ const initialState: WorkspaceState = {
   processingState: 'idle',
   error: null,
   isUploading: false,
-  activeTab:"inspiration", // Default active tab
+  activeTab:"inspiration", 
+  subActiveTab: "", // Default active tab
+  // Add any other initial state properties as needed
 
 
 };
@@ -96,11 +99,9 @@ const workspaceSlice = createSlice({
 
       state.error = null;
     },
-
-  
-
-
-
+    setSubActiveTab: (state, action: PayloadAction<string>) => {
+      state.subActiveTab = action.payload;
+    },
   
     // Set flag for adding inspiration
     setIsAddInspiration: (state, action: PayloadAction<boolean>) => {
@@ -128,7 +129,8 @@ export const {
   setIsGenerated,
   updateIsGenLoading,
   updateWorkspaceType,
-  updateActiveTab
+  updateActiveTab,
+  setSubActiveTab
 } = workspaceSlice.actions;
 
 // Export reducer

@@ -3,7 +3,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { SegmentsList } from '@/components/segments';
 import { ActivityTimeline } from '@/components/ActivityTimeline';
 import { SwatchRecommendations } from '@/components/swatch/SwatchRecommendations';
- import { StudioDesignTab } from '@/components/studio/StudioDesignTab';
+import { StudioDesignTab } from '@/components/studio/StudioDesignTab';
 // import { DesignSettings, Job } from './types';
 import {
   Palette,
@@ -47,15 +47,20 @@ export function StudioTabsNavigation({
   // onToneChange,
   // onIntensityChange
 }: StudioTabsNavigationProps) {
-  return (
+
+  const handleChangeTab = (value: string) => {
+    console.log("Tab changed to:", value);
+    
+    onTabChange(value);
+  };  return (
     <Tabs
-    defaultValue='design'
+      defaultValue='design'
       value={activeTab}
-      onValueChange={onTabChange}
+      onValueChange={handleChangeTab}
       className="flex-1 flex flex-col"
     >
-      <div className="px-4 pt-2 flex-shrink-0">
-        <TabsList className="grid w-full grid-cols-5 h-9">
+      <div className="px-4 pt-2 flex-shrink-0">  
+             <TabsList className="grid w-full grid-cols-6 h-9">
           <TabsTrigger value="segment" className="text-xs p-1">
             <Square className="h-3 w-3" />
             <span className="sr-only">Segment</span>
@@ -83,10 +88,10 @@ export function StudioTabsNavigation({
         <div className="py-4 space-y-6">
           <TabsContent value="segment" className="space-y-6 mt-0">
             {/* Segment content goes here */}
-            <SegmentHome/>
+            <SegmentHome />
           </TabsContent>
 
-          
+
           <TabsContent value="design" className="space-y-6 mt-0">
             <StudioDesignTab
             />
@@ -98,7 +103,7 @@ export function StudioTabsNavigation({
 
           <TabsContent value="swatches" className="mt-0">
             <SwatchRecommendations
-              
+
             />
           </TabsContent>
 
