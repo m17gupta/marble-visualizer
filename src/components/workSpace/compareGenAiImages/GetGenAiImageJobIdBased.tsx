@@ -3,7 +3,7 @@ import { AppDispatch, RootState } from '@/redux/store';
 import  { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
-import { boolean } from 'zod';
+
 
 const GetGenAiImageJobIdBased = () => {
         const dispatch= useDispatch<AppDispatch>();

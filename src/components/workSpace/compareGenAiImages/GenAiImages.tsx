@@ -10,7 +10,7 @@ const GenAiImages = () => {
     console.log('GenAiImages component mounted/rendered');
 
     const dispatch = useDispatch();
-    const { genAiImages, loading, error } = useSelector((state: RootState) => state.genAi);
+    const { genAiImages, loading, error, isFetchingGenAiImages } = useSelector((state: RootState) => state.genAi);
     
     const [selectedImageId] = useState<string | null>(null);
     const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
@@ -62,7 +62,7 @@ const GenAiImages = () => {
       )}
 
       {/* Show loading state */}
-      {loading && (
+      {isFetchingGenAiImages && (
         <div className="flex items-center justify-center p-4 text-gray-500">
           <p className="text-sm">Loading images...</p>
         </div>
@@ -70,7 +70,7 @@ const GenAiImages = () => {
 
       <div className="flex grid-cols-1 gap-6">
         {/* Show empty state */}
-        {!loading && genAiImages.length === 0 && (
+        {!isFetchingGenAiImages && genAiImages.length === 0 && (
           <div className="flex items-center justify-center p-4 text-gray-500">
             <p className="text-sm">No generated images available</p>
           </div>

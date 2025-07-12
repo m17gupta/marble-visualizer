@@ -8,12 +8,14 @@ interface GenAiState {
   inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
   loading: boolean;
+  
   error: string | null;
   currentRequestId: string | null;
   generatedImage: string; // Optional field for storing generated image URL
   originalHouseImage: string; // Optional field for storing original house image URL
   isSubmitGenAiFailed?: boolean;
   task_id?: string; // Optional field for storing task ID
+  isFetchingGenAiImages: boolean; // Flag to indicate if GenAI images are being fetched
 }
 
 // Initial state
@@ -39,6 +41,7 @@ const initialState: GenAiState = {
   originalHouseImage: "",
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
   task_id: "", // Optional field for storing task ID
+  isFetchingGenAiImages: false, // Flag to indicate if GenAI images are being fetched
 };
 
 // Async thunk for submitting a GenAI request
@@ -188,16 +191,16 @@ const genAiSlice = createSlice({
     // Handle checkGenAiStatus
     builder
       .addCase(fetchGenAiChat.pending, (state) => {
-        state.loading = true;
+        state.isFetchingGenAiImages  = true;
         state.error = null;
       })
       .addCase(fetchGenAiChat.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isFetchingGenAiImages = false;
         const chats = action.payload as GenAiChat[];
         state.genAiImages = chats;
       })
       .addCase(fetchGenAiChat.rejected, (state, action) => {
-        state.loading = false;
+        state.isFetchingGenAiImages = false;
         state.error = action.payload as string || 'Failed to fetch GenAI chats';
       });
 

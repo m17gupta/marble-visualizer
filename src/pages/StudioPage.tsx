@@ -67,10 +67,7 @@ export function StudioPage() {
   // const activeTab = useRef<string>("inspiration");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
-  const [rightPanelContent, setRightPanelContent] = useState<string | null>(
-    null
-  );
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+
 
   const { isGenerated } = useSelector((state: RootState) => state.workspace);
 
@@ -274,16 +271,7 @@ export function StudioPage() {
     }
   };
 
-  // Handle right panel actions
-  const handleToolSelect = (tool: string) => {
-    setRightPanelContent(tool);
-    setIsRightPanelOpen(true);
-  };
-
-  const handleCloseRightPanel = () => {
-    setIsRightPanelOpen(false);
-    setRightPanelContent(null);
-  };
+ 
 
   const handleDesignHubClick = () => {
     // setActiveTab("design-hub");
