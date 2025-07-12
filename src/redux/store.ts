@@ -57,27 +57,4 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// Selectors for recommended swatches
-export const selectRecommendedSwatches = createSelector(
-  [(state: RootState) => state.swatches.swatches, (state: RootState) => state.studio.selectedSegmentType],
-  (swatches, selectedSegmentType) => {
-    if (!selectedSegmentType) return [];
-    return swatches.filter(swatch => 
-      swatch.segment_types.includes(selectedSegmentType)
-    );
-  }
-);
-
-export const selectRecommendedSwatchesByCategory = createSelector(
-  [selectRecommendedSwatches],
-  (recommendedSwatches) => {
-    return recommendedSwatches.reduce((acc, swatch) => {
-      const category = swatch.category;
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(swatch);
-      return acc;
-    }, {} as Record<string, typeof recommendedSwatches>);
-  }
-);
+// Selectors for recommended swatch

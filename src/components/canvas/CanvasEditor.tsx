@@ -13,7 +13,8 @@ import {
 import {
   setZoom,
   setCanvasReady,
-  setMousePosition
+  setMousePosition,
+  updateMasks
 } from '@/redux/slices/canvasSlice';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -29,6 +30,7 @@ import { drawLines } from '../canvasUtil/DrawMouseLine';
 import CanvasToolbar from './CanvasToolbar';
 import { handleCanvasAutoPan, cleanupAutoPan } from '@/components/canvasUtil/canvasAutoPan';
 import { ZoomCanvas, ZoomCanvasMouse } from '../canvasUtil/ZoomCanvas';
+import { CanvasModel } from '@/models/canvasModel/CanvasModel';
 
 export type DrawingTool = 'select' | 'polygon';
 
@@ -94,6 +96,12 @@ export function CanvasEditor({
 
   const allSegments = useRef<{ [key: string]: fabric.Point[] }>({});
   const allSegmentsCount = useRef<number>(0);
+
+  const {canvasType} = useSelector((state: RootState) => state.canvas);
+
+  const convertPointsToNumbers = (points: fabric.Point[]): number[] => {
+  return points.flatMap(point => [point.x, point.y]);
+};
 
   // const [hoveredSegmentId] = useState<string | null>(null);
 
@@ -653,19 +661,30 @@ export function CanvasEditor({
     canvas.add(polygon);
     canvas.renderAll();
 
-    // Clean up temporary state
+   
+
+
+    const updatedSegments = { ...allSegments.current };
+   const numberArray = convertPointsToNumbers(tempPoints.current);
+    // Dispatch updated segments to Redux store
+     if(canvasType === "mask" && numberArray.length>0) {
+       const data:CanvasModel={
+        id:allSegmentsCount.current,
+        name:`area-${allSegmentsCount.current}`,
+        annotations: numberArray,
+       }
+
+       dispatch(updateMasks(data));
+    } else if(canvasType === "draw") {
+    dispatch(updateSegmentDrawn(updatedSegments));
+    }
+
+
+     // Clean up temporary state
     isPolygonMode.current = false;
     tempPoints.current = [];
     tempLines.current = [];
     tempPointCircles.current = [];
-
-
-    const updatedSegments = { ...allSegments.current };
-
-    // Dispatch updated segments to Redux store
-   
-    dispatch(updateSegmentDrawn(updatedSegments));
-  
      // reset the canvas
      handleResetCanvas()
     toast.success('Polygon created successfully! Ready to draw another.');

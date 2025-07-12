@@ -1,4 +1,5 @@
 import { GenAiChat } from '@/models/genAiModel/GenAiModel';
+import { setCurrentTabContent } from '@/redux/slices/studioSlice';
 import { setCurrentGenAiImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 //import { updateGeneratedImage, updateOriginalHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 import { setIsGenerated } from '@/redux/slices/visualizerSlice/workspaceSlice';
@@ -39,10 +40,7 @@ const GenAiImages = () => {
            console.log('Image selected:', imageSet);
            
               dispatch(setIsGenerated(true))
-             // dispatch(updateActiveTab('insipiration'));
-              // dispatch(updateGeneratedImage(imageSet.output_image));
-              // dispatch(updateOriginalHouseImage(imageSet.master_image_path));
-
+              dispatch(setCurrentTabContent("compare"))
               dispatch(setCurrentGenAiImage(imageSet));
         };
     

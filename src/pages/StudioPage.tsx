@@ -2,26 +2,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import {
-  setCurrentProject,
-  setStyle,
-  setLevel,
-  togglePreserveObject,
-  setTone,
-  setIntensity,
-  uploadImage,
-  clearCurrentImage,
-  clearError,
-  updateCurentImage,
-} from "@/redux/slices/studioSlice";
+
 
 import {
-  fetchJobsByProject,
+  // fetchJobsByProject,
   clearError as clearJobError,
   clearCurrentJob,
 } from "@/redux/slices/jobSlice";
 import {
-  fetchActivityLogs,
+  // fetchActivityLogs,
   logActivity,
 } from "@/redux/slices/activityLogsSlice";
 import { canEditProject, canAdminProject } from "@/middlewares/authMiddleware";
@@ -35,11 +24,14 @@ import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import AllSegments from "@/components/studio/segment/AllSegments";
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
-import ImagePreview from "@/components/workSpace/projectWorkSpace/ImagePreview";
-import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel";
-import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
+
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
-import GenAiImages from "@/components/workSpace/compareGenAiImages/GenAiImages";
+
+import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
+import { clearCurrentImage } from "@/redux/slices/studioSlice";
+import JobHome from "@/components/job/JobHome";
+import { setCanvasType, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
+import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
 
 
 //type DrawingTool = "select" | "polygon";
@@ -47,20 +39,14 @@ import GenAiImages from "@/components/workSpace/compareGenAiImages/GenAiImages";
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    designSettings,
-    selectedSegmentType,
-    currentImageUrl,
-    isUploading,
-    error,
-  } = useSelector((state: RootState) => state.studio);
 
+  
   const {
     currentJob,
     error: jobError,
     isCreating: isJobRunning,
   } = useSelector((state: RootState) => state.jobs);
-  const { currentUserRole } = useSelector((state: RootState) => state.projects);
+  const { currentUserRole, currentProject } = useSelector((state: RootState) => state.projects);
   const { activeTab: activeTabFromStore } = useSelector(
     (state: RootState) => state.workspace
   );
@@ -69,7 +55,7 @@ export function StudioPage() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
 
-
+ const {isCanvasModalOpen} = useSelector((state: RootState) => state.canvas);
   const { isGenerated } = useSelector((state: RootState) => state.workspace);
 
   // Check permissions
@@ -77,18 +63,8 @@ export function StudioPage() {
   const canAdmin = projectId ? canAdminProject(projectId) : false;
 
   const getAllJob = useSelector((state: RootState) => state.jobs.list);
-
-  useEffect(() => {
-    console.log("getAllJob effect triggered", {
-      getAllJob,
-      length: getAllJob?.length,
-    });
-    if (getAllJob && getAllJob.length > 0) {
-      dispatch(updateCurentImage(getAllJob[0].full_image || ""));
-    } else {
-      dispatch(updateCurentImage(""));
-    }
-  }, [getAllJob, dispatch, currentImageUrl]);
+   const {currentImageUrl} = useSelector((state: RootState) => state.studio);
+ 
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
@@ -96,34 +72,8 @@ export function StudioPage() {
     }
   }, [currentImageUrl]);
 
-  useEffect(() => {
-    if (projectId) {
-      dispatch(setCurrentProject(projectId));
-      // dispatch(fetchProjectAccess(projectId));
 
-      dispatch(fetchActivityLogs(projectId));
 
-      // Fetch jobs for this project
-      dispatch(fetchJobsByProject(parseInt(projectId)));
-
-      // Log project access
-      dispatch(
-        logActivity({
-          projectId,
-          type: "project_created",
-          action: "Project Opened",
-          detail: "Studio session started",
-        })
-      );
-    }
-  }, [projectId, dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
 
   useEffect(() => {
     if (jobError) {
@@ -153,23 +103,7 @@ export function StudioPage() {
       return;
     }
 
-    const result = await dispatch(uploadImage(file));
-    if (uploadImage.fulfilled.match(result)) {
-      toast.success("Image uploaded successfully!");
-
-      // Log activity
-      if (projectId) {
-        dispatch(
-          logActivity({
-            projectId,
-            type: "image_uploaded",
-            action: "Image Uploaded",
-            detail: `Background image "${file.name}" added to canvas`,
-            metadata: { fileName: file.name, fileSize: file.size },
-          })
-        );
-      }
-    }
+    
   };
 
   const handleGenerate = async () => {
@@ -214,20 +148,7 @@ export function StudioPage() {
       return;
     }
 
-    const previousStyle = designSettings.style;
-    dispatch(setStyle(value));
-
-    if (projectId && previousStyle !== value) {
-      dispatch(
-        logActivity({
-          projectId,
-          type: "style_changed",
-          action: "Style Changed",
-          detail: `Design style updated to ${value}`,
-          metadata: { previousStyle, newStyle: value },
-        })
-      );
-    }
+    
   };
 
   // Handle level change with activity logging
@@ -237,47 +158,34 @@ export function StudioPage() {
       return;
     }
 
-    const newLevel = checked ? 2 : 1;
-    const previousLevel = designSettings.level;
-    dispatch(setLevel(newLevel));
-
-    if (projectId && previousLevel !== newLevel) {
-      dispatch(
-        logActivity({
-          projectId,
-          type: "style_changed",
-          action: "Processing Level Changed",
-          detail: `Processing level updated to Level ${newLevel}`,
-          metadata: { previousLevel, newLevel },
-        })
-      );
-    }
+   
   };
 
   const handlePreserveToggle = (id: string) => {
     if (canEdit) {
-      dispatch(togglePreserveObject(id));
+     // dispatch(togglePreserveObject(id));
     }
   };
 
   const handleToneChange = (value: string) => {
     if (canEdit) {
-      dispatch(setTone(value));
+     // dispatch(setTone(value));
     }
   };
 
   const handleIntensityChange = (value: number) => {
     if (canEdit) {
-      dispatch(setIntensity(value));
+     // dispatch(setIntensity(value));
     }
   };
-
+  
 
 
   const handleDesignHubClick = () => {
     // setActiveTab("design-hub");
     // console.log("Design Hub tab clicked");
     dispatch(updateActiveTab("design-hub"));
+    dispatch(setCanvasType("draw"));
   };
 
   const handleInspirationClick = () => {
@@ -297,6 +205,10 @@ export function StudioPage() {
   }, [dispatch, activeTabFromStore]);
 
 
+  const handleCloseMask = () => {
+  
+    dispatch(setIsCanvasModalOpen(false));
+  };
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
       <div className="w-1/4 border-r overflow-hidden">
@@ -330,13 +242,13 @@ export function StudioPage() {
                 onTabChange={handleChangeTab}
                 onShareClick={() => setShareDialogOpen(true)}
                 projectId={projectId}
-                selectedSegmentType={selectedSegmentType}
-                designSettings={designSettings}
+                // selectedSegmentType={selectedSegmentType}
+                // designSettings={designSettings}
                 isJobRunning={isJobRunning}
                 jobError={jobError}
-                currentJob={currentJob}
-                currentImageUrl={currentImageUrl}
-                isUploading={isUploading}
+                // currentJob={currentJob}
+                // currentImageUrl={currentImageUrl}
+                // isUploading={isUploading}
                 jobProgress={jobProgress}
                 onStyleChange={handleStyleChange}
                 onLevelChange={handleLevelChange}
@@ -360,7 +272,7 @@ export function StudioPage() {
       {activeTabFromStore === "design-hub" ? (
         <StudioMainCanvas
           currentCanvasImage={currentCanvasImage}
-          isUploading={isUploading}
+          isUploading={true}
           canEdit={canEdit}
           isJobRunning={isJobRunning}
           onFileUpload={handleFileUpload}
@@ -368,22 +280,8 @@ export function StudioPage() {
         />
       ) : (
         <>
-
-          <div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-            {!isGenerated ? 
-            <ImagePreview /> :
-
-              <CompareGenAiHome />}
-
-
-            <div className="mt-4 ">
-              <GuidancePanel />
-               <GenAiImages/>
-            
-            </div>
-          </div>
-
+        {/* inspiration tab content */}
+        <WorkSpaceHome />
 
         </>
 
@@ -394,6 +292,18 @@ export function StudioPage() {
 
       {/* get all GenAi Image based on job ID */}
       <GetGenAiImageJobIdBased />
+
+
+        <JobHome
+        selectedProjectId={currentProject?.id || undefined}
+
+      />
+
+     { isCanvasModalOpen &&
+     <ModelCanvas 
+      isCanvasModalOpen={isCanvasModalOpen}
+      onClose={handleCloseMask}
+      />}
     </div>
   );
 }

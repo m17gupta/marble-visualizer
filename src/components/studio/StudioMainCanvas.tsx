@@ -114,15 +114,17 @@ export function StudioMainCanvas({
           </div> */}
 
           {/* Canvas Content */}
-          <div className="relative">
-            {/* Debug info */}
-            {/* {process.env.NODE_ENV === 'development' && (
-              <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
-                Debug: currentCanvasImage = {currentCanvasImage || 'null'}
-              </div>
-            )} */}
+          <div className="relative flex gap-4">
+            {/* Main Canvas Section */}
+            <div className="flex-1">
+              {/* Debug info */}
+              {/* {process.env.NODE_ENV === 'development' && (
+                <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
+                  Debug: currentCanvasImage = {currentCanvasImage || 'null'}
+                </div>
+              )} */}
 
-            <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait">
               {canvasImage ? (
                 <motion.div
                   key={`canvas-${canvasImage}`}
@@ -237,23 +239,43 @@ export function StudioMainCanvas({
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Generated GenAi Images - Always show regardless of canvas state */}
-            <div className="mt-6">
-              <GenAiImages />
             </div>
 
-            {/* Hidden file input */}
-            {canEdit && (
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileInputChange}
-                className="hidden"
-              />
-            )}
+            {/* Green Section - Additional Workspace */}
+            <div className="w-80 min-h-[600px]">
+              <Card className="h-full border-2 border-green-400 bg-green-50/50">
+                <CardContent className="p-4 h-full">
+                  <div className="flex flex-col h-full">
+                    <h3 className="text-lg font-semibold text-green-800 mb-4">
+                      Workspace Panel
+                    </h3>
+                    <div className="flex-1 bg-white/50 rounded-lg p-4 border border-green-200">
+                      <p className="text-green-700 text-sm">
+                        Additional workspace content can be added here
+                      </p>
+                      {/* You can add more content here as needed */}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
+
+          {/* Generated GenAi Images - Always show regardless of canvas state */}
+          <div className="mt-6">
+            <GenAiImages />
+          </div>
+
+          {/* Hidden file input */}
+          {canEdit && (
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileInputChange}
+              className="hidden"
+            />
+          )}
         </motion.div>
       </ScrollArea>
     </main>

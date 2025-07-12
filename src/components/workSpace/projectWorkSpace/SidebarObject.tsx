@@ -2,10 +2,18 @@ import React, { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { Badge } from "@/components/ui/badge";
+import { useDispatch } from "react-redux";
+import { setCanvasType, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
 //import objectimg from "../../../../dist/assets/object-img-f9e-Kvp6.jpeg"; // Adjust the path as necessary
 const SidebarObject = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
+  const handleMaskOpen = () => {
+    setIsOpen(false);
+    dispatch(setIsCanvasModalOpen(true));
+    dispatch(setCanvasType("mask"));
+  };
   return (
     <>
       {/* Main Card */}
@@ -79,7 +87,9 @@ const SidebarObject = () => {
 
         {/* Top actions */}
         <div className="flex items-center justify-between px-4 py-3 border-b">
-          <button className="bg-gray-100 text-sm px-3 py-1 rounded-full flex items-center gap-1">
+          <button className="bg-gray-100 text-sm px-3 py-1 rounded-full flex items-center gap-1"
+          onClick={handleMaskOpen}
+          >
             Custom Mask <Plus size={14} />
           </button>
           <div className="flex items-center gap-2 text-sm text-gray-600">

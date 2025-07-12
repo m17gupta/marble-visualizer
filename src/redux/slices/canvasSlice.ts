@@ -1,5 +1,5 @@
+import { CanvasModel } from '@/models/canvasModel/CanvasModel';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
 // Define the types for canvas state
 export type ZoomMode = 'center' | 'mouse';
 
@@ -8,6 +8,7 @@ export interface MouseCoordinates {
   x: number;
   y: number;
 }
+export type CanvasMode = "mask" | "draw" | "edit" | "reannotation";
 
 // Define the state interface
 interface CanvasState {
@@ -17,7 +18,10 @@ interface CanvasState {
   isCanvasReady: boolean;
   isBusy: boolean;
   error: string | null;
-  canavasActiveTool?: string; // Optional field for active tool
+  canavasActiveTool: string;
+  isCanvasModalOpen: boolean;
+  masks: CanvasModel[];
+  canvasType: "mask" | "draw" | "edit" | "reannotation" ;
 }
 
 // Initial state
@@ -28,7 +32,10 @@ const initialState: CanvasState = {
   isCanvasReady: false,
   isBusy: false,
   error: null,
-  canavasActiveTool:"", // Optional field for active tool, initialized as empty string
+  canavasActiveTool: "",
+  isCanvasModalOpen: false,
+  masks: [],
+  canvasType:"draw",
 };
 
 // Create the canvas slice
@@ -65,7 +72,9 @@ const canvasSlice = createSlice({
     setMousePosition(state, action: PayloadAction<MouseCoordinates>) {
       state.mousePosition = action.payload;
     },
-
+    setIsCanvasModalOpen(state, action: PayloadAction<boolean>) {
+      state.isCanvasModalOpen = action.payload;
+    },
     // Set busy state (for async operations)
     setCanvasBusy(state, action: PayloadAction<boolean>) {
       state.isBusy = action.payload;
@@ -75,6 +84,23 @@ const canvasSlice = createSlice({
     setCanvasError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
+    setCanvasType(state, action: PayloadAction<"mask" | "draw" | "edit" | "reannotation">) {
+      state.canvasType = action.payload;
+    },
+
+    updateMasks(state, action: PayloadAction<CanvasModel>) {
+      const updatedMask = action.payload;
+      const index = state.masks.findIndex(mask => mask.id === updatedMask.id);
+      if (index !== -1) {
+        state.masks[index] = updatedMask;
+      } else {
+        state.masks.push(updatedMask);
+      }
+    },
+    deleteMask(state, action: PayloadAction<number>) {
+      const maskId = action.payload;
+      state.masks = state.masks.filter(mask => mask.id !== maskId);
+    },
 
     // Reset canvas state to initial values
     resetCanvas(state) {
@@ -82,6 +108,7 @@ const canvasSlice = createSlice({
       state.isCanvasReady = false;
       state.isBusy = false;
       state.error = null;
+      state.masks=[];
       // Zoom mode is not reset as it's a user preference
     },
   },
@@ -97,7 +124,11 @@ export const {
   setCanvasBusy,
   setCanvasError,
   resetCanvas,
-  setCanvasActiveTool
+  setIsCanvasModalOpen,
+  setCanvasActiveTool,
+  setCanvasType,
+  updateMasks,
+  deleteMask
 } = canvasSlice.actions;
 
 // Export reducer

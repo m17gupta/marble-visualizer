@@ -45,6 +45,7 @@ import { addHouseImage, updateRequestJobId } from '@/redux/slices/visualizerSlic
 import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
 import ProjectHeader from './ProjectHeader';
 import ProjectStaticCard from './ProjectStaticCard';
+import { setCurrentImageUrl } from '@/redux/slices/studioSlice';
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -78,7 +79,9 @@ export function ProjectsPage() {
     if (project.id && project.jobData && project.jobData.length > 0) {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
+      
       if (jobId) {
+        dispatch(setCurrentImageUrl(projectImage || ''));
         dispatch(addHouseImage(projectImage || ''));
         dispatch(updateSidebarHeaderCollapse(false));
         setSelectedProjectId(project.id);
@@ -398,19 +401,9 @@ export function ProjectsPage() {
 
       <UserProfileHome />
 
-      <JobHome
-        selectedProjectId={selectedProjectId || undefined}
+    
 
-      />
-
-      {/* { isCreateDialogOpen  &&
-        user?.id && (
-        <CreateProjectDialog
-          open={isCreateDialogOpen}
-          user_id={user?.id }
-          onOpenChange={setIsCreateDialogOpen}
-          onJobCreated={handleCloseCreateDialog}
-        />)} */}
+     
 
       {isCreateDialogOpen && <VisualToolHome
         resetProjectCreated={handleResetProjectCreated}

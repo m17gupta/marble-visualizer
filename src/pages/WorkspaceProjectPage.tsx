@@ -1,17 +1,16 @@
 import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
-import CompareGenAiHome from '@/components/workSpace/compareGenAiImages/CompareGenAiHome';
-import GuidancePanel from '@/components/workSpace/projectWorkSpace/GuidancePanel';
-import ImagePreview from '@/components/workSpace/projectWorkSpace/ImagePreview';
+
 import InspirationSidebar from '@/components/workSpace/projectWorkSpace/InspirationSidebar';
-import { RootState } from '@/redux/store';
+import WorkSpaceHome from '@/components/workSpace/WorkSpaceHome';
+
 import React from 'react';
-import { useSelector } from 'react-redux';
+
 
 const WorkspaceProjectPage: React.FC = () => {
 
-  const { isGenerated } = useSelector((state: RootState) => state.workspace);
+  // const { isGenerated } = useSelector((state: RootState) => state.workspace);
 
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  // const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   return (
     <>
 
@@ -26,8 +25,8 @@ const WorkspaceProjectPage: React.FC = () => {
 
         {/* Middle: Main image preview and AI Guidance panel */}
 
-        {!isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-          {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
+        {/* {!isGenerated ? (<div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+       
           <ImagePreview />
 
 
@@ -37,7 +36,8 @@ const WorkspaceProjectPage: React.FC = () => {
           </div>
         </div>) : (
           <CompareGenAiHome />
-        )}
+        )} */}
+        <WorkSpaceHome />
       </div>
 
       {/* get all inspiration images */}

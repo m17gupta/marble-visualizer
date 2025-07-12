@@ -1,106 +1,33 @@
 import { motion } from "framer-motion";
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Slider } from '@/components/ui/slider';
+// import { Alert, AlertDescription } from '@/components/ui/alert';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// import { Switch } from '@/components/ui/switch';
+// import { Checkbox } from '@/components/ui/checkbox';
+// import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { DesignSettings, Job } from './types';
+
 import {
-  Zap,
+  // Zap,
   Palette,
-  Layers,
+  // Layers,
   Eye,
-  Sparkles,
-  AlertCircle,
+  // Sparkles,
+  // AlertCircle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-interface StudioDesignTabProps {
-  designSettings: DesignSettings;
-  isJobRunning: boolean;
-  canEdit: boolean;
-  jobError: string | null;
-  currentJob: Job | null;
-  onStyleChange: (value: string) => void;
-  onLevelChange: (checked: boolean) => void;
-  onPreserveToggle: (id: string) => void;
-  onToneChange: (value: string) => void;
-  onIntensityChange: (value: number) => void;
-}
 
-const styleOptions = [
-  { value: "modern", label: "Modern", description: "Clean, minimalist design" },
-  {
-    value: "classic",
-    label: "Classic",
-    description: "Traditional, timeless style",
-  },
-  {
-    value: "industrial",
-    label: "Industrial",
-    description: "Raw, urban aesthetic",
-  },
-  {
-    value: "scandinavian",
-    label: "Scandinavian",
-    description: "Light, natural, cozy",
-  },
-  {
-    value: "mediterranean",
-    label: "Mediterranean",
-    description: "Warm, coastal vibes",
-  },
-  {
-    value: "contemporary",
-    label: "Contemporary",
-    description: "Current, trendy design",
-  },
-];
 
-const preserveOptions = [
-  { id: "roof", label: "Roof", description: "Keep original roof structure" },
-  { id: "windows", label: "Windows", description: "Preserve window placement" },
-  { id: "doors", label: "Doors", description: "Maintain door positions" },
-  {
-    id: "landscaping",
-    label: "Landscaping",
-    description: "Keep garden elements",
-  },
-  {
-    id: "driveway",
-    label: "Driveway",
-    description: "Preserve driveway layout",
-  },
-  { id: "fence", label: "Fence", description: "Keep existing fencing" },
-];
 
-const toneOptions = [
-  { value: "warm", label: "Warm", color: "bg-orange-500" },
-  { value: "cool", label: "Cool", color: "bg-blue-500" },
-  { value: "neutral", label: "Neutral", color: "bg-gray-500" },
-  { value: "vibrant", label: "Vibrant", color: "bg-purple-500" },
-  { value: "earthy", label: "Earthy", color: "bg-green-600" },
-];
 
-export function StudioDesignTab({
-  designSettings,
-  isJobRunning,
-  canEdit,
-  jobError,
-  currentJob,
-  onStyleChange,
-  onLevelChange,
-  onPreserveToggle,
-  onToneChange,
-  onIntensityChange
-}: StudioDesignTabProps) {
+
+
+export function StudioDesignTab() {
   return (
     <>
       {/* Job Status Alert */}
-      {isJobRunning && (
+      {/* {isJobRunning && (
         <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
           <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <AlertDescription className="text-blue-800 dark:text-blue-200">
@@ -108,19 +35,12 @@ export function StudioDesignTab({
             minutes.
           </AlertDescription>
         </Alert>
-      )}
+      )} */}
 
-      {currentJob && jobError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {jobError || 'AI processing failed. Please try again.'}
-          </AlertDescription>
-        </Alert>
-      )}
+    
 
       {/* Style Selection */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -151,12 +71,12 @@ export function StudioDesignTab({
             ))}
           </SelectContent>
         </Select>
-      </motion.div>
+      </motion.div> */}
 
       <Separator />
 
       {/* Level Toggle */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -185,7 +105,7 @@ export function StudioDesignTab({
             disabled={isJobRunning || !canEdit}
           />
         </div>
-      </motion.div>
+      </motion.div> */}
 
       <Separator />
 
@@ -202,7 +122,7 @@ export function StudioDesignTab({
             Preserve Objects
           </Label>
         </div>
-        <div className="space-y-3">
+        {/* <div className="space-y-3">
           {preserveOptions.map((option) => (
             <div
               key={option.id}
@@ -227,7 +147,7 @@ export function StudioDesignTab({
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
       </motion.div>
 
       <Separator />
@@ -243,7 +163,7 @@ export function StudioDesignTab({
           <Palette className="h-4 w-4 text-primary" />
           <Label className="text-sm font-medium">Color Tone</Label>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        {/* <div className="grid grid-cols-2 gap-2">
           {toneOptions.map((tone) => (
             <button
               key={tone.value}
@@ -268,13 +188,13 @@ export function StudioDesignTab({
               </div>
             </button>
           ))}
-        </div>
+        </div> */}
       </motion.div>
 
       <Separator />
 
       {/* Intensity Slider */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
@@ -301,7 +221,7 @@ export function StudioDesignTab({
           <span>Subtle</span>
           <span>Dramatic</span>
         </div>
-      </motion.div>
+      </motion.div> */}
     </>
   );
 }

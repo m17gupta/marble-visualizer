@@ -7,6 +7,7 @@ import SideBySideCompare from './SideBySideCompare';
 import { setIsGenerated } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { resetRequest, setCurrentGenAiImage,} from '@/redux/slices/visualizerSlice/genAiSlice';
 import { GenAiChat } from '@/models/genAiModel/GenAiModel';
+import { setCurrentTabContent } from '@/redux/slices/studioSlice';
 
 const CompareGenAiHome: React.FC = () => {
   const dispatch = useDispatch()
@@ -56,6 +57,7 @@ const CompareGenAiHome: React.FC = () => {
   };
 
   const handleInspirationSection = () => {
+    dispatch(setCurrentTabContent("home"));
     dispatch(setIsGenerated(false));
     dispatch(resetRequest())
   }

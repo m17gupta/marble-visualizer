@@ -37,7 +37,7 @@ import { GenAiChat, GenAiRequest, TaskApiModel } from "@/models/genAiModel/GenAi
 import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 import WebhookEventsListener from "@/components/webBook/WebBook";
-import GenAiImages from "../compareGenAiImages/GenAiImages";
+// import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 
 const GuidancePanel: React.FC = () => {

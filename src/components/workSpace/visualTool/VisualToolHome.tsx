@@ -29,6 +29,7 @@ import {
 } from "@/services/uploadImageService/directS3UploadService";
 import { CreateJob, CreateJobParams } from "@/utils/CreateJob";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 
 type Props={
   resetProjectCreated: () => void;
@@ -169,9 +170,11 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
                 resetProjectCreated();
                 // navigate(`/app/studio/project/${createdProjectId.current}`);
               } else {
+                dispatch(setCurrentImageUrl(result?.fileUrl??""));
               navigate(`/workspace/project/${createdProjectId.current}`);
               }
             } else if (workspace_type === "design-hub") {
+              dispatch(setCurrentImageUrl(result?.fileUrl??""));
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }
           },

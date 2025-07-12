@@ -174,6 +174,16 @@ const jobSlice = createSlice({
         // state.currentJob.updated_at = new Date().toISOString();
       }
     },
+    resetJobSlice: (state) => {
+      state.list = [];
+      state.currentJob = null;
+      state.isLoading = false;
+      state.isCreating = false;
+      state.isUpdating = false;
+      state.isDeleting = false;
+      state.error = null;
+      state.isSidebarHeaderCollapsed = true;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -301,7 +311,8 @@ export const {
   clearCurrentJob, 
   clearError,
   updateCurrentJobSegments,
-  updateSidebarHeaderCollapse
+  updateSidebarHeaderCollapse,
+  resetJobSlice
 } = jobSlice.actions;
 
 

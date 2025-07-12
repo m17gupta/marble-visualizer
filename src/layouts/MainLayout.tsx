@@ -37,6 +37,8 @@ import {
 import { cn } from "@/lib/utils";
 import { resetGenAiState, resetRequest } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { clearCurrentProject } from "@/redux/slices/projectSlice";
+import { clearCurrentImage } from "@/redux/slices/studioSlice";
+import { resetJobSlice } from "@/redux/slices/jobSlice";
 
 const navigation = [
   {
@@ -87,6 +89,7 @@ export function MainLayout() {
   };
 
   const handleBackToProjects = () => {
+     dispatch(resetJobSlice()); // Clear current job state
     dispatch(resetGenAiState());  // Reset GenAI state
      dispatch(resetRequest())    // Reset request state
      dispatch(clearCurrentProject())
