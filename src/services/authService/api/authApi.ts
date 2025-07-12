@@ -239,6 +239,11 @@ export class AuthAPI {
       const { data, error } = await supabase.auth.getUser();
 
       if (error) {
+        // Handle "Auth session missing!" as a normal case when user is not logged in
+        if (error.message === "Auth session missing!") {
+          return null;
+        }
+        
         throw new AuthError({
           message: error.message,
           status: 401,
@@ -270,6 +275,8 @@ export class AuthAPI {
       if (error instanceof AuthError) {
         throw error;
       }
+      // For any other unexpected errors, return null instead of throwing
+      console.error('Unexpected error in getCurrentUser:', error);
       return null;
     }
   }

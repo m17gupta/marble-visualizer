@@ -4,6 +4,7 @@ import genAiService from '@/services/genAi/genAiService';
 
 interface GenAiState {
   genAiImages: GenAiChat[];
+  currentGenAiImage?: GenAiChat; // Optional field for the currently selected GenAI image
   requests: GenAiRequest;
   inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
@@ -11,8 +12,8 @@ interface GenAiState {
   
   error: string | null;
   currentRequestId: string | null;
-  generatedImage: string; // Optional field for storing generated image URL
-  originalHouseImage: string; // Optional field for storing original house image URL
+  // generatedImage: string; // Optional field for storing generated image URL
+  // originalHouseImage: string; // Optional field for storing original house image URL
   isSubmitGenAiFailed?: boolean;
   task_id?: string; // Optional field for storing task ID
   isFetchingGenAiImages: boolean; // Flag to indicate if GenAI images are being fetched
@@ -21,6 +22,7 @@ interface GenAiState {
 // Initial state
 const initialState: GenAiState = {
   genAiImages: [],
+  currentGenAiImage: undefined, // Initialize as an empty object
   inspirationNames: "", // Optional field for storing inspiration names
   requests: {
     houseUrl: [],
@@ -37,8 +39,8 @@ const initialState: GenAiState = {
   loading: false,
   error: null,
   currentRequestId: null,
-  generatedImage: "",
-  originalHouseImage: "",
+  // generatedImage: "",
+  // originalHouseImage: "",
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
   task_id: "", // Optional field for storing task ID
   isFetchingGenAiImages: false, // Flag to indicate if GenAI images are being fetched
@@ -107,6 +109,9 @@ const genAiSlice = createSlice({
       state.requests.referenceImageUrl = [imageValue];
 
     },
+    setCurrentGenAiImage:(state, action: PayloadAction<GenAiChat | undefined>) => {
+      state.currentGenAiImage = action.payload;
+    },
     resetInspirationImage: (state) => {
       // Clear the reference image URL
       state.requests.referenceImageUrl = [];
@@ -131,13 +136,13 @@ const genAiSlice = createSlice({
       state.inspirationNames = action.payload;
     },
 
-    updateGeneratedImage: (state, action: PayloadAction<string>) => {
+    // updateGeneratedImage: (state, action: PayloadAction<string>) => {
 
-      state.generatedImage = action.payload;
-    },
-    updateOriginalHouseImage: (state, action: PayloadAction<string>) => {
-      state.originalHouseImage = action.payload;
-    },
+    //   state.generatedImage = action.payload;
+    // },
+    // updateOriginalHouseImage: (state, action: PayloadAction<string>) => {
+    //   state.originalHouseImage = action.payload;
+    // },
     updateRequestJobId: (state, action: PayloadAction<string>) => {
       state.requests.jobId = action.payload;
     },
@@ -241,14 +246,15 @@ export const {
   addPrompt,
   addInspirationImage,
   resetInspirationImage,
-  updateGeneratedImage,
-  updateOriginalHouseImage,
+  // updateGeneratedImage,
+  // updateOriginalHouseImage,
   updateInspirationNames,
   resetRequest,
   updateRequestJobId,
   resetGenAiState,
   resetIsGenAiSumitFailed,
-  updateTaskId
+  updateTaskId,
+  setCurrentGenAiImage
 
 } = genAiSlice.actions;
 

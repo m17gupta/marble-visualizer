@@ -1,25 +1,23 @@
 import { GenAiChat } from '@/models/genAiModel/GenAiModel';
-import { updateGeneratedImage, updateOriginalHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
-import { setIsGenerated, updateActiveTab } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { setCurrentGenAiImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+//import { updateGeneratedImage, updateOriginalHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import { setIsGenerated } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { RootState } from '@/redux/store';
 import React, { useEffect, useState } from 'react'
 
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
 const GenAiImages = () => {
-    console.log('GenAiImages component mounted/rendered');
-
     const dispatch = useDispatch();
-    const { genAiImages, loading, error, isFetchingGenAiImages } = useSelector((state: RootState) => state.genAi);
+    const { genAiImages, error, isFetchingGenAiImages, currentGenAiImage } = useSelector((state: RootState) => state.genAi);
     
-    const [selectedImageId] = useState<string | null>(null);
     const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
     const [componentError, setComponentError] = useState<string | null>(null);
 
     // Update all GenAiImages
     useEffect(() => {
         try {
-            console.log('GenAiImages useEffect - genAiImages changed:', genAiImages);
+
             if(genAiImages && genAiImages.length > 0) {
                 // Sort the genAiImages based on created date, latest first
                 const sortedImages = [...genAiImages].sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
@@ -31,7 +29,7 @@ const GenAiImages = () => {
             }
             setComponentError(null);
         } catch (err) {
-            console.error('Error in GenAiImages useEffect:', err);
+            
             setComponentError(err instanceof Error ? err.message : 'Unknown error');
         }
     }, [genAiImages]);
@@ -39,13 +37,13 @@ const GenAiImages = () => {
 
     const handleImageSelect = (imageSet: GenAiChat) => {
            console.log('Image selected:', imageSet);
-           // const imageId = `${imageSet.id}-${index}`;
+           
               dispatch(setIsGenerated(true))
-              dispatch(updateActiveTab('insipiration'));
-              dispatch(updateGeneratedImage(imageSet.output_image));
-              dispatch(updateOriginalHouseImage(imageSet.master_image_path));
-              // If you want to toggle selection, uncomment the line below
-          //  setSelectedImageId(prevId => prevId === imageId ? null : imageId);
+             // dispatch(updateActiveTab('insipiration'));
+              // dispatch(updateGeneratedImage(imageSet.output_image));
+              // dispatch(updateOriginalHouseImage(imageSet.master_image_path));
+
+              dispatch(setCurrentGenAiImage(imageSet));
         };
     
 
@@ -86,7 +84,11 @@ const GenAiImages = () => {
                   alt={`Generated Image ${index + 1}`} 
                   width={100}
                   height={100}
-                  className='rounded-lg cursor-pointer hover:opacity-80 transition-opacity'
+                  className={`rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${
+                    currentGenAiImage && currentGenAiImage.id === imageSet.id 
+                      ? 'border-2 border-blue-500' 
+                      : 'border border-gray-200'
+                  }`}
                   onClick={() => handleImageSelect(imageSet)}
                   onError={(e) => {
                     console.error('Image failed to load:', imageSet.output_image);
@@ -95,7 +97,7 @@ const GenAiImages = () => {
                 />
                 
                 {/* Checkmark overlay for selected image */}
-                {selectedImageId === `${imageSet}-${index}` && (
+                {currentGenAiImage && currentGenAiImage.id === imageSet.id && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
                     <IoCheckmarkCircle className="text-white text-3xl" />
                   </div>
@@ -110,3 +112,5 @@ const GenAiImages = () => {
 }
 
 export default GenAiImages
+
+

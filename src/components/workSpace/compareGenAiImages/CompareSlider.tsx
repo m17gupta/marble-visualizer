@@ -28,7 +28,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
    const[beforeImage, setBeforeImage] = useState<string>('');
    const[afterImage, setAfterImage] = useState<string>('');
-    const { generatedImage, originalHouseImage } = useSelector((    state: RootState) => state.genAi);
+    const {currentGenAiImage } = useSelector((    state: RootState) => state.genAi);
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSliderPosition(Number(e.target.value));
     };
@@ -42,14 +42,14 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     };
 
     useEffect(() => {
-         if(generatedImage!=="" && originalHouseImage !=="") {
-            setBeforeImage(originalHouseImage);
-            setAfterImage(generatedImage);
+         if(currentGenAiImage && currentGenAiImage.master_image_path && currentGenAiImage.output_image) {
+            setBeforeImage(currentGenAiImage.master_image_path);
+            setAfterImage(currentGenAiImage.output_image);
             // setBeforeImageLoaded(true);
             // setAfterImageLoaded(true);
             // setImageError(false);
         }
-    }, [generatedImage, originalHouseImage]);
+    }, [currentGenAiImage]);
 
     const handleMouseMove = (e: React.MouseEvent) => {
         if (isDragging && containerRef.current) {
@@ -100,9 +100,9 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
 
     const handleDownload = () => {
         // Download the after image
-        if (generatedImage) {
+        if (currentGenAiImage && currentGenAiImage.output_image) {
             const link = document.createElement('a');
-            link.href = generatedImage;
+            link.href = currentGenAiImage.output_image;
             link.download = 'renovated-home.jpg';
             document.body.appendChild(link);
             link.click();
@@ -156,27 +156,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                 onTouchEnd={handleTouchEnd}
                 onTouchCancel={handleTouchEnd}
             >
-                {/* Loading indicator */}
-                {/* {(!beforeImageLoaded || !afterImageLoaded)  && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                    </div>
-                )} */}
-
-                {/* Error message
-                {imageError && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                        <div className="text-center p-4">
-                            <p className="text-red-500 mb-2">Failed to load images</p>
-                            <button
-                                onClick={() => window.location.reload()}
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Retry
-                            </button>
-                        </div>
-                    </div>
-                )} */}
+               
 
                 {/* Before image (original house) */}
                 <img
@@ -239,12 +219,6 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
                 </div>
 
 
-                {/* Watermark button */}
-                {/* <button
-                    className="absolute left-1/2 bottom-6 transform -translate-x-1/2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded flex items-center gap-2 shadow-md"
-                >
-                    <span className="text-lg">👑</span> Remove Watermark
-                </button> */}
             </div>
         </div>
     );

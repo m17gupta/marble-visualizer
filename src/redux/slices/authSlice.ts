@@ -78,9 +78,6 @@ export const logoutUser = createAsyncThunk(
       // This is important for UX - users expect to be able to log out regardless
       dispatch(clearAuth()); // Immediately clear the Redux state
 
-      // Force a route change regardless of error
-      window.location.href = "/login";
-
       if (error instanceof AuthError) {
         // We return the error, but the UI will still show as logged out
         return rejectWithValue(error.message);
@@ -193,8 +190,13 @@ const authSlice = createSlice({
       .addCase(initializeAuth.rejected, (state, action) => {
         state.isLoading = false;
         state.isInitialized = true;
-        state.error = action.payload as string;
         state.isAuthenticated = false;
+        
+        // Don't set error for "Auth session missing!" as it's a normal condition
+        // when user is not logged in
+        if (action.payload !== 'Auth session missing!') {
+          state.error = action.payload as string;
+        }
       })
 
       // Login cases
@@ -235,11 +237,11 @@ const authSlice = createSlice({
 
       // Logout cases
       .addCase(logoutUser.pending, (state) => {
-        state.isLoading = true;
+        // state.isLoading = true;
         state.error = null;
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
         state.error = null;

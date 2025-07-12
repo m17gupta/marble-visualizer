@@ -4,12 +4,13 @@ import  { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const WebhookEventsListener = () => {
-    const [events, setEvents] = useState<any[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [events, setEvents] = useState<Record<string, unknown>[]>([]);
     const { task_id } = useSelector((state: RootState) => state.genAi);
     useEffect(() => {
         if (task_id) {
 
-            const socket = new WebSocket(`wss:https://webhook.site/${task_id}`);
+            const socket = new WebSocket(`wss://webhook.site/${task_id}`);
 
             socket.onopen = () => {
                 console.log('✅ WebSocket connection established');
@@ -20,7 +21,7 @@ const WebhookEventsListener = () => {
                     const data = JSON.parse(event.data);
                     console.log('📦 Webhook Event:', data);
                     setEvents((prev) => [data, ...prev]);
-                } catch (err) {
+                } catch {
                     console.error('❌ Failed to parse WebSocket message:', event.data);
                 }
             };

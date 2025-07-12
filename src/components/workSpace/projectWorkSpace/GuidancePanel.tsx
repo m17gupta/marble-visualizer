@@ -17,7 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { FcIdea } from "react-icons/fc";
+
 
 import { AppDispatch, RootState } from "@/redux/store";
 import UserInputPopOver from "./userInputPopOver";
@@ -27,10 +27,9 @@ import {
   submitGenAiRequest,
   insertGenAiChatData,
   resetRequest,
-  updateGeneratedImage,
-  updateOriginalHouseImage,
   resetIsGenAiSumitFailed,
   updateTaskId,
+  setCurrentGenAiImage,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
@@ -38,6 +37,7 @@ import { GenAiChat, GenAiRequest, TaskApiModel } from "@/models/genAiModel/GenAi
 import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 import WebhookEventsListener from "@/components/webBook/WebBook";
+import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 
 const GuidancePanel: React.FC = () => {
@@ -146,8 +146,7 @@ const GuidancePanel: React.FC = () => {
     setIsTask(false);
     console.log("Reset start API call with data:", data);
 
-    dispatch(updateOriginalHouseImage(requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : ""));
-    dispatch(updateGeneratedImage(data.outputImage));
+  
 
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
@@ -170,6 +169,8 @@ const GuidancePanel: React.FC = () => {
       // Fix openai_metadata type issue - convert null to undefined
       openai_metadata: data.openai_metadata ? JSON.stringify(data.openai_metadata) : undefined,
     } as GenAiChat
+
+    dispatch(setCurrentGenAiImage(genChat));
     console.log("GenAI chat data to be inserted:", genChat);
     try {
       const result = await dispatch(insertGenAiChatData(genChat));
@@ -196,7 +197,7 @@ const GuidancePanel: React.FC = () => {
   /// fail task Api
   // Handle API call failure
   const handleResetFaiApiCall = (errorMessage: string) => {
-    console.log("Task failed:", errorMessage);
+   
     toast.error("Task failed: " + errorMessage);
     setTaskId(""); // Reset task ID on error
     setIsTask(false); // Reset task status
@@ -303,11 +304,12 @@ const GuidancePanel: React.FC = () => {
 
 
           </div>
+            
           <div className="flex items-center gap-2">
 
 
 
-            <TooltipProvider delayDuration={0}>
+            {/* <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="btn bg-transparent rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 p-2"
@@ -323,7 +325,7 @@ const GuidancePanel: React.FC = () => {
                   Suggested Next Steps
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
 
 
             <button
@@ -334,7 +336,11 @@ const GuidancePanel: React.FC = () => {
               {isGenLoading ? 'Processing...' : 'Visualize'}
             </button>
           </div>
+         
         </div>
+        {/* <div className="flex items-center gap-2">
+          <GenAiImages/>
+          </div> */}
       </div>
 
       {/* Only render Call_task_id when there's an active task */}

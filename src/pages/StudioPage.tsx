@@ -41,6 +41,7 @@ import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareG
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 import GenAiImages from "@/components/workSpace/compareGenAiImages/GenAiImages";
 
+
 //type DrawingTool = "select" | "polygon";
 
 export function StudioPage() {
@@ -271,7 +272,7 @@ export function StudioPage() {
     }
   };
 
- 
+
 
   const handleDesignHubClick = () => {
     // setActiveTab("design-hub");
@@ -290,25 +291,25 @@ export function StudioPage() {
   };
 
   useEffect(() => {
-  if (!activeTabFromStore) {
-    dispatch(updateActiveTab("inspiration"));
-  }
-}, [dispatch, activeTabFromStore]);
+    if (!activeTabFromStore) {
+      dispatch(updateActiveTab("inspiration"));
+    }
+  }, [dispatch, activeTabFromStore]);
 
 
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background">
       <div className="w-1/4 border-r overflow-hidden">
-      <Tabs value={activeTabFromStore ?? "inspiration"} onValueChange={handleChangeTab} className="w-full h-full flex flex-col">
+        <Tabs value={activeTabFromStore ?? "inspiration"} onValueChange={handleChangeTab} className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2" >
-             <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
+            <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
               Inspiration
             </TabsTrigger>
 
             <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
               Design Hub
             </TabsTrigger>
-           
+
           </TabsList>
 
           <TabsContent
@@ -367,24 +368,27 @@ export function StudioPage() {
         />
       ) : (
         <>
-          {!isGenerated ? (
-            <div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-              {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-              <ImagePreview />
+
+          <div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
+            {!isGenerated ? 
+            <ImagePreview /> :
+
+              <CompareGenAiHome />}
 
 
-
-          <div className="mt-4 ">
-            <GuidancePanel />
-            <GenAiImages />
+            <div className="mt-4 ">
+              <GuidancePanel />
+               <GenAiImages/>
+            
+            </div>
           </div>
-        </div>) : (
-          <CompareGenAiHome />
-        )}
-          </>
 
-        )}
-      
+
+        </>
+
+      )}
+
 
       <SwatchBookDataHome />
 

@@ -188,7 +188,8 @@ export const authMiddleware: Middleware = ({ getState }) => next => action => {
     if (action.type === 'auth/initializeAuth/rejected') {
       // Special handling for initialization failure
       if ('payload' in action && action.payload === 'Auth session missing!') {
-        //console.log('📢 Auth initialization: No active session found. User needs to log in.');
+        // This is a normal condition when user is not logged in - don't log as error
+        // console.log('📢 Auth initialization: No active session found. User needs to log in.');
       } else {
         console.error('❌ Auth initialization failed:', 'payload' in action ? action.payload : 'Unknown error');
       }
@@ -214,11 +215,11 @@ export const errorMiddleware: Middleware = ({ dispatch }) => next => action => {
   if (typeof action === 'object' && action !== null && 'type' in action && typeof action.type === 'string' && action.type.endsWith('/rejected')) {
     // Log errors in development
     if (import.meta.env.DEV) {
-      // console.error('🚨 Redux Error:', {
-      //   action: action.type,
-      //   payload: 'payload' in action ? action.payload : undefined,
-      //   error: 'error' in action ? action.error : undefined,
-      // });
+      console.error('🚨 Redux Error:', {
+        action: action.type,
+        payload: 'payload' in action ? action.payload : undefined,
+        error: 'error' in action ? action.error : undefined,
+      });
     }
     
     // Handle specific error types
@@ -226,8 +227,9 @@ export const errorMiddleware: Middleware = ({ dispatch }) => next => action => {
       const payload = action.payload;
       
       if (payload === 'Auth session missing!') {
-       // console.info('No active auth session found - user needs to log in');
-        // This is an expected error during initialization when no user is logged in
+        // This is a normal condition when user is not logged in - don't log as error
+        // console.info('No active auth session found - user needs to log in');
+        // This is an expected condition during initialization when no user is logged in
         // Don't force logout as this is a normal condition for non-authenticated users
       } else if (typeof payload === 'string') {
         if (payload.includes('Network error')) {

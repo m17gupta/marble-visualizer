@@ -75,10 +75,15 @@ export function MainLayout() {
   // Check if current route is studio page to hide sidebar
   const isStudioPage = location.pathname.startsWith("/app/studio");
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-    navigate("/")
-    // Navigation is handled within the thunk
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      navigate("/", { replace: true });
+    } catch (error) {
+      // Even if logout fails, force navigation to home page
+      console.error("Logout error:", error);
+      navigate("/", { replace: true });
+    }
   };
 
   const handleBackToProjects = () => {
