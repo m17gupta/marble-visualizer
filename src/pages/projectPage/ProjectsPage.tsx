@@ -39,7 +39,7 @@ import UserProfileHome from '@/components/userProfile/UserProfileHome';
 import JobHome from '@/components/job/JobHome';
 import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
-import { updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { addbreadcrumb, updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
 import { addHouseImage, updateRequestJobId } from '@/redux/slices/visualizerSlice/genAiSlice';
 import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
@@ -81,6 +81,7 @@ export function ProjectsPage() {
       const jobId = project.jobData[0]?.id;
       
       if (jobId) {
+        dispatch(addbreadcrumb("studio"))
         dispatch(setCurrentImageUrl(projectImage || ''));
         dispatch(addHouseImage(projectImage || ''));
         dispatch(updateSidebarHeaderCollapse(false));

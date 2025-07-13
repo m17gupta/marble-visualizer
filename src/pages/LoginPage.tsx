@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2, Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
+import { addbreadcrumb } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -80,6 +81,7 @@ export function LoginPage() {
     );
 
     if (loginUser.fulfilled.match(result)) {
+      dispatch(addbreadcrumb("Projects"));
       navigate("/projects", { replace: true });
     }
   };

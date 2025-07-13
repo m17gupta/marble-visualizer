@@ -1,44 +1,21 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
-import { RootState, AppDispatch } from "@/redux/store";
-import { logoutUser } from "@/redux/slices/authSlice";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Setting from "./Setting";
+
+
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import {
-  Menu,
   Home,
   FolderOpen,
   Palette,
-  // Package,
   Settings,
-  LogOut,
-  Sun,
-  Moon,
-  Bell,
-  // Search,
   ChevronLeft,
   ChevronRight,
   Paintbrush,
-  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { resetGenAiState, resetRequest } from "@/redux/slices/visualizerSlice/genAiSlice";
-import { clearCurrentProject } from "@/redux/slices/projectSlice";
-import { clearCurrentImage } from "@/redux/slices/studioSlice";
-import { resetJobSlice } from "@/redux/slices/jobSlice";
 
 const navigation = [
   {
@@ -51,11 +28,7 @@ const navigation = [
     href: "/app/studio",
     icon: Palette,
   },
-  // {
-  //   name: "Materials",
-  //   href: "/materials",
-  //   icon: Package,
-  // },
+  
   {
     name: "SwatchBook",
     href: "/app/swatchbook",
@@ -66,35 +39,13 @@ const navigation = [
 export function MainLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const { theme, setTheme } = useTheme();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { profile } = useSelector((state: RootState) => state.userProfile);
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   // Check if current route is studio page to hide sidebar
   const isStudioPage = location.pathname.startsWith("/app/studio");
-
-  const handleLogout = async () => {
-    try {
-      await dispatch(logoutUser()).unwrap();
-      navigate("/", { replace: true });
-    } catch (error) {
-      // Even if logout fails, force navigation to home page
-      console.error("Logout error:", error);
-      navigate("/", { replace: true });
-    }
-  };
-
-  const handleBackToProjects = () => {
-     dispatch(resetJobSlice()); // Clear current job state
-    dispatch(resetGenAiState());  // Reset GenAI state
-     dispatch(resetRequest())    // Reset request state
-     dispatch(clearCurrentProject())
-    navigate('/app/projects');
-  };
 
   const isActivePath = (path: string) => {
     return (
@@ -178,6 +129,7 @@ export function MainLayout() {
             <Button
               variant="ghost"
               className="w-full justify-start text-muted-foreground hover:text-foreground"
+              onClick={() => setSettingsModalOpen(true)}
             >
               <Settings className="h-4 w-4 mr-3" />
               Settings
@@ -218,126 +170,7 @@ export function MainLayout() {
         )}
       >
        
-        {/* <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="flex items-center justify-between px-6 py-2">
-            <div className="flex items-center space-x-4">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="lg:hidden"
-                    onClick={() => setMobileMenuOpen(true)}
-                  >
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-              </Sheet>
-              {isStudioPage && (
-                <Button 
-                  onClick={handleBackToProjects}
-                  variant="outline"
-                  size="sm"
-                  className="md:hidden flex items-center space-x-2"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span>Projects</span>
-                </Button>
-              )}
-
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="relative">
-                  {isStudioPage && (
-                    <Button 
-                      onClick={handleBackToProjects}
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center space-x-2"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      <span>Back to Projects</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                <Bell className="h-5 w-5" />
-                <Badge className="ml-1 px-1 py-0 text-xs" variant="destructive">
-                  3
-                </Badge>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-5 w-5" />
-                ) : (
-                  <Moon className="h-5 w-5" />
-                )}
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
-                  >
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage
-                        src={profile?.profile_image}
-                        alt={profile?.full_name}
-                      />
-                      <AvatarFallback className="bg-muted text-muted-foreground">
-                        {profile?.full_name
-                          ?.split(" ")
-                          .map((n: string) => n[0])
-                          .join("") || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none text-foreground">
-                        {profile?.full_name}
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user?.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => navigate('/app/profile')}
-                    className="text-foreground hover:bg-muted"
-                  >
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-foreground hover:bg-muted">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="text-foreground hover:bg-muted"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </header> */}
+       
 
 
 
@@ -353,6 +186,12 @@ export function MainLayout() {
           </motion.div>
         </main>
       </div>
+
+      {/* Settings Modal */}
+      <Setting 
+        isOpen={settingsModalOpen} 
+        onClose={() => setSettingsModalOpen(false)} 
+      />
     </div>
   );
 }

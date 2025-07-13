@@ -32,6 +32,7 @@ import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import JobHome from "@/components/job/JobHome";
 import { setCanvasType, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
+import Breadcrumb from "@/components/breadcrumbs/Breadcrumb";
 
 
 //type DrawingTool = "select" | "polygon";
@@ -210,7 +211,8 @@ export function StudioPage() {
     dispatch(setIsCanvasModalOpen(false));
   };
   return (
-    <div className="flex sm:flex-row flex-col md:h-screen bg-background">
+    <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
+      <Breadcrumb/>
       <div className="w-1/4 border-r overflow-hidden">
         <Tabs value={activeTabFromStore ?? "inspiration"} onValueChange={handleChangeTab} className="w-full h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2" >

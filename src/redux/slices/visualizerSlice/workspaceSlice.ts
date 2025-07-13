@@ -20,6 +20,7 @@ interface WorkspaceState {
   isGenLoading: boolean;
   activeTab?: string ;
   subActiveTab:string; // Default sub-active tab
+  breadcrumbs?: string[]; 
 }
 
 // Define the initial state
@@ -39,7 +40,7 @@ const initialState: WorkspaceState = {
   isUploading: false,
   activeTab:"inspiration", 
   subActiveTab: "", // Default active tab
-  // Add any other initial state properties as needed
+  breadcrumbs: [], // Initialize breadcrumbs as an empty array
 
 
 };
@@ -109,6 +110,29 @@ const workspaceSlice = createSlice({
     }
     , setIsGenerated: (state, action: PayloadAction<boolean>) => {
       state.isGenerated = action.payload;
+    }, 
+    addbreadcrumb: (state, action: PayloadAction<string>) => {
+      if (!state.breadcrumbs) {
+        state.breadcrumbs = [];
+      }
+      state.breadcrumbs.push(action.payload);
+    },
+    clearBreadcrumbs: (state) => {
+      state.breadcrumbs = [];
+    },
+    updateBreadCrumbs: (state, action: PayloadAction<string>) => {
+      //check if breadcrumbs is defined before updating
+      if (!state.breadcrumbs) {
+        state.breadcrumbs = [];
+      }else if (Array.isArray(action.payload)) {
+        // check if payload is an array  then remove from index at found
+        const existingBreadcrumbs = state.breadcrumbs.indexOf(action.payload);
+        if (existingBreadcrumbs !== -1) {
+          state.breadcrumbs.splice(existingBreadcrumbs, 1);
+        }
+       
+      }
+      
     }
   },
 });
@@ -130,7 +154,10 @@ export const {
   updateIsGenLoading,
   updateWorkspaceType,
   updateActiveTab,
-  setSubActiveTab
+  setSubActiveTab,
+  addbreadcrumb,
+  clearBreadcrumbs,
+  updateBreadCrumbs
 } = workspaceSlice.actions;
 
 // Export reducer
