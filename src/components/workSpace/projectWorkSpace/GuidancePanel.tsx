@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CiImageOn } from "react-icons/ci";
+import { FaMicrophone } from "react-icons/fa";
 import AddInspiration from "./AddInspiration";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -37,6 +38,7 @@ import { GenAiChat, GenAiRequest, TaskApiModel } from "@/models/genAiModel/GenAi
 import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 import WebhookEventsListener from "@/components/webBook/WebBook";
+import VoiceRecognition from "./VoiceRecognition";
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 
@@ -227,9 +229,11 @@ const GuidancePanel: React.FC = () => {
                 Provide specific instructions to the AI for better results.
               </TooltipContent>
             </Tooltip>
+
+            <VoiceRecognition />
           </TooltipProvider>
 
-
+           {/* provide mic icon  */}
         </div>
 
         <textarea

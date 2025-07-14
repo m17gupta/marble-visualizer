@@ -44,13 +44,15 @@ const Setting: React.FC<SettingProps> = ({ isOpen, onClose }) => {
  
      const handleLogout = async () => {
     try {
-        
+         onClose();
       await dispatch(logoutUser()).unwrap();
       dispatch(clearCurrentJob());
       dispatch(clearCurrentImage());
       dispatch(clearBreadcrumbs())
       toast.success("Logged out successfully");
       navigate("/", { replace: true });
+
+       window.location.href = "/";
     } catch (error) {
       // Even if logout fails, force navigation to home page
       console.error("Logout error:", error);
