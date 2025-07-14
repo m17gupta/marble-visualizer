@@ -22,6 +22,7 @@ interface CanvasState {
   isCanvasModalOpen: boolean;
   masks: CanvasModel[];
   canvasType: "mask" | "draw" | "edit" | "reannotation" ;
+  deleteMaskId: number | null; // Optional field for storing the ID of the mask to be deleted
 }
 
 // Initial state
@@ -36,6 +37,7 @@ const initialState: CanvasState = {
   isCanvasModalOpen: false,
   masks: [],
   canvasType:"draw",
+  deleteMaskId: null, // Initialize as null
 };
 
 // Create the canvas slice
@@ -100,6 +102,10 @@ const canvasSlice = createSlice({
     deleteMask(state, action: PayloadAction<number>) {
       const maskId = action.payload;
       state.masks = state.masks.filter(mask => mask.id !== maskId);
+      state.deleteMaskId = action.payload; // Reset deleteMaskId after deletion
+    },
+    setDeleteMMaskId(state, action: PayloadAction<number | null>) {
+      state.deleteMaskId = action.payload; // Set the ID of the mask to be deleted
     },
 
     // Reset canvas state to initial values
@@ -128,7 +134,8 @@ export const {
   setCanvasActiveTool,
   setCanvasType,
   updateMasks,
-  deleteMask
+  deleteMask,
+  setDeleteMMaskId
 } = canvasSlice.actions;
 
 // Export reducer

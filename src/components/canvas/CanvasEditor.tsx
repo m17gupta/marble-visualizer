@@ -64,7 +64,7 @@ export function CanvasEditor({
   } = useSelector((state: RootState) => state.segments);
 
   const {
-    // currentZoom,
+    deleteMaskId,
     zoomMode,
     isCanvasReady,
     mousePosition,
@@ -76,12 +76,12 @@ export function CanvasEditor({
   const backgroundImageRef = useRef<fabric.Image | null>(null);
 
   // Auto-panning state
-  const [isAutoPanning, setIsAutoPanning] = useState(false);
   const autoPanIntervalRef = useRef<number | null>(null);
+  const setIsAutoPanning = useState(false)[1];
 
   const currentMousePositionRef = useRef<{ x: number; y: number } | null>(null);
 
-  const activeTool = useRef<DrawingTool>('select');
+  const activeTool = useRef<DrawingTool>('polygon');
   const updatedZoomMode = useRef<string>("");
 
   // Store original viewport transform
@@ -119,14 +119,6 @@ export function CanvasEditor({
       activeTool.current = canavasActiveTool as DrawingTool;
     }
   }, [canavasActiveTool])
-
-  // Save canvas state to history
-  const saveCanvasState = useCallback(() => {
-    if (!fabricCanvasRef.current) return;
-
-    // const canvasState = JSON.stringify(fabricCanvasRef.current.toJSON());
-    // dispatch(saveToHistory(canvasState));
-  }, [dispatch]);
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
@@ -202,7 +194,7 @@ export function CanvasEditor({
 
     // saveCanvasState();
     // toast.success('Segment deleted');
-  }, [activeSegment, dispatch, saveCanvasState]);
+  }, []);
 
 
   const handleCancelDrawing = useCallback(() => {
@@ -515,18 +507,10 @@ export function CanvasEditor({
     // Reset auto-panning when tool changes
     cleanupAutoPan(autoPanIntervalRef, setIsAutoPanning);
 
-    // Update object selectability
-    // const objects = canvas.getObjects();
-    // objects.forEach(obj => {
-    //   const objData = (obj as any).data;
-    //   if (objData?.type === 'segment') {
-    //     obj.selectable = activeTool.current === 'select';
-    //     obj.evented = activeTool.current === 'select';
-    //   }
-    // });
+  
 
     canvas.renderAll();
-  }, [ activeTool, isCanvasReady]);
+  }, [ activeTool, isCanvasReady, setIsAutoPanning]);
 
   // Control whether zoom is centered on mouse position or canvas center
   const getIsCenterZooms = useRef(zoomMode === 'center');
@@ -639,6 +623,9 @@ export function CanvasEditor({
     const baseStrokeWidth = 2;
     // Adjust stroke width inversely proportional to zoom
     const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
+  allSegmentsCount.current += 1;
+    const segmentId = `poly-${allSegmentsCount.current}`;
+    allSegments.current[segmentId] = tempPoints.current;
 
     const polygon = new fabric.Polygon(polygonPoints, {
       fill: 'rgba(255, 132, 0, 0.3)', // Semi-transparent orange fill
@@ -648,14 +635,13 @@ export function CanvasEditor({
       evented: true,
     });
 
-    allSegmentsCount.current += 1;
-    const segmentId = `poly-${allSegmentsCount.current}`;
-    allSegments.current[segmentId] = tempPoints.current;
+  
 
     // Add custom data to the polygon for identification
-    (polygon as fabric.Object & { data?: { type?: string; segmentId?: string } }).data = {
+    (polygon as fabric.Object & { data?: { type?: string; segmentId?: string; name?: string } }).data = {
       type: 'segment',
       segmentId: `segment-${Date.now()}`, // Temporary ID, will be replaced by Redux
+      name: segmentId,
     };
 
     canvas.add(polygon);
@@ -686,9 +672,14 @@ export function CanvasEditor({
     tempLines.current = [];
     tempPointCircles.current = [];
      // reset the canvas
-     handleResetCanvas()
+     if (fabricCanvasRef.current && originalViewportTransform.current) {
+       fabricCanvasRef.current.setViewportTransform(originalViewportTransform.current);
+       fabricCanvasRef.current.setZoom(1);
+       fabricCanvasRef.current.requestRenderAll();
+       dispatch(setZoom(1));
+     }
     toast.success('Polygon created successfully! Ready to draw another.');
-  }, [dispatch]);
+  }, [dispatch, canvasType]);
 
   // Handle mouse down events
   const handleMouseDown = useCallback((e: fabric.TEvent) => {
@@ -837,7 +828,7 @@ export function CanvasEditor({
     }
 
     canvas.renderAll();
-  }, [dispatch, isAutoPanning, setIsAutoPanning]);
+  }, [dispatch]);
 
   // Handle double click to finish polygon
   const handleDoubleClick = useCallback(() => {
@@ -913,6 +904,26 @@ export function CanvasEditor({
       dispatch(setZoom(limitedZoom));
     }
   }
+
+  // delete mask id from canvas
+  useEffect(() => {
+    if(!deleteMaskId || !fabricCanvasRef.current) return;
+
+    console.log("deleteMaskId", deleteMaskId);
+    console.log("allSegments", allSegments.current);
+    const deletePolyId= `poly-${deleteMaskId}`;
+    delete allSegments.current[deletePolyId];
+    //delete the polygon from fabric canvas
+    const canvas = fabricCanvasRef.current;
+    const polygonToDelete = canvas.getObjects().find(obj => 
+      (obj as fabric.Object & { data?: { name?: string } }).data?.name === deletePolyId
+    );
+    if (polygonToDelete) {
+      canvas.remove(polygonToDelete);
+      canvas.requestRenderAll();
+    }
+  },[deleteMaskId, fabricCanvasRef, dispatch]);
+  
   return (
     <TooltipProvider>
       <div className={cn('flex flex-col space-y-4', className)}>
@@ -943,24 +954,24 @@ export function CanvasEditor({
                 />
 
                 {/* Drawing Instructions */}
-                { activeTool.current === 'polygon' && !isPolygonMode.current && (
+                {/* { activeTool.current === 'polygon' && !isPolygonMode.current && (
                   <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
                     Click to start drawing a polygon
                   </div>
-                )}
+                )} */}
 
-                {isPolygonMode.current && (
+                {/* {isPolygonMode.current && (
                   <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
                     Click to add points • Click near first point or double-click to finish • Esc to cancel
                   </div>
-                )}
+                )} */}
 
                 {/* Auto-panning indicator */}
-                {isAutoPanning && (
+                {/* {_isAutoPanning && (
                   <div className="absolute top-20 left-4 bg-amber-500 text-white px-3 py-2 rounded-lg text-sm animate-pulse">
                     Auto-panning active
                   </div>
-                )}
+                )} */}
 
                 {/* Canvas Status */}
                 {!isCanvasReady && (

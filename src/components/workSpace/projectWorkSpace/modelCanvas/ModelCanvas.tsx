@@ -12,10 +12,10 @@ type Props = {
     onClose: () => void;
 }
 const ModelCanvas = ({ isCanvasModalOpen, onClose }: Props) => {
-  const {currentImageUrl} = useSelector((state: RootState) => state.studio);
- 
-   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
-  const [imageLoading, setImageLoading] = useState(false);
+    const { currentImageUrl } = useSelector((state: RootState) => state.studio);
+
+    const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
+    const [imageLoading, setImageLoading] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
     const closeModal = () => {
@@ -24,15 +24,18 @@ const ModelCanvas = ({ isCanvasModalOpen, onClose }: Props) => {
         onClose()
     }
 
-     useEffect(() => {
+    useEffect(() => {
         if (currentImageUrl && currentImageUrl !== "") {
-          setCurrentCanvasImage(currentImageUrl);
+            setCurrentCanvasImage(currentImageUrl);
         }
-      }, [currentImageUrl]);
+    }, [currentImageUrl]);
 
- const handleImageLoad = useCallback(() => {
-    setImageLoading(false);
-  }, []);
+    const handleImageLoad = useCallback(() => {
+        setImageLoading(false);
+    }, []);
+
+
+
 
     return (
         <>
@@ -50,14 +53,16 @@ const ModelCanvas = ({ isCanvasModalOpen, onClose }: Props) => {
                                 <X size={24} />
                             </button>
                         </div>
-                        
+
                         {/* Modal Body - Two Column Layout */}
                         <div className="flex-1 overflow-auto flex">
                             {/* Left Section - Instructions */}
                             <div className="w-1/4 p-4 border-r border-gray-200 bg-gray-50">
-                                <GeneratedMask />
+                                <GeneratedMask
+
+                                />
                             </div>
-                            
+
                             {/* Right Section - Canvas */}
                             <div className="flex-1 p-4 overflow-auto">
                                 <CanvasEditor

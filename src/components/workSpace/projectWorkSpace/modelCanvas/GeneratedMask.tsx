@@ -16,12 +16,15 @@ const GeneratedMask = () => {
         useEffect(() => {
             if (masks && masks.length > 0) {
                 setAllMasks(masks);
+            }else{
+                setAllMasks([]);
             }
         }, [masks]);
 
 
         const handleDeleteMask = (maskId: number) => {
         dispatch(deleteMask(maskId));
+        
         };
       return (
     <>

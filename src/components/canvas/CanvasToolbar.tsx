@@ -80,7 +80,7 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {/* Drawing Tools */}
-            <div className="flex items-center space-x-1">
+            {/* <div className="flex items-center space-x-1">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -108,9 +108,9 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
                 </TooltipTrigger>
                 <TooltipContent>Draw polygon segments</TooltipContent>
               </Tooltip>
-            </div>
+            </div> */}
 
-            <Separator orientation="vertical" className="h-6" />
+            {/* <Separator orientation="vertical" className="h-6" /> */}
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-1">
