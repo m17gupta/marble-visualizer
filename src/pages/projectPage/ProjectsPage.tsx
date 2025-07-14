@@ -39,7 +39,7 @@ import UserProfileHome from '@/components/userProfile/UserProfileHome';
 import JobHome from '@/components/job/JobHome';
 import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
-import { addbreadcrumb, updateWorkspaceType } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { addbreadcrumb, updateWorkspaceType, updateBreadCrumbs } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
 import { addHouseImage, updateRequestJobId } from '@/redux/slices/visualizerSlice/genAiSlice';
 import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
@@ -66,6 +66,11 @@ export function ProjectsPage() {
   }, [user?.id, projects.length, isLoading, dispatch]);
 
   useEffect(() => {
+    // Set breadcrumb to "Projects" when component mounts
+    dispatch(updateBreadCrumbs("Projects"));
+  }, [dispatch]);
+
+  useEffect(() => {
     if (error) {
       toast.error(error);
       dispatch(clearError());
@@ -81,7 +86,7 @@ export function ProjectsPage() {
       const jobId = project.jobData[0]?.id;
       
       if (jobId) {
-        dispatch(addbreadcrumb("studio"))
+        dispatch(addbreadcrumb("Studio"))
         dispatch(setCurrentImageUrl(projectImage || ''));
         dispatch(addHouseImage(projectImage || ''));
         dispatch(updateSidebarHeaderCollapse(false));

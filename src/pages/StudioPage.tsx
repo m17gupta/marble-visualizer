@@ -30,9 +30,10 @@ import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/G
 import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
 import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import JobHome from "@/components/job/JobHome";
-import { setCanvasType, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
+import { setCanvasType, setIsCanvasModalOpen, updateIsGenerateMask } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
 import Breadcrumb from "@/components/breadcrumbs/Breadcrumb";
+import { renderPolygonMaskOnlyToCanvas, renderPolygonMaskToBlob, renderPolygonMaskToFile } from "@/components/canvasUtil/GenerateMask";
 
 
 //type DrawingTool = "select" | "polygon";
@@ -51,6 +52,7 @@ export function StudioPage() {
   const { activeTab: activeTabFromStore } = useSelector(
     (state: RootState) => state.workspace
   );
+
 
   // const activeTab = useRef<string>("inspiration");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -210,6 +212,10 @@ export function StudioPage() {
   
     dispatch(setIsCanvasModalOpen(false));
   };
+
+ 
+
+
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
       <Breadcrumb/>

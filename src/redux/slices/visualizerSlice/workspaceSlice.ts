@@ -18,9 +18,9 @@ interface WorkspaceState {
   isAddIspiration: boolean;
   isGenerated: boolean,
   isGenLoading: boolean;
-  activeTab?: string ;
-  subActiveTab:string; // Default sub-active tab
-  breadcrumbs?: string[]; 
+  activeTab?: string;
+  subActiveTab: string; // Default sub-active tab
+  breadcrumbs?: string[];
 }
 
 // Define the initial state
@@ -38,7 +38,7 @@ const initialState: WorkspaceState = {
   processingState: 'idle',
   error: null,
   isUploading: false,
-  activeTab:"inspiration", 
+  activeTab: "inspiration",
   subActiveTab: "", // Default active tab
   breadcrumbs: [], // Initialize breadcrumbs as an empty array
 
@@ -50,21 +50,21 @@ const workspaceSlice = createSlice({
   name: 'workspace',
   initialState,
   reducers: {
- 
 
- 
+
+
 
     addCurrentView: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
       const { view, file } = action.payload;
       state.currentView = { view, file };
     },
-  
+
     setIsContinue: (state, action: PayloadAction<boolean>) => {
       state.isContinue = action.payload;
     },
-  updateIsGenLoading: (state, action: PayloadAction<boolean>) => {
-      state.isGenLoading = action.payload;  
-  },
+    updateIsGenLoading: (state, action: PayloadAction<boolean>) => {
+      state.isGenLoading = action.payload;
+    },
     // Set uploading state
     setIsUploading: (state, action: PayloadAction<boolean>) => {
       state.isUploading = action.payload;
@@ -96,52 +96,70 @@ const workspaceSlice = createSlice({
 
     // Enter workspace mode (sets multiple states)
     enterWorkspace: (state) => {
-      
+
 
       state.error = null;
     },
     setSubActiveTab: (state, action: PayloadAction<string>) => {
       state.subActiveTab = action.payload;
     },
-  
+
     // Set flag for adding inspiration
     setIsAddInspiration: (state, action: PayloadAction<boolean>) => {
       state.isAddIspiration = action.payload;
     }
     , setIsGenerated: (state, action: PayloadAction<boolean>) => {
       state.isGenerated = action.payload;
-    }, 
+    },
     addbreadcrumb: (state, action: PayloadAction<string>) => {
       if (!state.breadcrumbs) {
         state.breadcrumbs = [];
+      } else if (state.breadcrumbs.length === 0) {
+        state.breadcrumbs.push("Projects");
+        state.breadcrumbs.push(action.payload);
+      } else {
+        state.breadcrumbs.push(action.payload);
       }
-      state.breadcrumbs.push(action.payload);
     },
     clearBreadcrumbs: (state) => {
       state.breadcrumbs = [];
     },
     updateBreadCrumbs: (state, action: PayloadAction<string>) => {
-      //check if breadcrumbs is defined before updating
       if (!state.breadcrumbs) {
         state.breadcrumbs = [];
-      }else if (Array.isArray(action.payload)) {
-        // check if payload is an array  then remove from index at found
-        const existingBreadcrumbs = state.breadcrumbs.indexOf(action.payload);
-        if (existingBreadcrumbs !== -1) {
-          state.breadcrumbs.splice(existingBreadcrumbs, 1);
-        }
-       
       }
-      
+
+      const breadcrumbValue = action.payload;
+
+      // Special handling for "Projects" - it should always be at index 0
+      // if (breadcrumbValue === "Projects") {
+      //   state.breadcrumbs = ["Projects"];
+      //   return;
+      // }
+
+      const index = state.breadcrumbs.indexOf(breadcrumbValue);
+     
+      if (index !== -1) {
+        state.breadcrumbs = state.breadcrumbs.slice(0, index + 1);
+      }
+      // else {
+      //   // Ensure "Projects" is always at index 0 when adding new breadcrumbs
+      //   if (state.breadcrumbs.length === 0 || state.breadcrumbs[0] !== "Projects") {
+      //     state.breadcrumbs = ["Projects", breadcrumbValue];
+      //   } else {
+      //     state.breadcrumbs.push(breadcrumbValue);
+      //   }
+      // }
     }
+
   },
 });
 
 // Export actions
 export const {
- 
+
   updateJobImage,
- 
+
   setProcessingState,
   setError,
   clearError,

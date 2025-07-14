@@ -44,7 +44,7 @@ const Setting: React.FC<SettingProps> = ({ isOpen, onClose }) => {
  
      const handleLogout = async () => {
     try {
-         onClose();
+         
       await dispatch(logoutUser()).unwrap();
       dispatch(clearCurrentJob());
       dispatch(clearCurrentImage());

@@ -12,11 +12,11 @@ interface GenAiState {
   
   error: string | null;
   currentRequestId: string | null;
-  // generatedImage: string; // Optional field for storing generated image URL
-  // originalHouseImage: string; // Optional field for storing original house image URL
+
   isSubmitGenAiFailed?: boolean;
-  task_id?: string; // Optional field for storing task ID
-  isFetchingGenAiImages: boolean; // Flag to indicate if GenAI images are being fetched
+  task_id?: string; 
+  isFetchingGenAiImages: boolean; 
+ 
 }
 
 // Initial state
@@ -39,11 +39,11 @@ const initialState: GenAiState = {
   loading: false,
   error: null,
   currentRequestId: null,
-  // generatedImage: "",
-  // originalHouseImage: "",
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
   task_id: "", // Optional field for storing task ID
-  isFetchingGenAiImages: false, // Flag to indicate if GenAI images are being fetched
+  isFetchingGenAiImages: false,
+  
+
 };
 
 // Async thunk for submitting a GenAI request
@@ -161,6 +161,7 @@ const genAiSlice = createSlice({
     updateTaskId: (state, action: PayloadAction<string>) => {
       state.task_id = action.payload; // Update the task_id in the state
     },
+  
     resetRequest: (state) => {
       state.requests = {
         houseUrl: state.requests.houseUrl, 
@@ -246,13 +247,12 @@ export const {
   addPrompt,
   addInspirationImage,
   resetInspirationImage,
-  // updateGeneratedImage,
-  // updateOriginalHouseImage,
   updateInspirationNames,
   resetRequest,
   updateRequestJobId,
   resetGenAiState,
   resetIsGenAiSumitFailed,
+ 
   updateTaskId,
   setCurrentGenAiImage
 

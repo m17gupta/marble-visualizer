@@ -13,8 +13,9 @@ const Breadcrumb = () => {
   const handleBreadcrumbClick = (index: number, crumb: string) => {
     // Handle navigation based on breadcrumb click
     if (crumb === 'Projects') {
-      navigate('/app/projects');
       dispatch(updateBreadCrumbs("Projects"));
+      navigate('/app/projects');
+
     } else if (crumb === 'Studio') {
       // Stay on current studio page
     }
@@ -34,7 +35,7 @@ const Breadcrumb = () => {
             Projects
           </Button>
         </li> */}
-        
+
         {breadcrumbs && breadcrumbs.length > 0 && (
           <>
             {/* <ChevronRight className="h-3 w-3 text-muted-foreground" /> */}
@@ -44,11 +45,10 @@ const Breadcrumb = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`h-6 px-2 ${
-                      index === breadcrumbs.length - 1
+                    className={`h-6 px-2 ${index === breadcrumbs.length - 1
                         ? 'text-foreground font-medium'
                         : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                      }`}
                     onClick={() => handleBreadcrumbClick(index, crumb)}
                   >
                     {crumb}
