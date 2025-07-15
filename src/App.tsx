@@ -8,6 +8,7 @@ import { AppRouter } from "./routes/AppRouter";
 // import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Toaster } from "@/components/ui/sonner";
 import ReduxDebugger from "./components/ui/ReduxDebugger";
+import Breadcrumb from "./components/breadcrumbs/Breadcrumb";
 
 function App() {
   useEffect(() => {

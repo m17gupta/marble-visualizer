@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
-
 import {
   // fetchJobsByProject,
   clearError as clearJobError,
@@ -24,17 +23,23 @@ import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import AllSegments from "@/components/studio/segment/AllSegments";
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
-
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 
 import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
 import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import JobHome from "@/components/job/JobHome";
-import { setCanvasType, setIsCanvasModalOpen, updateIsGenerateMask } from "@/redux/slices/canvasSlice";
+import {
+  setCanvasType,
+  setIsCanvasModalOpen,
+  updateIsGenerateMask,
+} from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
 import Breadcrumb from "@/components/breadcrumbs/Breadcrumb";
-import { renderPolygonMaskOnlyToCanvas, renderPolygonMaskToBlob, renderPolygonMaskToFile } from "@/components/canvasUtil/GenerateMask";
-
+import {
+  renderPolygonMaskOnlyToCanvas,
+  renderPolygonMaskToBlob,
+  renderPolygonMaskToFile,
+} from "@/components/canvasUtil/GenerateMask";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -42,23 +47,23 @@ export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
 
-  
   const {
     currentJob,
     error: jobError,
     isCreating: isJobRunning,
   } = useSelector((state: RootState) => state.jobs);
-  const { currentUserRole, currentProject } = useSelector((state: RootState) => state.projects);
+  const { currentUserRole, currentProject } = useSelector(
+    (state: RootState) => state.projects
+  );
   const { activeTab: activeTabFromStore } = useSelector(
     (state: RootState) => state.workspace
   );
-
 
   // const activeTab = useRef<string>("inspiration");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
 
- const {isCanvasModalOpen} = useSelector((state: RootState) => state.canvas);
+  const { isCanvasModalOpen } = useSelector((state: RootState) => state.canvas);
   const { isGenerated } = useSelector((state: RootState) => state.workspace);
 
   // Check permissions
@@ -66,17 +71,13 @@ export function StudioPage() {
   const canAdmin = projectId ? canAdminProject(projectId) : false;
 
   const getAllJob = useSelector((state: RootState) => state.jobs.list);
-   const {currentImageUrl} = useSelector((state: RootState) => state.studio);
- 
+  const { currentImageUrl } = useSelector((state: RootState) => state.studio);
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
       setCurrentCanvasImage(currentImageUrl);
     }
   }, [currentImageUrl]);
-
-
-
 
   useEffect(() => {
     if (jobError) {
@@ -105,8 +106,6 @@ export function StudioPage() {
       toast.error("File size must be less than 10MB");
       return;
     }
-
-    
   };
 
   const handleGenerate = async () => {
@@ -150,8 +149,6 @@ export function StudioPage() {
       toast.error("You do not have permission to change design settings");
       return;
     }
-
-    
   };
 
   // Handle level change with activity logging
@@ -160,29 +157,25 @@ export function StudioPage() {
       toast.error("You do not have permission to change design settings");
       return;
     }
-
-   
   };
 
   const handlePreserveToggle = (id: string) => {
     if (canEdit) {
-     // dispatch(togglePreserveObject(id));
+      // dispatch(togglePreserveObject(id));
     }
   };
 
   const handleToneChange = (value: string) => {
     if (canEdit) {
-     // dispatch(setTone(value));
+      // dispatch(setTone(value));
     }
   };
 
   const handleIntensityChange = (value: number) => {
     if (canEdit) {
-     // dispatch(setIntensity(value));
+      // dispatch(setIntensity(value));
     }
   };
-  
-
 
   const handleDesignHubClick = () => {
     // setActiveTab("design-hub");
@@ -207,21 +200,20 @@ export function StudioPage() {
     }
   }, [dispatch, activeTabFromStore]);
 
-
   const handleCloseMask = () => {
-  
     dispatch(setIsCanvasModalOpen(false));
   };
 
- 
-
-
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
-      <Breadcrumb/>
+      <Breadcrumb />
       <div className="w-1/4 border-r overflow-hidden">
-        <Tabs value={activeTabFromStore ?? "inspiration"} onValueChange={handleChangeTab} className="w-full h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-2" >
+        <Tabs
+          value={activeTabFromStore ?? "inspiration"}
+          onValueChange={handleChangeTab}
+          className="w-full h-full flex flex-col"
+        >
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
               Inspiration
             </TabsTrigger>
@@ -229,12 +221,12 @@ export function StudioPage() {
             <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
               Design Hub
             </TabsTrigger>
-
           </TabsList>
 
           <TabsContent
             value="design-hub"
-            className="flex-grow overflow-auto flex">
+            className="flex-grow overflow-auto flex"
+          >
             {/* All Segments - Left Side */}
             <div className="flex border-r">
               <AllSegments />
@@ -288,30 +280,24 @@ export function StudioPage() {
         />
       ) : (
         <>
-        {/* inspiration tab content */}
-        <WorkSpaceHome />
-
+          {/* inspiration tab content */}
+          <WorkSpaceHome />
         </>
-
       )}
-
 
       <SwatchBookDataHome />
 
       {/* get all GenAi Image based on job ID */}
       <GetGenAiImageJobIdBased />
 
+      <JobHome selectedProjectId={currentProject?.id || undefined} />
 
-        <JobHome
-        selectedProjectId={currentProject?.id || undefined}
-
-      />
-
-     { isCanvasModalOpen &&
-     <ModelCanvas 
-      isCanvasModalOpen={isCanvasModalOpen}
-      onClose={handleCloseMask}
-      />}
+      {isCanvasModalOpen && (
+        <ModelCanvas
+          isCanvasModalOpen={isCanvasModalOpen}
+          onClose={handleCloseMask}
+        />
+      )}
     </div>
   );
 }

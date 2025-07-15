@@ -1,19 +1,15 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { SegmentsList } from '@/components/segments';
-import { ActivityTimeline } from '@/components/ActivityTimeline';
-import { SwatchRecommendations } from '@/components/swatch/SwatchRecommendations';
-import { StudioDesignTab } from '@/components/studio/StudioDesignTab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { SegmentsList } from "@/components/segments";
+import { ActivityTimeline } from "@/components/ActivityTimeline";
+import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
+import { StudioDesignTab } from "@/components/studio/StudioDesignTab";
 // import { DesignSettings, Job } from './types';
-import {
-  Palette,
-  Shapes,
-  Target,
-  History,
-  Clock,
-  Square,
-} from "lucide-react";
-import SegmentHome from './segment/SegmentHome';
+import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
+import SegmentHome from "./segment/SegmentHome";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useState } from "react";
 
 interface StudioTabsNavigationProps {
   activeTab: string;
@@ -36,34 +32,40 @@ export function StudioTabsNavigation({
   activeTab,
   onTabChange,
   projectId,
-  // designSettings,
-  // isJobRunning,
-  // canEdit,
-  // jobError,
-  // currentJob,
-  // onStyleChange,
-  // onLevelChange,
-  // onPreserveToggle,
-  // onToneChange,
-  // onIntensityChange
-}: StudioTabsNavigationProps) {
-
+}: // designSettings,
+// isJobRunning,
+// canEdit,
+// jobError,
+// currentJob,
+// onStyleChange,
+// onLevelChange,
+// onPreserveToggle,
+// onToneChange,
+// onIntensityChange
+StudioTabsNavigationProps) {
+  const [designhubactivetab, setDesignHubActiveTab] = useState("segment");
   const handleChangeTab = (value: string) => {
     console.log("Tab changed to:", value);
-    
-    onTabChange(value);
-  };  return (
+    setDesignHubActiveTab(value);
+  };
+
+  console.log(designhubactivetab);
+
+  // const { list: jobs } = useSelector((state: RootState) => state.jobs);
+  // console.log("SegmentHome jobs", jobs);
+
+  return (
     <Tabs
-      defaultValue='design'
-      value={activeTab}
+      defaultValue="segment"
+      value={designhubactivetab}
       onValueChange={handleChangeTab}
       className="flex-1 flex flex-col"
     >
-      <div className="px-4 pt-2 flex-shrink-0">  
-             <TabsList className="grid w-full grid-cols-6 h-9">
+      <div className="px-4 pt-2 flex-shrink-0">
+        <TabsList className="grid w-full grid-cols-6 h-9">
           <TabsTrigger value="segment" className="text-xs p-1">
             <Square className="h-3 w-3" />
-            <span className="sr-only">Segment</span>
+            {/* <span className="sr-only">Segment</span> */}
           </TabsTrigger>
           <TabsTrigger value="design" className="text-xs p-1">
             <Palette className="h-3 w-3" />
@@ -91,10 +93,8 @@ export function StudioTabsNavigation({
             <SegmentHome />
           </TabsContent>
 
-
           <TabsContent value="design" className="space-y-6 mt-0">
-            <StudioDesignTab
-            />
+            <StudioDesignTab />
           </TabsContent>
 
           <TabsContent value="segments" className="space-y-4 mt-0">
@@ -102,9 +102,7 @@ export function StudioTabsNavigation({
           </TabsContent>
 
           <TabsContent value="swatches" className="mt-0">
-            <SwatchRecommendations
-
-            />
+            <SwatchRecommendations />
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">

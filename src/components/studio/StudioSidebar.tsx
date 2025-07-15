@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 // import { Button } from '@/components/ui/button';
 // import { Progress } from '@/components/ui/progress';
 
-import { StudioTabsNavigation } from './StudioTabsNavigation';
+import { StudioTabsNavigation } from "./StudioTabsNavigation";
 // import { DesignSettings, Job } from './types';
 // import {
 //   Sparkles,
@@ -11,7 +11,7 @@ import { StudioTabsNavigation } from './StudioTabsNavigation';
 // } from "lucide-react";
 
 interface StudioSidebarProps {
-  currentUserRole: 'admin' | 'editor' | 'viewer' | null;
+  currentUserRole: "admin" | "editor" | "viewer" | null;
   canEdit: boolean;
   canAdmin: boolean;
   activeTab: string;
@@ -36,25 +36,24 @@ interface StudioSidebarProps {
 }
 
 export function StudioSidebar({
-
   // canEdit,
 
   activeTab,
   onTabChange,
   projectId,
-  // selectedSegmentType,
-  // designSettings,
-  // isJobRunning,
-  // jobError,
-  // // currentJob,
+}: // selectedSegmentType,
+// designSettings,
+// isJobRunning,
+// jobError,
+// // currentJob,
 
-  // onStyleChange,
-  // onLevelChange,
-  // onPreserveToggle,
-  // onToneChange,
-  // onIntensityChange,
- 
-}: StudioSidebarProps) {
+// onStyleChange,
+// onLevelChange,
+// onPreserveToggle,
+// onToneChange,
+// onIntensityChange,
+
+StudioSidebarProps) {
   return (
     <motion.aside
       initial={{ x: -288, opacity: 0 }}
@@ -62,8 +61,6 @@ export function StudioSidebar({
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="sm:w-80 w-full bg-card border-r border-border flex flex-col"
     >
-   
-
       {/* Tabs Navigation */}
       <StudioTabsNavigation
         activeTab={activeTab}
@@ -81,8 +78,6 @@ export function StudioSidebar({
         // onToneChange={onToneChange}
         // onIntensityChange={onIntensityChange}
       />
-
-     
     </motion.aside>
   );
 }
