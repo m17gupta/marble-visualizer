@@ -1,12 +1,13 @@
-import { JobModel } from '@/models/jobModel/JobModel';
-import { ProjectModel } from '@/models/projectModel/ProjectModel';
-import { ProjectService } from '@/services/projects/ProjectsService';
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { JobModel } from "@/models/jobModel/JobModel";
+import { ProjectModel } from "@/models/projectModel/ProjectModel";
+import { ProjectAPI } from "@/services/projects/projectApi";
+import { ProjectService } from "@/services/projects/ProjectsService";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export interface ProjectAccess {
   userId: string;
   email: string;
-  role: 'admin' | 'editor' | 'viewer' | 'guest' | 'user';
+  role: "admin" | "editor" | "viewer" | "guest" | "user";
   addedAt: string;
   addedBy: string;
 }
@@ -14,7 +15,7 @@ export interface ProjectAccess {
 interface ProjectState {
   list: ProjectModel[];
   currentProject: ProjectModel | null;
-  currentUserRole: 'admin' | 'editor' | 'viewer' | null;
+  currentUserRole: "admin" | "editor" | "viewer" | null;
   projectAccess: ProjectAccess[];
   isLoading: boolean;
   isCreating: boolean;
@@ -37,11 +38,9 @@ const initialState: ProjectState = {
   isCreateDialogOpen: false,
 };
 
-
-
 // Async thunk to fetch projects
 export const fetchProjects = createAsyncThunk(
-  'projects/fetchProjects',
+  "projects/fetchProjects",
   async (user_id: string, { rejectWithValue }) => {
     try {
       const response = await ProjectService.getProjectByUserId(user_id);
@@ -49,134 +48,166 @@ export const fetchProjects = createAsyncThunk(
       // In a real app, this would be: return await projectsAPI.getAll();
       return (response.data as ProjectModel[]) || [];
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to fetch projects');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch projects"
+      );
     }
   }
 );
 
-
 // Async thunk to create a new project
 export const createProject = createAsyncThunk(
-  'projects/createProject',
+  "projects/createProject",
   async (projectData: ProjectModel, { rejectWithValue }) => {
     try {
-
       const projectResponse = await ProjectService.createProject(projectData);
       if (!projectResponse.success) {
-        throw new Error(projectResponse.error || 'Failed to create project');
+        throw new Error(projectResponse.error || "Failed to create project");
       }
       const newProject = projectResponse.data as ProjectModel;
-      
+
       // In a real app, this would be: return await projectsAPI.create(projectData);
       return newProject;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to create project');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to create project"
+      );
     }
   }
 );
 
 // delete project based on projectId
 export const deleteProject = createAsyncThunk(
-  'projects/deleteProject',
+  "projects/deleteProject",
   async (projectId: number, { rejectWithValue }) => {
     try {
       const response = await ProjectService.deleteProjectById(projectId);
       if (!response.success) {
-        throw new Error(response.error || 'Failed to delete project');
+        throw new Error(response.error || "Failed to delete project");
       }
       return projectId;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to delete project');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to delete project"
+      );
     }
   }
 );
 
 // Async thunk to update an existing project
 export const updateProject = createAsyncThunk(
-  'projects/updateProject',
-  async ({ id, updates }: { id: number; updates: Partial<ProjectModel> }, { rejectWithValue }) => {
+  "projects/updateProject",
+  async (
+    { id, updates }: { id: number; updates: Partial<ProjectModel> },
+    { rejectWithValue }
+  ) => {
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // In a real app, this would be: return await projectsAPI.update(id, updates);
-      return { id, updates: { ...updates, updated_at: new Date().toISOString() } };
+      return {
+        id,
+        updates: { ...updates, updated_at: new Date().toISOString() },
+      };
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to update project');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to update project"
+      );
+    }
+  }
+);
+
+export const updateProjectAnalysis = createAsyncThunk(
+  "projects/updateProjectAnalysis",
+  async ({ url, id }: { url: string; id: number }, { rejectWithValue }) => {
+    try {
+      const data = await ProjectAPI.analyseandupdateproject(url);
+      const response = await ProjectAPI.save_analysed_data(id, data);
+      console.log(response);
+      return response;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to update project"
+      );
     }
   }
 );
 
 // Async thunk to fetch project access list
 export const fetchProjectAccess = createAsyncThunk(
-  'projects/fetchProjectAccess',
+  "projects/fetchProjectAccess",
   async (projectId: number, { rejectWithValue }) => {
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Mock data for development
       const mockAccessList: ProjectAccess[] = [
         {
-          userId: '1',
-          email: 'admin@example.com',
-          role: 'admin',
+          userId: "1",
+          email: "admin@example.com",
+          role: "admin",
           addedAt: new Date().toISOString(),
-          addedBy: '1',
+          addedBy: "1",
         },
         {
-          userId: '2',
-          email: 'editor@example.com',
-          role: 'editor',
+          userId: "2",
+          email: "editor@example.com",
+          role: "editor",
           addedAt: new Date().toISOString(),
-          addedBy: '1',
+          addedBy: "1",
         },
       ];
-      
+
       // In a real app, this would be: return await projectsAPI.getAccess(projectId);
       return mockAccessList;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to fetch project access');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch project access"
+      );
     }
   }
 );
 
 // Async thunk to invite user to project
 export const inviteUserToProject = createAsyncThunk(
-  'projects/inviteUserToProject',
-  async ({  email, role }: { projectId: number; email: string; role: string }, { rejectWithValue, getState }) => {
+  "projects/inviteUserToProject",
+  async (
+    { email, role }: { projectId: number; email: string; role: string },
+    { rejectWithValue, getState }
+  ) => {
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       const state = getState() as { auth: { user: { id: string } } };
       const currentUser = state.auth.user;
-      
+
       const newAccess: ProjectAccess = {
         userId: Math.random().toString(36).substr(2, 9), // Generate random ID for demo
         email,
-        role: role as 'admin' | 'editor' | 'viewer' | 'guest' | 'user',
+        role: role as "admin" | "editor" | "viewer" | "guest" | "user",
         addedAt: new Date().toISOString(),
         addedBy: currentUser.id,
       };
-      
+
       // In a real app, this would be: return await projectsAPI.inviteUser(projectId, email, role);
       return newAccess;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to invite user');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to invite user"
+      );
     }
   }
 );
 
-
-
 const projectSlice = createSlice({
-  name: 'projects',
+  name: "projects",
   initialState,
   reducers: {
     setCurrentProject: (state, action: PayloadAction<ProjectModel>) => {
       state.currentProject = action.payload;
-      
     },
     clearCurrentProject: (state) => {
       state.currentProject = null;
@@ -187,19 +218,17 @@ const projectSlice = createSlice({
     },
     updateIsCreateDialog: (state, action: PayloadAction<boolean>) => {
       state.isCreateDialogOpen = action.payload;
-    }, 
-    updateNewProjectCreated:(state, action)=>{
-     const newProject = state.currentProject;
-     const newJob = action.payload as JobModel;
-     const data:ProjectModel= {
+    },
+    updateNewProjectCreated: (state, action) => {
+      const newProject = state.currentProject;
+      const newJob = action.payload as JobModel;
+      const data: ProjectModel = {
         ...newProject,
         jobData: [newJob],
-     }
-   state.list=[...state.list, data]
-   state.currentProject={}
-
-    }
-  
+      };
+      state.list = [...state.list, data];
+      state.currentProject = {};
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -225,12 +254,7 @@ const projectSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
-      
-       
-      
-      
-     
+
       // Create project
       .addCase(createProject.pending, (state) => {
         state.isCreating = true;
@@ -246,7 +270,7 @@ const projectSlice = createSlice({
         state.isCreating = false;
         state.error = action.payload as string;
       })
-      
+
       // Update project
       .addCase(updateProject.pending, (state) => {
         state.isUpdating = true;
@@ -255,16 +279,39 @@ const projectSlice = createSlice({
       .addCase(updateProject.fulfilled, (state, action) => {
         state.isUpdating = false;
         const { id, updates } = action.payload;
-        const projectIndex = state.list.findIndex(p => p.id === id);
+        const projectIndex = state.list.findIndex((p) => p.id === id);
         if (projectIndex !== -1) {
-          state.list[projectIndex] = { ...state.list[projectIndex], ...updates };
+          state.list[projectIndex] = {
+            ...state.list[projectIndex],
+            ...updates,
+          };
         }
       })
       .addCase(updateProject.rejected, (state, action) => {
         state.isUpdating = false;
         state.error = action.payload as string;
       })
-      
+
+      //UpdateProjectAnalysisDataa
+
+      .addCase(updateProjectAnalysis.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateProjectAnalysis.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        const { success, data } = action.payload;
+        const projectIndex = state.list.findIndex((p) => p.id === data?.id);
+        if (projectIndex !== -1) {
+          state.list[projectIndex].analysed_data = data?.analysed_data;
+        }
+      })
+
+      .addCase(updateProjectAnalysis.rejected, (state, action) => {
+        state.isUpdating = false;
+        state.error = action.payload as string;
+      })
+
       // Fetch project access
       .addCase(fetchProjectAccess.pending, (state) => {
         state.isLoadingAccess = true;
@@ -278,7 +325,7 @@ const projectSlice = createSlice({
         state.isLoadingAccess = false;
         state.error = action.payload as string;
       })
-      
+
       // Invite user to project
       .addCase(inviteUserToProject.pending, (state) => {
         state.error = null;
@@ -289,16 +336,16 @@ const projectSlice = createSlice({
       .addCase(inviteUserToProject.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      
-     // Delete project
+
+      // Delete project
       .addCase(deleteProject.pending, (state) => {
-        state.isLoading = true; 
+        state.isLoading = true;
       })
       .addCase(deleteProject.fulfilled, (state, action) => {
         state.isLoading = false;
 
         const projectId = action.payload;
-        state.list = state.list.filter(project => project.id !== projectId);
+        state.list = state.list.filter((project) => project.id !== projectId);
       })
       .addCase(deleteProject.rejected, (state, action) => {
         state.isLoading = false;
@@ -307,13 +354,12 @@ const projectSlice = createSlice({
   },
 });
 
-export const { 
-  setCurrentProject, 
-  clearCurrentProject, 
-  clearError, 
+export const {
+  setCurrentProject,
+  clearCurrentProject,
+  clearError,
   updateIsCreateDialog,
-  updateNewProjectCreated
-  
+  updateNewProjectCreated,
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

@@ -215,12 +215,9 @@ export class ProjectAPI {
       console.log(projectId);
       const { data, error } = await supabase
         .from("projects")
-        .select()
-        .eq("id", projectId);
-      // .update({ analysed_data: analysed_data })
-      // .eq("id", projectId)
-      // .select()
-      // .single();
+        .update({ analysed_data: analysed_data })
+        .eq("id", projectId)
+        .select();
 
       if (!data || data.length === 0) {
         return {
@@ -232,7 +229,7 @@ export class ProjectAPI {
       return {
         success: true,
         data: data[0] as ProjectModel,
-        message: "Project deleted successfully",
+        message: "Project Updated successfully",
       };
     } catch (error: unknown) {
       return handleError(

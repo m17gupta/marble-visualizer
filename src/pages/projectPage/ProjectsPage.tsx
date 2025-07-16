@@ -10,6 +10,7 @@ import {
   updateIsCreateDialog,
   setCurrentProject,
   deleteProject,
+  updateProjectAnalysis,
 } from "@/redux/slices/projectSlice";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { BsIncognito } from "react-icons/bs";
@@ -67,9 +68,6 @@ import ProjectHeader from "./ProjectHeader";
 import ProjectStaticCard from "./ProjectStaticCard";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { CiSquareInfo } from "react-icons/ci";
-import axios from "axios";
-import { ProjectAPI } from "@/services/projects/projectApi";
-import { number } from "zod";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -79,14 +77,30 @@ export function ProjectsPage() {
     list: projects,
     isLoading,
     error,
+    isUpdating,
   } = useSelector((state: RootState) => state.projects);
   const { user } = useSelector((state: RootState) => state.auth);
   const { isCreateDialogOpen } = useSelector(
     (state: RootState) => state.projects
   );
+
+  const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
+
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
   const isProject = useRef(true);
+  const handleHouseAnalysis = async (project: ProjectModel) => {
+    if (project) {
+      const url: string = project.jobData?.[0].full_image ?? "";
+      const projectId = project.id!;
+      const latestUpdating = [...updatingProjectId];
+      latestUpdating.push(projectId);
+      setUpdatingProjectId(latestUpdating); // <-- Set current updating ID
+      await dispatch(updateProjectAnalysis({ url: url, id: projectId }));
+      const filter = [...latestUpdating].filter((d) => d !== projectId);
+      setUpdatingProjectId(filter);
+    }
+  };
 
   useEffect(() => {
     // Only fetch if user exists and projects list is empty
@@ -147,58 +161,11 @@ export function ProjectsPage() {
       toast.error("Failed to delete project");
     }
   };
-  // const handleShare = () => {
-  //  // setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
-  // };
-  const [trigger, setTrigger] = useState({
-    loading: false,
-    url: "",
-    projectId: -Infinity,
-  });
-
-  const handleHouseAnalysis = async (project: ProjectModel) => {
-    console.log(typeof project.id);
-    if (project) {
-      const url: string = project.jobData?.[0].full_image ?? "";
-      const newTrigger = {
-        ...trigger,
-        url: url,
-        projectId: project.id!,
-        loading: true,
-      };
-      setTrigger(newTrigger);
-    }
-  };
-
-  console.log(trigger);
-
-  useEffect(() => {
-    const analyseandsave = async (url: string, projectId: number) => {
-      console.log("Started--------->");
-      console.log("_______>>.>>>>>>>", url, projectId);
-      const data = await ProjectAPI.analyseandupdateproject(url);
-      const response = await ProjectAPI.save_analysed_data(projectId, data);
-      const newTrigger = {
-        ...trigger,
-        url: "",
-        projectId: -Infinity,
-        loading: false,
-      };
-      setTrigger(newTrigger);
-      console.log(response);
-    };
-    if (trigger.loading) {
-      analyseandsave(trigger.url, trigger.projectId);
-    }
-  }, [trigger]);
-
   const handleCopyLink = (project: ProjectModel) => {
     const projectUrl = `${window.location.origin}/studio/${project.id}`;
     navigator.clipboard.writeText(projectUrl);
     toast.success("Project link copied to clipboard!");
   };
-
-  console.log(projects);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -393,9 +360,10 @@ export function ProjectsPage() {
                         </div>
                         <Progress value={project.progress} className="h-2" />
                       </div>
-
+                      {isUpdating &&
+                        updatingProjectId.includes(project.id!) && <Loader />}
                       <div className="flex items-center justify-between pt-2">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex relative items-center space-x-2">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -425,10 +393,10 @@ export function ProjectsPage() {
                             // }}
                             onClick={() => handleHouseAnalysis(project)}
                           >
-                            {true ? (
-                              <BsIncognito size={15} />
-                            ) : (
+                            {project.analysed_data ? (
                               <CiSquareInfo size={18} />
+                            ) : (
+                              <BsIncognito size={15} />
                             )}
                           </Button>
                         </div>
@@ -500,3 +468,11 @@ export function ProjectsPage() {
     </>
   );
 }
+
+const Loader = () => {
+  return (
+    <div className="relative w-full h-[3px] bg-gray-200 overflow-hidden rounded">
+      <div className="absolute inset-0 w-full bg-blue-500 animate-progress-bar" />
+    </div>
+  );
+};
