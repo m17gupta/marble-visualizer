@@ -13,12 +13,7 @@ import { RootState } from "@/redux/store";
 import { useParams } from "react-router-dom";
 //import objectimg from "../../../../dist/assets/object-img-f9e-Kvp6.jpeg"; // Adjust the path as necessary
 const SidebarObject = () => {
-  const {
-    list: projects,
-    isLoading,
-    error,
-    isUpdating,
-  } = useSelector((state: RootState) => state.projects);
+  const { list: projects } = useSelector((state: RootState) => state.projects);
   const { id } = useParams();
   const [project, setProject] = useState(projects.find((d) => d.id == id));
 
@@ -88,24 +83,25 @@ const SidebarObject = () => {
         )}
 
         <div className="flex items-center flex-wrap gap-2 pt-2">
-          {project?.analysed_data.segments_detected.map(
-            (name: string, idx: number) => {
-              return (
-                <button
-                  key={idx}
-                  className="relative rounded-xl py-1.5 m-0 text-sm border border-gray-300 bg-transparent"
-                >
-                  {name}
-                  <Badge
-                    className="absolute -top-2 -right-2 rounded-full bg-red-600 text-white px-2 py-0.5 pt-0 text-xs "
-                    variant="default"
+          {project?.analysed_data !== null &&
+            project?.analysed_data.segments_detected.map(
+              (name: string, idx: number) => {
+                return (
+                  <button
+                    key={idx}
+                    className="relative rounded-xl py-1.5 m-0 text-sm border border-gray-300 bg-transparent"
                   >
-                    x
-                  </Badge>
-                </button>
-              );
-            }
-          )}
+                    {name}
+                    <Badge
+                      className="absolute -top-2 -right-2 rounded-full bg-red-600 text-white px-2 py-0.5 pt-0 text-xs "
+                      variant="default"
+                    >
+                      x
+                    </Badge>
+                  </button>
+                );
+              }
+            )}
         </div>
 
         <div className="relative flex border border-gray-300 rounded-xl p-2 align-super justify-between">

@@ -1,17 +1,23 @@
-import { useState, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
-import { AnimatePresence } from 'framer-motion';
-import { AppDispatch } from '@/redux/store';
-import { Segment } from '@/redux/slices/segmentsSlice';
-import { logActivity } from '@/redux/slices/activityLogsSlice';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { useState, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { AnimatePresence } from "framer-motion";
+import { AppDispatch } from "@/redux/store";
+import { Segment } from "@/redux/slices/segmentsSlice";
+import { logActivity } from "@/redux/slices/activityLogsSlice";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import {
   Save,
   Shapes,
@@ -25,13 +31,13 @@ import {
   ChevronDown,
   Filter,
   Info,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 // Import the new mock data
-import { newSegments } from '@/mock/newSegmentsMockData';
+import { newSegments } from "@/mock/newSegmentsMockData";
 // Import components from the segments folder
-import { SegmentListItem } from './SegmentListItem';
-import { SegmentTypeIcon } from './SegmentTypeIcon';
+import { SegmentListItem } from "./SegmentListItem";
+import { SegmentTypeIcon } from "./SegmentTypeIcon";
 
 // Define interface for extended segment properties
 interface ExtendedSegment extends Segment {
@@ -40,7 +46,7 @@ interface ExtendedSegment extends Segment {
   perimeter_feet?: number;
   bb_area_pixel?: number;
   bb_area_sqft?: number;
-  annotation_type?: 'manual' | 'system';
+  annotation_type?: "manual" | "system";
   group?: string;
   svg_path?: string;
   bb_dimension_pixel?: number[];
@@ -67,7 +73,7 @@ interface SegmentsListProps {
 
 export function SegmentsList({ projectId, className }: SegmentsListProps) {
   const dispatch = useDispatch<AppDispatch>();
-  
+
   // For scaffolding, use the new mock data instead of Redux state
   // Uncomment the useSelector line when connected to real Redux state
   /*
@@ -75,28 +81,30 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
     (state: RootState) => state.segments
   );
   */
-  
+
   // Use newSegments for scaffolding
   const [segments, setSegments] = useState<Segment[]>(newSegments);
+  // const [segments, setSegments] = useState<Segment[]>([]);
   const [activeSegmentId, setActiveSegmentId] = useState<string | null>(null);
   const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>([]);
   const [copiedSegment, setCopiedSegment] = useState<Segment | null>(null);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [showAdvancedProps, setShowAdvancedProps] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('name'); // Options: name, type, area, perimeter
-  
-  const [editingSegmentId, setEditingSegmentId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("name"); // Options: name, type, area, perimeter
 
+  const [editingSegmentId, setEditingSegmentId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+
+  console.log(segments);
   // Get unique segment types for tabs
   const segmentTypes = useMemo(() => {
     return Array.from(
       new Set(
         segments
-          .map(s => s.type)
-          .filter((type): type is string => typeof type === 'string')
+          .map((s) => s.type)
+          .filter((type): type is string => typeof type === "string")
       )
     ).sort();
   }, [segments]);
@@ -104,52 +112,52 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   // Filter segments based on active tab and search
   const filteredSegments = useMemo(() => {
     let filtered = segments;
-    
+
     // Handle special tabs
     if (activeTab === "visible") {
-      filtered = segments.filter(s => s.visible !== false);
+      filtered = segments.filter((s) => s.visible !== false);
     } else if (activeTab === "hidden") {
-      filtered = segments.filter(s => s.visible === false);
+      filtered = segments.filter((s) => s.visible === false);
     } else if (activeTab !== "all") {
-      filtered = segments.filter(s => s.type === activeTab);
+      filtered = segments.filter((s) => s.type === activeTab);
     }
-      // Apply search filter if there's a query
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filtered = filtered.filter(s => {
-          const extSeg = s as ExtendedSegment;
-          return (
-            s.name.toLowerCase().includes(query) || 
-            (s.type || '').toLowerCase().includes(query) ||
-            extSeg.seg_short?.toLowerCase().includes(query) ||
-            extSeg.group?.toLowerCase().includes(query)
-          );
-        });
-      }
-      
-      // Apply sorting
-      return [...filtered].sort((a, b) => {
-        const extA = a as ExtendedSegment;
-        const extB = b as ExtendedSegment;
-        switch (sortBy) {
-          case 'name':
-            return a.name.localeCompare(b.name);
-          case 'type':
-            return (a.type || '').localeCompare(b.type || '');
-          case 'area':
-            return (extB.bb_area_pixel || 0) - (extA.bb_area_pixel || 0);
-          case 'perimeter':
-            return (extB.perimeter_pixel || 0) - (extA.perimeter_pixel || 0);
-          default:
-            return 0;
-        }
+    // Apply search filter if there's a query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((s) => {
+        const extSeg = s as ExtendedSegment;
+        return (
+          s.name.toLowerCase().includes(query) ||
+          (s.type || "").toLowerCase().includes(query) ||
+          extSeg.seg_short?.toLowerCase().includes(query) ||
+          extSeg.group?.toLowerCase().includes(query)
+        );
       });
+    }
+
+    // Apply sorting
+    return [...filtered].sort((a, b) => {
+      const extA = a as ExtendedSegment;
+      const extB = b as ExtendedSegment;
+      switch (sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "type":
+          return (a.type || "").localeCompare(b.type || "");
+        case "area":
+          return (extB.bb_area_pixel || 0) - (extA.bb_area_pixel || 0);
+        case "perimeter":
+          return (extB.perimeter_pixel || 0) - (extA.perimeter_pixel || 0);
+        default:
+          return 0;
+      }
+    });
   }, [segments, activeTab, searchQuery, sortBy]);
 
   // Count segments by type for the tab badges
   const segmentTypeCounts = useMemo(() => {
     return segments.reduce((acc: Record<string, number>, segment) => {
-      const type = segment.type || 'unknown';
+      const type = segment.type || "unknown";
       acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {});
@@ -160,7 +168,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
       // Multi-select logic would go here
       // For now, just select single segment
       setActiveSegmentId(segmentId);
-      setSelectedSegmentIds(prev => [...prev, segmentId]);
+      setSelectedSegmentIds((prev) => [...prev, segmentId]);
     } else {
       setActiveSegmentId(segmentId);
       setSelectedSegmentIds([segmentId]);
@@ -169,63 +177,69 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
 
   const handleDeleteSegment = (segmentId: string) => {
     const segment = segments.find((s: Segment) => s.id === segmentId);
-    setSegments(prev => prev.filter(s => s.id !== segmentId));
-    
+    setSegments((prev) => prev.filter((s) => s.id !== segmentId));
+
     if (segment) {
-      dispatch(logActivity({
-        projectId,
-        type: 'segment_edited',
-        action: 'Segment Deleted',
-        detail: `Segment "${segment.name}" was deleted`,
-        metadata: { segmentId, segmentName: segment.name },
-      }));
+      dispatch(
+        logActivity({
+          projectId,
+          type: "segment_edited",
+          action: "Segment Deleted",
+          detail: `Segment "${segment.name}" was deleted`,
+          metadata: { segmentId, segmentName: segment.name },
+        })
+      );
     }
-    
-    toast.success('Segment deleted');
+
+    toast.success("Segment deleted");
   };
 
   const handleDuplicateSegment = (segmentId: string) => {
     const segment = segments.find((s: Segment) => s.id === segmentId);
-    
+
     if (segment) {
       const newSegment = {
         ...segment,
         id: `seg_${Date.now()}`,
         name: `${segment.name} (Copy)`,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
-      
-      setSegments(prev => [...prev, newSegment]);
-      
-      dispatch(logActivity({
-        projectId,
-        type: 'segment_added',
-        action: 'Segment Duplicated',
-        detail: `Segment "${segment.name}" was duplicated`,
-        metadata: { originalSegmentId: segmentId, segmentName: segment.name },
-      }));
+
+      setSegments((prev) => [...prev, newSegment]);
+
+      dispatch(
+        logActivity({
+          projectId,
+          type: "segment_added",
+          action: "Segment Duplicated",
+          detail: `Segment "${segment.name}" was duplicated`,
+          metadata: { originalSegmentId: segmentId, segmentName: segment.name },
+        })
+      );
     }
-    
-    toast.success('Segment duplicated');
+
+    toast.success("Segment duplicated");
   };
 
   const handleCopySegment = (segmentId: string) => {
     const segment = segments.find((s: Segment) => s.id === segmentId);
-    
+
     if (segment) {
       setCopiedSegment(segment);
-      
-      dispatch(logActivity({
-        projectId,
-        type: 'segment_edited',
-        action: 'Segment Copied',
-        detail: `Segment "${segment.name}" was copied`,
-        metadata: { segmentId, segmentName: segment.name },
-      }));
+
+      dispatch(
+        logActivity({
+          projectId,
+          type: "segment_edited",
+          action: "Segment Copied",
+          detail: `Segment "${segment.name}" was copied`,
+          metadata: { segmentId, segmentName: segment.name },
+        })
+      );
     }
-    
-    toast.success('Segment copied');
+
+    toast.success("Segment copied");
   };
 
   const handleCopySpecificSegment = (segmentId: string) => {
@@ -233,7 +247,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
     if (segment) {
       setCopiedSegment(segment);
     }
-    toast.success('Segment copied to clipboard');
+    toast.success("Segment copied to clipboard");
   };
 
   const handlePasteSegment = () => {
@@ -243,105 +257,118 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
         id: `seg_${Date.now()}`,
         name: `${copiedSegment.name} (Copy)`,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
-      
-      setSegments(prev => [...prev, newSegment]);
-      
-      dispatch(logActivity({
-        projectId,
-        type: 'segment_added',
-        action: 'Segment Pasted',
-        detail: `Segment "${copiedSegment.name}" was pasted`,
-        metadata: { segmentName: copiedSegment.name },
-      }));
-      
-      toast.success('Segment pasted');
+
+      setSegments((prev) => [...prev, newSegment]);
+
+      dispatch(
+        logActivity({
+          projectId,
+          type: "segment_added",
+          action: "Segment Pasted",
+          detail: `Segment "${copiedSegment.name}" was pasted`,
+          metadata: { segmentName: copiedSegment.name },
+        })
+      );
+
+      toast.success("Segment pasted");
     }
   };
 
   const handleGroupSegments = () => {
     if (selectedSegmentIds.length < 2) {
-      toast.error('Select at least 2 segments to group');
+      toast.error("Select at least 2 segments to group");
       return;
     }
-    
+
     // Create a new group ID
     const groupId = `group_${Date.now()}`;
-    
+
     // Update segments with the new group ID
-    setSegments(prev => 
-      prev.map(segment => 
-        selectedSegmentIds.includes(segment.id) 
+    setSegments((prev) =>
+      prev.map((segment) =>
+        selectedSegmentIds.includes(segment.id)
           ? { ...segment, groupId, updatedAt: new Date().toISOString() }
           : segment
       )
     );
-    
-    dispatch(logActivity({
-      projectId,
-      type: 'segment_edited',
-      action: 'Segments Grouped',
-      detail: `${selectedSegmentIds.length} segments were grouped together`,
-      metadata: { segmentIds: selectedSegmentIds, count: selectedSegmentIds.length },
-    }));
-    
-    toast.success('Segments grouped');
+
+    dispatch(
+      logActivity({
+        projectId,
+        type: "segment_edited",
+        action: "Segments Grouped",
+        detail: `${selectedSegmentIds.length} segments were grouped together`,
+        metadata: {
+          segmentIds: selectedSegmentIds,
+          count: selectedSegmentIds.length,
+        },
+      })
+    );
+
+    toast.success("Segments grouped");
   };
 
   // Used when ungrouping segments from a group, keeping for future implementation
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleUngroupSegments = (groupId: string) => {
     // Remove the group ID from all segments in the group
-    setSegments(prev => 
-      prev.map(segment => 
-        segment.groupId === groupId 
-          ? { ...segment, groupId: undefined, updatedAt: new Date().toISOString() }
+    setSegments((prev) =>
+      prev.map((segment) =>
+        segment.groupId === groupId
+          ? {
+              ...segment,
+              groupId: undefined,
+              updatedAt: new Date().toISOString(),
+            }
           : segment
       )
     );
-    
-    dispatch(logActivity({
-      projectId,
-      type: 'segment_edited',
-      action: 'Segments Ungrouped',
-      detail: `Group with ID ${groupId} was ungrouped`,
-      metadata: { groupId },
-    }));
-    
-    toast.success('Segments ungrouped');
+
+    dispatch(
+      logActivity({
+        projectId,
+        type: "segment_edited",
+        action: "Segments Ungrouped",
+        detail: `Group with ID ${groupId} was ungrouped`,
+        metadata: { groupId },
+      })
+    );
+
+    toast.success("Segments ungrouped");
   };
 
   const handleBringForward = (segmentId: string) => {
     // Find the segment and increase its zIndex
-    setSegments(prev => {
-      const segment = prev.find(s => s.id === segmentId);
+    setSegments((prev) => {
+      const segment = prev.find((s) => s.id === segmentId);
       if (!segment) return prev;
-      
-      return prev.map(s => 
-        s.id === segmentId 
+
+      return prev.map((s) =>
+        s.id === segmentId
           ? { ...s, zIndex: s.zIndex + 1, updatedAt: new Date().toISOString() }
           : s
       );
     });
-    
-    toast.success('Segment moved forward');
+
+    toast.success("Segment moved forward");
   };
 
   const handleSendBackward = (segmentId: string) => {
     // Find the segment and decrease its zIndex
-    setSegments(prev => {
-      const segment = prev.find(s => s.id === segmentId);
+    setSegments((prev) => {
+      const segment = prev.find((s) => s.id === segmentId);
       if (!segment) return prev;
-      
-      return prev.map(s => 
-        s.id === segmentId 
+
+      return prev.map((s) =>
+        s.id === segmentId
           ? { ...s, zIndex: s.zIndex - 1, updatedAt: new Date().toISOString() }
           : s
       );
     });
-    
-    toast.success('Segment moved backward');
+
+    toast.success("Segment moved backward");
   };
 
   const handleStartEdit = (segment: Segment) => {
@@ -350,42 +377,54 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   };
 
   const handleSaveEdit = () => {
-    if (editingSegmentId && editingName.trim() !== '') {
-      const oldName = segments.find((s: Segment) => s.id === editingSegmentId)?.name;
-      
-      setSegments(prev => 
-        prev.map(segment => 
-          segment.id === editingSegmentId 
-            ? { ...segment, name: editingName.trim(), updatedAt: new Date().toISOString() }
+    if (editingSegmentId && editingName.trim() !== "") {
+      const oldName = segments.find(
+        (s: Segment) => s.id === editingSegmentId
+      )?.name;
+
+      setSegments((prev) =>
+        prev.map((segment) =>
+          segment.id === editingSegmentId
+            ? {
+                ...segment,
+                name: editingName.trim(),
+                updatedAt: new Date().toISOString(),
+              }
             : segment
         )
       );
-      
-      dispatch(logActivity({
-        projectId,
-        type: 'segment_edited',
-        action: 'Segment Renamed',
-        detail: `Segment renamed from "${oldName}" to "${editingName.trim()}"`,
-        metadata: { segmentId: editingSegmentId, oldName, newName: editingName.trim() },
-      }));
-      
+
+      dispatch(
+        logActivity({
+          projectId,
+          type: "segment_edited",
+          action: "Segment Renamed",
+          detail: `Segment renamed from "${oldName}" to "${editingName.trim()}"`,
+          metadata: {
+            segmentId: editingSegmentId,
+            oldName,
+            newName: editingName.trim(),
+          },
+        })
+      );
+
       setEditingSegmentId(null);
-      setEditingName('');
-      toast.success('Segment renamed');
+      setEditingName("");
+      toast.success("Segment renamed");
     }
   };
 
   const handleCancelEdit = () => {
     setEditingSegmentId(null);
-    setEditingName('');
+    setEditingName("");
   };
 
   const handleToggleVisibility = (segmentId: string) => {
     const segment = segments.find((s: Segment) => s.id === segmentId);
     if (segment) {
-      setSegments(prev => 
-        prev.map(s => 
-          s.id === segmentId 
+      setSegments((prev) =>
+        prev.map((s) =>
+          s.id === segmentId
             ? { ...s, visible: !s.visible, updatedAt: new Date().toISOString() }
             : s
         )
@@ -397,11 +436,11 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
     setActiveSegmentId(segmentId);
     setSelectedSegmentIds([segmentId]);
     // In a real implementation, this would scroll the canvas to center on the segment
-    toast.success('Segment focused');
+    toast.success("Segment focused");
   };
 
   const toggleDetailView = () => {
-    setShowDetails(prev => !prev);
+    setShowDetails((prev) => !prev);
     // Reset advanced props when hiding details
     if (showDetails) {
       setShowAdvancedProps(false);
@@ -409,7 +448,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   };
 
   const toggleAdvancedProps = () => {
-    setShowAdvancedProps(prev => !prev);
+    setShowAdvancedProps((prev) => !prev);
   };
 
   const selectedCount = selectedSegmentIds?.length || 0;
@@ -423,16 +462,16 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
         <div className="text-center py-8 text-muted-foreground space-y-2">
           <Shapes className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">No segments in this category</p>
-          
+
           {searchQuery ? (
             // Show search-specific message when filtering
             <div className="text-xs">
               <p>No results match your search query.</p>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="mt-2 text-xs h-7"
-                onClick={() => setSearchQuery('')}
+                onClick={() => setSearchQuery("")}
               >
                 Clear search
               </Button>
@@ -441,9 +480,9 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
             // Show category-specific message
             <div className="text-xs">
               <p>Use the canvas tools to draw {activeTab} segments</p>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="mt-2 text-xs h-7"
                 onClick={() => setActiveTab("all")}
               >
@@ -464,7 +503,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
           <AnimatePresence>
             {segments.map((segment: Segment, index: number) => {
               const extendedSegment = segment as ExtendedSegment;
-              
+
               return (
                 <SegmentListItem
                   key={segment.id}
@@ -500,7 +539,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   };
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Toolbar */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -541,7 +580,9 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {/* Save segments logic */}}
+              onClick={() => {
+                /* Save segments logic */
+              }}
               disabled={segments.length === 0}
             >
               <Save className="h-3 w-3 mr-1" />
@@ -556,22 +597,27 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
             <Input
               placeholder="Search segments..."
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="h-8 text-xs pl-7"
             />
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-3.5 w-3.5 text-muted-foreground" 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3.5 w-3.5 text-muted-foreground"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
           </div>
-          
+
           <div className="flex space-x-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -581,41 +627,42 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem 
-                  onClick={() => setSortBy('name')}
-                  className={cn(sortBy === 'name' && "bg-accent")}
+                <DropdownMenuItem
+                  onClick={() => setSortBy("name")}
+                  className={cn(sortBy === "name" && "bg-accent")}
                 >
                   By Name
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setSortBy('type')}
-                  className={cn(sortBy === 'type' && "bg-accent")}
+                <DropdownMenuItem
+                  onClick={() => setSortBy("type")}
+                  className={cn(sortBy === "type" && "bg-accent")}
                 >
                   By Type
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setSortBy('area')}
-                  className={cn(sortBy === 'area' && "bg-accent")}
+                <DropdownMenuItem
+                  onClick={() => setSortBy("area")}
+                  className={cn(sortBy === "area" && "bg-accent")}
                 >
                   By Area
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setSortBy('perimeter')}
-                  className={cn(sortBy === 'perimeter' && "bg-accent")}
+                <DropdownMenuItem
+                  onClick={() => setSortBy("perimeter")}
+                  className={cn(sortBy === "perimeter" && "bg-accent")}
                 >
                   By Perimeter
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className={cn(
                     "h-8 px-2",
-                    activeTab === "visible" && "border-green-500 text-green-600",
+                    activeTab === "visible" &&
+                      "border-green-500 text-green-600",
                     activeTab === "hidden" && "border-red-500 text-red-600"
                   )}
                 >
@@ -643,33 +690,33 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
                   Show all segments
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => {
                     // Show all segments in current view
-                    setSegments(prev => 
-                      prev.map(s => 
-                        filteredSegments.some(fs => fs.id === s.id) 
-                          ? { ...s, visible: true } 
+                    setSegments((prev) =>
+                      prev.map((s) =>
+                        filteredSegments.some((fs) => fs.id === s.id)
+                          ? { ...s, visible: true }
                           : s
                       )
                     );
-                    toast.success('Made all filtered segments visible');
+                    toast.success("Made all filtered segments visible");
                   }}
                 >
                   <Eye className="h-3 w-3 mr-2 text-green-500" />
                   Show all filtered segments
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => {
                     // Hide all segments in current view
-                    setSegments(prev => 
-                      prev.map(s => 
-                        filteredSegments.some(fs => fs.id === s.id) 
-                          ? { ...s, visible: false } 
+                    setSegments((prev) =>
+                      prev.map((s) =>
+                        filteredSegments.some((fs) => fs.id === s.id)
+                          ? { ...s, visible: false }
                           : s
                       )
                     );
-                    toast.success('Hidden all filtered segments');
+                    toast.success("Hidden all filtered segments");
                   }}
                 >
                   <EyeOff className="h-3 w-3 mr-2 text-red-500" />
@@ -685,7 +732,9 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => activeSegmentId && handleCopySegment(activeSegmentId)}
+            onClick={() =>
+              activeSegmentId && handleCopySegment(activeSegmentId)
+            }
             disabled={!hasSelection}
             className="text-xs"
           >
@@ -715,7 +764,9 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {/* Ungroup segments logic */}}
+            onClick={() => {
+              /* Ungroup segments logic */
+            }}
             disabled={!hasSelection}
             className="text-xs"
           >
@@ -723,41 +774,45 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
             Ungroup
           </Button>
         </div>
-        
+
         {/* Visibility Status Bar */}
         <div className="flex justify-between items-center mt-2 mb-2 px-1.5 py-1.5 bg-muted/20 rounded-md border-dashed border border-muted">
-          <div className="flex items-center gap-1 text-xs">
+          <div className="flex items-center gap-1 text-xs ">
             <span className="font-medium">Status:</span>
             <span className="inline-flex items-center text-green-600">
               <Eye className="h-3 w-3 mr-0.5" />
-              {segments.filter(s => s.visible !== false).length} visible
+              {segments.filter((s) => s.visible !== false).length}
             </span>
             <span className="mx-0.5">|</span>
             <span className="inline-flex items-center text-red-500">
               <EyeOff className="h-3 w-3 mr-0.5" />
-              {segments.filter(s => s.visible === false).length} hidden
+              {segments.filter((s) => s.visible === false).length}
             </span>
           </div>
           <div className="flex gap-0.5">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-6 px-1.5 text-[10px] border-green-400 text-green-600" 
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-6 px-1.5 text-[10px] border-green-400 text-green-600"
               onClick={() => {
-                setSegments(prev => prev.map(s => ({ ...s, visible: true })));
-                toast.success('All segments are now visible');
+                setSegments((prev) =>
+                  prev.map((s) => ({ ...s, visible: true }))
+                );
+                toast.success("All segments are now visible");
               }}
             >
               <Eye className="h-3 w-3 mr-0.5" />
               Show All
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-6 px-1.5 text-[10px] border-red-400 text-red-600" 
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-6 px-1.5 text-[10px] border-red-400 text-red-600"
               onClick={() => {
-                setSegments(prev => prev.map(s => ({ ...s, visible: false })));
-                toast.error('All segments are now hidden');
+                setSegments((prev) =>
+                  prev.map((s) => ({ ...s, visible: false }))
+                );
+                toast.error("All segments are now hidden");
               }}
             >
               <EyeOff className="h-3 w-3 mr-0.5" />
@@ -794,12 +849,17 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
       <Separator />
 
       {/* Tabs for segment types */}
-      <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
+      <Tabs
+        defaultValue="all"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="flex flex-col h-full"
+      >
         {/* Scrollable tab list for many types */}
         <div className="overflow-x-auto pb-1">
           <TabsList className="w-full mb-4 h-auto p-1 bg-muted/50 overflow-x-auto flex-nowrap">
-            <TabsTrigger 
-              value="all" 
+            <TabsTrigger
+              value="all"
               className="flex-grow text-xs py-1.5 h-auto"
             >
               All
@@ -807,11 +867,17 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
                 {segments.length}
               </Badge>
             </TabsTrigger>
-            {segmentTypes.map(type => (
-              <TabsTrigger key={type} value={type} className="flex items-center">
+            {segmentTypes.map((type) => (
+              <TabsTrigger
+                key={type}
+                value={type}
+                className="flex items-center"
+              >
                 <div className="flex items-center">
                   <SegmentTypeIcon type={type} />
-                  <span className="ml-1 capitalize whitespace-nowrap">{type}</span>
+                  <span className="ml-1 capitalize whitespace-nowrap">
+                    {type}
+                  </span>
                   <Badge variant="secondary" className="ml-1 text-[10px]">
                     {segmentTypeCounts[type] || 0}
                   </Badge>
@@ -820,16 +886,14 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
             ))}
           </TabsList>
         </div>
-        
+
         <TabsContent value="all" className="mt-2 flex-1">
           {renderSegmentsList(filteredSegments)}
         </TabsContent>
-        
-        {segmentTypes.map(type => (
+
+        {segmentTypes.map((type) => (
           <TabsContent key={type} value={type} className="mt-2 flex-1">
-            {renderSegmentsList(
-              segments.filter(s => s.type === type)
-            )}
+            {renderSegmentsList(segments.filter((s) => s.type === type))}
           </TabsContent>
         ))}
       </Tabs>

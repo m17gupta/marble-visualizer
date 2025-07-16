@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { JobModel } from '@/models/jobModel/JobModel';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { JobModel } from "@/models/jobModel/JobModel";
 
 export interface SegmentPoint {
   x: number;
@@ -22,40 +22,39 @@ export interface Segment {
   updatedAt: string;
 }
 
-
 export interface SegmentMaterial {
   materialId: string;
   materialName: string;
-  materialType: 'texture' | 'color' | 'pattern';
+  materialType: "texture" | "color" | "pattern";
   previewUrl?: string;
   textureUrl?: string;
   color?: string;
   appliedAt: string;
 }
 
-
 interface SegmentsState {
- 
   activeSegment: string | null;
   selectedSegmentIds: string[];
-  
+
   isDrawing: boolean;
-  segmentDrawn:{
-    [key: string]: fabric.Point[];
+  segmentDrawn: {
+    [key: string]: { x: number; y: number }[]; // ✅ not fabric.Point[]
   };
+  // segmentDrawn: {
+  //   [key: string]: fabric.Point[];
+  // };
   // currentPoints: SegmentPoint[];
   canvasHistory: string[];
   historyIndex: number;
   maxHistorySize: number;
   error: string | null;
-  jobs:JobModel | null;
+  jobs: JobModel | null;
 }
 
 const initialState: SegmentsState = {
-
   activeSegment: null,
   selectedSegmentIds: [],
-  
+
   isDrawing: false,
   // currentPoints: [],
   segmentDrawn: {},
@@ -66,38 +65,38 @@ const initialState: SegmentsState = {
   jobs: null,
 };
 
-
-
 const segmentsSlice = createSlice({
-  name: 'segments',
+  name: "segments",
   initialState,
   reducers: {
     // Drawing state management
     startDrawing: (state) => {
       state.isDrawing = true;
-      
     },
-   
-    updateSegmentDrawn: (state, action) => {
+
+    // updateSegmentDrawn: (state, action) => {
+    //   state.segmentDrawn = action.payload;
+    // },
+    updateSegmentDrawn: (
+      state,
+      action: PayloadAction<{ [key: string]: { x: number; y: number }[] }>
+    ) => {
       state.segmentDrawn = action.payload;
     },
-   
+
     cancelDrawing: (state) => {
       state.isDrawing = false;
-      state.segmentDrawn = {}
+      state.segmentDrawn = {};
     },
-    
+
     // Segment management
     selectSegment: (state, action: PayloadAction<string | null>) => {
       state.activeSegment = action.payload;
-     
     },
     selectMultipleSegments: (state, action: PayloadAction<string[]>) => {
       state.selectedSegmentIds = action.payload;
-     
     },
-  
-    
+
     undo: (state) => {
       if (state.historyIndex > 0) {
         state.historyIndex--;
@@ -112,14 +111,12 @@ const segmentsSlice = createSlice({
       state.canvasHistory = [];
       state.historyIndex = -1;
     },
-    
-   
+
     clearError: (state) => {
       state.error = null;
     },
   },
-}
-  );
+});
 
 export const {
   startDrawing,
@@ -127,7 +124,7 @@ export const {
   // finishDrawing,
   cancelDrawing,
   selectMultipleSegments,
- 
+
   undo,
   redo,
   clearHistory,

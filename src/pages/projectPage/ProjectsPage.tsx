@@ -68,6 +68,7 @@ import ProjectHeader from "./ProjectHeader";
 import ProjectStaticCard from "./ProjectStaticCard";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { CiSquareInfo } from "react-icons/ci";
+import AnalyzedDataModal from "@/components/Modal";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -84,6 +85,21 @@ export function ProjectsPage() {
     (state: RootState) => state.projects
   );
 
+  const [isOpen, setIsOpen] = useState<{
+    visible: boolean;
+    projectId: number;
+  }>({
+    visible: false,
+    projectId: -1,
+  });
+
+  const handleClose = () => {
+    const newState = { ...isOpen };
+    newState.visible = false;
+    newState.projectId = -1;
+    setIsOpen(newState);
+  };
+
   const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
 
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -97,8 +113,8 @@ export function ProjectsPage() {
       latestUpdating.push(projectId);
       setUpdatingProjectId(latestUpdating); // <-- Set current updating ID
       await dispatch(updateProjectAnalysis({ url: url, id: projectId }));
-      const filter = [...latestUpdating].filter((d) => d !== projectId);
-      setUpdatingProjectId(filter);
+      const filteredata = [...latestUpdating].filter((d) => d !== projectId);
+      setUpdatingProjectId(filteredata);
     }
   };
 
@@ -247,6 +263,7 @@ export function ProjectsPage() {
     dispatch(updateWorkspaceType("renovate"));
     setSelectedProjectId(undefined);
   };
+
   return (
     <>
       {!isCreateDialogOpen && (
@@ -257,7 +274,13 @@ export function ProjectsPage() {
           className="space-y-6 p-8 pe-10 ps-8"
         >
           {/* Header */}
-
+          {isOpen && (
+            <AnalyzedDataModal
+              projectId={isOpen.projectId}
+              isOpen={isOpen.visible}
+              onClose={handleClose}
+            />
+          )}
           <ProjectHeader createProject={handleCreateProject} />
 
           {/* Stats Section */}
@@ -381,24 +404,44 @@ export function ProjectsPage() {
                             //   e.stopPropagation();
                             //   handleProjectClick(project.id);
                             // }}
+                            onClick={() => {}}
                           >
                             <Edit3 className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            // onClick={(e) => {
-                            //   e.stopPropagation();
-                            //   handleProjectClick(project.id);
-                            // }}
-                            onClick={() => handleHouseAnalysis(project)}
-                          >
-                            {project.analysed_data ? (
+                          {project.analysed_data ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              // onClick={(e) => {
+                              //   e.stopPropagation();
+                              //   handleProjectClick(project.id);
+                              // }}
+                              onClick={() => {
+                                const newState = { ...isOpen };
+                                // newState.project = project;
+                                newState.visible = true;
+                                newState.projectId = project.id
+                                  ? project.id
+                                  : -1;
+                                setIsOpen(newState);
+                              }}
+                            >
                               <CiSquareInfo size={18} />
-                            ) : (
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              // onClick={(e) => {
+                              //   e.stopPropagation();
+                              //   handleProjectClick(project.id);
+                              // }}
+                              onClick={() => handleHouseAnalysis(project)}
+                            >
+                              {" "}
                               <BsIncognito size={15} />
-                            )}
-                          </Button>
+                            </Button>
+                          )}
                         </div>
 
                         <DropdownMenu>
@@ -469,7 +512,7 @@ export function ProjectsPage() {
   );
 }
 
-const Loader = () => {
+export const Loader = () => {
   return (
     <div className="relative w-full h-[3px] bg-gray-200 overflow-hidden rounded">
       <div className="absolute inset-0 w-full bg-blue-500 animate-progress-bar" />
