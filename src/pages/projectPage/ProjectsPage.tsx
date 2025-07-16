@@ -1,25 +1,37 @@
-import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AppDispatch, RootState } from '@/redux/store';
-import { ProjectModel } from '@/models/projectModel/ProjectModel';
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { AppDispatch, RootState } from "@/redux/store";
+import { ProjectModel } from "@/models/projectModel/ProjectModel";
 import {
   fetchProjects,
   clearError,
   updateIsCreateDialog,
   setCurrentProject,
-  deleteProject
-} from '@/redux/slices/projectSlice';
+  deleteProject,
+} from "@/redux/slices/projectSlice";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { BsIncognito } from "react-icons/bs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import {
   Plus,
   Calendar,
@@ -32,31 +44,50 @@ import {
   Users,
   Settings,
   Copy,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import UserProfileHome from '@/components/userProfile/UserProfileHome';
+  InspectIcon,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import UserProfileHome from "@/components/userProfile/UserProfileHome";
 // import { CreateProjectDialog } from './CreateProject';
-import JobHome from '@/components/job/JobHome';
-import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome';
-import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
-import { addbreadcrumb, updateWorkspaceType, updateBreadCrumbs } from '@/redux/slices/visualizerSlice/workspaceSlice';
-import { updateSidebarHeaderCollapse } from '@/redux/slices/jobSlice';
-import { addHouseImage, updateRequestJobId } from '@/redux/slices/visualizerSlice/genAiSlice';
-import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
-import ProjectHeader from './ProjectHeader';
-import ProjectStaticCard from './ProjectStaticCard';
-import { setCurrentImageUrl } from '@/redux/slices/studioSlice';
+import JobHome from "@/components/job/JobHome";
+import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
+import VisualToolHome from "@/components/workSpace/visualTool/VisualToolHome";
+import {
+  addbreadcrumb,
+  updateWorkspaceType,
+  updateBreadCrumbs,
+} from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
+import {
+  addHouseImage,
+  updateRequestJobId,
+} from "@/redux/slices/visualizerSlice/genAiSlice";
+import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
+import ProjectHeader from "./ProjectHeader";
+import ProjectStaticCard from "./ProjectStaticCard";
+import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
+import { CiSquareInfo } from "react-icons/ci";
+import axios from "axios";
+import { ProjectAPI } from "@/services/projects/projectApi";
+import { number } from "zod";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { list: projects, isLoading, error } = useSelector((state: RootState) => state.projects);
+  const {
+    list: projects,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.projects);
   const { user } = useSelector((state: RootState) => state.auth);
-  const { isCreateDialogOpen } = useSelector((state: RootState) => state.projects);
+  const { isCreateDialogOpen } = useSelector(
+    (state: RootState) => state.projects
+  );
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
   const isProject = useRef(true);
+
   useEffect(() => {
     // Only fetch if user exists and projects list is empty
     if (user?.id && projects.length === 0 && !isLoading && isProject.current) {
@@ -77,18 +108,18 @@ export function ProjectsPage() {
     }
   }, [error, dispatch]);
 
-
-  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(undefined);
+  const [selectedProjectId, setSelectedProjectId] = useState<
+    number | undefined
+  >(undefined);
   const handleProjectClick = (project: ProjectModel) => {
-
     if (project.id && project.jobData && project.jobData.length > 0) {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
-      
+
       if (jobId) {
-        dispatch(addbreadcrumb("Studio"))
-        dispatch(setCurrentImageUrl(projectImage || ''));
-        dispatch(addHouseImage(projectImage || ''));
+        dispatch(addbreadcrumb("Studio"));
+        dispatch(setCurrentImageUrl(projectImage || ""));
+        dispatch(addHouseImage(projectImage || ""));
         dispatch(updateSidebarHeaderCollapse(false));
         setSelectedProjectId(project.id);
         dispatch(updateRequestJobId(jobId?.toString()));
@@ -98,60 +129,97 @@ export function ProjectsPage() {
     }
   };
 
-
   const handleDeleteProject = async (project: ProjectModel) => {
     if (!project.id) return;
 
     try {
-      console.log('Deleting project:', project.id);
+      console.log("Deleting project:", project.id);
       // Call the deleteProjectById method from ProjectsService
       const result = await dispatch(deleteProject(project.id));
-      console.log('Delete result:', result);
+      console.log("Delete result:", result);
       if (deleteProject.fulfilled.match(result)) {
-        toast.success('Project deleted successfully');
+        toast.success("Project deleted successfully");
       } else {
-        toast.error(result.payload as string || 'Failed to delete project');
+        toast.error((result.payload as string) || "Failed to delete project");
       }
     } catch (error) {
-      console.error('Failed to delete project:', error);
-      toast.error('Failed to delete project');
+      console.error("Failed to delete project:", error);
+      toast.error("Failed to delete project");
     }
   };
   // const handleShare = () => {
   //  // setShareDialogProject({ id: String(project.id || 0), name: project.name || '' });
   // };
+  const [trigger, setTrigger] = useState({
+    loading: false,
+    url: "",
+    projectId: -Infinity,
+  });
+
+  const handleHouseAnalysis = async (project: ProjectModel) => {
+    console.log(typeof project.id);
+    if (project) {
+      const url: string = project.jobData?.[0].full_image ?? "";
+      const newTrigger = {
+        ...trigger,
+        url: url,
+        projectId: project.id!,
+        loading: true,
+      };
+      setTrigger(newTrigger);
+    }
+  };
+
+  console.log(trigger);
+
+  useEffect(() => {
+    const analyseandsave = async (url: string, projectId: number) => {
+      console.log("Started--------->");
+      console.log("_______>>.>>>>>>>", url, projectId);
+      const data = await ProjectAPI.analyseandupdateproject(url);
+      const response = await ProjectAPI.save_analysed_data(projectId, data);
+      const newTrigger = {
+        ...trigger,
+        url: "",
+        projectId: -Infinity,
+        loading: false,
+      };
+      setTrigger(newTrigger);
+      console.log(response);
+    };
+    if (trigger.loading) {
+      analyseandsave(trigger.url, trigger.projectId);
+    }
+  }, [trigger]);
 
   const handleCopyLink = (project: ProjectModel) => {
     const projectUrl = `${window.location.origin}/studio/${project.id}`;
     navigator.clipboard.writeText(projectUrl);
-    toast.success('Project link copied to clipboard!');
+    toast.success("Project link copied to clipboard!");
   };
 
-
+  console.log(projects);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'completed':
-        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-      case 'paused':
-        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+      case "active":
+        return "bg-green-500/10 text-green-500 border-green-500/20";
+      case "completed":
+        return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case "paused":
+        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
       default:
-        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+        return "bg-gray-500/10 text-gray-500 border-gray-500/20";
     }
   };
 
-
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
-
-
 
   if (isLoading) {
     return (
@@ -197,27 +265,24 @@ export function ProjectsPage() {
     );
   }
 
-
-
-
   // const handleCloseCreateDialog = () => {
   //   setIsCreateDialogOpen(false);
 
   // };
 
   const handleCreateProject = () => {
-    dispatch(updateWorkspaceType('renovate'))
-    dispatch(updateIsCreateDialog(true))
-  }
+    dispatch(updateWorkspaceType("renovate"));
+    dispatch(updateIsCreateDialog(true));
+  };
 
   const handleResetProjectCreated = () => {
     dispatch(updateIsCreateDialog(false));
-    dispatch(updateWorkspaceType('renovate'));
+    dispatch(updateWorkspaceType("renovate"));
     setSelectedProjectId(undefined);
   };
   return (
     <>
-      {!isCreateDialogOpen &&
+      {!isCreateDialogOpen && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -230,9 +295,8 @@ export function ProjectsPage() {
 
           {/* Stats Section */}
 
-
           {/* Stats Cards */}
-           <ProjectStaticCard/>
+          <ProjectStaticCard />
 
           {/* Projects Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -251,11 +315,13 @@ export function ProjectsPage() {
                       className="relative"
                       onClick={() => handleProjectClick(project)}
                     >
-                      {project.jobData &&
-                        project.jobData.length > 0 ? (
+                      {project.jobData && project.jobData.length > 0 ? (
                         <div className="relative overflow-hidden rounded-lg rounded-b-none ">
                           <img
-                            src={project.jobData[0]?.thumbnail || '/placeholder-image.png'}
+                            src={
+                              project.jobData[0]?.thumbnail ||
+                              "/placeholder-image.png"
+                            }
                             alt={project.name}
                             className="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105"
                           />
@@ -273,12 +339,12 @@ export function ProjectsPage() {
                           variant="secondary"
                           className={cn(
                             "text-xs",
-                            project.visibility === 'public'
+                            project.visibility === "public"
                               ? "bg-green-500/10 text-green-500 border-green-500/20"
                               : "bg-gray-500/10 text-gray-500 border-gray-500/20"
                           )}
                         >
-                          {project.visibility === 'public' ? (
+                          {project.visibility === "public" ? (
                             <Globe className="h-3 w-3 mr-1" />
                           ) : (
                             <Lock className="h-3 w-3 mr-1" />
@@ -288,33 +354,36 @@ export function ProjectsPage() {
                       </div>
 
                       {/* Role badge */}
-                      <div className="absolute top-2 left-2">
-
-                      </div>
+                      <div className="absolute top-2 left-2"></div>
                     </div>
 
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg truncate">{project.name}</CardTitle>
-                        <Badge className={getStatusColor(project?.status || 'active')}>
+                        <CardTitle className="text-lg truncate">
+                          {project.name}
+                        </CardTitle>
+                        <Badge
+                          className={getStatusColor(
+                            project?.status || "active"
+                          )}
+                        >
                           {project?.status}
                         </Badge>
                       </div>
                       <CardDescription className="line-clamp-2">
-                        {project.description || 'No description provided'}
+                        {project.description || "No description provided"}
                       </CardDescription>
                     </CardHeader>
 
                     <CardContent className="space-y-4">
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Calendar className="mr-2 h-4 w-4" />
-                        Updated {formatDate(project.updated_at || '')}
+                        Updated {formatDate(project.updated_at || "")}
                       </div>
 
                       {/* Access info */}
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Users className="mr-2 h-4 w-4" />
-
                       </div>
 
                       <div className="space-y-2">
@@ -330,22 +399,37 @@ export function ProjectsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   handleShare(project);
-                          // }}
+                            // onClick={(e) => {
+                            //   e.stopPropagation();
+                            //   handleShare(project);
+                            // }}
                           >
                             <Share2 className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   handleProjectClick(project.id);
-                          // }}
+                            // onClick={(e) => {
+                            //   e.stopPropagation();
+                            //   handleProjectClick(project.id);
+                            // }}
                           >
                             <Edit3 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            // onClick={(e) => {
+                            //   e.stopPropagation();
+                            //   handleProjectClick(project.id);
+                            // }}
+                            onClick={() => handleHouseAnalysis(project)}
+                          >
+                            {true ? (
+                              <BsIncognito size={15} />
+                            ) : (
+                              <CiSquareInfo size={18} />
+                            )}
                           </Button>
                         </div>
 
@@ -401,24 +485,18 @@ export function ProjectsPage() {
               </Button>
             </motion.div>
           )}
-
-
-        </motion.div>}
+        </motion.div>
+      )}
 
       <UserProfileHome />
 
-    
-
-     
-
-      {isCreateDialogOpen && <VisualToolHome
-        resetProjectCreated={handleResetProjectCreated}
-      />}
+      {isCreateDialogOpen && (
+        <VisualToolHome resetProjectCreated={handleResetProjectCreated} />
+      )}
 
       <SwatchBookDataHome />
 
       <MaterialData />
-
     </>
   );
 }

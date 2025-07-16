@@ -49,8 +49,6 @@ StudioTabsNavigationProps) {
     setDesignHubActiveTab(value);
   };
 
-  console.log(designhubactivetab);
-
   // const { list: jobs } = useSelector((state: RootState) => state.jobs);
   // console.log("SegmentHome jobs", jobs);
 
@@ -89,7 +87,6 @@ StudioTabsNavigationProps) {
       <ScrollArea className="flex-1 px-4">
         <div className="py-4 space-y-6">
           <TabsContent value="segment" className="space-y-6 mt-0">
-            {/* Segment content goes here */}
             <SegmentHome />
           </TabsContent>
 
