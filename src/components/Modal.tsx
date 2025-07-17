@@ -1,5 +1,5 @@
 // components/AnalyzedDataModal.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,18 +22,21 @@ export default function AnalyzedDataModal({ isOpen, onClose, projectId }: any) {
   const { isUpdating, list: projects } = useSelector(
     (state: RootState) => state.projects
   );
-  console.log(projects);
+
   const dispatch = useDispatch<AppDispatch>();
   const filter = projects.find((d) => d.id == projectId);
   const url = filter?.jobData?.[0].full_image ?? "";
   const analysed_data = filter?.analysed_data;
+  const [updatingid, setUpdatingid] = useState<number | null>(null);
 
-  const handleReset = (id: number) => {
+  const handleReset = async (id: number) => {
     const filter = projects.find((d) => d.id == id);
     if (filter) {
       const url: string = filter.jobData?.[0].full_image ?? "";
       const projectId = filter.id!;
-      dispatch(updateProjectAnalysis({ url: url, id: projectId }));
+      setUpdatingid(projectId);
+      await dispatch(updateProjectAnalysis({ url: url, id: projectId }));
+      setUpdatingid(null);
     }
   };
 
@@ -60,7 +63,7 @@ export default function AnalyzedDataModal({ isOpen, onClose, projectId }: any) {
             variants={modalVariants}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            {isUpdating && <Loader />}
+            {isUpdating && updatingid == projectId && <Loader />}
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 border-b">
               <h2 className="text-lg font-semibold">Analysed Data</h2>
