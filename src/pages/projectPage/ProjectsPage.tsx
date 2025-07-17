@@ -425,17 +425,16 @@ export function ProjectsPage() {
                                   : -1;
                                 setIsOpen(newState);
                               }}
+                              className="group/info relative"
                             >
-                              <div className="group/info relative">
-                                <CiSquareInfo size={18} />
-                                <span
-                                  className="pointer-events-none absolute bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap
+                              <CiSquareInfo size={18} />
+                              <span
+                                className="pointer-events-none absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap
                rounded-md bg-white px-3 py-1 text-xs text-black shadow-xl opacity-0 group-hover/info:opacity-100
                transition-opacity duration-200 z-50"
-                                >
-                                  Click to view analysed data.
-                                </span>
-                              </div>
+                              >
+                                Click to view analysed data.
+                              </span>
                             </Button>
                           ) : (
                             <Button
@@ -446,18 +445,17 @@ export function ProjectsPage() {
                               //   handleProjectClick(project.id);
                               // }}
                               onClick={() => handleHouseAnalysis(project)}
+                              className="group/info relative"
                             >
                               {" "}
-                              <div className="group/info relative">
-                                <BsIncognito size={15} />
-                                <span
-                                  className="pointer-events-none absolute bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap
+                              <BsIncognito size={15} />
+                              <span
+                                className="pointer-events-none absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap
                rounded-md bg-white px-3 py-1 text-xs text-black shadow-xl opacity-0 group-hover/info:opacity-100
                transition-opacity duration-200 z-50"
-                                >
-                                  Click to Analyse the Project
-                                </span>
-                              </div>
+                              >
+                                Click to Analyse the Project
+                              </span>
                             </Button>
                           )}
                         </div>

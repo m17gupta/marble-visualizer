@@ -9,6 +9,8 @@ import {
   setIsGenerated,
   updateIsGenLoading,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { TbBulb } from "react-icons/tb";
+import { TbBulbFilled } from "react-icons/tb";
 
 import ProjectHistory from "./ProjectHistory";
 import { HiOutlineSparkles } from "react-icons/hi";
@@ -18,7 +20,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 
 import { AppDispatch, RootState } from "@/redux/store";
 import UserInputPopOver from "./userInputPopOver";
@@ -34,17 +35,31 @@ import {
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
-import { GenAiChat, GenAiRequest, TaskApiModel } from "@/models/genAiModel/GenAiModel";
+import {
+  GenAiChat,
+  GenAiRequest,
+  TaskApiModel,
+} from "@/models/genAiModel/GenAiModel";
 import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
 import WebhookEventsListener from "@/components/webBook/WebBook";
 import VoiceRecognition from "./VoiceRecognition";
+import { useParams } from "react-router-dom";
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
-
 
 const GuidancePanel: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { list: projects } = useSelector((state: RootState) => state.projects);
 
+  const { id } = useParams();
+  const suggestions = projects.find((d) => d.id == id)?.analysed_data
+    .style_suggestions;
+  const randomSuggestions = suggestions
+    ? [...suggestions].sort(() => Math.random() - 0.5).slice(0, 3)
+    : [];
+  const [suggestedPrompt, setSuggestedPrompt] = useState<any[] | null>(
+    randomSuggestions
+  );
 
   const [isModel, setIsModel] = React.useState(false);
   const [showGuide, setShowGuide] = useState(false);
@@ -58,7 +73,9 @@ const GuidancePanel: React.FC = () => {
   const [isTask, setIsTask] = React.useState<boolean>(false);
   // Use separate state variables for each popover
 
-  const { requests, inspirationNames , isSubmitGenAiFailed} = useSelector((state: RootState) => state.genAi);
+  const { requests, inspirationNames, isSubmitGenAiFailed } = useSelector(
+    (state: RootState) => state.genAi
+  );
   const { isGenLoading } = useSelector((state: RootState) => state.workspace);
   const getIsAddInspirations = useSelector(getIsAddInspiration);
   // update the model open and closing
@@ -75,7 +92,7 @@ const GuidancePanel: React.FC = () => {
   useEffect(() => {
     if (isSubmitGenAiFailed) {
       toast.error("Failed to submit GenAI request. Please try again.");
-    dispatch(resetIsGenAiSumitFailed(false))
+      dispatch(resetIsGenAiSumitFailed(false));
       dispatch(updateIsGenLoading(false));
       dispatch(setIsGenerated(false));
     }
@@ -103,30 +120,37 @@ const GuidancePanel: React.FC = () => {
 
   const handleDelete = (data: string) => {
     if (data === "user-prompt") {
-
       dispatch(addPrompt(""));
     } else if (data === "inspiration-image") {
-
       dispatch(resetInspirationImage());
     }
   };
 
-
   const handleGenerateAiImage = async () => {
-
     dispatch(updateIsGenLoading(true));
     // Logic to generate AI image
     try {
-      const resultAction = await dispatch(submitGenAiRequest(requests as GenAiRequest));
+      const resultAction = await dispatch(
+        submitGenAiRequest(requests as GenAiRequest)
+      );
       console.log("Result action:", resultAction);
       if (resultAction.type === "genAi/submitRequest/fulfilled") {
-        const response = resultAction.payload as { data: { message: string; task_id: string } };
+        const response = resultAction.payload as {
+          data: { message: string; task_id: string };
+        };
         console.log("Response:--->", response);
-        if (response && response.data && response.data.message === "Image generation task started.") {
-          console.log("AI image generation started successfully:", response.data);
+        if (
+          response &&
+          response.data &&
+          response.data.message === "Image generation task started."
+        ) {
+          console.log(
+            "AI image generation started successfully:",
+            response.data
+          );
           // isApiCall.current = true; // Reset the flag for future API calls
           setTaskId(response.data.task_id); // Store the task ID
-           dispatch(updateTaskId(response.data.task_id)); // Update the task ID in the state
+          dispatch(updateTaskId(response.data.task_id)); // Update the task ID in the state
           setIsTask(true);
         }
       }
@@ -142,13 +166,13 @@ const GuidancePanel: React.FC = () => {
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
   const { list: jobList } = useSelector((state: RootState) => state.jobs);
-  const { list: ProjectList } = useSelector((state: RootState) => state.projects);
+  const { list: ProjectList } = useSelector(
+    (state: RootState) => state.projects
+  );
   const handleResetStartApiCall = async (data: TaskApiModel) => {
     setTaskId("");
     setIsTask(false);
     console.log("Reset start API call with data:", data);
-
-  
 
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
@@ -157,10 +181,18 @@ const GuidancePanel: React.FC = () => {
       // Fix for user_id - convert to number if string, and handle null profile
       user_id: profile?.id,
       job_id: jobList[0]?.id || 0,
-      master_image_path: requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : "",
-      palette_image_path: requests.paletteUrl && requests.paletteUrl[0] ? requests.paletteUrl[0] : "",
-      reference_img: requests.referenceImageUrl && requests.referenceImageUrl[0] ? requests.referenceImageUrl[0] : "",
-      user_input_text: requests.prompt && requests.prompt[0] ? requests.prompt[0] : "",
+      master_image_path:
+        requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : "",
+      palette_image_path:
+        requests.paletteUrl && requests.paletteUrl[0]
+          ? requests.paletteUrl[0]
+          : "",
+      reference_img:
+        requests.referenceImageUrl && requests.referenceImageUrl[0]
+          ? requests.referenceImageUrl[0]
+          : "",
+      user_input_text:
+        requests.prompt && requests.prompt[0] ? requests.prompt[0] : "",
       output_image: data.outputImage,
       is_completed: true,
       is_show: true,
@@ -169,22 +201,22 @@ const GuidancePanel: React.FC = () => {
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
       // Fix openai_metadata type issue - convert null to undefined
-      openai_metadata: data.openai_metadata ? JSON.stringify(data.openai_metadata) : undefined,
-    } as GenAiChat
+      openai_metadata: data.openai_metadata
+        ? JSON.stringify(data.openai_metadata)
+        : undefined,
+    } as GenAiChat;
 
     dispatch(setCurrentGenAiImage(genChat));
     console.log("GenAI chat data to be inserted:", genChat);
     try {
       const result = await dispatch(insertGenAiChatData(genChat));
       console.log("GenAI chat data inserted successfully");
-      if (result.meta.requestStatus === 'fulfilled') {
+      if (result.meta.requestStatus === "fulfilled") {
         console.log("GenAI chat data inserted successfully:", result.payload);
-        dispatch(resetRequest())
+        dispatch(resetRequest());
         dispatch(updateIsGenLoading(false));
 
-        dispatch(setIsGenerated(true))
-
-
+        dispatch(setIsGenerated(true));
       }
     } catch (error) {
       toast.error("Error in reset start API call: " + (error as Error).message);
@@ -195,24 +227,50 @@ const GuidancePanel: React.FC = () => {
     // isApiCall.current = true;
     // dispatch(resetChatMarking())
     // resetStartApiCall(data); // Reset the parent component's state
-  }
+  };
   /// fail task Api
   // Handle API call failure
   const handleResetFaiApiCall = (errorMessage: string) => {
-   
     toast.error("Task failed: " + errorMessage);
     setTaskId(""); // Reset task ID on error
     setIsTask(false); // Reset task status
+  };
 
-  }
+  const handleRandomPromptSelection = (prompt: string) => {
+    if (prompt) {
+      dispatch(addPrompt(prompt));
+    }
+  };
   return (
     <>
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
-      <div className="p-4 bg-white rounded-sm">
+      <div className="bg-white rounded-sm">
+        <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl border border-white/30 flex flex-col gap-3">
+          {suggestedPrompt !== null &&
+            suggestedPrompt.map((suggestion: any, idx: number) => (
+              <div
+                key={idx}
+                className="bg-white/10 rounded-xl p-3 border  border-black/10"
+              >
+                <h3 className="text-base font-semibold text-gray-900 mb-1">
+                  {suggestion.title}
+                </h3>
+                <p className="text-sm text-gray-800 leading-snug mb-2">
+                  {suggestion.prompt}
+                </p>
+                <button
+                  onClick={() => handleRandomPromptSelection(suggestion.prompt)}
+                  className="px-3 py-1 bg-black text-white text-xs rounded-md hover:bg-gray-900 transition"
+                >
+                  Apply
+                </button>
+              </div>
+            ))}
+        </div>
+
         <div className="flex items-center">
           <h2 className="text-lg font-semibold ">AI Guidance</h2>
-
 
           <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -233,7 +291,7 @@ const GuidancePanel: React.FC = () => {
             <VoiceRecognition />
           </TooltipProvider>
 
-           {/* provide mic icon  */}
+          {/* provide mic icon  */}
         </div>
 
         <textarea
@@ -293,26 +351,21 @@ const GuidancePanel: React.FC = () => {
               </Tooltip>
             </TooltipProvider>
 
-
             <AddInspiration
               isOpen={isModel}
               onClose={handleCloseModel}
               onSubmit={handleSubmit}
             />
             <button
-              className="text-sm border  border border-gray-300 flex align-middle gap-1"
-              onClick={handleAddInspirational}>
+              className="text-sm border border-gray-300 flex align-middle gap-1"
+              onClick={handleAddInspirational}
+            >
               {" "}
               <CiImageOn className="text-lg" /> Add Inspiration
             </button>
-
-
           </div>
-            
+
           <div className="flex items-center gap-2">
-
-
-
             {/* <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -330,17 +383,31 @@ const GuidancePanel: React.FC = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider> */}
-
-
             <button
-              className={`px-4 py-2 ${isTask ? 'bg-gray-400' : 'bg-blue-600'} text-white rounded`}
+              onClick={() => {
+                if (suggestedPrompt !== null) {
+                  setSuggestedPrompt(null);
+                } else {
+                  setSuggestedPrompt(randomSuggestions);
+                }
+              }}
+            >
+              {suggestedPrompt !== null ? (
+                <TbBulb size={15} />
+              ) : (
+                <TbBulbFilled size={15} />
+              )}
+            </button>
+            <button
+              className={`px-4 py-1 ${
+                isTask ? "bg-gray-400" : "bg-blue-600"
+              } text-white rounded`}
               onClick={handleGenerateAiImage}
               disabled={isTask || isGenLoading}
             >
-              {isGenLoading ? 'Processing...' : 'Visualize'}
+              {isGenLoading ? "Processing..." : "Visualize"}
             </button>
           </div>
-         
         </div>
         {/* <div className="flex items-center gap-2">
           <GenAiImages/>
@@ -348,18 +415,16 @@ const GuidancePanel: React.FC = () => {
       </div>
 
       {/* Only render Call_task_id when there's an active task */}
-      {taskId && taskId !== "" &&
-        isTask &&
-        (
-          <Call_task_id
-            taskId={taskId}
-            resetChatTask={handleResetStartApiCall}
-            resetChatTaskFail={handleResetFaiApiCall}
-          />
-        )}
+      {taskId && taskId !== "" && isTask && (
+        <Call_task_id
+          taskId={taskId}
+          resetChatTask={handleResetStartApiCall}
+          resetChatTaskFail={handleResetFaiApiCall}
+        />
+      )}
 
-        {/* <WebhookEventsListener /> */}
-        <WebhookEventsListener />
+      {/* <WebhookEventsListener /> */}
+      <WebhookEventsListener />
     </>
   );
 };
