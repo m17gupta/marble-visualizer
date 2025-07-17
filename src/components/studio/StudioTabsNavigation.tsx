@@ -9,7 +9,7 @@ import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
 import SegmentHome from "./segment/SegmentHome";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface StudioTabsNavigationProps {
   activeTab: string;
@@ -44,12 +44,22 @@ export function StudioTabsNavigation({
 // onIntensityChange
 StudioTabsNavigationProps) {
   const [designhubactivetab, setDesignHubActiveTab] = useState("segment");
+
+  const {activeTab: tabControlActiveTab} = useSelector((state: RootState) => state.tabControl);
   const handleChangeTab = (value: string) => {
     console.log("Tab changed to:", value);
     setDesignHubActiveTab(value);
   };
 
-  // const { list: jobs } = useSelector((state: RootState) => state.jobs);
+
+  // update te active tab
+
+  useEffect(() => {
+    if(tabControlActiveTab) {
+    handleChangeTab(tabControlActiveTab);
+  }
+  }, [tabControlActiveTab]);
+  //  const { list: jobs } = useSelector((state: RootState) => state.jobs);
   // console.log("SegmentHome jobs", jobs);
 
   return (

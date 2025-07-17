@@ -40,6 +40,7 @@ import {
   renderPolygonMaskToBlob,
   renderPolygonMaskToFile,
 } from "@/components/canvasUtil/GenerateMask";
+import CreateMaterArray from "@/components/studio/segment/CreateMaterArray";
 
 //type DrawingTool = "select" | "polygon";
 
@@ -298,6 +299,8 @@ export function StudioPage() {
           onClose={handleCloseMask}
         />
       )}
+
+      <CreateMaterArray/>
     </div>
   );
 }

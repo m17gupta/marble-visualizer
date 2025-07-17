@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
 import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSegmentSlice";
+import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
 
 const AllSegments = () => {
   const { segments } = useSelector(
@@ -27,6 +28,10 @@ const AllSegments = () => {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
       console.log("Selected Segment:", selectedSeg);
+
+      //segMent tye in tab slice
+      dispatch(setSegmentType(selectedSeg.name));
+       dispatch(setActiveTab("segment"));
     }
   };
 

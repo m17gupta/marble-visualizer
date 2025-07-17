@@ -86,3 +86,24 @@ export interface JobModel{
     updated_at?: string;
     segments?: JobSegmentModel;
 }
+
+export  interface GroupSegmentModel {
+[key: string]: JobSegmentModel;
+}
+export interface MasterGroupModel {
+ groupName: string;
+ segments: GroupSegmentModel[];
+}
+
+export interface MasterModel{
+  id:number,
+  name:string,
+  color: string,
+  color_code: string,
+  short_code: string,
+   overAllSwatch: Swatch[];
+  allSegments: MasterGroupModel[]  //all walls
+}
+
+
+

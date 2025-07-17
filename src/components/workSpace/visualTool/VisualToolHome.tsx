@@ -36,6 +36,10 @@ type Props={
 }
 const VisualToolHome = ({resetProjectCreated}: Props) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { profile } = useSelector((state: RootState) => state.userProfile);
+  const { list: projectList } = useSelector((state: RootState) => state.projects);
+  const { workspace_type } = useSelector((state: RootState) => state.workspace);
+
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
@@ -53,9 +57,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
     isAllViewsUploaded,
   } = useViewFiles();
 
-  const { profile } = useSelector((state: RootState) => state.userProfile);
 
-  const { workspace_type } = useSelector((state: RootState) => state.workspace);
   const createdProjectId = useRef<number | null>(null);
 
   console.log("Workspace Type:", workspace_type);
@@ -84,7 +86,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
   const handleCreateProject = async () => {
     setIsCreatingProject(true);
     const projectData: ProjectModel = {
-      name: projectName ?? "New Project",
+      name: projectName ?? `New Project-${projectList.length + 1}`,
       description: "This is a demo project",
       status: "active",
       created_at: new Date().toISOString(),

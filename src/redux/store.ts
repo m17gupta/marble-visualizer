@@ -19,8 +19,9 @@ import StyleSlice from './slices/materialSlices/StyleSlice'; // Assuming styles 
 import inspirationalColorSlice from './slices/InspirationalSlice/inspirationalColorSlice'; // New inspirational color slice
 import inspirationalImageSlice from './slices/InspirationalSlice/inspirationalImageSlice'; // New inspirational image slice
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
-import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; // New subscription plan slice  
-import workspaceSlice from './slices/visualizerSlice/workspaceSlice'; // New workspace slice  
+import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; // 
+import workspaceSlice from './slices/visualizerSlice/workspaceSlice'; 
+import  tabControlSlice from './slices/TabControlSlice'; // New tab control slice
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -43,6 +44,8 @@ export const store = configureStore({
     inspirationalImages: inspirationalImageSlice, // New inspirational image slice
     subscriptionPlan: subscriptionPlanSlice,
     workspace: workspaceSlice, // New workspace slice
+
+    tabControl:tabControlSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

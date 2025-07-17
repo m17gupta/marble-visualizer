@@ -668,7 +668,7 @@ export function CanvasEditor({
       // const plainPoints = tempPoints.current.map(p=>({x:p.x,y:p.y}))
       // allSegments.current[segmentId] = plainPoints;
       const plainPoints = tempPoints.current.map((p) => ({ x: p.x, y: p.y }));
-      allSegments.current[segmentId] = plainPoints;
+      allSegments.current[segmentId] = plainPoints.map(p => new fabric.Point(p.x, p.y));
       dispatch(updateSegmentDrawn({ ...allSegments.current }));
       // dispatch(updateSegmentDrawn(updatedSegments));
     }
