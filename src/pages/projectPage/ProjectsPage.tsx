@@ -426,7 +426,16 @@ export function ProjectsPage() {
                                 setIsOpen(newState);
                               }}
                             >
-                              <CiSquareInfo size={18} />
+                              <div className="group/info relative">
+                                <CiSquareInfo size={18} />
+                                <span
+                                  className="pointer-events-none absolute bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap
+               rounded-md bg-white px-3 py-1 text-xs text-black shadow-xl opacity-0 group-hover/info:opacity-100
+               transition-opacity duration-200 z-50"
+                                >
+                                  Click to view analysed data.
+                                </span>
+                              </div>
                             </Button>
                           ) : (
                             <Button
@@ -439,7 +448,16 @@ export function ProjectsPage() {
                               onClick={() => handleHouseAnalysis(project)}
                             >
                               {" "}
-                              <BsIncognito size={15} />
+                              <div className="group/info relative">
+                                <BsIncognito size={15} />
+                                <span
+                                  className="pointer-events-none absolute bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap
+               rounded-md bg-white px-3 py-1 text-xs text-black shadow-xl opacity-0 group-hover/info:opacity-100
+               transition-opacity duration-200 z-50"
+                                >
+                                  Click to Analyse the Project
+                                </span>
+                              </div>
                             </Button>
                           )}
                         </div>
