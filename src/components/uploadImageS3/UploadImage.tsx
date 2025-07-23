@@ -138,7 +138,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
         (progress) => setUploadProgress(progress)
       );
 
-      console.log('Upload result:', result.fileUrl);
+      
       setUploadResult(result);
       
       if (result.success && result.fileUrl && result.key) {

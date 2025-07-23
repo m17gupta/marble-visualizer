@@ -23,10 +23,10 @@ const GenAiImages = () => {
                 // Sort the genAiImages based on created date, latest first
                 const sortedImages = [...genAiImages].sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
                 setAllGenAiImages(sortedImages);
-                console.log('GenAiImages - sorted images set:', sortedImages);
+               
             } else {
                 setAllGenAiImages([]);
-                console.log('GenAiImages - no images available, setting empty array');
+                
             }
             setComponentError(null);
         } catch (err) {
@@ -37,7 +37,7 @@ const GenAiImages = () => {
     
 
     const handleImageSelect = (imageSet: GenAiChat) => {
-           console.log('Image selected:', imageSet);
+           
            
               dispatch(setIsGenerated(true))
               dispatch(setCurrentTabContent("compare"))

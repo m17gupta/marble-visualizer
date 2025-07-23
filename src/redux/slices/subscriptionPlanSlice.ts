@@ -39,10 +39,10 @@ export const fetchAllSubscriptionPlans = createAsyncThunk(
   "subscriptionPlan/fetchAllPlans",
   async (filters: SubscriptionPlanFilters | undefined, { rejectWithValue }) => {
     try {
-      console.log("Redux fetchAllSubscriptionPlans - Starting with filters:", filters);
+      
       
       const plans = await SubscriptionPlanService.getAllPlans(filters);
-      console.log("Redux fetchAllSubscriptionPlans - Fetched plans:", plans.length);
+      
       
       return plans;
     } catch (error) {

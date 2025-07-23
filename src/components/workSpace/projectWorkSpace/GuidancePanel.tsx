@@ -53,7 +53,7 @@ const GuidancePanel: React.FC = () => {
 
   const { id } = useParams();
   const suggestions = projects.find((d) => d.id == id)?.analysed_data
-    .style_suggestions;
+    ?.style_suggestions;
   const randomSuggestions = suggestions
     ? [...suggestions].sort(() => Math.random() - 0.5).slice(0, 3)
     : [];
@@ -112,7 +112,7 @@ const GuidancePanel: React.FC = () => {
 
   // add prompt
   const handleAddPrompt = (value: string) => {
-    console.log("Prompt value:", value);
+   
     if (!value || value.trim() !== "") {
       dispatch(addPrompt(value));
     }
@@ -133,7 +133,7 @@ const GuidancePanel: React.FC = () => {
       const resultAction = await dispatch(
         submitGenAiRequest(requests as GenAiRequest)
       );
-      console.log("Result action:", resultAction);
+      
       if (resultAction.type === "genAi/submitRequest/fulfilled") {
         const response = resultAction.payload as {
           data: { message: string; task_id: string };
@@ -172,8 +172,7 @@ const GuidancePanel: React.FC = () => {
   const handleResetStartApiCall = async (data: TaskApiModel) => {
     setTaskId("");
     setIsTask(false);
-    console.log("Reset start API call with data:", data);
-
+   
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
 
@@ -207,12 +206,12 @@ const GuidancePanel: React.FC = () => {
     } as GenAiChat;
 
     dispatch(setCurrentGenAiImage(genChat));
-    console.log("GenAI chat data to be inserted:", genChat);
+    
     try {
       const result = await dispatch(insertGenAiChatData(genChat));
-      console.log("GenAI chat data inserted successfully");
+      
       if (result.meta.requestStatus === "fulfilled") {
-        console.log("GenAI chat data inserted successfully:", result.payload);
+        
         dispatch(resetRequest());
         dispatch(updateIsGenLoading(false));
 

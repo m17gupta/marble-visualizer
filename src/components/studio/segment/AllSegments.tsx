@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
 import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSegmentSlice";
 import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
+import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
 
 const AllSegments = () => {
   const { segments } = useSelector(
@@ -27,7 +28,7 @@ const AllSegments = () => {
     if (selectedSeg) {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
-      console.log("Selected Segment:", selectedSeg);
+      dispatch(addSelectedMasterArray(selectedSeg.name));
 
       //segMent tye in tab slice
       dispatch(setSegmentType(selectedSeg.name));
@@ -36,7 +37,7 @@ const AllSegments = () => {
   };
 
   const handleMouseEnter = (segmentId: number, color: string) => {
-    console.log("Segment hovered:", segmentId, color);
+   
   };
 
   const handleMouseLeave = (segmentId: number) => {};

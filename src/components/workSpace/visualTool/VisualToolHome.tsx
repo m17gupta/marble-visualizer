@@ -60,7 +60,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
 
   const createdProjectId = useRef<number | null>(null);
 
-  console.log("Workspace Type:", workspace_type);
+ 
   // Upload a file for a given view
   const handleFileUpload = (file: File, view: ViewType) => {
     setViewFile(view, file);
@@ -163,9 +163,9 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
         setIsCreatingJob(true);
         CreateJob(jobData, {
           resetForm: () => {
-            console.log("Form reset");
+          ;
             setIsCreatingJob(false);
-            console.log("Project ID cleared");
+            
             // Navigate to the project page or workspace after job creation
             if (workspace_type === "renovate") {
               if (isAuthenticated) {

@@ -51,15 +51,10 @@ export const validateS3Config = (): { isValid: boolean; errors: string[] } => {
 // Debug function to check configuration
 export const debugS3Config = (): void => {
   console.group('🔧 S3 Configuration Debug');
-  console.log('Region:', s3Config.region);
-  console.log('Bucket:', s3Config.bucket);
-  console.log('Has Access Key:', !!s3Config.accessKeyId);
-  console.log('Has Secret Key:', !!s3Config.secretAccessKey);
-  console.log('CloudFront URL:', s3Config.cloudFrontUrl || 'Not set');
-  console.log('API Base URL:', s3Config.apiBaseUrl);
+ 
   
   const validation = validateS3Config();
-  console.log('Is Valid:', validation.isValid);
+  
   if (!validation.isValid) {
     console.error('Configuration Errors:', validation.errors);
   }

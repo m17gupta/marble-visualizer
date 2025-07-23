@@ -42,7 +42,7 @@ export const checkConnection = async (): Promise<{
       .select("count", { count: "exact", head: true })
       .limit(1);
 
-    console.log("Connection test data:", data);
+    
     const latency = Date.now() - startTime;
 
     if (error) {
@@ -68,10 +68,10 @@ export const checkConnection = async (): Promise<{
 
 // Auth state change listener
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log("Auth state changed:", event);
+  
 
   if (event === "SIGNED_IN" && session?.user) {
-    console.log("User signed in:", session.user.email);
+   
     // Store the event to help with debugging
     localStorage.setItem(
       "auth_last_event",
@@ -82,7 +82,7 @@ supabase.auth.onAuthStateChange((event, session) => {
       })
     );
   } else if (event === "SIGNED_OUT") {
-    console.log("User signed out");
+   
     // Store the event to help with debugging
     localStorage.setItem(
       "auth_last_event",
@@ -110,7 +110,7 @@ supabase.auth.onAuthStateChange((event, session) => {
       window.location.href = "/login";
     }
   } else if (event === "TOKEN_REFRESHED") {
-    console.log("Token refreshed");
+    
     localStorage.setItem(
       "auth_last_event",
       JSON.stringify({

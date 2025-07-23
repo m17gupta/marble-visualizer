@@ -22,12 +22,13 @@ import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
 import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; // 
 import workspaceSlice from './slices/visualizerSlice/workspaceSlice'; 
 import  tabControlSlice from './slices/TabControlSlice'; // New tab control slice
+import masterArraySlice from './slices/MasterArraySlice'; // New master array slice
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     userProfile: userProfileSlice,
     projects: projectSlice,
-    studio: studioSlice,
+    masterArray:masterArraySlice,
     segments: segmentsSlice,
     canvas: canvasSlice, // New canvas slice
     materials: materialsSlice,
@@ -44,8 +45,8 @@ export const store = configureStore({
     inspirationalImages: inspirationalImageSlice, // New inspirational image slice
     subscriptionPlan: subscriptionPlanSlice,
     workspace: workspaceSlice, // New workspace slice
-
-    tabControl:tabControlSlice
+    studio: studioSlice,
+    tabControl: tabControlSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

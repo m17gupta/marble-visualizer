@@ -40,8 +40,8 @@ const MaterialData = () => {
 
     const getFetchWallMMaterials = async () => {
         try {
-            const materialsWall = await dispatch(fetchWallMaterials({ page: 0, limit: 30 })).unwrap();
-            console.log('Fetched wall materials:', materialsWall);
+           await dispatch(fetchWallMaterials({ page: 0, limit: 30 })).unwrap();
+           
         } catch (error) {
             toast.error('Error fetching wall materials');
 
@@ -50,19 +50,19 @@ const MaterialData = () => {
     }
     const getFetchDoorMaterials = async () => {
         try {
-            const materialsDoor = await dispatch(fetchDoorMaterials({ page: 0, limit: 30 })).unwrap();
-            console.log('Fetched door materials:', materialsDoor);
+             await dispatch(fetchDoorMaterials({ page: 0, limit: 30 })).unwrap();
+            
         } catch (error) {
             toast.error('Error fetching door materials');
 
-            console.error('Error fetching door materials:', error);
+          
         }
     }
 
     const getFetchRoofMaterials = async () => {
         try {
-            const materialsRoof = await dispatch(fetchRoofMaterials({ page: 0, limit: 30 })).unwrap();
-            console.log('Fetched roof materials:', materialsRoof);
+          await dispatch(fetchRoofMaterials({ page: 0, limit: 30 })).unwrap();
+            
         } catch (error) {
             toast.error('Error fetching roof materials');
 
@@ -72,8 +72,8 @@ const MaterialData = () => {
 
     const getFetchWindowMaterials = async () => {
         try {
-            const materialsWindow = await dispatch(fetchWindowMaterials({ page: 0, limit: 30 })).unwrap();
-            console.log('Fetched window materials:', materialsWindow);
+            await dispatch(fetchWindowMaterials({ page: 0, limit: 30 })).unwrap();
+            
         } catch (error) {
             toast.error('Error fetching window materials');
 
@@ -84,9 +84,9 @@ const MaterialData = () => {
 
     const getFetchTrimMaterials = async () => {
         try {
-            const materialsTrim = await dispatch(fetchTrimMaterials({ page: 0, limit: 30 })).unwrap();
-            console.log('Fetched trim materials:', materialsTrim);
-        } catch (error:unknown) {
+           await dispatch(fetchTrimMaterials({ page: 0, limit: 30 })).unwrap();
+          
+        } catch (error) {
             toast.error('Error fetching trim materials');
 
         }

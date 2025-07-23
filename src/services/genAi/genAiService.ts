@@ -29,7 +29,7 @@ class GenAiService {
           },
         }
       );
-      console.log("GenAI request submitted:", response);
+   
       if (response.status !== 200) {
         throw new Error(
           response.data.message || "Failed to submit GenAI request"
@@ -57,7 +57,7 @@ class GenAiService {
         }
       );
 
-      console.log("GenAI task ID retrieved:", response);
+   
       if (response.status !== 200) {
         throw new Error(
           response.data.message || "Failed to submit GenAI request"
@@ -81,7 +81,6 @@ class GenAiService {
       if (error) {
         throw new Error(error.message || "Failed to fetch GenAI chats");
       }
-      console.log("Fetched GenAI chats:", data);
       return data;
     } catch (error) {
       console.error("Error fetching GenAI chats:", error);

@@ -46,7 +46,7 @@ export class UserAPI {
         .single();
 
       if (error) {
-        console.log('Error fetching user profile:', error);
+        
         throw new AuthError({
           message: error.message,
           status: 404,

@@ -97,7 +97,6 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   const [editingSegmentId, setEditingSegmentId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
 
-  console.log(segments);
   // Get unique segment types for tabs
   const segmentTypes = useMemo(() => {
     return Array.from(

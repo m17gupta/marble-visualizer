@@ -43,12 +43,12 @@ export class AuthService {
       try {
         const existingProfile = await AuthAPI.getUserProfileBySessionId(profileData.session_id);
         if (existingProfile) {
-          console.log('User profile already exists for this session ID:', profileData.session_id);
+        
           return existingProfile;
         }
       } catch (error) {
         toast.error('Error checking for existing profile. Creating a new one.');
-        console.error('Error checking for existing profile:', error);
+        
        
       }
     }
@@ -105,7 +105,7 @@ export class AuthService {
     updates: UpdateAuthUserProfileRequest
   ): Promise<UserProfile> {
     // TODO: Implement updateUserProfile in AuthAPI
-    console.log('UpdateProfile called with:', { userId, updates });
+  
     throw new Error('Method not implemented');
   }
 

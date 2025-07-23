@@ -140,7 +140,6 @@ export function MainLayout() {
     </div>
   );
 
-  console.log("isStudioPage", isStudioPage);
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}

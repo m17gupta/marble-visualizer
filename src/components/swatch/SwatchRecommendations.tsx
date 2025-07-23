@@ -35,7 +35,7 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
         switch (title) {
           case 'Wall':
             filteredMaterials = wallMaterials;
-            console.log('Wall Materials:', filteredMaterials);
+          
             break;
           case 'Door':
             filteredMaterials = doorMaterials;

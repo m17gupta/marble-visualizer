@@ -39,7 +39,7 @@ export const getUserProfile = createAsyncThunk(
   "userProfile/getUserProfile",
   async (userId: string, { rejectWithValue }) => {
     try {
-      console.log("Redux getUserProfile - Starting with userId:", userId);
+   
       
       if (!userId || userId.trim() === '') {
         return rejectWithValue("User ID is required");
@@ -49,7 +49,7 @@ export const getUserProfile = createAsyncThunk(
    
       // If no profile found, try to get user info and create a profile
       if (!profile) {
-        console.log("Redux getUserProfile - No profile found, attempting to create one");
+        
         
         try {
           // Get current user from auth to get email
@@ -61,7 +61,7 @@ export const getUserProfile = createAsyncThunk(
               currentUser.user.email, 
               currentUser.user.email?.split('@')[0]
             );
-            console.log("Redux getUserProfile - Created new profile:", profile);
+            
           }
         } catch (createError) {
           console.error("Redux getUserProfile - Failed to create profile:", createError);
@@ -147,7 +147,7 @@ export const getUserProfileBySessionId = createAsyncThunk(
   async (sessionId: string, { rejectWithValue }) => {
     try {
       const response = await AuthAPI.getUserProfileBySessionId(sessionId);
-      console.log("Fetched user profile by session ID: slice s", response);
+      
       if(response=== null ) {
         return "No user profile found for session ID";
       }

@@ -124,7 +124,7 @@ export const updateProjectAnalysis = createAsyncThunk(
     try {
       const data = await ProjectAPI.analyseandupdateproject(url);
       const response = await ProjectAPI.save_analysed_data(id, data);
-      console.log(response);
+      
       return response;
     } catch (error: unknown) {
       return rejectWithValue(

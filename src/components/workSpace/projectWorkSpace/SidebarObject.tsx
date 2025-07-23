@@ -39,13 +39,13 @@ const SidebarObject = () => {
         maskColor: "rgba(255, 149, 0, 0.4)",
       });
 
-      console.log("Generated Mask File:", response);
+      
 
       // If you want to get the blob URL for display/download
       if (response) {
         const blobUrl = URL.createObjectURL(response);
         setGeneratedMaskUrl(blobUrl);
-        console.log("Generated Mask Blob URL:", blobUrl);
+        
       }
     }
   }, [masks]);
