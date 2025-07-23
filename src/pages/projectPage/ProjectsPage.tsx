@@ -163,17 +163,16 @@ export function ProjectsPage() {
     if (!project.id) return;
 
     try {
-      console.log("Deleting project:", project.id);
+
       // Call the deleteProjectById method from ProjectsService
       const result = await dispatch(deleteProject(project.id));
-      console.log("Delete result:", result);
+
       if (deleteProject.fulfilled.match(result)) {
         toast.success("Project deleted successfully");
       } else {
         toast.error((result.payload as string) || "Failed to delete project");
       }
     } catch (error) {
-      console.error("Failed to delete project:", error);
       toast.error("Failed to delete project");
     }
   };
@@ -390,10 +389,10 @@ export function ProjectsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            // onClick={(e) => {
-                            //   e.stopPropagation();
-                            //   handleShare(project);
-                            // }}
+                          // onClick={(e) => {
+                          //   e.stopPropagation();
+                          //   handleShare(project);
+                          // }}
                           >
                             <Share2 className="h-4 w-4" />
                           </Button>
@@ -404,7 +403,7 @@ export function ProjectsPage() {
                             //   e.stopPropagation();
                             //   handleProjectClick(project.id);
                             // }}
-                            onClick={() => {}}
+                            onClick={() => { }}
                           >
                             <Edit3 className="h-4 w-4" />
                           </Button>

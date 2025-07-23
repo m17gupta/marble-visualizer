@@ -118,7 +118,7 @@ export const handleCanvasAutoPan = (
   const shouldPanRight = edgeDistances.isNearRightEdge && (vpt[4] + canvasWidth < zoomedWidth - canvasWidth / zoom);
   const shouldPanUp = edgeDistances.isNearTopEdge && vpt[5] < 0;
   const shouldPanDown = edgeDistances.isNearBottomEdge && (vpt[5] + canvasHeight < zoomedHeight - canvasHeight / zoom);
-  console.log('Edge Distances:', shouldPanLeft);
+ 
   // Handle left panning
   if (shouldPanLeft) {
     const panDistance = vpt[4] + panSpeed;

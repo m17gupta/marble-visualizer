@@ -248,12 +248,12 @@ const LandingHome = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const handleRoomClick = (roomId: string) => {
-    console.log('Room clicked:', roomId);
+   
     // Add your navigation logic here
   };
     
       const handleTopPickClick = (pickId: string) => {
-        console.log('Top pick clicked:', pickId);
+      
         // Add your navigation logic here
         switch (pickId) {
           case 'renovate':

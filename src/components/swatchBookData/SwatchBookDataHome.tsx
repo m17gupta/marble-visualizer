@@ -70,7 +70,7 @@ const SwatchBookDataHome = () => {
   useEffect(() => {
     // Only fetch data if user is authenticated and auth is initialized
     if (!isAuthenticated || !isInitialized) {
-      console.log('User not authenticated or auth not initialized, skipping data fetch')
+      
       return
     }
 

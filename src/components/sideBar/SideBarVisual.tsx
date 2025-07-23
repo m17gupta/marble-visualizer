@@ -109,8 +109,7 @@ const SideBarVisual = () => {
 
   const handleItemClick = (item: SidebarItem) => {
     if (item.isAction) {
-      // Handle action items (like "Add Organization")
-      console.log(`Action: ${item.label}`);
+      // Handle action items (like "Add Orga  console.log(`Action: ${item.label}`);
       return;
     }
     

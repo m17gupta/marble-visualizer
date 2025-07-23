@@ -166,7 +166,7 @@ export function CreateProjectDialog({ open,user_id, onOpenChange, onJobCreated }
   };
 
   const handleCreateJob=async(jobUrl:string, key:string )=>{
-      console.log('Job created with URL:', jobUrl, 'and key:', key);
+   
       if(!jobUrl || !key || !createdProjectId) {
         toast.error('Job creation failed. Please try again.');
         return;

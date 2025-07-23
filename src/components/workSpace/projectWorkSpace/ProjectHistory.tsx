@@ -16,7 +16,7 @@ const ProjectHistory = () => {
   const { genAiImages, isFetchingGenAiImages } = useSelector((state: RootState) => state.genAi);
   const dispatch = useDispatch();
   const handleGenAiImageClick = (image: GenAiChat) => {
-    console.log('GenAi image clicked:', image);
+ 
     dispatch(setCurrentGenAiImage(image));
 
     // add inspiration image to the state

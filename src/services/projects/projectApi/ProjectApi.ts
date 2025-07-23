@@ -63,7 +63,7 @@ export class ProjectAPI {
         .select("*")
         .eq("user_id", userId);
 
-      console.log("Response from supabase projects:", response);
+      
       if (response.error) {
         throw response.error;
       }
@@ -122,7 +122,7 @@ export class ProjectAPI {
     project: ProjectModel
   ): Promise<ProjectApiResponse> {
     try {
-      console.log("Creating project with data:", project);
+     
       const { data } = await supabase
         .from("projects")
         .insert(project)
@@ -154,7 +154,7 @@ export class ProjectAPI {
         console.error(`Failed to delete project ${projectId}:`, error);
         throw error;
       }
-      console.log(`Project with ID ${projectId} deleted successfully`, data);
+      
 
       // Check if any rows were deleted
       if (!data || data.length === 0) {
@@ -182,7 +182,7 @@ export class ProjectAPI {
   static async analyseandupdateproject(image_url: string): Promise<any> {
     try {
       const response = await axios.post(
-        `${this.baseUrl}projects/analyse-house`,
+        `https://nexus.dzinly.org/api/v1/ai/ai/analyse-house`,
         { image_url },
         {
           headers: {
@@ -192,7 +192,7 @@ export class ProjectAPI {
           },
         }
       );
-      console.log("Analysis Completed:", response);
+      
       if (response.status !== 200) {
         throw new Error(
           response.data.message || "Failed to submit GenAI request"

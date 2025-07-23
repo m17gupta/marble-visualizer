@@ -40,7 +40,7 @@ const VoiceRecognition: React.FC<VoiceRecognitionProps> = ({ onTranscript }) => 
   // Watch for transcript changes and dispatch immediately
   useEffect(() => {
     if (transcript && (listening || isListening)) {
-      console.log('Transcript:', transcript);
+      
       dispatch(addPrompt(transcript));
     }
   }, [transcript, listening, isListening, dispatch]);

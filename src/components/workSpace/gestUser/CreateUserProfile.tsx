@@ -33,7 +33,7 @@ const CreateUserProfile = () => {
 
   const getUserBaseOnSessionId = useCallback(async (sessionId:string) => {
     try {
-      console.log("Fetching user profile for session ID:", sessionId);
+     
       const response= await dispatch(getUserProfileBySessionId(sessionId)).unwrap();
       if(!response) {
         console.error("No user profile found for session ID:", sessionId);
@@ -58,11 +58,11 @@ const CreateUserProfile = () => {
         const sessionId = await generateSessionId();
         localStorage.setItem('session_id', sessionId);
         document.cookie = `session_id=${sessionId}; path=/; max-age=${30 * 24 * 60 * 60}`; // 30 days expiration
-        console.log("Session ID created:", sessionId);
+       
         handleCreateUserProfile(sessionId);
       } else {
         getUserBaseOnSessionId(getSessionId);
-        console.log("User is not authenticated but session ID exists", getSessionId);
+        
       }
     };
     

@@ -949,8 +949,7 @@ export function CanvasEditor({
   useEffect(() => {
     if (!deleteMaskId || !fabricCanvasRef.current) return;
 
-    console.log("deleteMaskId", deleteMaskId);
-    console.log("allSegments", allSegments.current);
+  
     const deletePolyId = `poly-${deleteMaskId}`;
     delete allSegments.current[deletePolyId];
     //delete the polygon from fabric canvas

@@ -285,7 +285,7 @@ export class AuthAPI {
   // get current user profile based on userId
    static async getUserProfileByUserId(userId: string): Promise<UserProfile | null> {
     try { 
-      console.log("getUserProfileByUserId - Input userId:", userId);
+      
       
       // First, check if user_profiles table exists and has data
       const response = await supabase
@@ -293,14 +293,14 @@ export class AuthAPI {
         .select("*")
         .eq("user_id", userId);
        
-      console.log("getUserProfileByUserId - Response: supabase", response);
+     
       
       if (response.error) {
         console.error("getUserProfileByUserId - Database error:", response.error);
         
         // If table doesn't exist, let's debug what tables are available
         if (response.error.message.includes('relation "public.user_profiles" does not exist')) {
-          console.log("user_profiles table doesn't exist, running debug...");
+          
           await this.debugDatabaseTables();
           
           // Try with profiles table instead
@@ -309,7 +309,7 @@ export class AuthAPI {
             .select("*")
             .eq("id", userId);
             
-          console.log("profiles table response:", profilesResponse);
+         
           
           if (profilesResponse.error) {
             throw new AuthError({
@@ -320,7 +320,7 @@ export class AuthAPI {
           }
           
           if (!profilesResponse.data || profilesResponse.data.length === 0) {
-            console.log("getUserProfileByUserId - No profile found in profiles table for userId:", userId);
+            
             return null;
           }
           
@@ -347,15 +347,13 @@ export class AuthAPI {
 
       // If no rows found, return null
       if (!response.data || response.data.length === 0) {
-        console.log("getUserProfileByUserId - No profile found for userId:", userId);
+      
         
-        // Let's also debug what's in the table
-        console.log("Checking what profiles exist in user_profiles table...");
         const allProfilesResponse = await supabase
           .from("user_profiles")
           .select("user_id, full_name")
           .limit(5);
-        console.log("Sample profiles in table:", allProfilesResponse);
+       
         
         return null;
       }
@@ -365,12 +363,10 @@ export class AuthAPI {
         console.warn(`getUserProfileByUserId - Multiple profiles found for userId: ${userId}, returning first one`);
       }
 
-      console.log("getUserProfileByUserId - Found profile:", response.data[0]);
       return response.data[0] as UserProfile;
 
     }
     catch (error) {
-      console.error("getUserProfileByUserId - Catch error:", error);
       if (error instanceof AuthError) {
         throw error;
       }
@@ -412,9 +408,7 @@ export class AuthAPI {
       updated_at: new Date().toISOString(),
     };
 
-    console.log("createUserProfile - Insert data:", insertData);
-
-    // Try user_profiles first, then fallback to profiles
+      // Try user_profiles first, then fallback to profiles
     const response = await supabase
       .from("user_profiles")
       .insert(insertData)
@@ -442,7 +436,7 @@ export class AuthAPI {
       });
     }
 
-    console.log("createUserProfile - Success:", response.data);
+   
     
     // Map profiles table data to UserProfile interface
     const profileResult = response.data;
@@ -822,12 +816,12 @@ export class AuthAPI {
       const existingProfile = await this.getUserProfileByUserId(userId);
       
       if (existingProfile) {
-        console.log("Profile already exists:", existingProfile);
+     
         return existingProfile;
       }
       
       // If no profile exists, create one
-      console.log("No profile found, creating new profile for user:", userId);
+
       
       const profileData = {
         user_id: userId,

@@ -84,7 +84,7 @@ export class JobService {
         .select('*')
         .eq('project_id', projectId)
       
-        console.log('jobData', data);
+        
       if (error) {
         console.error('Error fetching jobs by project ID:', error);
         return {
