@@ -7,6 +7,7 @@ import {
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_APP_BACKEND_URL;
+// "https://nexus.dzinly.org/api/v1/ai/ai/generate-image"
 class GenAiService {
   // Base URL for the GenAI API
   private baseUrl = BASE_URL;
@@ -19,7 +20,7 @@ class GenAiService {
   async submitRequest(request: GenAiRequest): Promise<GenAiResponse> {
     try {
       const response = await axios.post(
-        `${this.baseUrl}ai/ai/generate-image`,
+        `${this.baseUrl}/generate-image`,
         request,
         {
           headers: {
