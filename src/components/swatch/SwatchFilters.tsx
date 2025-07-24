@@ -33,6 +33,7 @@ import { BrandModel } from "@/models/swatchBook/brand/BrandModel";
 import { StyleModel } from "@/models/swatchBook/styleModel/StyleModel";
 import { fetchMaterials } from "@/redux/slices/materialSlices/materialsSlice";
 import { filters } from "node_modules/fabric/dist/src/filters";
+import { SwatchBookSearch } from "../swatchBook";
 
 interface SwatchFiltersProps {
   compact?: boolean;
@@ -237,8 +238,10 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
   return (
     <Card className={cn("items-center", compact && "border-0 shadow-none")}>
       <CardHeader className="pb-4">
+        <CardTitle className="text-lg">Filters</CardTitle>
         <div className="flex items-center gap-2">
-          <CardTitle className="text-lg">Filters</CardTitle>
+          <SwatchBookSearch />
+
           {getActiveFiltersCount() > 0 && (
             <div className="flex items-center space-x-2">
               <Badge variant="secondary" className="text-xs">

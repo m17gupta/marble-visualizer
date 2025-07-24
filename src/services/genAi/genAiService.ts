@@ -20,7 +20,7 @@ class GenAiService {
   async submitRequest(request: GenAiRequest): Promise<GenAiResponse> {
     try {
       const response = await axios.post(
-        `${this.baseUrl}/generate-image`,
+        `${this.baseUrl}ai/ai/generate-image`,
         request,
         {
           headers: {
@@ -30,7 +30,7 @@ class GenAiService {
           },
         }
       );
-   
+
       if (response.status !== 200) {
         throw new Error(
           response.data.message || "Failed to submit GenAI request"
@@ -58,7 +58,6 @@ class GenAiService {
         }
       );
 
-   
       if (response.status !== 200) {
         throw new Error(
           response.data.message || "Failed to submit GenAI request"

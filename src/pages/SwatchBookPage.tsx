@@ -78,25 +78,21 @@ export function SwatchBookPage() {
       <SwatchBookHeader />
 
       {/* Search and Controls */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <SwatchBookSearch />
-        <SwatchBookControls
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          layoutMode={layoutMode}
-          setLayoutMode={setLayoutMode}
-          sortBy={sortBy}
-          handleSort={handleSort}
-          showFavoritesOnly={showFavoritesOnly}
-          setShowFavoritesOnly={setShowFavoritesOnly}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
-          getActiveFiltersCount={getActiveFiltersCount}
-        />
-      </div>
-
+      <SwatchBookControls
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        layoutMode={layoutMode}
+        setLayoutMode={setLayoutMode}
+        sortBy={sortBy}
+        handleSort={handleSort}
+        showFavoritesOnly={showFavoritesOnly}
+        setShowFavoritesOnly={setShowFavoritesOnly}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        getActiveFiltersCount={getActiveFiltersCount}
+      />
       {/* Active Filters */}
-      {/* <SwatchBookActiveFilters getActiveFiltersCount={getActiveFiltersCount} /> */}
+      <SwatchBookActiveFilters getActiveFiltersCount={getActiveFiltersCount} />
 
       {/* Main Content */}
       <SwatchBookMainContent
