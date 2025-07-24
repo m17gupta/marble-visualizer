@@ -52,11 +52,8 @@ const studioSlice = createSlice({
       setCurrentImageUrl: (state, action: PayloadAction<string | null>) => {
           state.currentImageUrl = action.payload;
       },
-       clearCurrentImage: (state) => {
-      if (state.currentImageUrl) {
-        URL.revokeObjectURL(state.currentImageUrl);
-      }
-      state.currentImageUrl = null;
+       clearCurrentImage: () => {
+      return initialState
     },
   },
   

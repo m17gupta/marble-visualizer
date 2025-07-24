@@ -11,7 +11,7 @@ export interface GenAiRequest {
   prompt: string[];
   imageQuality: ImageQuality;
   annotationValue: AnnotationValue;
-  externalUserId: "dzinly-prod";
+   externalUserId: "dzinly-prod";
   jobId: string;
 }
 export interface GenAiModel {

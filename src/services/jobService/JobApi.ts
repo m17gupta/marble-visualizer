@@ -1,6 +1,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { JobModel } from "@/models/jobModel/JobModel";
+import axios from "axios";
 
 export interface CreateJobRequest {
   title: string;
@@ -25,9 +26,36 @@ export interface JobApiResponse<T> {
   success: boolean;
 }
 
-export class JobService {
+export class JobApi {
   private static readonly TABLE_NAME = 'job';
 
+
+  // get master Data based of annotation points
+  static async getMasterData(segmentationInt:number[], segName:string)  {
+     const value={
+        segmentationInt:segmentationInt ,
+          className: segName,
+          Perfeet: 20
+      }
+    try {
+      await axios.post(`https://api.dzinly.org/manual-annot-result`, value).then((response) => {
+        if (response.status === 200) {
+          return {
+            data: response.data as JobModel[],
+            error: null,
+            success: true,
+          };
+        }
+      });
+    } catch (error) {
+      console.error('Error in getMasterData:', error);
+      return {
+        data: null,
+        error: (error as Error).message || 'Failed to fetch master data',
+        success: false,
+      };
+    }
+  }
   /**
    * Create a new job
    */
@@ -185,6 +213,8 @@ export class JobService {
     }
   }
 
+
+  
   /**
    * Delete a job
    */

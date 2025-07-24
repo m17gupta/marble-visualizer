@@ -7,6 +7,7 @@ import { RootState } from "@/redux/store";
 const ImageCard: React.FC = () => {
  
    const {list} = useSelector((state: RootState) => state.jobs);
+     const { currentImageUrl } = useSelector((state: RootState) => state.studio);
 
   const handleFullscreen = () => {  
     console.log("Fullscreen clicked");
@@ -52,7 +53,7 @@ const ImageCard: React.FC = () => {
 
       {/* Image section */}
       <img
-        src={list[0]?.full_image || "https://via.placeholder.com/800x600"} // Replace with actual image URL
+        src={currentImageUrl|| "https://via.placeholder.com/800x600"} // Replace with actual image URL
         alt={list[0]?.title || "Image Preview"}
         className="rounded-md object-contain "
       />

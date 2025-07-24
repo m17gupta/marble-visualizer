@@ -68,7 +68,7 @@ const CompareGenAiHome: React.FC = () => {
         back to Inspiration
       </button>
       {/* View mode tabs */}
-      {showCompareView && currentGenAiImage &&
+      {/* {showCompareView && currentGenAiImage &&
       currentGenAiImage.master_image_path && currentGenAiImage.output_image && (
         <div className="flex justify-center mb-4 absolute top-8 left-96 right-0 z-40">
           <div className="inline-flex gap-2 rounded-lg overflow-hidden">
@@ -86,7 +86,7 @@ const CompareGenAiHome: React.FC = () => {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Conditional rendering of compare view or image gallery */}
       {showCompareView && currentGenAiImage &&

@@ -17,9 +17,9 @@ const handleError = (
 import { ProjectModel } from "@/models/projectModel/ProjectModel";
 import { supabase } from "@/lib/supabase";
 import { JobModel } from "@/models";
-import { JobService } from "@/services/jobService/JobApi";
 import { toast } from "sonner";
 import axios from "axios";
+import { JobService } from "@/services/jobService/JobService";
 
 // Project API Response Types
 export interface ProjectApiResponse {

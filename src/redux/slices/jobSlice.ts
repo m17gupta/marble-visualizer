@@ -1,5 +1,8 @@
 import { JobModel } from '@/models/jobModel/JobModel';
-import { JobService, UpdateJobRequest } from '@/services/jobService/JobApi';
+import { UpdateJobRequest } from '@/services/jobService/JobApi';
+import { JobService } from '@/services/jobService/JobService';
+
+
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 interface JobState {

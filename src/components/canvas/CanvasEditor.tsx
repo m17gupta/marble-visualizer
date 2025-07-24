@@ -31,8 +31,9 @@ import {
   handleCanvasAutoPan,
   cleanupAutoPan,
 } from "@/components/canvasUtil/canvasAutoPan";
-import { ZoomCanvas, ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
+import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
+import CanvasAdddNewSegmentHome from "./canvasAddNewSegment/CanvasAdddNewSegmentHome";
 
 export type DrawingTool = "select" | "polygon";
 
@@ -59,7 +60,7 @@ export function CanvasEditor({
   const dispatch = useDispatch<AppDispatch>();
   const { activeSegment, segmentDrawn, canvasHistory, historyIndex } =
     useSelector((state: RootState) => state.segments);
-  console.log(segmentDrawn);
+ 
   const {
     deleteMaskId,
     zoomMode,
@@ -79,7 +80,7 @@ export function CanvasEditor({
   const currentMousePositionRef = useRef<{ x: number; y: number } | null>(null);
 
   const activeTool = useRef<DrawingTool>("polygon");
-  const updatedZoomMode = useRef<string>("");
+  const updatedZoomMode = useRef<string>("mouse");
 
   // Store original viewport transform
   const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
@@ -94,18 +95,18 @@ export function CanvasEditor({
 
   const { canvasType } = useSelector((state: RootState) => state.canvas);
 
-  const convertPointsToNumbers = (points: fabric.Point[]): number[] => {
-    return points.flatMap((point) => [point.x, point.y]);
-  };
+ 
 
+
+  const {selectedMasterArray}= useSelector((state: RootState) => state.masterArray);
   // const [hoveredSegmentId] = useState<string | null>(null);
 
   // update Zoom Mode
-  useEffect(() => {
-    if (zoomMode) {
-      updatedZoomMode.current = zoomMode;
-    }
-  }, [zoomMode]);
+  // useEffect(() => {
+  //   if (zoomMode) {
+  //     updatedZoomMode.current = zoomMode;
+  //   }
+  // }, [zoomMode]);
 
   // update the canavasActiveTool
   useEffect(() => {
@@ -329,10 +330,13 @@ export function CanvasEditor({
 
     const canvas = fabricCanvasRef.current;
 
-    // Remove existing background image
+    // Remove existing background image (ensure full cleanup)
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
       backgroundImageRef.current = null;
+      // Deselect any active object and force render
+      canvas.discardActiveObject();
+      canvas.renderAll();
     }
 
     // Helper function to create and add fabric image to canvas
@@ -540,11 +544,12 @@ export function CanvasEditor({
       drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
 
       // Apply the zoom based on mode preference
-      if (updatedZoomMode.current === "center" && !wouldGoTooSmall) {
-        ZoomCanvas(fabricCanvasRef, zoom);
-        event.e.stopPropagation();
-        event.e.preventDefault();
-      } else if (updatedZoomMode.current === "mouse" && !wouldGoTooSmall) {
+      // if (updatedZoomMode.current === "center" && !wouldGoTooSmall) {
+      //   ZoomCanvas(fabricCanvasRef, zoom);
+      //   event.e.stopPropagation();
+      //   event.e.preventDefault();
+      // } else
+         if (updatedZoomMode.current === "mouse" && !wouldGoTooSmall) {
         ZoomCanvasMouse(fabricCanvasRef, zoom, mousePosition);
         event.e.stopPropagation();
         event.e.preventDefault();
@@ -623,6 +628,7 @@ export function CanvasEditor({
       (p) => new fabric.Point(p.x, p.y)
     );
 
+    const polygonNumberArray = polygonPoints.flatMap(point => [point.x, point.y]);
     // Base stroke width value
     const baseStrokeWidth = 2;
     // Adjust stroke width inversely proportional to zoom
@@ -654,22 +660,19 @@ export function CanvasEditor({
     canvas.renderAll();
 
     const updatedSegments = { ...allSegments.current };
-    const numberArray = convertPointsToNumbers(tempPoints.current);
+    //const numberArray = convertPointsToNumbers(tempPoints.current);
     // Dispatch updated segments to Redux store
-    if (canvasType === "mask" && numberArray.length > 0) {
+    if (canvasType === "mask" && polygonNumberArray.length > 0) {
       const data: CanvasModel = {
         id: allSegmentsCount.current,
         name: `area-${allSegmentsCount.current}`,
-        annotations: numberArray,
+        annotations: polygonNumberArray,
       };
 
       dispatch(updateMasks(data));
     } else if (canvasType === "draw") {
-      // const plainPoints = tempPoints.current.map(p=>({x:p.x,y:p.y}))
-      // allSegments.current[segmentId] = plainPoints;
-      const plainPoints = tempPoints.current.map((p) => ({ x: p.x, y: p.y }));
-      allSegments.current[segmentId] = plainPoints.map(p => new fabric.Point(p.x, p.y));
-      dispatch(updateSegmentDrawn({ ...allSegments.current }));
+
+      dispatch(updateSegmentDrawn(polygonNumberArray));
       // dispatch(updateSegmentDrawn(updatedSegments));
     }
 
@@ -721,12 +724,12 @@ export function CanvasEditor({
         ) {
           const convertedSegments: { [key: string]: fabric.Point[] } = {};
 
-          Object.entries(segmentDrawn).forEach(([key, points]) => {
-            // Convert each point to a fabric.Point
-            convertedSegments[key] = points.map(
-              (p) => new fabric.Point(p.x, p.y)
-            );
-          });
+          // Object.entries(segmentDrawn).forEach(([key, points]) => {
+          //   // Convert each point to a fabric.Point
+          //   convertedSegments[key] = points.map(
+          //     (p) => new fabric.Point(p.x, p.y)
+          //   );
+          // });
 
           allSegments.current = convertedSegments;
         }
@@ -968,6 +971,7 @@ export function CanvasEditor({
   }, [deleteMaskId, fabricCanvasRef, dispatch]);
 
   return (
+    <>
     <TooltipProvider>
       <div className={cn("flex flex-col space-y-4", className)}>
         {/* Toolbar */}
@@ -988,7 +992,8 @@ export function CanvasEditor({
         >
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="relative bg-gray-50">
+
+              <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
                 <canvas
                   ref={canvasRef}
                   className="border-0 block"
@@ -1057,5 +1062,10 @@ export function CanvasEditor({
         /> */}
       </div>
     </TooltipProvider>
+
+
+  
+    </>
   );
 }
+
