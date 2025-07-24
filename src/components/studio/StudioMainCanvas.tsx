@@ -86,44 +86,10 @@ export function StudioMainCanvas({
           transition={{ duration: 0.5, delay: 0.2 }}
           className="p-6 pt-0 pe-0 ps-0"
         >
-          {/* Canvas Header */}
-          {/* <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Design Canvas
-              </h1>
-              <p className="text-muted-foreground">
-                {canEdit
-                  ? "Upload an image and use drawing tools to create segments"
-                  : "View-only access to this project"}
-              </p>
-            </div>
-            {currentCanvasImage && canEdit && (
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onClearImage}
-                  disabled={isJobRunning}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Clear
-                </Button>
-              </div>
-            )}
-          </div> */}
-
           {/* Canvas Content */}
           <div className="relative flex gap-4">
             {/* Main Canvas Section */}
             <div className="flex-1">
-              {/* Debug info */}
-              {/* {process.env.NODE_ENV === 'development' && (
-                <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
-                  Debug: currentCanvasImage = {currentCanvasImage || 'null'}
-                </div>
-              )} */}
-
               <AnimatePresence mode="wait">
               {canvasImage ? (
                 <motion.div
@@ -240,17 +206,10 @@ export function StudioMainCanvas({
               )}
             </AnimatePresence>
             </div>
-
-            {/* Green Section - Additional Workspace */}
-           
           </div>
-
-          {/* Generated GenAi Images - Always show regardless of canvas state */}
-          <div className="mt-6">
+          <div className="px-4">
             <GenAiImages />
           </div>
-
-          {/* Hidden file input */}
           {canEdit && (
             <input
               ref={fileInputRef}

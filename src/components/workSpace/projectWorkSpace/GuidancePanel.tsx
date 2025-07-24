@@ -244,8 +244,8 @@ const GuidancePanel: React.FC = () => {
     <>
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
-      <div className="bg-white rounded-sm">
-        <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl border border-white/30 flex flex-col gap-3">
+      <div className="bg-white rounded-sm p-4">
+        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3">
           {suggestedPrompt !== null &&
             suggestedPrompt.map((suggestion: any, idx: number) => (
               <div

@@ -23,21 +23,8 @@ const Breadcrumb = () => {
   return (
     <nav className="absolute top-4 left-[calc(25%+2rem)] z-20 bg-background/90 backdrop-blur-sm border border-border rounded-lg px-3 py-2 shadow-lg">
       <ol className="flex items-center space-x-1 text-sm">
-        {/* <li>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 px-2 text-muted-foreground hover:text-foreground"
-            onClick={() => navigate('/app/projects')}
-          >
-            <Home className="h-3 w-3 mr-1" />
-            Projects
-          </Button>
-        </li> */}
-
         {breadcrumbs && breadcrumbs.length > 0 && (
           <>
-            {/* <ChevronRight className="h-3 w-3 text-muted-foreground" /> */}
             {breadcrumbs.map((crumb, index) => (
               <React.Fragment key={index}>
                 <li>

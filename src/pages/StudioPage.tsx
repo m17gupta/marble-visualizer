@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
@@ -41,8 +41,11 @@ import {
   renderPolygonMaskToFile,
 } from "@/components/canvasUtil/GenerateMask";
 import CreateMaterArray from "@/components/studio/segment/CreateMaterArray";
+import dzinlylogo from "../../public/assets/image/dzinly-logo.svg";
+import { Button } from '@/components/ui/button'
 
 //type DrawingTool = "select" | "polygon";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -207,8 +210,21 @@ export function StudioPage() {
 
   return (
     <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
-      <Breadcrumb />
+      {/* <Breadcrumb /> */}
       <div className="w-1/4 border-r overflow-hidden">
+
+      <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
+        <div className="text-start">
+         <Link to="/"> <img className="w-44 text-center" src={dzinlylogo} alt="dzinly logo"></img></Link>
+        </div>
+        <Link to="/">
+         <Button className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent ">
+          <IoMdArrowRoundBack className="w-4 h-4" />
+             <span>Back</span> 
+         </Button>
+        </Link>
+      </div>            
+
         <Tabs
           value={activeTabFromStore ?? "inspiration"}
           onValueChange={handleChangeTab}
@@ -218,7 +234,6 @@ export function StudioPage() {
             <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
               Inspiration
             </TabsTrigger>
-
             <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
               Design Hub
             </TabsTrigger>

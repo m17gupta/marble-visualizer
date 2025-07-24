@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-
+import dzinlylogo from "../../../public/assets/image/dzinly-logo.svg";
 const Navigation = () => {
   return (
     <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -8,7 +8,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Dzinly
+           <img className='w-44 h-16' src={dzinlylogo} alt='dzinly logo'></img>
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-8">
