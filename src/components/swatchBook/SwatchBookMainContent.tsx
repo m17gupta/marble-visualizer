@@ -1,23 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SwatchCard } from '@/components/swatch/SwatchCard';
-import { SwatchFilters } from '@/components/swatch/SwatchFilters';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Heart, 
-  Search, 
-  ChevronLeft, 
-  ChevronRight 
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { AppDispatch, RootState } from '@/redux/store';
-import {  setFilters, setPage } from '@/redux/slices/swatchSlice';
-import { addMaterialPagination, fetchMaterials } from '@/redux/slices/materialSlices/materialsSlice';
-import { toast } from 'sonner';
+import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { SwatchCard } from "@/components/swatch/SwatchCard";
+import { SwatchFilters } from "@/components/swatch/SwatchFilters";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Heart, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { AppDispatch, RootState } from "@/redux/store";
+import { setFilters, setPage } from "@/redux/slices/swatchSlice";
+import {
+  addMaterialPagination,
+  fetchMaterials,
+} from "@/redux/slices/materialSlices/materialsSlice";
+import { toast } from "sonner";
 
-type ViewMode = 'grid' | 'list';
-type LayoutMode = 'compact' | 'detailed';
+type ViewMode = "grid" | "list";
+type LayoutMode = "compact" | "detailed";
 
 interface SwatchBookMainContentProps {
   viewMode: ViewMode;
@@ -34,56 +32,62 @@ export function SwatchBookMainContent({
   showFilters,
   showFavoritesOnly,
   setShowFavoritesOnly,
-  getActiveFiltersCount
+  getActiveFiltersCount,
 }: SwatchBookMainContentProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { 
-    materials, 
-    isLoading, 
-    error, 
-    pagination 
-  } = useSelector((state: RootState) => state.materials);
+  const { materials, isLoading, error, pagination } = useSelector(
+    (state: RootState) => state.materials
+  );
 
-//   const filteredSwatches = showFavoritesOnly 
-//     ? swatches.filter(swatch => favorites.includes(swatch._id))
-//     : swatches;
+  //   const filteredSwatches = showFavoritesOnly
+  //     ? swatches.filter(swatch => favorites.includes(swatch._id))
+  //     : swatches;
 
   const handlePageChange = async (page: number) => {
-
     dispatch(addMaterialPagination(page));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
-    try{
-    const response = await dispatch(fetchMaterials({ page: page , limit:100}));
-    if (fetchMaterials.fulfilled.match(response)) {
+    try {
+      const response = await dispatch(
+        fetchMaterials({ page: page, limit: 100 })
+      );
+      if (fetchMaterials.fulfilled.match(response)) {
         // Successfully fetched materials, no additional action needed
-        toast.success('Swatches fetched successfully');
-    }
-    }catch (error) {
-      console.error('Error fetching swatches:', error);
+        toast.success("Swatches fetched successfully");
+      }
+    } catch (error) {
+      console.error("Error fetching swatches:", error);
       dispatch(setFilters({}));
       dispatch(setPage(1));
-    }   
+    }
   };
 
   const LoadingSkeleton = () => (
-    <div className={cn(
-      'grid gap-4',
-      layoutMode === 'compact' 
-        ? (viewMode === 'grid' 
-          ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8' 
-          : 'grid-cols-1')
-        : (viewMode === 'grid' 
-          ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-          : 'grid-cols-1')
-    )}>
-      {[...Array(layoutMode === 'compact' ? 24 : 12)].map((_, i) => (
+    <div
+      className={cn(
+        "grid gap-4",
+        layoutMode === "compact"
+          ? viewMode === "grid"
+            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
+            : "grid-cols-1"
+          : viewMode === "grid"
+          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          : "grid-cols-1"
+      )}
+    >
+      {[...Array(layoutMode === "compact" ? 24 : 12)].map((_, i) => (
         <div key={i} className="space-y-3">
-          <Skeleton className={cn(
-            layoutMode === 'compact' 
-              ? (viewMode === 'grid' ? 'aspect-square h-24' : 'h-16')
-              : (viewMode === 'grid' ? 'aspect-square' : 'h-24')
-          )} />
+          <Skeleton
+            className={cn(
+              layoutMode === "compact"
+                ? viewMode === "grid"
+                  ? "aspect-square h-24"
+                  : "h-16"
+                : viewMode === "grid"
+                ? "aspect-square"
+                : "h-24"
+            )}
+          />
           <div className="space-y-2">
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-3 w-1/2" />
@@ -94,16 +98,16 @@ export function SwatchBookMainContent({
   );
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col gap-6">
       {/* Filters Sidebar */}
       <AnimatePresence>
         {showFilters && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
+            animate={{ width: "100%", opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="hidden lg:block flex-shrink-0"
+            className="hidden lg:block w-full"
           >
             <SwatchFilters />
           </motion.aside>
@@ -123,12 +127,12 @@ export function SwatchBookMainContent({
         <div className="flex items-center justify-between mb-6">
           <div className="text-sm text-muted-foreground">
             {isLoading ? (
-              'Loading swatches...'
+              "Loading swatches..."
             ) : (
               <>
                 Showing {materials.length} of {pagination.total} materials
-                {showFavoritesOnly && ' (favorites only)'}
-                {layoutMode === 'compact' && ' • Compact view'}
+                {showFavoritesOnly && " (favorites only)"}
+                {layoutMode === "compact" && " • Compact view"}
               </>
             )}
           </div>
@@ -138,9 +142,7 @@ export function SwatchBookMainContent({
         {error && (
           <div className="text-center py-12">
             <p className="text-destructive mb-4">{error}</p>
-            <Button >
-              Try Again
-            </Button>
+            <Button>Try Again</Button>
           </div>
         )}
 
@@ -158,13 +160,17 @@ export function SwatchBookMainContent({
               {showFavoritesOnly ? (
                 <>
                   <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-semibold mb-2 text-foreground">No favorites yet</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">
+                    No favorites yet
+                  </h3>
                   <p>Start exploring swatches and add your favorites!</p>
                 </>
               ) : (
                 <>
                   <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-semibold mb-2 text-foreground">No swatches found</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">
+                    No swatches found
+                  </h3>
                   <p>Try adjusting your search or filters</p>
                 </>
               )}
@@ -190,16 +196,18 @@ export function SwatchBookMainContent({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <div className={cn(
-              'grid gap-4',
-              layoutMode === 'compact' 
-                ? (viewMode === 'grid' 
-                  ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8' 
-                  : 'grid-cols-1')
-                : (viewMode === 'grid' 
-                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                  : 'grid-cols-1')
-            )}>
+            <div
+              className={cn(
+                "grid gap-4",
+                layoutMode === "compact"
+                  ? viewMode === "grid"
+                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"
+                    : "grid-cols-1"
+                  : viewMode === "grid"
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "grid-cols-1"
+              )}
+            >
               <AnimatePresence>
                 {materials.map((material, index) => (
                   <motion.div
@@ -209,9 +217,9 @@ export function SwatchBookMainContent({
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3, delay: index * 0.02 }}
                   >
-                    <SwatchCard 
-                      swatch={material} 
-                      variant={viewMode} 
+                    <SwatchCard
+                      swatch={material}
+                      variant={viewMode}
                       layoutMode={layoutMode}
                     />
                   </motion.div>
@@ -233,14 +241,16 @@ export function SwatchBookMainContent({
               <ChevronLeft className="h-4 w-4" />
               Previous
             </Button>
-            
+
             <div className="flex items-center space-x-1">
               {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
                 const pageNum = i + 1;
                 return (
                   <Button
                     key={pageNum}
-                    variant={pagination.page === pageNum ? 'default' : 'outline'}
+                    variant={
+                      pagination.page === pageNum ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => handlePageChange(pageNum)}
                     className="w-8 h-8 p-0"
@@ -253,7 +263,11 @@ export function SwatchBookMainContent({
                 <>
                   <span className="text-muted-foreground">...</span>
                   <Button
-                    variant={pagination.page === pagination.totalPages ? 'default' : 'outline'}
+                    variant={
+                      pagination.page === pagination.totalPages
+                        ? "default"
+                        : "outline"
+                    }
                     size="sm"
                     onClick={() => handlePageChange(pagination.totalPages)}
                     className="w-8 h-8 p-0"
@@ -263,7 +277,7 @@ export function SwatchBookMainContent({
                 </>
               )}
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"

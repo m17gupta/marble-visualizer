@@ -1,13 +1,15 @@
-import { useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { RootState } from '@/redux/store';
+import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { RootState } from "@/redux/store";
 
 interface SwatchBookActiveFiltersProps {
   getActiveFiltersCount: () => number;
 }
 
-export function SwatchBookActiveFilters({ getActiveFiltersCount }: SwatchBookActiveFiltersProps) {
+export function SwatchBookActiveFilters({
+  getActiveFiltersCount,
+}: SwatchBookActiveFiltersProps) {
   const { filters } = useSelector((state: RootState) => state.swatches);
 
   if (getActiveFiltersCount() === 0) {
@@ -17,9 +19,9 @@ export function SwatchBookActiveFilters({ getActiveFiltersCount }: SwatchBookAct
   return (
     <motion.div
       initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
+      animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="flex flex-wrap gap-2"
+      className="flex gap-2"
     >
       {filters.search && (
         <Badge variant="secondary" className="bg-muted text-muted-foreground">
@@ -51,13 +53,21 @@ export function SwatchBookActiveFilters({ getActiveFiltersCount }: SwatchBookAct
           Type: {filters.coating_type}
         </Badge>
       )}
-      {filters.tags.map(tag => (
-        <Badge key={tag} variant="secondary" className="bg-muted text-muted-foreground">
+      {filters.tags.map((tag) => (
+        <Badge
+          key={tag}
+          variant="secondary"
+          className="bg-muted text-muted-foreground"
+        >
           Tag: {tag}
         </Badge>
       ))}
-      {filters.segment_types.map(type => (
-        <Badge key={type} variant="secondary" className="bg-muted text-muted-foreground">
+      {filters.segment_types.map((type) => (
+        <Badge
+          key={type}
+          variant="secondary"
+          className="bg-muted text-muted-foreground"
+        >
           Area: {type}
         </Badge>
       ))}

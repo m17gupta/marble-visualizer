@@ -1,21 +1,38 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/redux/store';
-import { setFilters, FilterSwatchModel, updateFilterCategory, updateFilterStyle, updateFilterBrand, resetSwatchFilter } from '@/redux/slices/swatchSlice';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import {
+  setFilters,
+  FilterSwatchModel,
+  updateFilterCategory,
+  updateFilterStyle,
+  updateFilterBrand,
+  resetSwatchFilter,
+} from "@/redux/slices/swatchSlice";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { BrandModel } from '@/models/swatchBook/brand/BrandModel';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { BrandModel } from "@/models/swatchBook/brand/BrandModel";
 
-import { StyleModel } from '@/models/swatchBook/styleModel/StyleModel';
-import { fetchMaterials } from '@/redux/slices/materialSlices/materialsSlice';
-import { filters } from 'node_modules/fabric/dist/src/filters';
+import { StyleModel } from "@/models/swatchBook/styleModel/StyleModel";
+import { fetchMaterials } from "@/redux/slices/materialSlices/materialsSlice";
+import { filters } from "node_modules/fabric/dist/src/filters";
 
 interface SwatchFiltersProps {
   compact?: boolean;
@@ -29,8 +46,7 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
   const { brands } = useSelector((state: RootState) => state.brands);
   const { styles } = useSelector((state: RootState) => state.styles);
 
- 
-  const mockFinishes = ['Matte', 'Satin', 'Semi-Gloss', 'Gloss'];
+  const mockFinishes = ["Matte", "Satin", "Semi-Gloss", "Gloss"];
 
   const [allBrands, setAllBrands] = useState<BrandModel[]>([]);
   const [allStyles, setAllStyles] = useState<StyleModel[]>([]);
@@ -47,73 +63,76 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
   });
 
   const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
-  const handleFilterChange = (key: string, value: FilterSwatchModel ) => {
-    dispatch(setFilters({
-      [key]: value?.id.toString()
-    }));
-    if (key === 'category' && value && typeof value === 'object') {
-
-      dispatch(updateFilterCategory(value as FilterSwatchModel))
+  const handleFilterChange = (key: string, value: FilterSwatchModel) => {
+    dispatch(
+      setFilters({
+        [key]: value?.id.toString(),
+      })
+    );
+    if (key === "category" && value && typeof value === "object") {
+      dispatch(updateFilterCategory(value as FilterSwatchModel));
 
       //search material based on category
-      dispatch(fetchMaterials({
-        material_category_id: value.id,
-        limit: 100
-      }))
-    } else if (key === 'brand' && value && typeof value === 'object') {
+      dispatch(
+        fetchMaterials({
+          material_category_id: value.id,
+          limit: 100,
+        })
+      );
+    } else if (key === "brand" && value && typeof value === "object") {
+      dispatch(updateFilterBrand(value as FilterSwatchModel));
 
+      dispatch(
+        fetchMaterials({
+          material_category_id: Number(filters.category),
+          material_brand_id: value.id,
+          limit: 100,
+        })
+      );
+    } else if (key === "style" && value && typeof value === "object") {
+      dispatch(updateFilterStyle(value as FilterSwatchModel));
 
-      dispatch(updateFilterBrand(value as FilterSwatchModel))
-
-       dispatch(fetchMaterials({
-        material_category_id: Number(filters.category),
-        material_brand_id: value.id,
-        limit: 100
-      }))
-    }
-    
-    else if(key === 'style' && value && typeof value === 'object') {
-      dispatch(updateFilterStyle(value as FilterSwatchModel))
-
-        dispatch(fetchMaterials({
-        material_category_id: Number(filters.category),
-        material_brand_id: Number(filters.brand),
-        material_brand_style_id: value.id,
-        limit: 100
-      }));
+      dispatch(
+        fetchMaterials({
+          material_category_id: Number(filters.category),
+          material_brand_id: Number(filters.brand),
+          material_brand_style_id: value.id,
+          limit: 100,
+        })
+      );
     }
   };
 
   const handleCategoryChange = (value: string) => {
- 
-      const category = categories.find(c => c.id.toString() === value);
-      if (category) {
-        handleFilterChange('category', { id: category.id, title: category.title });
-      
+    const category = categories.find((c) => c.id.toString() === value);
+    if (category) {
+      handleFilterChange("category", {
+        id: category.id,
+        title: category.title,
+      });
     }
   };
 
   const handleBrandChange = (value: string) => {
-   
-      const brand = brands.find(b => b.id.toString() === value);
-      if (brand) {
-        handleFilterChange('brand', { id: brand.id, title: brand.title });
-      
+    const brand = brands.find((b) => b.id.toString() === value);
+    if (brand) {
+      handleFilterChange("brand", { id: brand.id, title: brand.title });
     }
   };
-
 
   // based on caregory selecct brand
   useEffect(() => {
     if (filters.category) {
-      const filteredBrands = brands.filter(b => b.material_category_id.toString() === filters.category);
-      
+      const filteredBrands = brands.filter(
+        (b) => b.material_category_id.toString() === filters.category
+      );
+
       setAllBrands(filteredBrands);
     } else {
       setAllBrands(brands);
@@ -122,33 +141,29 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
 
   // based on brand update the style
   useEffect(() => {
-    if( filters.brand && styles.length > 0) {
-      const filteredStyles = styles.filter(s => s.material_brand_id.toString() === filters.brand);
-     
+    if (filters.brand && styles.length > 0) {
+      const filteredStyles = styles.filter(
+        (s) => s.material_brand_id.toString() === filters.brand
+      );
+
       setAllStyles(filteredStyles);
     } else {
-      setAllStyles(styles); 
+      setAllStyles(styles);
     }
-  },[ filters.brand, styles]);
-
+  }, [filters.brand, styles]);
 
   const handleStyleChange = (value: string) => {
-    const style = allStyles.find(s => s.id.toString() === value);
+    const style = allStyles.find((s) => s.id.toString() === value);
     if (style) {
-      handleFilterChange('style', { id: style.id, title: style.title });
+      handleFilterChange("style", { id: style.id, title: style.title });
     }
   };
 
-
-
-  const handleCoatingChange = (value: string) => {
-    
-  };
+  const handleCoatingChange = (value: string) => {};
 
   const handleTagToggle = (tag: string) => {
     // const tagModel: FilterSwatchModel = { id: mockTags.indexOf(tag), title: tag };
     // const isSelected = filters.tags.some(t => t.title === tag);
-    
     // if (isSelected) {
     //   const newTags = filters.tags.filter(t => t.title !== tag);
     //   handleFilterChange('tags', newTags);
@@ -160,7 +175,6 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
   const handleSegmentToggle = (segment: string) => {
     // const segmentModel: FilterSwatchModel = { id: mockSegmentTypes.indexOf(segment), title: segment };
     // const isSelected = filters.segment_types.some(s => s.title === segment);
-    
     // if (isSelected) {
     //   const newSegments = filters.segment_types.filter(s => s.title !== segment);
     //   handleFilterChange('segment_types', newSegments);
@@ -187,13 +201,13 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
     return count;
   };
 
-  const FilterSection = ({ 
-    title, 
-    section, 
-    children 
-  }: { 
-    title: string; 
-    section: keyof typeof expandedSections; 
+  const FilterSection = ({
+    title,
+    section,
+    children,
+  }: {
+    title: string;
+    section: keyof typeof expandedSections;
     children: React.ReactNode;
   }) => (
     <Collapsible
@@ -203,13 +217,15 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between p-0 h-auto font-medium text-left"
+          className="w-full justify-between p-2 h-auto font-medium text-left"
         >
           {title}
-          <ChevronDown className={cn(
-            "h-4 w-4 transition-transform",
-            expandedSections[section] && "rotate-180"
-          )} />
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 transition-transform",
+              expandedSections[section] && "rotate-180"
+            )}
+          />
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-3 pt-3">
@@ -218,11 +234,10 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
     </Collapsible>
   );
 
- 
   return (
-    <Card className={cn("w-full", compact && "border-0 shadow-none")}>
+    <Card className={cn("items-center", compact && "border-0 shadow-none")}>
       <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <CardTitle className="text-lg">Filters</CardTitle>
           {getActiveFiltersCount() > 0 && (
             <div className="flex items-center space-x-2">
@@ -241,12 +256,12 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
           )}
         </div>
       </CardHeader>
-      
-      <CardContent className="space-y-6">
+
+      <CardContent className="grid grid-cols-3 gap-10 items-center">
         {/* Category */}
         <FilterSection title="Category" section="category">
           <Select
-            value={filters.category??""}
+            value={filters.category ?? ""}
             onValueChange={handleCategoryChange}
           >
             <SelectTrigger>
@@ -254,66 +269,55 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {categories && categories.length > 0 && (
+              {categories &&
+                categories.length > 0 &&
                 categories.map((category) => (
-                  <SelectItem
-                    key={category.id}
-                    value={category.id.toString()}
-                  >
+                  <SelectItem key={category.id} value={category.id.toString()}>
                     {category.title}
                   </SelectItem>
-                ))
-              ) }
+                ))}
             </SelectContent>
           </Select>
         </FilterSection>
 
-        <Separator />
+        {/* <Separator /> */}
 
         {/* Brand */}
         <FilterSection title="Brand" section="brand">
-          <Select
-            value={filters.brand??""}
-            onValueChange={handleBrandChange}
-          >
+          <Select value={filters.brand ?? ""} onValueChange={handleBrandChange}>
             <SelectTrigger>
               <SelectValue placeholder="All Brands" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Brands</SelectItem>
-              {allBrands && 
-              allBrands.length > 0 &&
-              allBrands.map((brand) => (
-                <SelectItem
-                 key={brand.id}
-                  value={brand.id.toString()}>
-                  {brand.title}
-                </SelectItem>
-              ))}
+              {allBrands &&
+                allBrands.length > 0 &&
+                allBrands.map((brand) => (
+                  <SelectItem key={brand.id} value={brand.id.toString()}>
+                    {brand.title}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </FilterSection>
 
-        <Separator />
+        {/* <Separator /> */}
 
         {/* Style */}
         <FilterSection title="Style" section="style">
-          <Select
-           value={filters.style ?? ""}
-             onValueChange={handleStyleChange}
-          >
+          <Select value={filters.style ?? ""} onValueChange={handleStyleChange}>
             <SelectTrigger>
               <SelectValue placeholder="All Styles" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Styles</SelectItem>
-              {allStyles && allStyles.length > 0 && (
+              {allStyles &&
+                allStyles.length > 0 &&
                 allStyles.map((style) => (
                   <SelectItem key={style.id} value={style.id.toString()}>
                     {style.title}
                   </SelectItem>
-                ))
-              )}
+                ))}
             </SelectContent>
           </Select>
         </FilterSection>
@@ -401,7 +405,7 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
           </div>
         </FilterSection> */}
 
-        <Separator />
+        {/* <Separator /> */}
 
         {/* Tags */}
         {/* <FilterSection title="Tags" section="tags">

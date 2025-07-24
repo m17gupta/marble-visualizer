@@ -1,37 +1,42 @@
-import {  useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { AppDispatch, RootState } from '@/redux/store';
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { AppDispatch, RootState } from "@/redux/store";
 
-import { SwatchBookHeader } from '@/components/swatchBook/SwatchBookHeader';
-import { SwatchBookSearch } from '@/components/swatchBook/SwatchBookSearch';
-import { SwatchBookControls } from '@/components/swatchBook/SwatchBookControls';
-import { SwatchBookActiveFilters } from '@/components/swatchBook/SwatchBookActiveFilters';
-import { SwatchBookMainContent } from '@/components/swatchBook/SwatchBookMainContent';
-import { setPage } from '@/redux/slices/swatchSlice';
+import { SwatchBookHeader } from "@/components/swatchBook/SwatchBookHeader";
+import { SwatchBookSearch } from "@/components/swatchBook/SwatchBookSearch";
+import { SwatchBookControls } from "@/components/swatchBook/SwatchBookControls";
+import { SwatchBookActiveFilters } from "@/components/swatchBook/SwatchBookActiveFilters";
+import { SwatchBookMainContent } from "@/components/swatchBook/SwatchBookMainContent";
+import { setPage } from "@/redux/slices/swatchSlice";
 
-type ViewMode = 'grid' | 'list';
-type LayoutMode = 'compact' | 'detailed';
-type SortOption = 'name' | 'price_low' | 'price_high' | 'lrv_low' | 'lrv_high' | 'newest' | 'popular';
+type ViewMode = "grid" | "list";
+type LayoutMode = "compact" | "detailed";
+type SortOption =
+  | "name"
+  | "price_low"
+  | "price_high"
+  | "lrv_low"
+  | "lrv_high"
+  | "newest"
+  | "popular";
 
 export function SwatchBookPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const { 
-    filters, 
-    pagination 
-  } = useSelector((state: RootState) => state.swatches);
-  
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('compact');
-  const [sortBy, setSortBy] = useState<SortOption>('name');
+  const { filters, pagination } = useSelector(
+    (state: RootState) => state.swatches
+  );
+
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("compact");
+  const [sortBy, setSortBy] = useState<SortOption>("name");
   const [showFilters, setShowFilters] = useState(true);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
- 
 
   // Set compact layout as default and increase items per page
   useEffect(() => {
     // Update pagination to show more items in compact mode
-    const newLimit = layoutMode === 'compact' ? 48 : 24;
+    const newLimit = layoutMode === "compact" ? 48 : 24;
     if (pagination.limit !== newLimit) {
       dispatch(setPage(1)); // Reset to first page when changing layout
     }
@@ -89,9 +94,9 @@ export function SwatchBookPage() {
           getActiveFiltersCount={getActiveFiltersCount}
         />
       </div>
-      
+
       {/* Active Filters */}
-      <SwatchBookActiveFilters getActiveFiltersCount={getActiveFiltersCount} />
+      {/* <SwatchBookActiveFilters getActiveFiltersCount={getActiveFiltersCount} /> */}
 
       {/* Main Content */}
       <SwatchBookMainContent
