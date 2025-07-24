@@ -1,5 +1,5 @@
 // components/AnalyzedDataModal.tsx
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";

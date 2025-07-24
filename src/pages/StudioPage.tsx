@@ -43,6 +43,7 @@ import {
 import CreateMaterArray from "@/components/studio/segment/CreateMaterArray";
 import dzinlylogo from "../../public/assets/image/dzinly-logo.svg";
 import { Button } from '@/components/ui/button'
+import CanvasAdddNewSegmentHome from "@/components/canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome";
 
 //type DrawingTool = "select" | "polygon";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -80,6 +81,8 @@ export function StudioPage() {
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
       setCurrentCanvasImage(currentImageUrl);
+    }else{
+      setCurrentCanvasImage("");
     }
   }, [currentImageUrl]);
 
@@ -209,6 +212,7 @@ export function StudioPage() {
   };
 
   return (
+    <>
     <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
       {/* <Breadcrumb /> */}
       <div className="w-1/4 border-r overflow-hidden">
@@ -287,7 +291,7 @@ export function StudioPage() {
 
       {activeTabFromStore === "design-hub" ? (
         <StudioMainCanvas
-          currentCanvasImage={currentCanvasImage}
+          // currentCanvasImage={currentCanvasImage}
           isUploading={true}
           canEdit={canEdit}
           isJobRunning={isJobRunning}
@@ -317,5 +321,7 @@ export function StudioPage() {
 
       <CreateMaterArray/>
     </div>
+     <CanvasAdddNewSegmentHome />
+    </>
   );
 }

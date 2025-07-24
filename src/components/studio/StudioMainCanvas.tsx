@@ -13,9 +13,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import GenAiImages from "../workSpace/compareGenAiImages/GenAiImages";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface StudioMainCanvasProps {
-  currentCanvasImage: string;
+  // currentCanvasImage: string;
   isUploading: boolean;
   canEdit: boolean;
   isJobRunning: boolean;
@@ -24,7 +26,7 @@ interface StudioMainCanvasProps {
 }
 
 export function StudioMainCanvas({
-  currentCanvasImage,
+  // currentCanvasImage,
   isUploading,
   canEdit,
   isJobRunning,
@@ -35,18 +37,29 @@ export function StudioMainCanvas({
   const [dragActive, setDragActive] = useState(false);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
+const { currentImageUrl } = useSelector((state: RootState) => state.studio);
 
-  // update the canvas image
+  // // update the canvas image
+  // useEffect(() => {
+  //   if (currentImageUrl && currentImageUrl !== "") {
+  //     setCanvasImage(currentImageUrl);
+  //   } else {
+  //     setCanvasImage(null);
+  //     setImageLoading(false);
+  //   }
+  // }, [currentImageUrl]);
+
   useEffect(() => {
-    if (currentCanvasImage && currentCanvasImage !== "") {
-
+    if (currentImageUrl && currentImageUrl !== "") {
       setImageLoading(true);
-      setCanvasImage(currentCanvasImage);
+      setCanvasImage(currentImageUrl);
     } else {
       setCanvasImage(null);
       setImageLoading(false);
     }
-  }, [currentCanvasImage]);
+  }, [currentImageUrl]);
+
+
 
   // Handle image load completion
   const handleImageLoad = useCallback(() => {
@@ -90,6 +103,8 @@ export function StudioMainCanvas({
           <div className="relative flex gap-4">
             {/* Main Canvas Section */}
             <div className="flex-1">
+          
+
               <AnimatePresence mode="wait">
               {canvasImage ? (
                 <motion.div

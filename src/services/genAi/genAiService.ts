@@ -20,7 +20,7 @@ class GenAiService {
   async submitRequest(request: GenAiRequest): Promise<GenAiResponse> {
     try {
       const response = await axios.post(
-        `${this.baseUrl}ai/ai/generate-image`,
+        `${this.baseUrl}/generate-image`,
         request,
         {
           headers: {
@@ -48,7 +48,7 @@ class GenAiService {
   async getChatTaskId(request: string) {
     try {
       const response = await axios.get(
-        `${this.baseUrl}ai/ai/generate-image/status/${request}`,
+        `${this.baseUrl}/generate-image/status/${request}`,
         {
           headers: {
             Accept: "application/json",

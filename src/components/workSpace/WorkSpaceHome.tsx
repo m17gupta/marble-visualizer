@@ -5,6 +5,7 @@ import CompareGenAiHome from './compareGenAiImages/CompareGenAiHome'
 import ImagePreview from './projectWorkSpace/ImagePreview'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
+import CanvasAdddNewSegmentHome from '../canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome'
 
 const WorkSpaceHome = () => {
      
@@ -27,6 +28,8 @@ const WorkSpaceHome = () => {
 
             </div>
           </div>
+
+            
           </>
 
   )

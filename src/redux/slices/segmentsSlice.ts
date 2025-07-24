@@ -41,8 +41,14 @@ interface SegmentsState {
 
   isDrawing: boolean;
   segmentDrawn: {
-    [key: string]: { x: number; y: number }[]; // ✅ not fabric.Point[]
+    annotation: number[];
+    segType: string;
+    groupName: string;
+    childName: string;
+    shortName: string;
   };
+  isAddSegmentModalOpen: boolean;
+  isMasterDataAnnotationOpen: boolean;
   // segmentDrawn: {
   //   [key: string]: fabric.Point[];
   // };
@@ -51,9 +57,9 @@ interface SegmentsState {
   historyIndex: number;
   maxHistorySize: number;
   error: string | null;
-  jobs:JobModel | null;
-  selectedSegments:JobSegmentModel | null;
-  
+  jobs: JobModel | null;
+  selectedSegments: JobSegmentModel | null;
+
   // Manual annotation states
   isLoadingManualAnnotation: boolean;
   manualAnnotationResult: unknown | null;
@@ -66,14 +72,22 @@ const initialState: SegmentsState = {
 
   isDrawing: false,
   // currentPoints: [],
-  segmentDrawn: {},
+  segmentDrawn: {
+    annotation: [],
+    segType: '',
+    groupName: '',
+    childName: '',
+    shortName: ''
+  },
+  isAddSegmentModalOpen: false,
+  isMasterDataAnnotationOpen: false,
   canvasHistory: [],
   historyIndex: -1,
   maxHistorySize: 50,
   error: null,
   jobs: null,
   selectedSegments: null,
-  
+
   // Manual annotation initial states
   isLoadingManualAnnotation: false,
   manualAnnotationResult: null,
@@ -118,14 +132,39 @@ const segmentsSlice = createSlice({
     // },
     updateSegmentDrawn: (
       state,
-      action: PayloadAction<{ [key: string]: { x: number; y: number }[] }>
+      action
     ) => {
-      state.segmentDrawn = action.payload;
+      state.segmentDrawn.annotation = action.payload;
+      state.isAddSegmentModalOpen = true;
+    },
+    UpdateOtherSegmentDrawn: (
+      state,
+      action
+    ) => {
+        const {segType, groupName, childName, shortName} = action.payload;
+      state.segmentDrawn.segType = segType; 
+      state.segmentDrawn.groupName = groupName;
+      state.segmentDrawn.childName = childName;
+      state.segmentDrawn.shortName = shortName;
     },
 
     cancelDrawing: (state) => {
       state.isDrawing = false;
-      state.segmentDrawn = {};
+      state.segmentDrawn = {
+        annotation: [],
+        segType: '',
+        groupName: '',
+        childName: '',
+        shortName: ''
+      };
+    },
+
+    updateIsAddSegmentModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isAddSegmentModalOpen = action.payload;
+    },
+
+    updateIsMasterDataAnnotationOpen: (state, action: PayloadAction<boolean>) => {
+      state.isMasterDataAnnotationOpen = action.payload;
     },
 
     // Segment management
@@ -154,12 +193,12 @@ const segmentsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    
+
     // Manual annotation actions
     clearManualAnnotationError: (state) => {
       state.manualAnnotationError = null;
     },
-    
+
     clearManualAnnotationResult: (state) => {
       state.manualAnnotationResult = null;
     },
@@ -186,6 +225,8 @@ const segmentsSlice = createSlice({
 export const {
   startDrawing,
   updateSegmentDrawn,
+  UpdateOtherSegmentDrawn,
+  // updateSegmentDrawn,
   // finishDrawing,
   cancelDrawing,
   selectMultipleSegments,
@@ -196,6 +237,8 @@ export const {
   clearError,
   clearManualAnnotationError,
   clearManualAnnotationResult,
+  updateIsAddSegmentModalOpen,
+  updateIsMasterDataAnnotationOpen
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;
@@ -216,3 +259,7 @@ export const selectSelectedSegments = (state: { segments: SegmentsState }) => st
 export const selectIsLoadingManualAnnotation = (state: { segments: SegmentsState }) => state.segments.isLoadingManualAnnotation;
 export const selectManualAnnotationResult = (state: { segments: SegmentsState }) => state.segments.manualAnnotationResult;
 export const selectManualAnnotationError = (state: { segments: SegmentsState }) => state.segments.manualAnnotationError;
+
+
+export const selectIsAddSegmentModalOpen = (state: { segments: SegmentsState }) => state.segments.isAddSegmentModalOpen;
+export const selectIsMasterDataAnnotationOpen = (state: { segments: SegmentsState })=> state.segments.isMasterDataAnnotationOpen;
