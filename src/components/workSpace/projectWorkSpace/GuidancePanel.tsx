@@ -112,7 +112,6 @@ const GuidancePanel: React.FC = () => {
 
   // add prompt
   const handleAddPrompt = (value: string) => {
-   
     if (!value || value.trim() !== "") {
       dispatch(addPrompt(value));
     }
@@ -133,24 +132,19 @@ const GuidancePanel: React.FC = () => {
       const resultAction = await dispatch(
         submitGenAiRequest(requests as GenAiRequest)
       );
-      
+
       if (resultAction.type === "genAi/submitRequest/fulfilled") {
         const response = resultAction.payload as {
-          data: { message: string; task_id: string };
+          message: string;
+          task_id: string;
         };
+
         console.log("Response:--->", response);
-        if (
-          response &&
-          response.data &&
-          response.data.message === "Image generation task started."
-        ) {
-          console.log(
-            "AI image generation started successfully:",
-            response.data
-          );
+        if (response && response.message === "Image generation task started.") {
+          console.log("AI image generation started successfully:", response);
           // isApiCall.current = true; // Reset the flag for future API calls
-          setTaskId(response.data.task_id); // Store the task ID
-          dispatch(updateTaskId(response.data.task_id)); // Update the task ID in the state
+          setTaskId(response.task_id); // Store the task ID
+          dispatch(updateTaskId(response.task_id)); // Update the task ID in the state
           setIsTask(true);
         }
       }
@@ -172,7 +166,7 @@ const GuidancePanel: React.FC = () => {
   const handleResetStartApiCall = async (data: TaskApiModel) => {
     setTaskId("");
     setIsTask(false);
-   
+
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
 
@@ -206,12 +200,11 @@ const GuidancePanel: React.FC = () => {
     } as GenAiChat;
 
     dispatch(setCurrentGenAiImage(genChat));
-    
+
     try {
       const result = await dispatch(insertGenAiChatData(genChat));
-      
+
       if (result.meta.requestStatus === "fulfilled") {
-        
         dispatch(resetRequest());
         dispatch(updateIsGenLoading(false));
 
@@ -278,7 +271,7 @@ const GuidancePanel: React.FC = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <span tabIndex={0}>
-                  <IoIosHelpCircleOutline className="ms-2 text-xl text-gray-500 cursor-pointer" />
+                  <IoIosHelpCircleOutline className="ms-2 text-xl text-gray-500 cursor-pointer " />
                 </span>
               </TooltipTrigger>
               <TooltipContent
@@ -333,15 +326,15 @@ const GuidancePanel: React.FC = () => {
             )}
         </div>
 
-        <div className="flex justify-between items-between">
+        <div className="grid gap-3 md-gap-0 md:flex justify-between items-between">
           <div className="flex items-center">
             <ProjectHistory />
 
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 px-3 py-2 rounded-md">
-                    <HiOutlineSparkles className="text-lg" />
+                  <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 rounded-md md:px-3 md:py-2 px-3 py-1">
+                    <HiOutlineSparkles className="text-xl" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent
@@ -359,15 +352,14 @@ const GuidancePanel: React.FC = () => {
               onSubmit={handleSubmit}
             />
             <button
-              className="text-sm border border-gray-300 flex align-middle gap-1"
+              className="text-sm border border-gray-300 flex align-middle gap-1 md:px-3 md:py-2 px-3 py-1 rounded-md"
               onClick={handleAddInspirational}
             >
-              {" "}
               <CiImageOn className="text-lg" /> Add Inspiration
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-end">
             {/* <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>

@@ -1,9 +1,8 @@
-import { JobModel } from '@/models/jobModel/JobModel';
-import { UpdateJobRequest } from '@/services/jobService/JobApi';
-import { JobService } from '@/services/jobService/JobService';
+import { JobModel } from "@/models/jobModel/JobModel";
+import { UpdateJobRequest } from "@/services/jobService/JobApi";
+import { JobService } from "@/services/jobService/JobService";
 
-
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface JobState {
   list: JobModel[];
@@ -29,133 +28,153 @@ const initialState: JobState = {
 
 // Async thunk to fetch jobs by project ID
 export const fetchJobsByProject = createAsyncThunk(
-  'jobs/fetchJobsByProject',
+  "jobs/fetchJobsByProject",
   async (project_id: number, { rejectWithValue }) => {
     try {
       const response = await JobService.getJobsByProjectId(project_id);
-      
+
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to fetch jobs');
+        throw new Error(response.error || "Failed to fetch jobs");
       }
-      
+
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to fetch jobs');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch jobs"
+      );
     }
   }
 );
 
 // Async thunk to fetch all jobs
 export const fetchJobs = createAsyncThunk(
-  'jobs/fetchJobs',
+  "jobs/fetchJobs",
   async (_, { rejectWithValue }) => {
     try {
       const response = await JobService.getAllJobs();
-      
+
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to fetch jobs');
+        throw new Error(response.error || "Failed to fetch jobs");
       }
-      
+
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to fetch jobs');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch jobs"
+      );
     }
   }
 );
 
 // Async thunk to fetch a single job by ID
 export const fetchJobById = createAsyncThunk(
-  'jobs/fetchJobById',
-  async (id: number, { rejectWithValue }) => {
+  "jobs/fetchJobById",
+  async (id: number | string, { rejectWithValue }) => {
     try {
       const response = await JobService.getJobById(id);
-      
+
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Job not found');
+        throw new Error(response.error || "Job not found");
       }
-      
+
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to fetch job');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch job"
+      );
     }
   }
 );
 
-// 
+//
 // Async thunk to create a new job
 export const createJob = createAsyncThunk(
-  'jobs/createJob',
+  "jobs/createJob",
   async (jobData: JobModel, { rejectWithValue }) => {
     try {
       const response = await JobService.createJob(jobData);
-      
+
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to create job');
+        throw new Error(response.error || "Failed to create job");
       }
-      
+
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to create job');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to create job"
+      );
     }
   }
 );
 
 // Async thunk to update an existing job
 export const updateJob = createAsyncThunk(
-  'jobs/updateJob',
-  async ({ id, updates }: { id: number; updates: UpdateJobRequest }, { rejectWithValue }) => {
+  "jobs/updateJob",
+  async (
+    { id, updates }: { id: number; updates: UpdateJobRequest },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await JobService.updateJob(id, updates);
-      
+
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to update job');
+        throw new Error(response.error || "Failed to update job");
       }
-      
+
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to update job');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to update job"
+      );
     }
   }
 );
 
 // Async thunk to delete a job
 export const deleteJob = createAsyncThunk(
-  'jobs/deleteJob',
+  "jobs/deleteJob",
   async (id: number, { rejectWithValue }) => {
     try {
       const response = await JobService.deleteJob(id);
-      
+
       if (!response.success) {
-        throw new Error(response.error || 'Failed to delete job');
+        throw new Error(response.error || "Failed to delete job");
       }
-      
+
       return id;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to delete job');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to delete job"
+      );
     }
   }
 );
 
 // Async thunk to update job segments
 export const updateJobSegments = createAsyncThunk(
-  'jobs/updateJobSegments',
-  async ({ id, segments }: { id: number; segments: string }, { rejectWithValue }) => {
+  "jobs/updateJobSegments",
+  async (
+    { id, segments }: { id: number; segments: string },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await JobService.updateJobSegments(id, segments);
-      
+
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to update job segments');
+        throw new Error(response.error || "Failed to update job segments");
       }
-      
+
       return response.data;
     } catch (error: unknown) {
-      return rejectWithValue((error as Error)?.message || 'Failed to update job segments');
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to update job segments"
+      );
     }
   }
 );
 
 const jobSlice = createSlice({
-  name: 'jobs',
+  name: "jobs",
   initialState,
   reducers: {
     setCurrentJob: (state, action: PayloadAction<JobModel>) => {
@@ -186,7 +205,7 @@ const jobSlice = createSlice({
       state.isDeleting = false;
       state.error = null;
       state.isSidebarHeaderCollapsed = true;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -203,7 +222,7 @@ const jobSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Fetch all jobs
       .addCase(fetchJobs.pending, (state) => {
         state.isLoading = true;
@@ -217,7 +236,7 @@ const jobSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Fetch job by ID
       .addCase(fetchJobById.pending, (state) => {
         state.isLoading = true;
@@ -231,7 +250,7 @@ const jobSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
+
       // Create job
       .addCase(createJob.pending, (state) => {
         state.isCreating = true;
@@ -246,7 +265,7 @@ const jobSlice = createSlice({
         state.isCreating = false;
         state.error = action.payload as string;
       })
-      
+
       // Update job
       .addCase(updateJob.pending, (state) => {
         state.isUpdating = true;
@@ -255,7 +274,7 @@ const jobSlice = createSlice({
       .addCase(updateJob.fulfilled, (state, action) => {
         state.isUpdating = false;
         const updatedJob = action.payload;
-        const jobIndex = state.list.findIndex(j => j.id === updatedJob.id);
+        const jobIndex = state.list.findIndex((j) => j.id === updatedJob.id);
         if (jobIndex !== -1) {
           state.list[jobIndex] = updatedJob;
         }
@@ -267,7 +286,7 @@ const jobSlice = createSlice({
         state.isUpdating = false;
         state.error = action.payload as string;
       })
-      
+
       // Delete job
       .addCase(deleteJob.pending, (state) => {
         state.isDeleting = true;
@@ -276,7 +295,7 @@ const jobSlice = createSlice({
       .addCase(deleteJob.fulfilled, (state, action) => {
         state.isDeleting = false;
         const deletedId = action.payload;
-        state.list = state.list.filter(j => j.id !== deletedId);
+        state.list = state.list.filter((j) => j.id !== deletedId);
         if (state.currentJob && state.currentJob.id === deletedId) {
           state.currentJob = null;
         }
@@ -285,7 +304,7 @@ const jobSlice = createSlice({
         state.isDeleting = false;
         state.error = action.payload as string;
       })
-      
+
       // Update job segments
       .addCase(updateJobSegments.pending, (state) => {
         state.isUpdating = true;
@@ -294,7 +313,7 @@ const jobSlice = createSlice({
       .addCase(updateJobSegments.fulfilled, (state, action) => {
         state.isUpdating = false;
         const updatedJob = action.payload;
-        const jobIndex = state.list.findIndex(j => j.id === updatedJob.id);
+        const jobIndex = state.list.findIndex((j) => j.id === updatedJob.id);
         if (jobIndex !== -1) {
           state.list[jobIndex] = updatedJob;
         }
@@ -309,18 +328,17 @@ const jobSlice = createSlice({
   },
 });
 
-export const { 
-  setCurrentJob, 
-  clearCurrentJob, 
+export const {
+  setCurrentJob,
+  clearCurrentJob,
   clearError,
   updateCurrentJobSegments,
   updateSidebarHeaderCollapse,
-  resetJobSlice
+  resetJobSlice,
 } = jobSlice.actions;
 
-
 export const getAllJobs = (state: { jobs: JobState }) => state.jobs.list;
-export const getIsSideBarHeader = (state: { jobs: JobState }) => state.jobs.isSidebarHeaderCollapsed;
+export const getIsSideBarHeader = (state: { jobs: JobState }) =>
+  state.jobs.isSidebarHeaderCollapsed;
 
 export default jobSlice.reducer;
-  

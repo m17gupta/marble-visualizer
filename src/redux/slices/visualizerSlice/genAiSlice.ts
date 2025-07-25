@@ -1,6 +1,10 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { GenAiChat, GenAiRequest, GenAiResponse } from '@/models/genAiModel/GenAiModel';
-import genAiService from '@/services/genAi/genAiService';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  GenAiChat,
+  GenAiRequest,
+  GenAiResponse,
+} from "@/models/genAiModel/GenAiModel";
+import genAiService from "@/services/genAi/genAiService";
 
 interface GenAiState {
   genAiImages: GenAiChat[];
@@ -9,14 +13,13 @@ interface GenAiState {
   inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
   loading: boolean;
-  
+
   error: string | null;
   currentRequestId: string | null;
 
   isSubmitGenAiFailed?: boolean;
-  task_id?: string; 
-  isFetchingGenAiImages: boolean; 
- 
+  task_id?: string;
+  isFetchingGenAiImages: boolean;
 }
 
 // Initial state
@@ -29,11 +32,10 @@ const initialState: GenAiState = {
     paletteUrl: [],
     referenceImageUrl: [],
     prompt: [],
-    imageQuality: 'medium', // Assuming 'medium' is a valid default value
+    imageQuality: "medium", // Assuming 'medium' is a valid default value
     annotationValue: {},
     externalUserId: "dzinly-prod",
     jobId: "", // Assuming jobId is a number, set to 0 as default
-
   },
   responses: {},
   loading: false,
@@ -42,19 +44,18 @@ const initialState: GenAiState = {
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
   task_id: "", // Optional field for storing task ID
   isFetchingGenAiImages: false,
-  
-
 };
 
 // Async thunk for submitting a GenAI request
 export const submitGenAiRequest = createAsyncThunk(
-  'genAi/submitRequest',
+  "genAi/submitRequest",
   async (request: GenAiRequest, { rejectWithValue }) => {
     try {
       const response = await genAiService.submitRequest(request);
-      return response;
+
+      return response.data;
     } catch (error) {
-      console.error('Error submitting GenAI request:', error);
+      console.error("Error submitting GenAI request:", error);
       return rejectWithValue((error as Error).message);
     }
   }
@@ -62,10 +63,11 @@ export const submitGenAiRequest = createAsyncThunk(
 
 // async forfetch all get Ai chat from database
 export const fetchGenAiChat = createAsyncThunk(
-  'genAi/fetchChat',
+  "genAi/fetchChat",
   async (jobId: number, { rejectWithValue }) => {
     try {
       const response = await genAiService.getAllGenAiChats(jobId);
+
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message);
@@ -75,7 +77,7 @@ export const fetchGenAiChat = createAsyncThunk(
 
 // Async thunk for update the status of a GenAI request
 export const insertGenAiChatData = createAsyncThunk(
-  'genAi/updateStatus',
+  "genAi/updateStatus",
   async (payload: GenAiChat, { rejectWithValue }) => {
     try {
       const response = await genAiService.insertGenAiChat(payload);
@@ -88,7 +90,7 @@ export const insertGenAiChatData = createAsyncThunk(
 
 // Create the slice
 const genAiSlice = createSlice({
-  name: 'genAi',
+  name: "genAi",
   initialState,
   reducers: {
     // Clear current request
@@ -102,14 +104,17 @@ const genAiSlice = createSlice({
     // Add a new request manuall
     addInspirationImage: (state, action) => {
       // state.requests.referenceImageUrl=[action.payload];
-      const imageValue = action.payload instanceof File
-        ? URL.createObjectURL(action.payload) // Create a URL for the file
-        : action.payload; // Use the existing value if it's already a string
+      const imageValue =
+        action.payload instanceof File
+          ? URL.createObjectURL(action.payload) // Create a URL for the file
+          : action.payload; // Use the existing value if it's already a string
 
       state.requests.referenceImageUrl = [imageValue];
-
     },
-    setCurrentGenAiImage:(state, action: PayloadAction<GenAiChat | undefined>) => {
+    setCurrentGenAiImage: (
+      state,
+      action: PayloadAction<GenAiChat | undefined>
+    ) => {
       state.currentGenAiImage = action.payload;
     },
     resetInspirationImage: (state) => {
@@ -126,13 +131,11 @@ const genAiSlice = createSlice({
       } else {
         state.requests.prompt = [action.payload];
       }
-
     },
     addHouseImage: (state, action) => {
       state.requests.houseUrl = [action.payload];
     },
     updateInspirationNames: (state, action: PayloadAction<string>) => {
-
       state.inspirationNames = action.payload;
     },
 
@@ -155,26 +158,25 @@ const genAiSlice = createSlice({
       state.isSubmitGenAiFailed = action.payload; // Reset the flag when needed
     },
     resetGenAiState: () => {
-      return initialState
+      return initialState;
     },
 
     updateTaskId: (state, action: PayloadAction<string>) => {
       state.task_id = action.payload; // Update the task_id in the state
     },
-  
+
     resetRequest: (state) => {
       state.requests = {
-        houseUrl: state.requests.houseUrl, 
+        houseUrl: state.requests.houseUrl,
         paletteUrl: [],
         referenceImageUrl: [],
         prompt: [],
-        imageQuality: 'medium',
+        imageQuality: "medium",
         annotationValue: {},
         externalUserId: "dzinly-prod",
         jobId: state.requests.jobId, // Reset jobId to its current value
       };
     },
-   
   },
   extraReducers: (builder) => {
     // Handle submitGenAiRequest
@@ -190,14 +192,15 @@ const genAiSlice = createSlice({
       })
       .addCase(submitGenAiRequest.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || 'Failed to submit GenAI request';
+        state.error =
+          (action.payload as string) || "Failed to submit GenAI request";
         state.isSubmitGenAiFailed = true; // Set the flag to true if submission fails
       });
 
     // Handle checkGenAiStatus
     builder
       .addCase(fetchGenAiChat.pending, (state) => {
-        state.isFetchingGenAiImages  = true;
+        state.isFetchingGenAiImages = true;
         state.error = null;
       })
       .addCase(fetchGenAiChat.fulfilled, (state, action) => {
@@ -207,7 +210,8 @@ const genAiSlice = createSlice({
       })
       .addCase(fetchGenAiChat.rejected, (state, action) => {
         state.isFetchingGenAiImages = false;
-        state.error = action.payload as string || 'Failed to fetch GenAI chats';
+        state.error =
+          (action.payload as string) || "Failed to fetch GenAI chats";
       });
 
     // Handle insertGenAiChatData
@@ -221,18 +225,25 @@ const genAiSlice = createSlice({
         const newChat = action.payload as GenAiChat;
 
         // Check if the chat with this task_id already exists in the state
-        const chatExists = state.genAiImages.some(chat => chat.task_id === newChat.task_id);
+        const chatExists = state.genAiImages.some(
+          (chat) => chat.task_id === newChat.task_id
+        );
 
         // Only add the chat if it doesn't already exist
         if (!chatExists) {
           state.genAiImages = [...state.genAiImages, newChat];
         } else {
-          console.log('Chat with task_id', newChat.task_id, 'already exists in state, not adding duplicate');
+          console.log(
+            "Chat with task_id",
+            newChat.task_id,
+            "already exists in state, not adding duplicate"
+          );
         }
       })
       .addCase(insertGenAiChatData.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || 'Failed to insert GenAI chat';
+        state.error =
+          (action.payload as string) || "Failed to insert GenAI chat";
       });
   },
 });
@@ -252,10 +263,9 @@ export const {
   updateRequestJobId,
   resetGenAiState,
   resetIsGenAiSumitFailed,
- 
-  updateTaskId,
-  setCurrentGenAiImage
 
+  updateTaskId,
+  setCurrentGenAiImage,
 } = genAiSlice.actions;
 
 // Export reducer

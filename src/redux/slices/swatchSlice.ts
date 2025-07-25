@@ -1,9 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
-
-export interface FilterSwatchModel{
-  id:number;
-  title:string;
+export interface FilterSwatchModel {
+  id: number;
+  title: string;
 }
 export interface SwatchColor {
   hex: string;
@@ -89,9 +88,9 @@ interface SwatchState {
 const initialState: SwatchState = {
   swatches: [],
   currentSwatch: null,
-  favorites: JSON.parse(localStorage.getItem('swatch_favorites') || '[]'),
+  favorites: JSON.parse(localStorage.getItem("swatch_favorites") || "[]"),
   filters: {
-    search: '',
+    search: "",
     category: null,
     brand: null,
     style: null,
@@ -124,70 +123,96 @@ const initialState: SwatchState = {
 
 // Async thunks
 export const fetchSwatchBySlug = createAsyncThunk(
-  'swatches/fetchBySlug',
-  async (slug: string, { rejectWithValue }) => {
+  "swatches/fetchBySlug",
+  async (slug: number, { rejectWithValue }) => {
     try {
       // TODO: Replace with actual API call
       const response = await fetch(`/api/swatches/${slug}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch swatch');
+        throw new Error("Failed to fetch swatch");
       }
       return await response.json();
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 );
 
 export const toggleFavorite = createAsyncThunk(
-  'swatches/toggleFavorite',
+  "swatches/toggleFavorite",
   async (swatchId: string, { getState, rejectWithValue }) => {
     try {
       // TODO: Replace with actual API call
       const state = getState() as { swatches: SwatchState };
       const isFavorite = state.swatches.favorites.includes(swatchId);
-      
+
       const response = await fetch(`/api/swatches/${swatchId}/favorite`, {
-        method: isFavorite ? 'DELETE' : 'POST',
+        method: isFavorite ? "DELETE" : "POST",
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to toggle favorite');
+        throw new Error("Failed to toggle favorite");
       }
-      
+
       return { swatchId, isFavorite: !isFavorite };
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 );
 
+// export const toggleFavoriteinLocal = createAsyncThunk(
+//   "swatches/toggleFavorite",
+//   async (swatchId: number, { getState, rejectWithValue }) => {
+//     try {
+//       // TODO: Replace with actual API call
+//       const getAllFavorite = JSON.parse(localStorage.getItem("fav_swatch")!);
+//       getAllFavorite.push(swatchId)
+//       const addInFavorite = JSON.stringify(localStorage.setItem("fav_swatch", getAllFavorite))
+//       return "Swatch ID added"
+//     } catch (error) {
+//       return rejectWithValue(
+//         error instanceof Error ? error.message : "Unknown error"
+//       );
+//     }
+//   }
+// );
+
 export const createSwatch = createAsyncThunk(
-  'swatches/create',
-  async (swatchData: Omit<Swatch, '_id' | 'created_at' | 'updated_at'>, { rejectWithValue }) => {
+  "swatches/create",
+  async (
+    swatchData: Omit<Swatch, "_id" | "created_at" | "updated_at">,
+    { rejectWithValue }
+  ) => {
     try {
       // TODO: Replace with actual API call
-      const response = await fetch('/api/swatches', {
-        method: 'POST',
+      const response = await fetch("/api/swatches", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(swatchData),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to create swatch');
+        throw new Error("Failed to create swatch");
       }
-      
+
       return await response.json();
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 );
 
 const swatchSlice = createSlice({
-  name: 'swatches',
+  name: "swatches",
   initialState,
   reducers: {
     setFilters: (state, action: PayloadAction<Partial<SwatchFilters>>) => {
@@ -195,28 +220,34 @@ const swatchSlice = createSlice({
         ...state.filters,
         ...action.payload,
       };
-    },  
+    },
     clearFilters: (state) => {
       state.filters = initialState.filters;
     },
     updateFilterCategory: (state, action: PayloadAction<FilterSwatchModel>) => {
       // Check if the category already exists
-      const existingCategoryIndex = state.categories.findIndex(cat => cat.id === action.payload.id);
+      const existingCategoryIndex = state.categories.findIndex(
+        (cat) => cat.id === action.payload.id
+      );
       if (existingCategoryIndex === -1) {
-        state.categories = [ action.payload];
+        state.categories = [action.payload];
       }
     },
 
-    updateFilterBrand:(state, action: PayloadAction<FilterSwatchModel>) => {
+    updateFilterBrand: (state, action: PayloadAction<FilterSwatchModel>) => {
       // Check if the brand already exists
-      const existingBrandIndex = state.brands.findIndex(brand => brand.id === action.payload.id);
+      const existingBrandIndex = state.brands.findIndex(
+        (brand) => brand.id === action.payload.id
+      );
       if (existingBrandIndex === -1) {
         state.brands = [action.payload];
       }
     },
-    updateFilterStyle:(state, action: PayloadAction<FilterSwatchModel>) => {
+    updateFilterStyle: (state, action: PayloadAction<FilterSwatchModel>) => {
       // Check if the style already exists
-      const existingStyleIndex = state.styles.findIndex(style => style.id === action.payload.id);
+      const existingStyleIndex = state.styles.findIndex(
+        (style) => style.id === action.payload.id
+      );
       if (existingStyleIndex === -1) {
         state.styles = [action.payload];
       }
@@ -233,9 +264,9 @@ const swatchSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    resetSwatchFilter:()=>{
-      return initialState
-    }
+    resetSwatchFilter: () => {
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -258,9 +289,12 @@ const swatchSlice = createSlice({
         if (isFavorite) {
           state.favorites.push(swatchId);
         } else {
-          state.favorites = state.favorites.filter(id => id !== swatchId);
+          state.favorites = state.favorites.filter((id) => id !== swatchId);
         }
-        localStorage.setItem('swatch_favorites', JSON.stringify(state.favorites));
+        localStorage.setItem(
+          "swatch_favorites",
+          JSON.stringify(state.favorites)
+        );
       })
       // createSwatch
       .addCase(createSwatch.pending, (state) => {
@@ -276,7 +310,6 @@ const swatchSlice = createSlice({
         state.error = action.payload as string;
       });
   },
-
 });
 
 export const {
@@ -289,7 +322,7 @@ export const {
   updateFilterCategory,
   updateFilterBrand,
   updateFilterStyle,
-  resetSwatchFilter
+  resetSwatchFilter,
 } = swatchSlice.actions;
 
 export default swatchSlice.reducer;

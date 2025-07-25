@@ -32,7 +32,7 @@ const ProjectHistory = () => {
 
     <Popover>
       <PopoverTrigger asChild>
-        <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 px-3 py-2 rounded-md">
+        <button className="text-sm text-blue-600 border  border-blue-600 bg-transparent me-2 flex items-center justify-center gap-1 md:px-3 md:py-2 px-3 py-1 rounded-md">
           <IoTimerOutline className="text-lg" /> History
         </button>
       </PopoverTrigger>

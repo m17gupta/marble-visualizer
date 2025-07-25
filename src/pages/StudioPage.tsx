@@ -33,12 +33,7 @@ import {
   setIsCanvasModalOpen,
 } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
-import Breadcrumb from "@/components/breadcrumbs/Breadcrumb";
-import {
-  renderPolygonMaskOnlyToCanvas,
-  renderPolygonMaskToBlob,
-  renderPolygonMaskToFile,
-} from "@/components/canvasUtil/GenerateMask";
+
 import CreateMaterArray from "@/components/studio/segment/CreateMaterArray";
 import dzinlylogo from "../../public/assets/image/dzinly-logo.svg";
 import { Button } from "@/components/ui/button";
@@ -347,7 +342,7 @@ export function StudioPage() {
         <SwatchBookDataHome />
 
         {/* get all GenAi Image based on job ID */}
-        <GetGenAiImageJobIdBased />
+        {/* <GetGenAiImageJobIdBased /> */}
 
         <JobHome selectedProjectId={currentProject?.id || undefined} />
 
@@ -360,6 +355,7 @@ export function StudioPage() {
    
         <CreateMaterArray />
       </div>
+
       <CanvasAdddNewSegmentHome />
  {/* get all segments based on job Id */}
       <GetSegments />

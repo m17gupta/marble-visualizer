@@ -101,7 +101,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
         {/* Background Image */}
         {!uploadedFile && (
           <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
             style={{
               backgroundImage: `url(${getBackgroundImage(viewType)})`,
             }}
@@ -142,9 +142,9 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
                 e.stopPropagation();
                 onFileRemove();
               }}
-              className="absolute top-2 right-2 w-10 h-10 rounded-full bg-white/80 hover:bg-gray-50 text-black hover:text-black flex items-center justify-center shadow-md transition-all"
+              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/80 hover:bg-gray-50 p-0 text-black hover:text-black flex items-center justify-center shadow-md transition-all"
             >
-              <span>X</span>
+              <span className='text-sm' style={{paddingLeft:"1px"}}>X</span>
             </button>
 
 

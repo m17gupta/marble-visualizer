@@ -1,72 +1,66 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import CompareSlider from './CompareSlider';
-import SideBySideCompare from './SideBySideCompare';
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import CompareSlider from "./CompareSlider";
+import SideBySideCompare from "./SideBySideCompare";
 // import AllGenAiImages from './AllGenAiImages';
-import { setIsGenerated } from '@/redux/slices/visualizerSlice/workspaceSlice';
-import { resetRequest, setCurrentGenAiImage,} from '@/redux/slices/visualizerSlice/genAiSlice';
-import { GenAiChat } from '@/models/genAiModel/GenAiModel';
-import { setCurrentTabContent } from '@/redux/slices/studioSlice';
+import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import {
+  resetRequest,
+  setCurrentGenAiImage,
+} from "@/redux/slices/visualizerSlice/genAiSlice";
+import { GenAiChat } from "@/models/genAiModel/GenAiModel";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 
 const CompareGenAiHome: React.FC = () => {
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
   const { genAiImages } = useSelector((state: RootState) => state.genAi);
   const { currentGenAiImage } = useSelector((state: RootState) => state.genAi);
   const [showCompareView, setShowCompareView] = useState(true);
- 
-
-
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
-  const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>(genAiImages);
+  const [allGenAiImages, setAllGenAiImages] =
+    useState<GenAiChat[]>(genAiImages);
 
   // update all GenAiImages
   useEffect(() => {
     if (genAiImages.length > 0) {
       // Sort the genAiImages based on created date, latest first
-      const sortedImages = [...genAiImages].sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+      const sortedImages = [...genAiImages].sort(
+        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+      );
       setAllGenAiImages(sortedImages);
     }
   }, [genAiImages]);
 
   useEffect(() => {
     if (allGenAiImages && allGenAiImages.length > 0 && !isAuthenticated) {
-
       // dispatch(updateGeneratedImage(allGenAiImages[0].output_image));
       // dispatch(updateOriginalHouseImage(allGenAiImages[0].master_image_path));
-
       dispatch(setCurrentGenAiImage(allGenAiImages[0]));
     }
-  }, [allGenAiImages, isAuthenticated])
-
-
+  }, [allGenAiImages, isAuthenticated]);
 
   // Handle close compare view
   const handleCloseCompare = () => {
-    
     setShowCompareView(false);
   };
 
-  const [viewMode, setViewMode] = useState<'slider' | 'side-by-side'>('slider');
+  const [viewMode, setViewMode] = useState<"slider" | "side-by-side">("slider");
 
   // Toggle view mode between side-by-side and slider
-  const handleToggleViewMode = (mode: 'slider' | 'side-by-side') => {
+  const handleToggleViewMode = (mode: "slider" | "side-by-side") => {
     setViewMode(mode);
   };
 
   const handleInspirationSection = () => {
     dispatch(setCurrentTabContent("home"));
     dispatch(setIsGenerated(false));
-    dispatch(resetRequest())
-  }
+    dispatch(resetRequest());
+  };
+
   return (
     <div className="flex flex-col h-full w-full p-6 bg-gray-100">
-      <button
-        onClick={handleInspirationSection}>
-        back to Inspiration
-      </button>
+      <button onClick={handleInspirationSection}>back to Inspiration</button>
       {/* View mode tabs */}
       {/* {showCompareView && currentGenAiImage &&
       currentGenAiImage.master_image_path && currentGenAiImage.output_image && (
@@ -89,12 +83,14 @@ const CompareGenAiHome: React.FC = () => {
       )} */}
 
       {/* Conditional rendering of compare view or image gallery */}
-      {showCompareView && currentGenAiImage &&
-      currentGenAiImage.master_image_path && currentGenAiImage.output_image ? (
+      {showCompareView &&
+      currentGenAiImage &&
+      currentGenAiImage.master_image_path &&
+      currentGenAiImage.output_image ? (
         <div className="h-[500px] mb-6">
           {currentGenAiImage.master_image_path &&
-            currentGenAiImage.output_image &&
-            viewMode === 'slider' ? (
+          currentGenAiImage.output_image &&
+          viewMode === "slider" ? (
             <CompareSlider
               // beforeImage={originalHouseImage.current }
               // afterImage={selectedGeneratedImage.current }
@@ -111,9 +107,12 @@ const CompareGenAiHome: React.FC = () => {
       ) : (
         <div className="flex items-center justify-center h-[300px] bg-gray-100 mb-6 rounded-lg">
           <div className="text-center">
-            <p className="text-xl font-medium mb-2">Select a Design to Compare</p>
+            <p className="text-xl font-medium mb-2">
+              Select a Design to Compare
+            </p>
             <p className="text-gray-600">
-              Choose one of the generated designs below to see a comparison with your original house.
+              Choose one of the generated designs below to see a comparison with
+              your original house.
             </p>
           </div>
         </div>

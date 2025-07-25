@@ -61,6 +61,7 @@ import {
 import { updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import {
   addHouseImage,
+  resetGenAiState,
   updateRequestJobId,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
@@ -84,7 +85,6 @@ export function ProjectsPage() {
   const { isCreateDialogOpen } = useSelector(
     (state: RootState) => state.projects
   );
-
   const [isOpen, setIsOpen] = useState<{
     visible: boolean;
     projectId: number;
@@ -145,7 +145,6 @@ export function ProjectsPage() {
     if (project.id && project.jobData && project.jobData.length > 0) {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
-
       if (jobId) {
 
        
@@ -154,7 +153,8 @@ export function ProjectsPage() {
         dispatch(addHouseImage(projectImage || ""));
         dispatch(updateSidebarHeaderCollapse(false));
         setSelectedProjectId(project.id);
-        dispatch(updateRequestJobId(jobId?.toString()));
+        // dispatch(updateRequestJobId(jobId?.toString()));
+        dispatch(resetGenAiState());
         dispatch(setCurrentProject(project));
         navigate(`/app/studio/${project.id}`);
       }
@@ -165,7 +165,6 @@ export function ProjectsPage() {
     if (!project.id) return;
 
     try {
-
       // Call the deleteProjectById method from ProjectsService
       const result = await dispatch(deleteProject(project.id));
 
@@ -391,10 +390,10 @@ export function ProjectsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   handleShare(project);
-                          // }}
+                            // onClick={(e) => {
+                            //   e.stopPropagation();
+                            //   handleShare(project);
+                            // }}
                           >
                             <Share2 className="h-4 w-4" />
                           </Button>
@@ -405,7 +404,7 @@ export function ProjectsPage() {
                             //   e.stopPropagation();
                             //   handleProjectClick(project.id);
                             // }}
-                            onClick={() => { }}
+                            onClick={() => {}}
                           >
                             <Edit3 className="h-4 w-4" />
                           </Button>

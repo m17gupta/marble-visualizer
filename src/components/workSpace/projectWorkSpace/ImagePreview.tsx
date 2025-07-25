@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Download, Expand, X } from "lucide-react"; // Optional, or use inline SVGs
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useParams } from "react-router-dom";
+import { fetchJobsByProject } from "@/redux/slices/jobSlice";
 // import sampleImg from "@/assets/kitchen.jpg"; // Replace with your actual image path
 
 const ImageCard: React.FC = () => {
- 
-   const {list} = useSelector((state: RootState) => state.jobs);
-     const { currentImageUrl } = useSelector((state: RootState) => state.studio);
+  const { currentImageUrl } = useSelector((state: RootState) => state.studio);
 
-  const handleFullscreen = () => {  
+  const param = useParams();
+  const id = param.id !== undefined ? parseInt(param.id) : 0;
+  const { list: projects } = useSelector((state: RootState) => state.projects);
+  const findProject = projects.find((d) => d.id == id);
+  const handleFullscreen = () => {
     console.log("Fullscreen clicked");
   };
-
   const handleDownload = () => {
     const link = document.createElement("a");
     // link.href = sampleImg;
@@ -52,11 +55,18 @@ const ImageCard: React.FC = () => {
       </div>
 
       {/* Image section */}
-      <img
-        src={currentImageUrl|| "https://via.placeholder.com/800x600"} // Replace with actual image URL
-        alt={list[0]?.title || "Image Preview"}
-        className="rounded-md object-contain "
-      />
+      {!findProject || findProject.jobData == undefined ? (
+        <h1>Loading</h1>
+      ) : (
+        <img
+          src={
+            findProject.jobData[0]?.full_image ||
+            "https://via.placeholder.com/800x600"
+          }
+          alt={findProject.jobData[0]?.title || "Image Preview"}
+          className="rounded-md object-contain"
+        />
+      )}
     </div>
   );
 };

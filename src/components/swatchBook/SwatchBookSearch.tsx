@@ -8,16 +8,11 @@ import { useEffect, useState } from "react";
 export function SwatchBookSearch() {
   const dispatch = useDispatch<AppDispatch>();
   const { filters } = useSelector((state: RootState) => state.swatches);
-  const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      dispatch(setFilters({ search: search }));
-      dispatch(setPage(1));
-    }, 100);
-
-    return () => clearTimeout(delayDebounce);
-  }, [search, dispatch]);
+  const handleSearch = (value: string) => {
+    dispatch(setFilters({ search: value }));
+    dispatch(setPage(1));
+  };
 
   return (
     <div className="flex-1">
@@ -26,7 +21,7 @@ export function SwatchBookSearch() {
         <Input
           placeholder="Search swatches by name, brand, or tags..."
           value={filters.search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
           className="pl-10 bg-background "
         />
       </div>

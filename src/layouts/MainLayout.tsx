@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Setting from "./Setting";
-
+import dzinlylogo from "../../public/assets/image/dzinlylogo-icon.svg";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
@@ -16,6 +16,8 @@ import {
   Paintbrush,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
+import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 
 const navigation = [
   {
@@ -28,7 +30,7 @@ const navigation = [
     href: "/app/studio",
     icon: Palette,
   },
-  
+
   {
     name: "SwatchBook",
     href: "/app/swatchbook",
@@ -55,14 +57,17 @@ export function MainLayout() {
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full bg-card">
+      <SwatchBookDataHome />
+      <GetGenAiImageJobIdBased />
       <div className="flex items-center justify-between p-6">
         <motion.div
           initial={false}
           animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
           className="flex items-center space-x-3"
         >
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8  rounded-lg flex items-center justify-center">
             <Home className="h-5 w-5 text-primary-foreground" />
+            <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
           </div>
           {(!sidebarCollapsed || mobile) && (
             <span className="text-xl font-bold text-foreground">Dashboard</span>
@@ -168,12 +173,6 @@ export function MainLayout() {
           isStudioPage && "lg:pl-0"
         )}
       >
-       
-       
-
-
-
-
         {/* Main Content Area */}
         <main>
           <motion.div
@@ -187,9 +186,9 @@ export function MainLayout() {
       </div>
 
       {/* Settings Modal */}
-      <Setting 
-        isOpen={settingsModalOpen} 
-        onClose={() => setSettingsModalOpen(false)} 
+      <Setting
+        isOpen={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
       />
     </div>
   );

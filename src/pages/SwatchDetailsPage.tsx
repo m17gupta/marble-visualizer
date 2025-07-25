@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { motion,  } from 'framer-motion';
-import { AppDispatch, RootState } from '@/redux/store';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { AppDispatch, RootState } from "@/redux/store";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Heart,
@@ -30,47 +30,55 @@ import {
   Eye,
   Info,
   CheckCircle,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { fetchSwatchBySlug, toggleFavorite } from '@/redux/slices/swatchSlice';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { fetchSwatchBySlug, toggleFavorite } from "@/redux/slices/swatchSlice";
 
 export function SwatchDetailsPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const params = useParams<{ id: string }>();
+  const id = params.id !== undefined ? parseInt(params.id) : 0;
+
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  
-  const { currentSwatch, favorites, isLoading, error } = useSelector(
+  const { currentSwatch, swatches, favorites, isLoading, error } = useSelector(
     (state: RootState) => state.swatches
   );
-  
-  const [activeTab, setActiveTab] = useState('overview');
+
+  // const { materials, isLoading, error, pagination } = useSelector(
+  //     (state: RootState) => state.materials
+  //   );
+
+  // const currentSwatch = materials.find((d)=>d.id==id)
+
+  const [activeTab, setActiveTab] = useState("overview");
   // const [imageLoaded, setImageLoaded] = useState(false);
 
-  useEffect(() => {
-    if (slug) {
-      dispatch(fetchSwatchBySlug(slug));
-    }
-  }, [slug, dispatch]);
+  // useEffect(() => {
+  //   if (id !== null) {
+  //     dispatch(fetchSwatchBySlug(id));
+  //   }
+  // }, [id, dispatch]);
 
-  const isFavorite = currentSwatch ? favorites.includes(currentSwatch._id) : false;
+  const isFavorite = currentSwatch
+    ? favorites.includes(currentSwatch._id)
+    : false;
 
   const handleToggleFavorite = async () => {
     if (!currentSwatch) return;
-    
+
     await dispatch(toggleFavorite(currentSwatch._id));
-    toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+    toast.success(isFavorite ? "Removed from favorites" : "Added to favorites");
   };
 
   const handleCopyColor = () => {
     if (!currentSwatch) return;
-    
+
     navigator.clipboard.writeText(currentSwatch.color.hex);
     toast.success(`Color ${currentSwatch.color.hex} copied to clipboard`);
   };
 
   const handleShare = async () => {
     if (!currentSwatch) return;
-    
     // try {
     //   await navigator.share({
     //     title: currentSwatch.title,
@@ -85,16 +93,30 @@ export function SwatchDetailsPage() {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(price);
   };
 
   const getLRVCategory = (lrv: number) => {
-    if (lrv >= 70) return { label: 'Light', color: 'bg-yellow-100 text-yellow-800', description: 'Reflects most light, ideal for small spaces' };
-    if (lrv >= 30) return { label: 'Medium', color: 'bg-orange-100 text-orange-800', description: 'Balanced light reflection, versatile for most rooms' };
-    return { label: 'Dark', color: 'bg-gray-100 text-gray-800', description: 'Absorbs most light, creates dramatic atmosphere' };
+    if (lrv >= 70)
+      return {
+        label: "Light",
+        color: "bg-yellow-100 text-yellow-800",
+        description: "Reflects most light, ideal for small spaces",
+      };
+    if (lrv >= 30)
+      return {
+        label: "Medium",
+        color: "bg-orange-100 text-orange-800",
+        description: "Balanced light reflection, versatile for most rooms",
+      };
+    return {
+      label: "Dark",
+      color: "bg-gray-100 text-gray-800",
+      description: "Absorbs most light, creates dramatic atmosphere",
+    };
   };
 
   if (isLoading) {
@@ -104,7 +126,7 @@ export function SwatchDetailsPage() {
           <Skeleton className="h-10 w-20" />
           <Skeleton className="h-8 w-48" />
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Skeleton className="aspect-square rounded-lg" />
           <div className="space-y-4">
@@ -129,7 +151,7 @@ export function SwatchDetailsPage() {
         <p className="text-muted-foreground mb-6">
           The swatch you're looking for doesn't exist or has been removed.
         </p>
-        <Button onClick={() => navigate('/swatchbook')}>
+        <Button onClick={() => navigate("/swatchbook")}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to SwatchBook
         </Button>
@@ -150,31 +172,29 @@ export function SwatchDetailsPage() {
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
-          onClick={() => navigate('/swatchbook')}
+          onClick={() => navigate("/swatchbook")}
           className="flex items-center space-x-2"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to SwatchBook</span>
         </Button>
-        
+
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleShare}
-          >
+          <Button variant="outline" size="sm" onClick={handleShare}>
             <Share2 className="h-4 w-4 mr-2" />
             Share
           </Button>
-          
+
           <Button
-            variant={isFavorite ? 'default' : 'outline'}
+            variant={isFavorite ? "default" : "outline"}
             size="sm"
             onClick={handleToggleFavorite}
-            className={cn(isFavorite && 'text-red-500 hover:text-red-600')}
+            className={cn(isFavorite && "text-red-500 hover:text-red-600")}
           >
-            <Heart className={cn('h-4 w-4 mr-2', isFavorite && 'fill-current')} />
-            {isFavorite ? 'Favorited' : 'Add to Favorites'}
+            <Heart
+              className={cn("h-4 w-4 mr-2", isFavorite && "fill-current")}
+            />
+            {isFavorite ? "Favorited" : "Add to Favorites"}
           </Button>
         </div>
       </div>
@@ -193,16 +213,22 @@ export function SwatchDetailsPage() {
                 className="w-full h-full transition-all duration-300"
                 style={{ backgroundColor: currentSwatch.color.hex }}
               />
-              
+
               {/* Color overlay info */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              
+
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-end justify-between text-white">
                   <div>
-                    <h2 className="text-2xl font-bold mb-1">{currentSwatch.color.hex}</h2>
-                    <p className="text-sm opacity-90">{currentSwatch.color.rgb}</p>
-                    <p className="text-sm opacity-90">LRV {currentSwatch.color.lrv}</p>
+                    <h2 className="text-2xl font-bold mb-1">
+                      {currentSwatch.color.hex}
+                    </h2>
+                    <p className="text-sm opacity-90">
+                      {currentSwatch.color.rgb}
+                    </p>
+                    <p className="text-sm opacity-90">
+                      LRV {currentSwatch.color.lrv}
+                    </p>
                   </div>
                   <Badge className={lrvCategory.color} variant="secondary">
                     {lrvCategory.label}
@@ -236,13 +262,15 @@ export function SwatchDetailsPage() {
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h1 className="text-3xl font-bold">{currentSwatch.title}</h1>
-                <p className="text-lg text-muted-foreground">{currentSwatch.brand}</p>
+                <p className="text-lg text-muted-foreground">
+                  {currentSwatch.brand}
+                </p>
               </div>
               <Badge variant="outline" className="text-sm">
                 {currentSwatch.sku}
               </Badge>
             </div>
-            
+
             <p className="text-muted-foreground mb-4">
               {currentSwatch.description}
             </p>
@@ -295,17 +323,21 @@ export function SwatchDetailsPage() {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">Dry Time (Touch)</span>
                 </div>
-                <span className="text-sm font-medium">{currentSwatch.dry_time_touch}</span>
+                <span className="text-sm font-medium">
+                  {currentSwatch.dry_time_touch}
+                </span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">Dry Time (Recoat)</span>
                 </div>
-                <span className="text-sm font-medium">{currentSwatch.dry_time_recoat}</span>
+                <span className="text-sm font-medium">
+                  {currentSwatch.dry_time_recoat}
+                </span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Ruler className="h-4 w-4 text-muted-foreground" />
@@ -315,15 +347,20 @@ export function SwatchDetailsPage() {
                   {currentSwatch.application.coverage_sqft_per_gal} sq ft/gal
                 </span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Eye className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">Light Reflectance</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium">{currentSwatch.color.lrv}</span>
-                  <Badge className={`${lrvCategory.color} text-xs`} variant="secondary">
+                  <span className="text-sm font-medium">
+                    {currentSwatch.color.lrv}
+                  </span>
+                  <Badge
+                    className={`${lrvCategory.color} text-xs`}
+                    variant="secondary"
+                  >
                     {lrvCategory.label}
                   </Badge>
                 </div>
@@ -378,18 +415,22 @@ export function SwatchDetailsPage() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium">RGB Values</Label>
                     <code className="block text-sm bg-muted px-2 py-1 rounded mt-1">
                       {currentSwatch.color.rgb}
                     </code>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium">Light Reflectance Value</Label>
+                    <Label className="text-sm font-medium">
+                      Light Reflectance Value
+                    </Label>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm font-medium">{currentSwatch.color.lrv}</span>
+                      <span className="text-sm font-medium">
+                        {currentSwatch.color.lrv}
+                      </span>
                       <Badge className={lrvCategory.color} variant="secondary">
                         {lrvCategory.label}
                       </Badge>
@@ -410,21 +451,33 @@ export function SwatchDetailsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label className="text-sm font-medium mb-2 block">Style Tags</Label>
+                    <Label className="text-sm font-medium mb-2 block">
+                      Style Tags
+                    </Label>
                     <div className="flex flex-wrap gap-1">
                       {currentSwatch.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                         </Badge>
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium mb-2 block">Application Areas</Label>
+                    <Label className="text-sm font-medium mb-2 block">
+                      Application Areas
+                    </Label>
                     <div className="flex flex-wrap gap-1">
                       {currentSwatch.segment_types.map((type) => (
-                        <Badge key={type} variant="outline" className="text-xs capitalize">
+                        <Badge
+                          key={type}
+                          variant="outline"
+                          className="text-xs capitalize"
+                        >
                           {type}
                         </Badge>
                       ))}
@@ -445,31 +498,46 @@ export function SwatchDetailsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">Recommended Substrates</Label>
+                  <Label className="text-sm font-medium mb-3 block">
+                    Recommended Substrates
+                  </Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {currentSwatch.application.recommended_substrates.map((substrate) => (
-                      <div key={substrate} className="flex items-center space-x-2 p-3 border rounded-lg">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-sm">{substrate}</span>
-                      </div>
-                    ))}
+                    {currentSwatch.application.recommended_substrates.map(
+                      (substrate) => (
+                        <div
+                          key={substrate}
+                          className="flex items-center space-x-2 p-3 border rounded-lg"
+                        >
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span className="text-sm">{substrate}</span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label className="text-sm font-medium mb-2 block">Coverage</Label>
+                    <Label className="text-sm font-medium mb-2 block">
+                      Coverage
+                    </Label>
                     <div className="text-2xl font-bold text-primary">
                       {currentSwatch.application.coverage_sqft_per_gal}
                     </div>
-                    <p className="text-sm text-muted-foreground">square feet per gallon</p>
+                    <p className="text-sm text-muted-foreground">
+                      square feet per gallon
+                    </p>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium mb-2 block">Finish Type</Label>
-                    <div className="text-lg font-semibold">{currentSwatch.finish}</div>
+                    <Label className="text-sm font-medium mb-2 block">
+                      Finish Type
+                    </Label>
+                    <div className="text-lg font-semibold">
+                      {currentSwatch.finish}
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {currentSwatch.coating_type} coating
                     </p>
@@ -491,11 +559,15 @@ export function SwatchDetailsPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <span className="text-sm font-medium">Touch Dry</span>
-                    <span className="text-sm">{currentSwatch.dry_time_touch}</span>
+                    <span className="text-sm">
+                      {currentSwatch.dry_time_touch}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <span className="text-sm font-medium">Recoat Time</span>
-                    <span className="text-sm">{currentSwatch.dry_time_recoat}</span>
+                    <span className="text-sm">
+                      {currentSwatch.dry_time_recoat}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -510,7 +582,9 @@ export function SwatchDetailsPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <span className="text-sm font-medium">Coating Type</span>
-                    <span className="text-sm">{currentSwatch.coating_type}</span>
+                    <span className="text-sm">
+                      {currentSwatch.coating_type}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <span className="text-sm font-medium">Finish</span>
@@ -537,13 +611,18 @@ export function SwatchDetailsPage() {
                 {currentSwatch.certifications.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {currentSwatch.certifications.map((cert) => (
-                      <div key={cert} className="flex items-center space-x-3 p-4 border rounded-lg">
+                      <div
+                        key={cert}
+                        className="flex items-center space-x-3 p-4 border rounded-lg"
+                      >
                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                           <Shield className="h-5 w-5 text-green-600" />
                         </div>
                         <div>
                           <h4 className="font-medium">{cert}</h4>
-                          <p className="text-sm text-muted-foreground">Certified standard</p>
+                          <p className="text-sm text-muted-foreground">
+                            Certified standard
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -568,10 +647,15 @@ export function SwatchDetailsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">Available Sizes</Label>
+                  <Label className="text-sm font-medium mb-3 block">
+                    Available Sizes
+                  </Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {currentSwatch.container_sizes.map((size) => (
-                      <div key={size} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div
+                        key={size}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
                         <span className="text-sm font-medium">{size}</span>
                         <Badge variant="secondary" className="text-xs">
                           In Stock
@@ -580,19 +664,29 @@ export function SwatchDetailsPage() {
                     ))}
                   </div>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
-                  <Label className="text-sm font-medium mb-3 block">Pricing by Size</Label>
+                  <Label className="text-sm font-medium mb-3 block">
+                    Pricing by Size
+                  </Label>
                   <div className="space-y-2">
                     {currentSwatch.container_sizes.map((size) => {
                       // Mock pricing calculation based on size
-                      const multiplier = size.includes('Quart') ? 0.25 : size.includes('5') ? 4.5 : 1;
-                      const price = currentSwatch.pricing.per_gallon * multiplier;
-                      
+                      const multiplier = size.includes("Quart")
+                        ? 0.25
+                        : size.includes("5")
+                        ? 4.5
+                        : 1;
+                      const price =
+                        currentSwatch.pricing.per_gallon * multiplier;
+
                       return (
-                        <div key={size} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <div
+                          key={size}
+                          className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                        >
                           <span className="text-sm">{size}</span>
                           <span className="text-sm font-semibold text-green-600">
                             {formatPrice(price)}
