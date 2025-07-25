@@ -16,7 +16,7 @@ const CTASection = () => {
           <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-8 py-4 font-semibold">
             <a href="/signup">Start Free Trial</a>
           </Button>
-          <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4">
+          <Button size="lg" variant="outline" className="border-white text-black hover:bg-white hover:text-blue-600 text-lg px-8 py-4">
             Contact Sales
           </Button>
         </div>

@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Setting from "./Setting";
+import dzinlylogo from "../../public/assets/image/dzinlylogo-icon.svg";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
@@ -64,8 +65,9 @@ export function MainLayout() {
           animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
           className="flex items-center space-x-3"
         >
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8  rounded-lg flex items-center justify-center">
             <Home className="h-5 w-5 text-primary-foreground" />
+            <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
           </div>
           {(!sidebarCollapsed || mobile) && (
             <span className="text-xl font-bold text-foreground">Dashboard</span>

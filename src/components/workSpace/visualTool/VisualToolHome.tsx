@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import useViewFiles from "@/hooks/useViewFiles";
+import Camera from "../../../../public/assets/image/camera.png";
+import Homeimage from "../../../../public/assets/image/home.png";
+import { LuImageUp } from "react-icons/lu";
 
 import { RootState } from "@/redux/store";
 import {
@@ -30,6 +33,10 @@ import {
 import { CreateJob, CreateJobParams } from "@/utils/CreateJob";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
+
+import { MdPhotoSizeSelectLarge, MdBrokenImage } from "react-icons/md";
+import { PiImagesDuotone } from "react-icons/pi";
+
 
 type Props={
   resetProjectCreated: () => void;
@@ -215,28 +222,30 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className=" border-b border-gray-200 py-6">
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-6xl mx-auto px-2 md:px-6">
             <div className="text-center relative flex items-center justify-center ">
               {/* Back button positioned absolutely in header */}
               <Button
                 onClick={handleGoBack}
                 variant="outline"
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                <ArrowLeft className="h-4 w-4" />
+                className="text-lg absolute left-0 top-0 md:top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900 bg-transparent border-0 shadow-none">
+                <ArrowLeft className="h-6 w-6 md:w-4 md:w-4" />
                 <span>Back</span>
               </Button>
+
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-8 md:mt-10">
                   Work Space View
                 </h1>
 
-                <p className="text-lg text-gray-600 mb-1">
+                <p className="text-lg text-gray-600 mb-2">
                   Select the initial view you want to work on
                 </p>
                 <p className="text-sm text-gray-500">
                   (Additional views available after delivery of initial project)
                 </p>
               </div>
+
             </div>
           </div>
         </div>
@@ -293,16 +302,19 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
 
                   {/* Device Recommendation */}
                   <div className="flex items-center space-x-3">
-                    <div className="w-18 h-20  rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16  rounded-full flex items-center justify-center">
                       {/* <div className="w-10 h-8 bg-gray-800 rounded border-2 border-gray-600 relative"> */}
                       {/* <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div> */}
                       {/* </div> */}
-                      {/* <img src={Camera} alt="Camera Icon" className="h-16 w-16 object-contain" /> */}
-                    </div>
+                      {/* <img src={Camera} alt="Camera Icon" className="h-18 w-32 object-contain" /> */}
+                    <LuImageUp className="h-10 w-10 text-gray-600"/>
+                      
+
+                    </div> 
                     <div>
                       <p className="text-sm text-gray-700">
                         Project images need to be a min. of 1MB in landscape
-                        orientation.{" "}
+                        orientation.
                         <span className="font-semibold">
                           We can only render what is visible in image.
                         </span>
@@ -312,8 +324,14 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
 
                   {/* Quality Guidelines */}
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-16  rounded-full flex items-center justify-center">
-                      <Home className="h-8 w-8 text-gray-600" />
+                    <div className="w-16 h-16  rounded-full flex items-center justify-center">
+                      {/* <Home className="h-8 w-8 text-gray-600" /> */}
+                        {/* <img src={Homeimage} alt="Home Icon" className="h-18 w-36 object-contain" /> */}
+                     {/* <LuImageUp className="text-2xl text-gray-700 mt-1"/> */}
+                     <PiImagesDuotone className="h-10 w-10 text-gray-600"/>
+
+
+
                     </div>
                     <div>
                       <p className="text-sm text-gray-700">
@@ -380,7 +398,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
             <Button
               onClick={handleContinue}
               disabled={!hasAnyFiles || !projectName.trim()}
-              className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all ${
+              className={`py-4 text-sm font-semibold rounded-lg transition-all ${
                 hasAnyFiles && projectName.trim()
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
