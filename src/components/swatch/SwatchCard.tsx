@@ -57,7 +57,7 @@ export function SwatchCard({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const { favorites } = useSelector((state: RootState) => state.swatches);
-  console.log(swatch);
+
   const [isHovered, setIsHovered] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
   // const [imageLoaded, setImageLoaded] = useState(false);
@@ -90,9 +90,9 @@ export function SwatchCard({
     setFavorites(stored);
   }, []);
 
-  const handleViewDetails = () => {
-    console.log("Navigating to swatch details:", swatch.id);
-    navigate(`/swatch/${swatch.id}`);
+  const handleViewDetails = (id: number) => {
+    const path = `/app/swatchbook/${id}`;
+    navigate(path);
   };
 
   const handleCopyColor = (e: React.MouseEvent) => {
@@ -143,7 +143,7 @@ export function SwatchCard({
         >
           <Card
             className="cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden bg-card border-border"
-            onClick={handleViewDetails}
+            onClick={() => handleViewDetails(swatch.id!)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -231,7 +231,7 @@ export function SwatchCard({
         >
           <Card
             className="group cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
-            onClick={handleViewDetails}
+            onClick={() => handleViewDetails(swatch.id!)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -332,7 +332,7 @@ export function SwatchCard({
         >
           <Card
             className="cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
-            onClick={handleViewDetails}
+            onClick={() => handleViewDetails(swatch.id)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -434,7 +434,7 @@ export function SwatchCard({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={handleViewDetails}
+                            onClick={() => handleViewDetails(swatch.id)}
                             className="h-8 w-8 p-0"
                           >
                             <ExternalLink className="h-4 w-4" />
@@ -485,7 +485,7 @@ export function SwatchCard({
       >
         <Card
           className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-card border-border"
-          onClick={handleViewDetails}
+          onClick={() => handleViewDetails(swatch.id)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >

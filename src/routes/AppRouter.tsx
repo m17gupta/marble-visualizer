@@ -78,7 +78,7 @@ export function AppRouter() {
         <Route path="studio/:id" element={<StudioPage />} />
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
-        <Route path="swatch/:id" element={<SwatchDetailsPage />} />
+        <Route path="swatchbook/:id" element={<SwatchDetailsPage />} />
       </Route>
 
       {/* Catch all route */}

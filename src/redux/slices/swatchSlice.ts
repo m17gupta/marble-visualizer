@@ -124,7 +124,7 @@ const initialState: SwatchState = {
 // Async thunks
 export const fetchSwatchBySlug = createAsyncThunk(
   "swatches/fetchBySlug",
-  async (slug: string, { rejectWithValue }) => {
+  async (slug: number, { rejectWithValue }) => {
     try {
       // TODO: Replace with actual API call
       const response = await fetch(`/api/swatches/${slug}`);
