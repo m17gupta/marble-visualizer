@@ -1,3 +1,4 @@
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { SegmentApi } from "./SegmentApi";
 
 
@@ -11,5 +12,13 @@ export class SegmentService{
 // get Manual Annotation Result
 async GetManualThroughApi(segmentationInt:number[], segName:string){
   return this.segmentApi.GetMasterDataThroughApi(segmentationInt, segName);
+}
+
+async createSegment(segmentData: SegmentModal) {
+  return this.segmentApi.createSegment(segmentData);
+}
+
+async getSegmentsByJobId(jobId: number): Promise<SegmentModal[]> {
+  return this.segmentApi.getSegmentsByJobId(jobId);
 }
 }

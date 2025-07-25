@@ -148,7 +148,7 @@ export class CategoryApi {
                     error: error.message,
                 };
             }
-    console.log('Category data:', data);
+
             return {
                 data: data as CategoryModel,
                 success: true,

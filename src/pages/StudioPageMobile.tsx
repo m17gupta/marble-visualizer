@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { StudioPage } from "./StudioPage";
-import LeftPage from "./mobilePage/leftpage";
+import LeftPage from "./mobilePage/LeftPage";
+
 
 const styles = [
   "Modern",

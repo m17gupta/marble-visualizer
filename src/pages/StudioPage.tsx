@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
@@ -31,15 +31,9 @@ import JobHome from "@/components/job/JobHome";
 import {
   setCanvasType,
   setIsCanvasModalOpen,
-  updateIsGenerateMask,
 } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
-import Breadcrumb from "@/components/breadcrumbs/Breadcrumb";
-import {
-  renderPolygonMaskOnlyToCanvas,
-  renderPolygonMaskToBlob,
-  renderPolygonMaskToFile,
-} from "@/components/canvasUtil/GenerateMask";
+
 import CreateMaterArray from "@/components/studio/segment/CreateMaterArray";
 import dzinlylogo from "../../public/assets/image/dzinly-logo.svg";
 import { Button } from "@/components/ui/button";
@@ -47,11 +41,15 @@ import CanvasAdddNewSegmentHome from "@/components/canvas/canvasAddNewSegment/Ca
 
 //type DrawingTool = "select" | "polygon";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { resetSegmentSlice } from "@/redux/slices/segmentsSlice";
+import { clearMasterArray } from "@/redux/slices/MasterArraySlice";
+import GetSegments from "@/components/getSegments/GetSegments";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-
+  const navigate = useNavigate();
   const {
     currentJob,
     error: jobError,
@@ -77,6 +75,18 @@ export function StudioPage() {
 
   const getAllJob = useSelector((state: RootState) => state.jobs.list);
   const { currentImageUrl } = useSelector((state: RootState) => state.studio);
+   const {addSegMessage} = useSelector((state: RootState) => state.segments); 
+
+  const [loadingMessage, setLoadingMessage] = useState("");
+   // update message 
+
+  useEffect(() => {
+    if (addSegMessage ) {
+      setLoadingMessage(addSegMessage);
+    } else {
+      setLoadingMessage("");
+    }
+  }, [addSegMessage]);
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
@@ -211,47 +221,43 @@ export function StudioPage() {
     dispatch(setIsCanvasModalOpen(false));
   };
 
+
+  const handleBackToProject=()=>{
+      dispatch(resetSegmentSlice())
+      dispatch(clearCurrentJob());
+      dispatch(clearMasterArray())
+       navigate("/projects")
+  }
   return (
     <>
-      <div className="py-3 pt-2 px-4 flex items-center justify-between align-center md:hidden">
-        <div className="text-start">
-          <Link to="/">
-            {" "}
-            <img
-              className="w-44 text-center"
-              src={dzinlylogo}
-              alt="dzinly logo"
-            ></img>
-          </Link>
-        </div>
-        <Link to="/">
-          <Button className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent ">
-            <IoMdArrowRoundBack className="w-4 h-4" />
-            <span>Back</span>
-          </Button>
-        </Link>
-      </div>
-
+  
+{ loadingMessage && loadingMessage.trim() !== "" &&
+  <LoadingOverlay
+    message={loadingMessage}
+   
+  />}
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
         {/* <Breadcrumb /> */}
         <div className="w-full md:w-1/4 border-r overflow-hidden hidden md:block">
           <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
             <div className="text-start">
-              <Link to="/">
+              {/* <Link to="/"> */}
                 {" "}
                 <img
                   className="w-44 text-center"
                   src={dzinlylogo}
                   alt="dzinly logo"
                 ></img>
-              </Link>
+              {/* </Link> */}
             </div>
-            <Link to="/">
-              <Button className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent ">
+            {/* <Link to="/"> */}
+              <Button className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
+              onClick={handleBackToProject}
+              >
                 <IoMdArrowRoundBack className="w-4 h-4" />
                 <span>Back</span>
               </Button>
-            </Link>
+            {/* </Link> */}
           </div>
 
           <Tabs
@@ -346,11 +352,13 @@ export function StudioPage() {
             onClose={handleCloseMask}
           />
         )}
-
+   
         <CreateMaterArray />
       </div>
 
       <CanvasAdddNewSegmentHome />
+ {/* get all segments based on job Id */}
+      <GetSegments />
     </>
   );
 }

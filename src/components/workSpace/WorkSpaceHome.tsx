@@ -1,3 +1,4 @@
+
 import StudioPageMobile from "@/pages/StudioPageMobile";
 import React, { useEffect, useState } from "react";
 import GenAiImages from "./compareGenAiImages/GenAiImages";
@@ -6,11 +7,9 @@ import CompareGenAiHome from "./compareGenAiImages/CompareGenAiHome";
 import ImagePreview from "./projectWorkSpace/ImagePreview";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import CanvasAdddNewSegmentHome from "../canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome";
-import { fetchJobsByProject } from "@/redux/slices/jobSlice";
+
 import { useParams } from "react-router-dom";
-import { parse } from "path";
-import { GenAiChat } from "@/models/genAiModel/GenAiModel";
+
 import {
   fetchGenAiChat,
   resetGenAiState,

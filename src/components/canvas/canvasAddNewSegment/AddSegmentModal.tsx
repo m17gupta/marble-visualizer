@@ -3,8 +3,8 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { UpdateOtherSegmentDrawn } from '@/redux/slices/segmentsSlice';
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import { updateAddSegMessage, UpdateOtherSegmentDrawn } from '@/redux/slices/segmentsSlice';
+ import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface AddSegmentModalProps {
   open: boolean;
@@ -18,49 +18,47 @@ interface AddSegmentModalProps {
 const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave }) => {
   const dispatch = useDispatch();
   const [segType, setSegType] = useState('');
-
+  const [allcatogories, setAllCategories] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
   const [shortName, setShortName] = useState('');
   const [childName, setChildName] = useState('');
  const  [groupArray, setGroupArray] = useState<string[]>([]);
   const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
-
-  console.log("selectedMasterArray", selectedMasterArray);
+ const [selectedCatogory, setSelectedCategory] = useState<string>('');
+ 
   useEffect(() => {
     if( selectedMasterArray &&
         selectedMasterArray.name &&
         selectedMasterArray.allSegments &&
-        selectedMasterArray.allSegments.length > 0 
+        selectedMasterArray.allSegments.length === 0
     ) {
       setSegType(selectedMasterArray.name);
+      setAllCategories(selectedMasterArray.categories || []);
       const allSeg = selectedMasterArray.allSegments.length;
-      if (allSeg == 1) {
-        setGroupArray((prev) => [...prev, selectedMasterArray.allSegments[0].groupName]);
-        const firstSeg = selectedMasterArray.allSegments[0];
-        if (firstSeg && firstSeg.segments && firstSeg.segments.length == 0) {
-          setGroupName(firstSeg.groupName ?? "");
-          setShortName(selectedMasterArray.short_code + firstSeg.segments.length + 1);
-          setChildName(selectedMasterArray.name + firstSeg.segments.length + 1);
-        }
-
-
-        }else if(allSeg > 1) {
-            setGroupArray(selectedMasterArray.allSegments.map(seg => seg.groupName));
-            setSegType(selectedMasterArray.name);
-            // Reset groupName and childName if there are multiple segments
-            setGroupName('');
-            setChildName('');
+      if (allSeg == 0) {
+        setGroupArray([`${selectedMasterArray.name}1`]);
+        const firstSeg =`${selectedMasterArray.name}1`
+        if (firstSeg ) {
+          setGroupName(firstSeg);
+          setShortName(`${selectedMasterArray.short_code}1`);
+          setChildName(firstSeg);
         }
     }
+    }
   },[selectedMasterArray])
+
+
+
   const handleSave = () => {
 
     dispatch(UpdateOtherSegmentDrawn({
       segType,
       groupName,
       childName,
-      shortName: shortName
+      shortName: shortName,
+      category:selectedCatogory
     }))
+    dispatch(updateAddSegMessage(" Getting segment details..."));
     onSave()
   };
 
@@ -79,10 +77,11 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
       </Modal.Header>
       <Modal.Body>
         <div className="flex-1 overflow-auto p-6 flex flex-col gap-4">
-          {/* Wall Dropdown */}
-          <div className="bg-purple-50 rounded-lg p-3 flex items-center justify-between">
-            <span>{groupName}</span>
+          {/* Wall and Categories Dropdowns in one line */}
+          <div className="bg-purple-50 rounded-lg p-3 flex items-center justify-between gap-4">
+            {/* Wall Dropdown */}
             <div className="flex items-center gap-2">
+              <span>{groupName}</span>
               <select
                 className="bg-transparent outline-none"
                 value={groupName}
@@ -94,6 +93,20 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
                 ))}
               </select>
               <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold">+</button>
+            </div>
+            {/* Categories Dropdown */}
+            <div className="flex items-center gap-2">
+              <span>Categories</span>
+              <select
+                className="bg-transparent outline-none"
+                value={selectedCatogory}
+                onChange={e => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Select Category</option>
+                {allcatogories.map((category, index) => (
+                  <option key={index} value={category}>{category}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

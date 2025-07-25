@@ -70,6 +70,9 @@ export const fetchJobs = createAsyncThunk(
 export const fetchJobById = createAsyncThunk(
   "jobs/fetchJobById",
   async (id: number | string, { rejectWithValue }) => {
+    if (typeof id !== "number") {
+      return rejectWithValue("Invalid job ID");
+    }
     try {
       const response = await JobService.getJobById(id);
 

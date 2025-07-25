@@ -1,6 +1,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { JobModel } from "@/models/jobModel/JobModel";
+import { MsterDataAnnotationResponse } from "@/models/jobSegmentsModal/JobSegmentModal";
 import axios from "axios";
 
 export interface CreateJobRequest {
@@ -31,29 +32,23 @@ export class JobApi {
 
 
   // get master Data based of annotation points
-  static async getMasterData(segmentationInt:number[], segName:string)  {
-     const value={
-        segmentationInt:segmentationInt ,
-          className: segName,
-          Perfeet: 20
-      }
+  static async getMasterData(segmentationInt:number[], segName:string):Promise<MsterDataAnnotationResponse>  {
+    const value = {
+      segmentationInt: segmentationInt,
+      className: segName,
+      Perfeet: 20
+    };
     try {
-      await axios.post(`https://api.dzinly.org/manual-annot-result`, value).then((response) => {
-        if (response.status === 200) {
-          return {
-            data: response.data as JobModel[],
-            error: null,
-            success: true,
-          };
-        }
-      });
+      const response = await axios.post(`https://api.dzinly.org/manual-annot-result`, value);
+      if (response && response.status === 200) {
+        console.log('Master Data Response:', response);
+        return response.data as MsterDataAnnotationResponse;
+      } else {
+        throw new Error(response.data?.error || 'Failed to fetch master data');
+      }
     } catch (error) {
       console.error('Error in getMasterData:', error);
-      return {
-        data: null,
-        error: (error as Error).message || 'Failed to fetch master data',
-        success: false,
-      };
+      throw error;
     }
   }
   /**
