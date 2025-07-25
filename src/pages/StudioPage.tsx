@@ -213,7 +213,6 @@ export function StudioPage() {
 
   return (
     <>
-<<<<<<< Updated upstream
       <div className="py-3 pt-2 px-4 flex items-center justify-between align-center md:hidden block">
         <div className="text-start">
           <Link to="/">
@@ -350,125 +349,7 @@ export function StudioPage() {
 
         <CreateMaterArray />
       </div>
-=======
-      <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
-        {/* <Breadcrumb /> */}
-        <div className="w-1/4 border-r overflow-hidden">
-          <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
-            <div className="text-start">
-              <Link to="/">
-                {" "}
-                <img
-                  className="w-44 text-center"
-                  src={dzinlylogo}
-                  alt="dzinly logo"
-                ></img>
-              </Link>
-            </div>
-            <Link to="/">
-              <Button className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent ">
-                <IoMdArrowRoundBack className="w-4 h-4" />
-                <span>Back</span>
-              </Button>
-            </Link>
-          </div>
 
-          <Tabs
-            value={activeTabFromStore ?? "inspiration"}
-            onValueChange={handleChangeTab}
-            className="w-full h-full flex flex-col"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="inspiration" onClick={handleInspirationClick}>
-                Inspiration
-              </TabsTrigger>
-              <TabsTrigger value="design-hub" onClick={handleDesignHubClick}>
-                Design Hub
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent
-              value="design-hub"
-              className="flex-grow overflow-auto flex"
-            >
-              {/* All Segments - Left Side */}
-              <div className="flex border-r">
-                <AllSegments />
-              </div>
-
-              {/* Studio Sidebar - Right Side */}
-              <div className="flex-1">
-                <StudioSidebar
-                  currentUserRole={currentUserRole}
-                  canEdit={canEdit}
-                  canAdmin={canAdmin}
-                  activeTab={activeTabFromStore ?? "design-hub"}
-                  onTabChange={handleChangeTab}
-                  onShareClick={() => setShareDialogOpen(true)}
-                  projectId={projectId}
-                  // selectedSegmentType={selectedSegmentType}
-                  // designSettings={designSettings}
-                  isJobRunning={isJobRunning}
-                  jobError={jobError}
-                  // currentJob={currentJob}
-                  // currentImageUrl={currentImageUrl}
-                  // isUploading={isUploading}
-                  jobProgress={jobProgress}
-                  onStyleChange={handleStyleChange}
-                  onLevelChange={handleLevelChange}
-                  onPreserveToggle={handlePreserveToggle}
-                  onToneChange={handleToneChange}
-                  onIntensityChange={handleIntensityChange}
-                  onGenerate={handleGenerate}
-                  onCancelJob={handleCancelJob}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent
-              value="inspiration"
-              className="flex-grow overflow-auto"
-            >
-              <InspirationSidebar />
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        {/* Main Canvas */}
-
-        {activeTabFromStore === "design-hub" ? (
-          <StudioMainCanvas
-            // currentCanvasImage={currentCanvasImage}
-            isUploading={true}
-            canEdit={canEdit}
-            isJobRunning={isJobRunning}
-            onFileUpload={handleFileUpload}
-            onClearImage={() => dispatch(clearCurrentImage())}
-          />
-        ) : (
-          <>
-            {/* inspiration tab content */}
-            <WorkSpaceHome />
-          </>
-        )}
-
-        <SwatchBookDataHome />
-
-        {/* get all GenAi Image based on job ID */}
-        {/* <GetGenAiImageJobIdBased /> */}
-
-        <JobHome selectedProjectId={currentProject?.id || undefined} />
-
-        {isCanvasModalOpen && (
-          <ModelCanvas
-            isCanvasModalOpen={isCanvasModalOpen}
-            onClose={handleCloseMask}
-          />
-        )}
-
-        <CreateMaterArray />
-      </div>
->>>>>>> Stashed changes
       <CanvasAdddNewSegmentHome />
     </>
   );

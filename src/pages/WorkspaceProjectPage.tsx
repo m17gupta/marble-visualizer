@@ -1,27 +1,21 @@
-import GetAllInspirational from '@/components/swatchBookData/GetAllInsiprational';
+import GetAllInspirational from "@/components/swatchBookData/GetAllInsiprational";
 
-import InspirationSidebar from '@/components/workSpace/projectWorkSpace/InspirationSidebar';
-import WorkSpaceHome from '@/components/workSpace/WorkSpaceHome';
+import InspirationSidebar from "@/components/workSpace/projectWorkSpace/InspirationSidebar";
+import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
 
-import React from 'react';
-
+import React from "react";
 
 const WorkspaceProjectPage: React.FC = () => {
-
   // const { isGenerated } = useSelector((state: RootState) => state.workspace);
 
   // const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   return (
     <>
-
-
-      <div className='flex'>
+      <div className="flex">
         {/* Left: Inspiration and uploads */}
         <div className="w-1/4 border-r">
           <InspirationSidebar />
         </div>
-
-
 
         {/* Middle: Main image preview and AI Guidance panel */}
 
@@ -41,15 +35,13 @@ const WorkspaceProjectPage: React.FC = () => {
       </div>
 
       {/* get all inspiration images */}
-      <div className='aa'>
+      <div className="aa">
         <GetAllInspirational />
       </div>
-
     </>
   );
 };
 
 export default WorkspaceProjectPage;
 
-
-//  
+//

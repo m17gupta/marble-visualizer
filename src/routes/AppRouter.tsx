@@ -4,11 +4,8 @@ import { RootState } from "@/redux/store";
 import { LoginPage } from "@/pages/LoginPage";
 import { SignUpPage } from "@/pages/SignUpPage";
 import { ProjectsPage } from "@/pages/projectPage/ProjectsPage";
-<<<<<<< Updated upstream
-import { StudioPage } from "@/routes/StudioPage";
-=======
+// import { StudioPage } from "@/routes/StudioPage";
 import { StudioPage } from "@/pages/StudioPage";
->>>>>>> Stashed changes
 import { ProfilePage } from "@/pages/ProfilePage";
 // import { MaterialsPage } from '@/pages/MaterialsPage';
 

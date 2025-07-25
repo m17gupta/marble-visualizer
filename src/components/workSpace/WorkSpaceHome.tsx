@@ -1,14 +1,4 @@
-<<<<<<< Updated upstream
-import React from 'react'
-import GenAiImages from './compareGenAiImages/GenAiImages'
-import GuidancePanel from './projectWorkSpace/GuidancePanel'
-import CompareGenAiHome from './compareGenAiImages/CompareGenAiHome'
-import ImagePreview from './projectWorkSpace/ImagePreview'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/redux/store'
-import CanvasAdddNewSegmentHome from '../canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome'
-import StudioPageMobile from '@/pages/StudioPageMobile'
-=======
+import StudioPageMobile from "@/pages/StudioPageMobile";
 import React, { useEffect, useState } from "react";
 import GenAiImages from "./compareGenAiImages/GenAiImages";
 import GuidancePanel from "./projectWorkSpace/GuidancePanel";
@@ -26,7 +16,6 @@ import {
   resetGenAiState,
   setCurrentGenAiImage,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
->>>>>>> Stashed changes
 
 const WorkSpaceHome = () => {
   const { currentTabContent } = useSelector((state: RootState) => state.studio);
@@ -54,16 +43,9 @@ const WorkSpaceHome = () => {
 
   return (
     <>
-<<<<<<< Updated upstream
-     <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-           {currentTabContent==="home" &&
-             <ImagePreview /> }
-=======
-      <div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+      <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
         {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
         {currentTabContent === "home" && <ImagePreview />}
->>>>>>> Stashed changes
 
         {currentTabContent === "compare" && <CompareGenAiHome />}
 
@@ -72,26 +54,11 @@ const WorkSpaceHome = () => {
           <GenAiImages />
         </div>
       </div>
+      <div className="md:hidden block">
+        <StudioPageMobile />
+      </div>
     </>
   );
 };
 
-<<<<<<< Updated upstream
-            <div className="mt-4 ">
-              <GuidancePanel />
-              <GenAiImages />
-
-            </div>
-          </div>
-         <div className="md:hidden block">
-            <StudioPageMobile />
-            </div>
-          </>
-
-  )
-}
-
-export default WorkSpaceHome
-=======
 export default WorkSpaceHome;
->>>>>>> Stashed changes
