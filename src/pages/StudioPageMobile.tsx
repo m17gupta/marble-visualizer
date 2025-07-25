@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-
 import LeftPage from "./mobilePage/LeftPage";
+
 
 const styles = [
   "Modern",

@@ -1,5 +1,3 @@
-import React from 'react'
-
 
 import StudioPageMobile from "@/pages/StudioPageMobile";
 import React, { useEffect, useState } from "react";
