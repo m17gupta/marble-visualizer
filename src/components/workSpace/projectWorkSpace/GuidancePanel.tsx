@@ -250,14 +250,17 @@ const GuidancePanel: React.FC = () => {
             suggestedPrompt.map((suggestion: any, idx: number) => (
               <div
                 key={idx}
-                className="bg-white/10 rounded-xl p-3 border  border-black/10"
+                className="bg-white/10 rounded-xl p-3 border  flex items-center justify-between border-black/10"
               >
+                <div>
                 <h3 className="text-base font-semibold text-gray-900 mb-1">
                   {suggestion.title}
                 </h3>
                 <p className="text-sm text-gray-800 leading-snug mb-2">
                   {suggestion.prompt}
                 </p>
+                </div>
+
                 <button
                   onClick={() => handleRandomPromptSelection(suggestion.prompt)}
                   className="px-3 py-1 bg-black text-white text-xs rounded-md hover:bg-gray-900 transition"
