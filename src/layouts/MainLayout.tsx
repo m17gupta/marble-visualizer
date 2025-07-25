@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Setting from "./Setting";
 
-
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
   Home,
@@ -16,6 +15,8 @@ import {
   Paintbrush,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
+import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 
 const navigation = [
   {
@@ -28,7 +29,7 @@ const navigation = [
     href: "/app/studio",
     icon: Palette,
   },
-  
+
   {
     name: "SwatchBook",
     href: "/app/swatchbook",
@@ -55,6 +56,8 @@ export function MainLayout() {
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full bg-card">
+      <SwatchBookDataHome />
+      <GetGenAiImageJobIdBased />
       <div className="flex items-center justify-between p-6">
         <motion.div
           initial={false}
@@ -168,12 +171,6 @@ export function MainLayout() {
           isStudioPage && "lg:pl-0"
         )}
       >
-       
-       
-
-
-
-
         {/* Main Content Area */}
         <main>
           <motion.div
@@ -187,9 +184,9 @@ export function MainLayout() {
       </div>
 
       {/* Settings Modal */}
-      <Setting 
-        isOpen={settingsModalOpen} 
-        onClose={() => setSettingsModalOpen(false)} 
+      <Setting
+        isOpen={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
       />
     </div>
   );

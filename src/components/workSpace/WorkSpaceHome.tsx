@@ -38,7 +38,7 @@ const WorkSpaceHome = () => {
     if (!genAiImages || genAiImages.length === 0) {
       dispatch(fetchGenAiChat(jobId!));
     }
-  }, [genAiImages]);
+  }, [jobId, genAiImages.length]);
   console.log(genAiImages);
 
   return (

@@ -213,7 +213,7 @@ export function StudioPage() {
 
   return (
     <>
-      <div className="py-3 pt-2 px-4 flex items-center justify-between align-center md:hidden block">
+      <div className="py-3 pt-2 px-4 flex items-center justify-between align-center md:hidden">
         <div className="text-start">
           <Link to="/">
             {" "}
@@ -336,7 +336,7 @@ export function StudioPage() {
         <SwatchBookDataHome />
 
         {/* get all GenAi Image based on job ID */}
-        <GetGenAiImageJobIdBased />
+        {/* <GetGenAiImageJobIdBased /> */}
 
         <JobHome selectedProjectId={currentProject?.id || undefined} />
 
