@@ -1,13 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 // import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 // import { AppDispatch } from '@/redux/store';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   // Heart,
@@ -19,44 +30,68 @@ import {
   // Award,
   Copy,
   ExternalLink,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
+  Heart,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
+import { toggleFavorite } from "@/redux/slices/swatchSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface SwatchCardProps {
   swatch: MaterialModel;
-  variant?: 'grid' | 'list';
-  layoutMode?: 'compact' | 'detailed';
+  variant?: "grid" | "list";
+  layoutMode?: "compact" | "detailed";
   showActions?: boolean;
   className?: string;
 }
 
-export function SwatchCard({ 
-  swatch, 
-  variant = 'grid', 
-  layoutMode = 'detailed',
+export function SwatchCard({
+  swatch,
+  variant = "grid",
+  layoutMode = "detailed",
   showActions = true,
-  className 
+  className,
 }: SwatchCardProps) {
   // const dispatch = useDispatch<AppDispatch>();
-   const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   // const { favorites } = useSelector((state: RootState) => state.swatches);
-  
+  console.log(swatch);
   const [isHovered, setIsHovered] = useState(false);
+  const [favorites, setFavorites] = useState<number[]>([]);
   // const [imageLoaded, setImageLoaded] = useState(false);
-  
-  // const isFavorite = favorites.includes(swatch._id);
+  const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
+  const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
+  const handleToggleFavorite = async (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    const getAllFavorite = (await JSON.parse(
+      localStorage.getItem("fav_swatch") || "[]"
+    )) as number[];
 
-  const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
-  const newPath="https://betadzinly.s3.us-east-2.amazonaws.com/material/"
-  const handleToggleFavorite = async (e: React.MouseEvent) => {
-    // e.stopPropagation();
+    if (!getAllFavorite.includes(id)) {
+      getAllFavorite.push(id);
+      await localStorage.setItem("fav_swatch", JSON.stringify(getAllFavorite));
+      setFavorites(getAllFavorite); // update state
+    } else {
+      const filteredData = getAllFavorite.filter((d) => d !== id);
+      await localStorage.setItem("fav_swatch", JSON.stringify(filteredData));
+      setFavorites(filteredData);
+    }
+
     // await dispatch(toggleFavorite(swatch.id));
     // toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
   };
 
+  useEffect(() => {
+    const stored = JSON.parse(
+      localStorage.getItem("fav_swatch") || "[]"
+    ) as number[];
+    setFavorites(stored);
+  }, []);
+
   const handleViewDetails = () => {
-    console.log('Navigating to swatch details:', swatch.id);
+    console.log("Navigating to swatch details:", swatch.id);
     navigate(`/swatch/${swatch.id}`);
   };
 
@@ -74,15 +109,29 @@ export function SwatchCard({
   // };
 
   const getLRVCategory = (lrv: number) => {
-    if (lrv >= 70) return { label: 'Light', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800' };
-    if (lrv >= 30) return { label: 'Medium', color: 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800' };
-    return { label: 'Dark', color: 'bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-400 dark:border-gray-800' };
+    if (lrv >= 70)
+      return {
+        label: "Light",
+        color:
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800",
+      };
+    if (lrv >= 30)
+      return {
+        label: "Medium",
+        color:
+          "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800",
+      };
+    return {
+      label: "Dark",
+      color:
+        "bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-400 dark:border-gray-800",
+    };
   };
 
   const lrvCategory = getLRVCategory(swatch.material_category_id);
 
   // Compact List View
-  if (variant === 'list' && layoutMode === 'compact') {
+  if (variant === "list" && layoutMode === "compact") {
     return (
       <TooltipProvider>
         <motion.div
@@ -90,9 +139,9 @@ export function SwatchCard({
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.01 }}
           transition={{ duration: 0.2 }}
-          className={cn('w-full', className)}
+          className={cn("w-full", className)}
         >
-          <Card 
+          <Card
             className="cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden bg-card border-border"
             onClick={handleViewDetails}
             onMouseEnter={() => setIsHovered(true)}
@@ -102,14 +151,18 @@ export function SwatchCard({
               {/* Compact Color Preview */}
               <div className="w-12 h-12 flex-shrink-0 relative rounded-md overflow-hidden border border-border">
                 <img
-                   src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
-                alt={swatch.title}
+                  src={
+                    `${swatch.bucket_path}` === "default"
+                      ? `${path}/${swatch.photo}`
+                      : `${newPath}/${swatch.bucket_path}`
+                  }
+                  alt={swatch.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.style.backgroundColor = swatch.color || '#ffffff';
-                    target.style.display = 'block';
-                    target.src = '';
+                    target.style.backgroundColor = swatch.color || "#ffffff";
+                    target.style.display = "block";
+                    target.src = "";
                   }}
                 />
               </div>
@@ -118,7 +171,9 @@ export function SwatchCard({
               <div className="flex-1 min-w-0 ml-3">
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-medium text-sm truncate text-foreground">{swatch.title}</h3>
+                    <h3 className="font-medium text-sm truncate text-foreground">
+                      {swatch.title}
+                    </h3>
                     <div className="flex items-center space-x-2 mt-1">
                       <code className="text-xs bg-muted px-1 py-0.5 rounded text-muted-foreground">
                         {swatch.color ?? "#000000"}
@@ -164,7 +219,7 @@ export function SwatchCard({
   }
 
   // Compact Grid View
-  if (variant === 'grid' && layoutMode === 'compact') {
+  if (variant === "grid" && layoutMode === "compact") {
     return (
       <TooltipProvider>
         <motion.div
@@ -172,9 +227,9 @@ export function SwatchCard({
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
-          className={cn('w-full', className)}
+          className={cn("w-full", className)}
         >
-          <Card 
+          <Card
             className="group cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
             onClick={handleViewDetails}
             onMouseEnter={() => setIsHovered(true)}
@@ -183,21 +238,24 @@ export function SwatchCard({
             {/* Compact Color Preview */}
             <div className="relative aspect-square">
               <img
-                src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
+                src={
+                  `${swatch.bucket_path}` === "default"
+                    ? `${path}/${swatch.photo}`
+                    : `${newPath}/${swatch.bucket_path}`
+                }
                 alt={swatch.title}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.style.backgroundColor = swatch.color || '#ffffff';
-                  target.style.display = 'block';
-                  target.src = '';
+                  target.style.backgroundColor = swatch.color || "#ffffff";
+                  target.style.display = "block";
+                  target.src = "";
                 }}
               />
-              
-              
+
               {/* Compact overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              
+
               {/* Compact color info */}
               <div className="absolute bottom-2 left-2 right-2">
                 <div className="text-white text-xs">
@@ -206,7 +264,7 @@ export function SwatchCard({
                 </div>
               </div>
 
-              {/* Compact action buttons */}  
+              {/* Compact action buttons */}
               {showActions && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -214,17 +272,23 @@ export function SwatchCard({
                   transition={{ duration: 0.2 }}
                   className="absolute top-2 right-2 flex space-x-1"
                 >
-                  {/* <Button
+                  <Button
                     variant="secondary"
                     size="sm"
-                    onClick={handleToggleFavorite}
+                    onClick={(e) => handleToggleFavorite(e, swatch.id)}
                     className={cn(
-                      'h-6 w-6 p-0 bg-white/90 hover:bg-white',
-                      isFavorite && 'text-red-500 hover:text-red-600'
+                      "h-6 w-6 p-0 bg-white/90 hover:bg-white",
+                      favorites.includes(swatch.id) &&
+                        "text-red-500 hover:text-red-600"
                     )}
                   >
-                    <Heart className={cn('h-3 w-3', isFavorite && 'fill-current')} />
-                  </Button> */}
+                    <Heart
+                      className={cn(
+                        "h-3 w-3",
+                        favorites.includes(swatch.id) && "fill-current"
+                      )}
+                    />
+                  </Button>
                 </motion.div>
               )}
 
@@ -239,16 +303,16 @@ export function SwatchCard({
             </div>
 
             {/* Compact footer */}
-            <div className="p-2">
+            {/* <div className="p-2">
               <div className="flex items-center justify-between text-xs">
-                {/* <span className="text-green-600 font-medium">
-                  {formatPrice(swatch.pricing.per_gallon)}
-                </span> */}
-                {/* <Badge variant="outline" className="text-xs px-1 py-0">
+                <span className="text-green-600 font-medium">
+                  {formatPrice(swatch.pricing.per_gallon)}s
+                </span>
+                <Badge variant="outline" className="text-xs px-1 py-0">
                   {swatch.brand}
-                </Badge> */}
+                </Badge>
               </div>
-            </div>
+            </div> */}
           </Card>
         </motion.div>
       </TooltipProvider>
@@ -256,7 +320,7 @@ export function SwatchCard({
   }
 
   // Detailed List View (existing implementation)
-  if (variant === 'list') {
+  if (variant === "list") {
     return (
       <TooltipProvider>
         <motion.div
@@ -264,9 +328,9 @@ export function SwatchCard({
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.01 }}
           transition={{ duration: 0.2 }}
-          className={cn('w-full', className)}
+          className={cn("w-full", className)}
         >
-          <Card 
+          <Card
             className="cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
             onClick={handleViewDetails}
             onMouseEnter={() => setIsHovered(true)}
@@ -276,14 +340,18 @@ export function SwatchCard({
               {/* Color Preview */}
               <div className="w-24 h-24 flex-shrink-0 relative">
                 <img
-                   src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
-                alt={swatch.title}
+                  src={
+                    `${swatch.bucket_path}` === "default"
+                      ? `${path}/${swatch.photo}`
+                      : `${newPath}/${swatch.bucket_path}`
+                  }
+                  alt={swatch.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.style.backgroundColor = swatch.color || '#000000';
-                    target.style.display = 'block';
-                    target.src = '';
+                    target.style.backgroundColor = swatch.color || "#000000";
+                    target.style.display = "block";
+                    target.src = "";
                   }}
                 />
                 <div className="absolute inset-0 bg-black/10" />
@@ -294,16 +362,18 @@ export function SwatchCard({
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-lg truncate text-foreground">{swatch.title}</h3>
+                      <h3 className="font-semibold text-lg truncate text-foreground">
+                        {swatch.title}
+                      </h3>
                       <Badge variant="outline" className="text-xs">
                         {swatch.color}
                       </Badge>
                     </div>
-                    
+
                     <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                       {swatch.description}
                     </p>
-                    
+
                     <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                       {/* <span>{swatch.brand}</span>
                       <span>•</span>
@@ -337,17 +407,25 @@ export function SwatchCard({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={handleToggleFavorite}
+                            onClick={(e) => handleToggleFavorite(e, swatch.id)}
                             className={cn(
-                              'h-8 w-8 p-0',
-                              // isFavorite && 'text-red-500 hover:text-red-600'
+                              "h-8 w-8 p-0",
+                              favorites.includes(swatch.id) &&
+                                "text-red-500 hover:text-red-600"
                             )}
                           >
-                            {/* <Heart className={cn('h-4 w-4', isFavorite && 'fill-current')} /> */}
+                            <Heart
+                              className={cn(
+                                "h-4 w-4",
+                                favorites.includes(swatch.id) && "fill-current"
+                              )}
+                            />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          {/* {isFavorite ? 'Remove from favorites' : 'Add to favorites'} */}
+                          {favorites.includes(swatch.id)
+                            ? "Remove from favorites"
+                            : "Add to favorites"}
                         </TooltipContent>
                       </Tooltip>
 
@@ -403,9 +481,9 @@ export function SwatchCard({
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.2 }}
-        className={cn('w-full', className)}
+        className={cn("w-full", className)}
       >
-        <Card 
+        <Card
           className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-card border-border"
           onClick={handleViewDetails}
           onMouseEnter={() => setIsHovered(true)}
@@ -414,26 +492,32 @@ export function SwatchCard({
           {/* Color Preview */}
           <div className="relative aspect-square">
             <img
-               src={`${swatch.bucket_path}` === "default" ? `${path}/${swatch.photo}` : `${newPath}/${swatch.bucket_path}` }
-                alt={swatch.title}
+              src={
+                `${swatch.bucket_path}` === "default"
+                  ? `${path}/${swatch.photo}`
+                  : `${newPath}/${swatch.bucket_path}`
+              }
+              alt={swatch.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.style.backgroundColor = swatch.color || '#ffffff';
-                target.style.display = 'block';
-                target.src = '';
+                target.style.backgroundColor = swatch.color || "#ffffff";
+                target.style.display = "block";
+                target.src = "";
               }}
             />
-            
+
             {/* Overlay with color info */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            
+
             {/* Color details overlay */}
             <div className="absolute bottom-3 left-3 right-3">
               <div className="flex items-center justify-between text-white text-sm">
                 <div>
                   <div className="font-medium">{swatch.title}</div>
-                  <div className="text-xs opacity-90">Description {swatch.description}</div>
+                  <div className="text-xs opacity-90">
+                    Description: {swatch.description}
+                  </div>
                 </div>
                 <Badge className={lrvCategory.color} variant="secondary">
                   {lrvCategory.label}
@@ -453,17 +537,25 @@ export function SwatchCard({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={handleToggleFavorite}
+                    onClick={(e) => handleToggleFavorite(e, swatch.id)}
                     className={cn(
-                      'h-8 w-8 p-0 bg-white/90 hover:bg-white',
-                      // isFavorite && 'text-red-500 hover:text-red-600'
+                      "h-8 w-8 p-0 bg-white/90 hover:bg-white",
+                      favorites.includes(swatch.id) &&
+                        "text-red-500 hover:text-red-600"
                     )}
                   >
-                    {/* <Heart className={cn('h-4 w-4', isFavorite && 'fill-current')} /> */}
+                    <Heart
+                      className={cn(
+                        "h-4 w-4",
+                        favorites.includes(swatch.id) && "fill-current"
+                      )}
+                    />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {/* {isFavorite ? 'Remove from favorites' : 'Add to favorites'} */}
+                  {favorites.includes(swatch.id)
+                    ? "Remove from favorites"
+                    : "Add to favorites"}
                 </TooltipContent>
               </Tooltip>
 
@@ -496,13 +588,15 @@ export function SwatchCard({
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg truncate text-foreground">{swatch.title}</CardTitle>
+                <CardTitle className="text-lg truncate text-foreground">
+                  {swatch.title}
+                </CardTitle>
                 <CardDescription className="line-clamp-2 mt-1">
                   {swatch.description}
                 </CardDescription>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2 mt-2">
               <Badge variant="outline" className="text-xs">
                 {swatch.material_brand_id}
@@ -513,7 +607,7 @@ export function SwatchCard({
             </div>
           </CardHeader>
 
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 hidden">
             {/* Pricing */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-1 text-green-600">

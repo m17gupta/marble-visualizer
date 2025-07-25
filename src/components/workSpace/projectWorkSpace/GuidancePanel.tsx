@@ -112,7 +112,6 @@ const GuidancePanel: React.FC = () => {
 
   // add prompt
   const handleAddPrompt = (value: string) => {
-   
     if (!value || value.trim() !== "") {
       dispatch(addPrompt(value));
     }
@@ -133,24 +132,19 @@ const GuidancePanel: React.FC = () => {
       const resultAction = await dispatch(
         submitGenAiRequest(requests as GenAiRequest)
       );
-      
+
       if (resultAction.type === "genAi/submitRequest/fulfilled") {
         const response = resultAction.payload as {
-          data: { message: string; task_id: string };
+          message: string;
+          task_id: string;
         };
+
         console.log("Response:--->", response);
-        if (
-          response &&
-          response.data &&
-          response.data.message === "Image generation task started."
-        ) {
-          console.log(
-            "AI image generation started successfully:",
-            response.data
-          );
+        if (response && response.message === "Image generation task started.") {
+          console.log("AI image generation started successfully:", response);
           // isApiCall.current = true; // Reset the flag for future API calls
-          setTaskId(response.data.task_id); // Store the task ID
-          dispatch(updateTaskId(response.data.task_id)); // Update the task ID in the state
+          setTaskId(response.task_id); // Store the task ID
+          dispatch(updateTaskId(response.task_id)); // Update the task ID in the state
           setIsTask(true);
         }
       }
@@ -172,7 +166,7 @@ const GuidancePanel: React.FC = () => {
   const handleResetStartApiCall = async (data: TaskApiModel) => {
     setTaskId("");
     setIsTask(false);
-   
+
     const genChat: GenAiChat = {
       // Remove the id field to let Supabase generate a UUID automatically
 
@@ -206,12 +200,11 @@ const GuidancePanel: React.FC = () => {
     } as GenAiChat;
 
     dispatch(setCurrentGenAiImage(genChat));
-    
+
     try {
       const result = await dispatch(insertGenAiChatData(genChat));
-      
+
       if (result.meta.requestStatus === "fulfilled") {
-        
         dispatch(resetRequest());
         dispatch(updateIsGenLoading(false));
 

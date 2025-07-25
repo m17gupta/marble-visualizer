@@ -1,21 +1,33 @@
-import { ReactNode, useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppDispatch, RootState } from '@/redux/store';
-import { initializeAuth } from '@/redux/slices/authSlice';
-import { Loader2 } from 'lucide-react';
-import { UserRole } from '@/types/auth';
+import { ReactNode, useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { initializeAuth } from "@/redux/slices/authSlice";
+import { Loader2 } from "lucide-react";
+import { UserRole } from "@/types/auth";
+import { fetchProjects } from "@/redux/slices/projectSlice";
 
 interface PrivateRouteProps {
   children: ReactNode;
   requiredRole?: UserRole;
 }
 
-export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRouteProps) {
+export function PrivateRoute({
+  children,
+  requiredRole = "user",
+}: PrivateRouteProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, isLoading, isInitialized, user } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isLoading, isInitialized, user } = useSelector(
+    (state: RootState) => state.auth
+  );
   const { profile } = useSelector((state: RootState) => state.userProfile);
   const location = useLocation();
+
+  const {
+    list: projects,
+    error,
+    isUpdating,
+  } = useSelector((state: RootState) => state.projects);
 
   // Initialize auth on mount
   useEffect(() => {
@@ -23,6 +35,12 @@ export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRoutePr
       dispatch(initializeAuth());
     }
   }, [dispatch, isInitialized]);
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      dispatch(fetchProjects(user.id));
+    }
+  }, [dispatch, isAuthenticated, user?.id]);
 
   // Show loading spinner while initializing or checking authentication
   if (isLoading || !isInitialized) {
@@ -46,11 +64,11 @@ export function PrivateRoute({ children, requiredRole = 'user' }: PrivateRoutePr
   // Check role permissions
   if (requiredRole && user && profile) {
     const roleHierarchy: Record<UserRole, number> = {
-      'user': 0,
-      'viewer': 1,
-      'vendor': 2,
-      'editor': 3,
-      'admin': 4,
+      user: 0,
+      viewer: 1,
+      vendor: 2,
+      editor: 3,
+      admin: 4,
     };
 
     const userRoleLevel = roleHierarchy[profile.role as UserRole] || 0;
