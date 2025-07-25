@@ -1,3 +1,5 @@
+// Annotation response interface
+
 // import axios from "axios";
 
 // const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -37,9 +39,11 @@
 
     static async getMasterAnnotationData(segmentationInt: number[], segName: string) {
 
-      return  await JobApi.getMasterData(segmentationInt, segName);
+      const data = await  JobApi.getMasterData(segmentationInt, segName);
+      console.log('Master Annotation Data jo servive :', data);
+      return data;
       }
-
+      
 
       static async getJobsByProjectId(projectId:number) {
           return await JobApi.getJobsByProjectId(projectId);

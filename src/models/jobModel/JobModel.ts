@@ -1,4 +1,5 @@
 
+
 export interface ISkewModel{
   skew_x?:number;
   skew_y?:number;
@@ -90,9 +91,31 @@ export interface JobModel{
 export  interface GroupSegmentModel {
 [key: string]: JobSegmentModel;
 }
+
+export interface SegmentModal {
+  id?: number;
+  job_id?: number;
+  title?: string;
+  short_title?: string;
+  group_name?: string;
+  group_desc?: string;
+  segment_type?: string;
+  annotation_points_float?: number[];
+  segment_bb_float?: number[];
+  annotation_type?: string;
+  seg_perimeter?: number;
+  seg_area_sqmt?: number;
+  seg_skewx?: number;
+  seg_skewy?: number;
+  created_at?: string;
+  updated_at?: string;
+  group_label?: string;
+}
+
+
 export interface MasterGroupModel {
  groupName: string;
- segments: GroupSegmentModel[];
+ segments: SegmentModal[];
 }
 
 export interface MasterModel{
@@ -102,8 +125,10 @@ export interface MasterModel{
   color_code: string,
   short_code: string,
    overAllSwatch: Swatch[];
+   categories?: string[];
   allSegments: MasterGroupModel[]  //all walls
 }
+
 
 
 

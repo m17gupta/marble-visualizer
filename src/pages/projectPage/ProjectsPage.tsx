@@ -141,12 +141,14 @@ export function ProjectsPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<
     number | undefined
   >(undefined);
-  const handleProjectClick = (project: ProjectModel) => {
+  const handleProjectClick = async (project: ProjectModel) => {
     if (project.id && project.jobData && project.jobData.length > 0) {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
 
       if (jobId) {
+
+       
         dispatch(addbreadcrumb("Studio"));
         dispatch(setCurrentImageUrl(projectImage || ""));
         dispatch(addHouseImage(projectImage || ""));

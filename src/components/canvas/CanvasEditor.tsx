@@ -33,7 +33,6 @@ import {
 } from "@/components/canvasUtil/canvasAutoPan";
 import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
-import CanvasAdddNewSegmentHome from "./canvasAddNewSegment/CanvasAdddNewSegmentHome";
 
 export type DrawingTool = "select" | "polygon";
 
@@ -549,7 +548,7 @@ export function CanvasEditor({
       //   event.e.stopPropagation();
       //   event.e.preventDefault();
       // } else
-         if (updatedZoomMode.current === "mouse" && !wouldGoTooSmall) {
+         if ( !wouldGoTooSmall) {
         ZoomCanvasMouse(fabricCanvasRef, zoom, mousePosition);
         event.e.stopPropagation();
         event.e.preventDefault();
@@ -696,6 +695,12 @@ export function CanvasEditor({
   // Handle mouse down events
   const handleMouseDown = useCallback(
     (e: fabric.TEvent) => {
+
+      //  if(selectedMasterArray ===null){
+      //   alert("Please select a segment to draw");
+      //   return;
+      //  }
+
       if (!fabricCanvasRef.current || activeTool.current !== "polygon") {
         return;
       }
@@ -784,6 +789,7 @@ export function CanvasEditor({
       calculateDistance,
       finishPolygon,
       segmentDrawn,
+      selectedMasterArray
     ]
   );
 
