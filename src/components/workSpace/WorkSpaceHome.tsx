@@ -6,13 +6,14 @@ import ImagePreview from './projectWorkSpace/ImagePreview'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import CanvasAdddNewSegmentHome from '../canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome'
+import StudioPageMobile from '@/pages/StudioPageMobile'
 
 const WorkSpaceHome = () => {
      
       const {currentTabContent} = useSelector((state: RootState) => state.studio);
   return (
     <>
-     <div className="w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+     <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
             {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
            {currentTabContent==="home" &&
              <ImagePreview /> }
@@ -28,8 +29,9 @@ const WorkSpaceHome = () => {
 
             </div>
           </div>
-
-            
+         <div className="md:hidden block">
+            <StudioPageMobile />
+            </div>
           </>
 
   )
