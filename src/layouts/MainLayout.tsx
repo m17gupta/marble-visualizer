@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Setting from "./Setting";
 import dzinlylogo from "../../public/assets/image/dzinlylogo-icon.svg";
+import { AiOutlineMenuUnfold } from "react-icons/ai";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
@@ -14,7 +15,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Paintbrush,
+  Menu,
 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
@@ -31,7 +34,6 @@ const navigation = [
     href: "/app/studio",
     icon: Palette,
   },
-
   {
     name: "Materials Library",
     href: "/app/swatchbook",
@@ -47,7 +49,6 @@ export function MainLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
-  // Check if current route is studio page to hide sidebar
   const isStudioPage = location.pathname.startsWith("/app/studio");
 
   const isActivePath = (path: string) => {
@@ -57,22 +58,22 @@ export function MainLayout() {
   };
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="flex flex-col h-full bg-card">
+    <div className="flex flex-col h-full overflow-y-auto bg-card">
       <UserProfileHome />
       <SwatchBookDataHome />
       <GetGenAiImageJobIdBased />
-      <div className="flex items-center justify-between p-6">
+      <div className="flex items-center justify-between p-4 pt-3">
         <motion.div
           initial={false}
           animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
           className="flex items-center space-x-3"
         >
-          <div className="w-8 h-8  rounded-lg flex items-center justify-center">
-            <Home className="h-5 w-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center pt-0">
+            {/* <Home className="h-5 w-5 text-primary-foreground" /> */}
             <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-xl font-bold text-foreground">Dashboard</span>
+            <span className="text-xl font-bold text-foreground pt-1">Dashboard</span>
           )}
         </motion.div>
         {!mobile && (
@@ -80,7 +81,7 @@ export function MainLayout() {
             variant="ghost"
             size="sm"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="hidden lg:flex"
+            className="hidden lg:flex position-absolute right-3"
           >
             {sidebarCollapsed ? (
               <ChevronRight className="h-4 w-4" />
@@ -149,6 +150,16 @@ export function MainLayout() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile Top Bar */}
+      <div className="lg:hidden sticky top-0 z-40 bg-background border-b border-border flex items-center justify-between px-4 h-14">
+        <Button variant="ghost"  onClick={() => setMobileMenuOpen(true)}>
+          {/* <Menu className="h-5 w-5" /> */}
+          <AiOutlineMenuUnfold className="text-2xl"/>
+
+        </Button>
+        <img src={dzinlylogo} alt="Dzinly" className="h-8" />
+      </div>
+
       {/* Desktop Sidebar */}
       {!isStudioPage && (
         <motion.aside
@@ -170,13 +181,12 @@ export function MainLayout() {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all w-screen duration-300 lg:pl-72",
-          sidebarCollapsed && "lg:pl-20",
+          "transition-all duration-300 w-full lg:pl-[280px]",
+          sidebarCollapsed && "lg:pl-[80px]",
           isStudioPage && "lg:pl-0"
         )}
       >
-        {/* Main Content Area */}
-        <main>
+        <main className="overflow-y-auto min-h-[calc(100vh-56px)]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

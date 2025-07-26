@@ -48,17 +48,17 @@ const StudioMainTabs = () => {
             <Tabs
                 value={activeTabFromStore ?? "inspiration"}
                 onValueChange={handleChangeTab}
-                className="w-full h-full flex flex-col"
+                className="w-full h-full flex flex-col "
             >
-                <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 rounded-xl shadow-sm mb-4 p-1 gap-2">
+                <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 rounded-xl shadow-sm  p-1 gap-2 px-3">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <TabsTrigger
                         value="inspiration"
                         onClick={handleInspirationClick}
-                        className="flex flex-col items-center justify-center h-12 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                        className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-icon lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-icon lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
                       </TabsTrigger>
                     </TooltipTrigger>
                     <TooltipContent>Inspiration</TooltipContent>
@@ -68,9 +68,9 @@ const StudioMainTabs = () => {
                       <TabsTrigger
                         value="design-hub"
                         onClick={handleDesignHubClick}
-                        className="flex flex-col items-center justify-center h-12 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                        className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-waypoints-icon lucide-waypoints"><circle cx="12" cy="4.5" r="2.5"/><path d="m10.2 6.3-3.9 3.9"/><circle cx="4.5" cy="12" r="2.5"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.5"/><path d="m13.8 17.7 3.9-3.9"/><circle cx="12" cy="19.5" r="2.5"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-waypoints-icon lucide-waypoints"><circle cx="12" cy="4.5" r="2.5"/><path d="m10.2 6.3-3.9 3.9"/><circle cx="4.5" cy="12" r="2.5"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.5"/><path d="m13.8 17.7 3.9-3.9"/><circle cx="12" cy="19.5" r="2.5"/></svg>
                       </TabsTrigger>
                     </TooltipTrigger>
                     <TooltipContent>Design Hub</TooltipContent>
@@ -80,9 +80,9 @@ const StudioMainTabs = () => {
                       <TabsTrigger
                         value="measurement"
                         onClick={handleMeasurementClick}
-                        className="flex flex-col items-center justify-center h-12 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                        className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calculator-icon lucide-calculator"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calculator-icon lucide-calculator"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
                       </TabsTrigger>
                     </TooltipTrigger>
                     <TooltipContent>Measurement</TooltipContent>
@@ -92,9 +92,9 @@ const StudioMainTabs = () => {
                       <TabsTrigger
                         value="layers"
                         onClick={handleLayersClick}
-                        className="flex flex-col items-center justify-center h-12 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                        className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-rows3-icon lucide-rows-3"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-rows3-icon lucide-rows-3"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>
                       </TabsTrigger>
                     </TooltipTrigger>
                     <TooltipContent>Layers</TooltipContent>

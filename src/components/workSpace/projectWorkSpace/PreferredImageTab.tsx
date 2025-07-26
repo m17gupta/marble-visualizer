@@ -61,13 +61,13 @@ const StyleAndRenovationPanel: React.FC = () => {
     dispatch(addInspirationImage(image));
   };
   return (
-    <div className="max-w-md mx-auto p-1 space-y-6 p-4">
+    <div className="max-w-md mx-auto p-1 space-y-6 py-1 px-2">
       {/* Tabs */}
 
 
       {/* Style Card */}
-      <div className="bg-white border rounded-xl p-4">
-        <h3 className="font-semibold text-lg mb-4">1. Choose Your Preferred Style</h3>
+      <div className="bg-white border rounded-xl p-3">
+        <h3 className="font-semibold text-lg mb-3">1. Choose Your Preferred Style</h3>
         <div className="flex flex-wrap gap-2 justify-start mb-4">
 
           <button
@@ -100,7 +100,7 @@ const StyleAndRenovationPanel: React.FC = () => {
         </div>
 
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2">
           {isLoading ? (
             // Loading skeleton
             Array.from({ length: 9 }).map((_, i) => (

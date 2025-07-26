@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MasterModel } from "@/models/jobModel/JobModel";
-import { Swiper, SwiperSlide } from 'swiper/react';
+// import { Swiper, SwiperSlide } from 'swiper/react';
 
 const AllSegments = () => {
   const { list: jobs } = useSelector((state: RootState) => state.jobs);
@@ -76,12 +76,12 @@ const AllSegments = () => {
               <TabsList className="flex w-full h-9 overflow-x-auto no-scrollbar">
                
                   {masterArray.allSegments.map((group) => (
-                    <SwiperSlide key={group.groupName} style={{ width: 'auto' }}>
+                    <div key={group.groupName} style={{ width: 'auto', display: 'inline-block' }}>
                       <TabsTrigger value={group.groupName} className="text-xs p-1 flex items-center">
                         <Home className="h-3 w-3 mr-1" />
                         {group.groupName}
                       </TabsTrigger>
-                    </SwiperSlide>
+                    </div>
                   ))}
               
               </TabsList>

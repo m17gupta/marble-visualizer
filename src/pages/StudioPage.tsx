@@ -151,8 +151,7 @@ export function StudioPage() {
               {/* </Link> */}
             </div>
             {/* <Link to="/"> */}
-            <Button
-              className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
+              <Button className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
               onClick={handleBackToProject}
             >
               <IoMdArrowRoundBack className="w-4 h-4" />

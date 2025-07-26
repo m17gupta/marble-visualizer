@@ -20,6 +20,9 @@ export const DashboardLandingSection = () => {
     // Reset logic for project created state
   };
   return (
+    <>
+
+    
     <div className="flex min-h-screen bg-gray-100 border-2">
       {/* Left Sidebar */}
       {/* <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200"> */}
@@ -43,7 +46,9 @@ export const DashboardLandingSection = () => {
         )}
       </div>
     </div>
-    // </div>
+
+
+    </>
   );
 };
 
