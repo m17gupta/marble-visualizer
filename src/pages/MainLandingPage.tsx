@@ -1,7 +1,6 @@
 import React from "react";
 import { DashboardLandingSection } from "@/components/DashboardLandingSection";
-import Breadcrumb from "@/components/breadcrumbs/Breadcrumb";
-import { ProfilePage } from "./ProfilePage";
+
 
 const MainLandingPage = () => {
   return (
