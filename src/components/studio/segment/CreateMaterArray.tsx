@@ -1,21 +1,27 @@
 import { MasterGroupModel, MasterModel } from '@/models/jobModel/JobModel';
 import { setMasterArray } from '@/redux/slices/MasterArraySlice';
 import { RootState } from '@/redux/store';
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CreateMasterArray = () => {
   const { segments } = useSelector((state: RootState) => state.materialSegments);
   const dispatch = useDispatch();
-  const { list: jobLists } = useSelector((state: RootState) => state.jobs);
-  const { allSegments } = useSelector((state: RootState) => state.segments);
 
-  useEffect(() => {
+  const { allSegments } = useSelector((state: RootState) => state.segments);
+  const { currentProject } = useSelector((state: RootState) => state.projects);
+
+
+
+
+
+    useEffect(() => {
     if (!segments || segments.length === 0) return;
 
     const segData: MasterModel[] = [];
 
     if (allSegments && allSegments.length === 0) {
+
       segments.forEach((segment) => {
         segData.push({
           id: segment.id,
@@ -42,7 +48,7 @@ const CreateMasterArray = () => {
         getallGrpName.forEach((grp) => {
           const sameGrp = allsameGrp.filter((item) => item.group_name === grp);
           sameGrpSeg.push({
-            groupName: grp??"",
+            groupName: grp ?? "",
             segments: sameGrp,
           });
         });
@@ -63,7 +69,7 @@ const CreateMasterArray = () => {
         dispatch(setMasterArray(segData));
       }
     }
-  }, [segments, allSegments, dispatch]);
+  }, [segments, allSegments, currentProject, dispatch]);
 
   return null;
 };

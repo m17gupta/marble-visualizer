@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define tab types
-export type TabType = 'segment' | 'design' | 'segments' | 'swatches' | 'history' | 'activity';
+export type TabType = 'studio-segment' | 'design' | 'segments' | 'swatches' | 'history' | 'activity';
 
 
 // Define the state interface
@@ -13,7 +13,7 @@ interface TabControlState {
 
 // Define the initial state
 const initialState: TabControlState = {
-  activeTab: 'segment',
+  activeTab: 'studio-segment',
   segmentType: "Wall",
 
 

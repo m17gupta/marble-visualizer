@@ -10,7 +10,7 @@ import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
-import AllSegments from "../designHub/AllSegments";
+import AllSegments from "../designHub/studio_segement_content/AllSegments";
 
 interface StudioTabsNavigationProps {
   activeTab: string;
@@ -44,7 +44,7 @@ export function StudioTabsNavigation({
 // onToneChange,
 // onIntensityChange
 StudioTabsNavigationProps) {
-  const [designhubactivetab, setDesignHubActiveTab] = useState("segment");
+  const [designhubactivetab, setDesignHubActiveTab] = useState("studio-segment");
 
   const {activeTab: tabControlActiveTab} = useSelector((state: RootState) => state.tabControl);
   const handleChangeTab = (value: string) => {

@@ -7,6 +7,7 @@ import { MaterialSegmentService } from '@/services/materialSegment/MaterialSegme
 
 export interface MaterialSegmentState {
   segments: MaterialSegmentModel[];
+   detectedSegments : MaterialSegmentModel[]; // Added to store detected segments
   selectedMaterialSegment: MaterialSegmentModel| null; // Changed to allow null for no selection
   segmentLoading: boolean;
   error: string | null;
@@ -21,6 +22,7 @@ export interface MaterialSegmentState {
 
 const initialState: MaterialSegmentState = {
   segments: [],
+  detectedSegments: [],
   selectedMaterialSegment:null ,
   segmentLoading: false,
   error: null,
@@ -60,6 +62,9 @@ const materialSegmentSlice = createSlice({
          state.selectedMaterialSegment = action.payload;
     
   },  
+  updateDetectedSegments: (state, action: PayloadAction<MaterialSegmentModel[]>) => {
+      state.detectedSegments = action.payload;
+  },
     clearError: (state) => {
       state.error = null;
     },
@@ -135,6 +140,7 @@ export const {
   updateSegmentLocally,
   addSegmentToGallery,
   removeSegmentFromGallery,
+  updateDetectedSegments
 } = materialSegmentSlice.actions;
 
 export default materialSegmentSlice.reducer;

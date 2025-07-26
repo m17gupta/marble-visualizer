@@ -45,12 +45,11 @@ import {
   Users,
   Settings,
   Copy,
-  InspectIcon,
+  
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import UserProfileHome from "@/components/userProfile/UserProfileHome";
-// import { CreateProjectDialog } from './CreateProject';
-import JobHome from "@/components/job/JobHome";
+
+
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 import VisualToolHome from "@/components/workSpace/visualTool/VisualToolHome";
 import {
@@ -62,7 +61,7 @@ import { updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import {
   addHouseImage,
   resetGenAiState,
-  updateRequestJobId,
+  
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import ProjectHeader from "./ProjectHeader";
@@ -124,7 +123,7 @@ export function ProjectsPage() {
       isProject.current = false;
       dispatch(fetchProjects(user.id));
     }
-  }, [user?.id, projects.length, isLoading, dispatch]);
+  }, [user?.id, projects.length, isLoading]);
 
   useEffect(() => {
     // Set breadcrumb to "Projects" when component mounts
