@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
+import UserProfileHome from "@/components/userProfile/UserProfileHome";
 
 const navigation = [
   {
@@ -57,6 +58,7 @@ export function MainLayout() {
 
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full bg-card">
+      <UserProfileHome />
       <SwatchBookDataHome />
       <GetGenAiImageJobIdBased />
       <div className="flex items-center justify-between p-6">

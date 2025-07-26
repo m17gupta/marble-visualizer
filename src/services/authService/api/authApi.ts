@@ -35,18 +35,15 @@ export class AuthAPI {
         });
       }
 
-       
       // Update last login
       await this.updateLastLogin(data.user.id);
 
-      
-
       const userAuth: User = {
         id: data.user.id,
-        email: data.user.email || '',
+        email: data.user.email || "",
         profile: 0, // Default profile ID or fetch from database
         is_active: true,
-        status: 'active',
+        status: "active",
         created_at: data.user.created_at || new Date().toISOString(),
         modified_at: new Date().toISOString(),
       };
@@ -96,8 +93,7 @@ export class AuthAPI {
 
       // First create the Supabase auth user
       const { data, error } = await supabase.auth.signUp(finalUser);
-               
-    
+
       if (error) {
         throw new AuthError({
           message: error.message,
@@ -123,14 +119,12 @@ export class AuthAPI {
       // Create user profile in user_profiles table
       const profile = await this.createUserProfile(profileData);
 
-  
-
       const userAuth: User = {
         id: data.user.id,
-        email: data.user.email || '',
-        profile: profile.id?? 0, // Use the created profile ID
+        email: data.user.email || "",
+        profile: profile.id ?? 0, // Use the created profile ID
         is_active: true,
-        status: 'active',
+        status: "active",
         created_at: data.user.created_at || new Date().toISOString(),
         modified_at: new Date().toISOString(),
       };
@@ -243,7 +237,7 @@ export class AuthAPI {
         if (error.message === "Auth session missing!") {
           return null;
         }
-        
+
         throw new AuthError({
           message: error.message,
           status: 401,
@@ -262,10 +256,10 @@ export class AuthAPI {
 
       const userAuth: User = {
         id: data.user.id,
-        email: data.user.email || '',
+        email: data.user.email || "",
         profile: 0, // Default profile ID or fetch from database
         is_active: true,
-        status: 'active',
+        status: "active",
         created_at: data.user.created_at || new Date().toISOString(),
         modified_at: new Date().toISOString(),
       };
@@ -276,41 +270,42 @@ export class AuthAPI {
         throw error;
       }
       // For any other unexpected errors, return null instead of throwing
-      console.error('Unexpected error in getCurrentUser:', error);
+      console.error("Unexpected error in getCurrentUser:", error);
       return null;
     }
   }
 
-
   // get current user profile based on userId
-   static async getUserProfileByUserId(userId: string): Promise<UserProfile | null> {
-    try { 
-      
-      
+  static async getUserProfileByUserId(
+    userId: string
+  ): Promise<UserProfile | null> {
+    try {
       // First, check if user_profiles table exists and has data
       const response = await supabase
         .from("user_profiles")
         .select("*")
         .eq("user_id", userId);
-       
-     
-      
+
       if (response.error) {
-        console.error("getUserProfileByUserId - Database error:", response.error);
-        
+        console.error(
+          "getUserProfileByUserId - Database error:",
+          response.error
+        );
+
         // If table doesn't exist, let's debug what tables are available
-        if (response.error.message.includes('relation "public.user_profiles" does not exist')) {
-          
+        if (
+          response.error.message.includes(
+            'relation "public.user_profiles" does not exist'
+          )
+        ) {
           await this.debugDatabaseTables();
-          
+
           // Try with profiles table instead
           const profilesResponse = await supabase
             .from("profiles")
             .select("*")
             .eq("id", userId);
-            
-         
-          
+
           if (profilesResponse.error) {
             throw new AuthError({
               message: `Failed to get user profile from both tables: ${profilesResponse.error.message}`,
@@ -318,26 +313,26 @@ export class AuthAPI {
               code: "PROFILE_QUERY_ERROR",
             });
           }
-          
+
           if (!profilesResponse.data || profilesResponse.data.length === 0) {
-            
             return null;
           }
-          
+
           // Map profiles table data to UserProfile interface
           const profileData = profilesResponse.data[0];
           return {
             id: 0,
             user_id: profileData.id,
-            full_name: profileData.full_name || profileData.email?.split('@')[0] || '',
-            role: profileData.role || 'user',
+            full_name:
+              profileData.full_name || profileData.email?.split("@")[0] || "",
+            role: profileData.role || "user",
             profile_image: profileData.avatar_url,
             status: true,
             created_at: profileData.created_at,
             updated_at: profileData.updated_at,
           } as UserProfile;
         }
-        
+
         throw new AuthError({
           message: `Failed to get user profile: ${response.error.message}`,
           status: 500,
@@ -347,26 +342,23 @@ export class AuthAPI {
 
       // If no rows found, return null
       if (!response.data || response.data.length === 0) {
-      
-        
         const allProfilesResponse = await supabase
           .from("user_profiles")
           .select("user_id, full_name")
           .limit(5);
-       
-        
+
         return null;
       }
 
       // If multiple rows found, log warning and return the first one
       if (response.data.length > 1) {
-        console.warn(`getUserProfileByUserId - Multiple profiles found for userId: ${userId}, returning first one`);
+        console.warn(
+          `getUserProfileByUserId - Multiple profiles found for userId: ${userId}, returning first one`
+        );
       }
 
       return response.data[0] as UserProfile;
-
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof AuthError) {
         throw error;
       }
@@ -378,37 +370,35 @@ export class AuthAPI {
     }
   }
 
-  
   /**
    * Create user profile in profiles table
    */
-   static async createUserProfile(profileData: {
+  static async createUserProfile(profileData: {
     user_id: string;
     role: string;
     full_name: string;
     session_id?: string;
   }): Promise<UserProfile> {
- 
     // Generate a UUID if user_id is empty or null
     if (!profileData.user_id || profileData.user_id === "") {
-      profileData.user_id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
-
-      
+      profileData.user_id = crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now().toString();
     }
-  
+
     // For profiles table, we need to map the fields correctly
     const insertData = {
-      user_id: profileData.user_id||"",
-      role: profileData.role || '',
-      full_name: profileData.full_name || '',
-      profile_image: '',
+      user_id: profileData.user_id || "",
+      role: profileData.role || "",
+      full_name: profileData.full_name || "",
+      profile_image: "",
       status: true,
-      session_id: profileData.session_id || '',
+      session_id: profileData.session_id || "",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
-      // Try user_profiles first, then fallback to profiles
+    // Try user_profiles first, then fallback to profiles
     const response = await supabase
       .from("user_profiles")
       .insert(insertData)
@@ -416,9 +406,13 @@ export class AuthAPI {
       .single();
 
     // If user_profiles table doesn't exist, use profiles table
-    if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
+    if (
+      response.error &&
+      response.error.message.includes(
+        'relation "public.user_profiles" does not exist'
+      )
+    ) {
       console.log("user_profiles table doesn't exist, using profiles table");
-    
     }
 
     if (response.error) {
@@ -427,7 +421,7 @@ export class AuthAPI {
         message: response.error.message,
         details: response.error.details,
         hint: response.error.hint,
-        code: response.error.code
+        code: response.error.code,
       });
       throw new AuthError({
         message: `Failed to create user profile: ${response.error.message}`,
@@ -436,25 +430,23 @@ export class AuthAPI {
       });
     }
 
-   
-    
     // Map profiles table data to UserProfile interface
     const profileResult = response.data;
     if (!profileResult.user_id) {
       // If using profiles table, map the fields
       return {
         id: profileResult.id,
-        user_id: profileResult.user_id || '',
-        full_name: profileResult.full_name || '',
-        role: profileResult.role || '',
-        profile_image: profileResult.avatar_url || '',
-        session_id: profileResult.session_id || '',
+        user_id: profileResult.user_id || "",
+        full_name: profileResult.full_name || "",
+        role: profileResult.role || "",
+        profile_image: profileResult.avatar_url || "",
+        session_id: profileResult.session_id || "",
         status: true,
         created_at: profileResult.created_at,
         updated_at: profileResult.updated_at,
       } as UserProfile;
     }
-    
+
     return profileResult;
   }
 
@@ -471,13 +463,18 @@ export class AuthAPI {
         .single();
 
       // If user_profiles table doesn't exist, use profiles table
-      if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
+      if (
+        response.error &&
+        response.error.message.includes(
+          'relation "public.user_profiles" does not exist'
+        )
+      ) {
         response = await supabase
           .from("profiles")
           .select("*")
           .eq("id", userId)
           .single();
-          
+
         if (!response.error && response.data) {
           // Map profiles data to UserProfile interface
           return {
@@ -518,11 +515,12 @@ export class AuthAPI {
    * Update user profile
    */
   static async updateUserProfile(
-    userId: string, 
+    userId: string,
     updates: Partial<UserProfile>
   ): Promise<UserProfile> {
     try {
       // Try user_profiles first, then fallback to profiles
+
       let response = await supabase
         .from("user_profiles")
         .update({
@@ -533,37 +531,59 @@ export class AuthAPI {
         .select()
         .single();
 
-      // If user_profiles table doesn't exist, use profiles table
-      if (response.error && response.error.message.includes('relation "public.user_profiles" does not exist')) {
-        // Map UserProfile updates to profiles table format
-        const profileUpdates = {
-          full_name: updates.full_name,
-          role: updates.role,
-          avatar_url: updates.profile_image,
-          updated_at: new Date().toISOString(),
-        };
-        
-        response = await supabase
-          .from("profiles")
-          .update(profileUpdates)
-          .eq("id", userId)
-          .select()
-          .single();
-          
-        if (!response.error && response.data) {
-          // Map profiles data back to UserProfile interface
-          return {
-            id: 0,
-            user_id: response.data.id,
-            full_name: response.data.full_name,
-            role: response.data.role,
-            profile_image: response.data.avatar_url,
-            status: true,
-            created_at: response.data.created_at,
-            updated_at: response.data.updated_at,
-          } as UserProfile;
-        }
+      if (!response.error && response.data) {
+        // Map profiles data back to UserProfile interface
+        return {
+          id: response.data.id,
+          user_id: response.data.user_id,
+          full_name: response.data.full_name,
+          role: response.data.role,
+          profile_image: response.data.avatar_url,
+          status: true,
+          created_at: response.data.created_at,
+          updated_at: response.data.updated_at,
+          favorite_materials: response.data.favorite_materials,
+        } as UserProfile;
       }
+      // If user_profiles table doesn't exist, use profiles table
+      // if (
+      //   response.error &&
+      //   response.error.message.includes(
+      //     'relation "public.user_profiles" does not exist'
+      //   )
+      // )
+      // {
+      //   // Map UserProfile updates to profiles table format
+      //   const profileUpdates = {
+      //     full_name: updates.full_name,
+      //     role: updates.role,
+      //     avatar_url: updates.profile_image,
+      //     updated_at: new Date().toISOString(),
+      //     favorite_materials: [],
+      //   };
+
+      //   // response = await supabase
+      //   //   .from("profiles")
+      //   //   .update(profileUpdates)
+      //   //   .eq("id", userId)
+      //   //   .select()
+      //   //   .single();
+
+      //   if (!response.error && response.data) {
+      //     // Map profiles data back to UserProfile interface
+      //     return {
+      //       id: 0,
+      //       user_id: response.data.id,
+      //       full_name: response.data.full_name,
+      //       role: response.data.role,
+      //       profile_image: response.data.avatar_url,
+      //       status: true,
+      //       created_at: response.data.created_at,
+      //       updated_at: response.data.updated_at,
+      //       favorite_materials: response.data.favorite_materials,
+      //     } as UserProfile;
+      //   }
+      // }
 
       if (response.error) {
         throw new AuthError({
@@ -590,18 +610,20 @@ export class AuthAPI {
    * Get user profile based on user session ID
    * Get user profile based on user session ID
    */
-  static async getUserProfileBySessionId(sessionId: string): Promise<UserProfile | null> {
+  static async getUserProfileBySessionId(
+    sessionId: string
+  ): Promise<UserProfile | null> {
     try {
       const { data } = await supabase
         .from("user_profiles")
         .select("*")
-        .eq("session_id", sessionId)
+        .eq("session_id", sessionId);
 
-        console.log("getUserProfileBySessionId - Data:", data);
-     if(!data || data.length === 0) {
-      return null;
-    }
-    return data[0] as UserProfile;
+      console.log("getUserProfileBySessionId - Data:", data);
+      if (!data || data.length === 0) {
+        return null;
+      }
+      return data[0] as UserProfile;
     } catch (error) {
       if (error instanceof AuthError) {
         throw error;
@@ -618,17 +640,17 @@ export class AuthAPI {
    * Upload user profile image
    */
   static async uploadProfileImage(
-    userId: string, 
+    userId: string,
     file: File
   ): Promise<{ imageUrl: string }> {
     try {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${userId}-${Date.now()}.${fileExt}`;
       const filePath = `profiles/${fileName}`;
 
       // Upload file to Supabase storage
       const { error: uploadError } = await supabase.storage
-        .from('user-profiles')
+        .from("user-profiles")
         .upload(filePath, file);
 
       if (uploadError) {
@@ -640,9 +662,9 @@ export class AuthAPI {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('user-profiles')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("user-profiles").getPublicUrl(filePath);
 
       // Update user profile with new image URL
       await this.updateUserProfile(userId, { profile_image: publicUrl });
@@ -663,16 +685,19 @@ export class AuthAPI {
   /**
    * Delete user profile image
    */
-  static async deleteProfileImage(userId: string, imageUrl: string): Promise<void> {
+  static async deleteProfileImage(
+    userId: string,
+    imageUrl: string
+  ): Promise<void> {
     try {
       // Extract file path from URL
-      const urlParts = imageUrl.split('/');
+      const urlParts = imageUrl.split("/");
       const fileName = urlParts[urlParts.length - 1];
       const filePath = `profiles/${fileName}`;
 
       // Delete file from storage
       const { error: deleteError } = await supabase.storage
-        .from('user-profiles')
+        .from("user-profiles")
         .remove([filePath]);
 
       if (deleteError) {
@@ -767,9 +792,16 @@ export class AuthAPI {
    * Validate and sanitize user role
    */
   private static validateUserRole(role?: string): string {
-    const validRoles = ['admin', 'user', 'viewer', 'vendor', 'designer', "customer"];
+    const validRoles = [
+      "admin",
+      "user",
+      "viewer",
+      "vendor",
+      "designer",
+      "customer",
+    ];
     if (!role || !validRoles.includes(role)) {
-      return 'user'; // Default to 'user' if invalid role
+      return "user"; // Default to 'user' if invalid role
     }
     return role;
   }
@@ -780,26 +812,26 @@ export class AuthAPI {
   static async debugDatabaseTables() {
     try {
       console.log("=== DEBUGGING DATABASE TABLES ===");
-      
+
       // Try to query user_profiles table
       const userProfilesResponse = await supabase
         .from("user_profiles")
-        .select("*", { count: 'exact' })
+        .select("*", { count: "exact" })
         .limit(1);
-      
+
       console.log("user_profiles table response:", userProfilesResponse);
-      
+
       // Try to query profiles table
       const profilesResponse = await supabase
         .from("profiles")
-        .select("*", { count: 'exact' })
+        .select("*", { count: "exact" })
         .limit(1);
-      
+
       console.log("profiles table response:", profilesResponse);
-      
+
       return {
         user_profiles: userProfilesResponse,
-        profiles: profilesResponse
+        profiles: profilesResponse,
       };
     } catch (error) {
       console.error("Error debugging tables:", error);
@@ -810,27 +842,28 @@ export class AuthAPI {
   /**
    * Ensure user profile exists, create if not found
    */
-  static async ensureUserProfile(userId: string, email?: string, fullName?: string): Promise<UserProfile> {
+  static async ensureUserProfile(
+    userId: string,
+    email?: string,
+    fullName?: string
+  ): Promise<UserProfile> {
     try {
       // First try to get existing profile
       const existingProfile = await this.getUserProfileByUserId(userId);
-      
+
       if (existingProfile) {
-     
         return existingProfile;
       }
-      
+
       // If no profile exists, create one
 
-      
       const profileData = {
         user_id: userId,
-        full_name: fullName || email?.split('@')[0] || 'User',
-        role: 'user',
+        full_name: fullName || email?.split("@")[0] || "User",
+        role: "user",
       };
-      
+
       return await this.createUserProfile(profileData);
-      
     } catch (error) {
       console.error("Error ensuring user profile:", error);
       throw error;

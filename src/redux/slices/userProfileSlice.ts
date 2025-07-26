@@ -39,43 +39,46 @@ export const getUserProfile = createAsyncThunk(
   "userProfile/getUserProfile",
   async (userId: string, { rejectWithValue }) => {
     try {
-   
-      
-      if (!userId || userId.trim() === '') {
+      if (!userId || userId.trim() === "") {
         return rejectWithValue("User ID is required");
       }
-      
+
       let profile = await AuthService.getUserProfileByUserId(userId);
-   
+
       // If no profile found, try to get user info and create a profile
       if (!profile) {
-        
-        
         try {
           // Get current user from auth to get email
           const currentUser = await AuthAPI.getCurrentUser();
           if (currentUser && currentUser.user.id === userId) {
             // Try to ensure profile exists
             profile = await AuthAPI.ensureUserProfile(
-              userId, 
-              currentUser.user.email, 
-              currentUser.user.email?.split('@')[0]
+              userId,
+              currentUser.user.email,
+              currentUser.user.email?.split("@")[0]
             );
-            
           }
         } catch (createError) {
-          console.error("Redux getUserProfile - Failed to create profile:", createError);
+          console.error(
+            "Redux getUserProfile - Failed to create profile:",
+            createError
+          );
         }
-        
+
         // If still no profile, return error
         if (!profile) {
-          return rejectWithValue("User profile not found and could not be created");
+          return rejectWithValue(
+            "User profile not found and could not be created"
+          );
         }
       }
-      
+
       return profile;
     } catch (error) {
-      console.error("Redux getUserProfile - Error fetching user profile:", error);
+      console.error(
+        "Redux getUserProfile - Error fetching user profile:",
+        error
+      );
       if (error instanceof AuthError) {
         return rejectWithValue(error.message);
       }
@@ -85,6 +88,24 @@ export const getUserProfile = createAsyncThunk(
 );
 
 // Async thunk to update user profile
+// export const updateUserProfile = createAsyncThunk(
+//   "userProfile/updateUserProfile",
+//   async (
+//     { userId, updates }: { userId: string; updates: Partial<UserProfile> },
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const updatedProfile = await AuthAPI.updateUserProfile(userId, updates);
+//       return updatedProfile;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Failed to update user profile");
+//     }
+//   }
+// );
+
 export const updateUserProfile = createAsyncThunk(
   "userProfile/updateUserProfile",
   async (
@@ -93,6 +114,7 @@ export const updateUserProfile = createAsyncThunk(
   ) => {
     try {
       const updatedProfile = await AuthAPI.updateUserProfile(userId, updates);
+
       return updatedProfile;
     } catch (error) {
       if (error instanceof AuthError) {
@@ -147,8 +169,8 @@ export const getUserProfileBySessionId = createAsyncThunk(
   async (sessionId: string, { rejectWithValue }) => {
     try {
       const response = await AuthAPI.getUserProfileBySessionId(sessionId);
-      
-      if(response=== null ) {
+
+      if (response === null) {
         return "No user profile found for session ID";
       }
       if (!response) {
@@ -183,7 +205,8 @@ const userProfileSlice = createSlice({
       action: PayloadAction<{ field: keyof UserProfile; value: unknown }>
     ) => {
       if (state.profile) {
-        (state.profile as Record<string, unknown>)[action.payload.field] = action.payload.value;
+        (state.profile as Record<string, unknown>)[action.payload.field] =
+          action.payload.value;
       }
     },
   },
@@ -196,7 +219,7 @@ const userProfileSlice = createSlice({
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.profile = action.payload as UserProfile || {};
+        state.profile = (action.payload as UserProfile) || {};
         state.error = null;
       })
       .addCase(getUserProfile.rejected, (state, action) => {
@@ -258,15 +281,15 @@ const userProfileSlice = createSlice({
         state.updateError = action.payload as string;
       });
 
-      //fetch usser profile by session ID
-      builder
+    //fetch usser profile by session ID
+    builder
       .addCase(getUserProfileBySessionId.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(getUserProfileBySessionId.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.profile = action.payload as UserProfile || {};
+        state.profile = (action.payload as UserProfile) || {};
         state.error = null;
       })
       .addCase(getUserProfileBySessionId.rejected, (state, action) => {
@@ -276,20 +299,28 @@ const userProfileSlice = createSlice({
   },
 });
 
-export const { 
-  clearProfileError, 
-  setProfile, 
-  clearProfile, 
-  updateProfileField 
+export const {
+  clearProfileError,
+  setProfile,
+  clearProfile,
+  updateProfileField,
 } = userProfileSlice.actions;
 
 // Selectors
-export const selectProfile = (state: { userProfile: UserProfileState }) => state.userProfile.profile;
-export const selectProfileLoading = (state: { userProfile: UserProfileState }) => state.userProfile.isLoading;
-export const selectProfileError = (state: { userProfile: UserProfileState }) => state.userProfile.error;
-export const selectProfileUpdating = (state: { userProfile: UserProfileState }) => state.userProfile.isUpdating;
-export const selectProfileUpdateError = (state: { userProfile: UserProfileState }) => state.userProfile.updateError;
-export const getUser_id = (state: { userProfile: UserProfileState }) => state.userProfile.profile?.user_id;
+export const selectProfile = (state: { userProfile: UserProfileState }) =>
+  state.userProfile.profile;
+export const selectProfileLoading = (state: {
+  userProfile: UserProfileState;
+}) => state.userProfile.isLoading;
+export const selectProfileError = (state: { userProfile: UserProfileState }) =>
+  state.userProfile.error;
+export const selectProfileUpdating = (state: {
+  userProfile: UserProfileState;
+}) => state.userProfile.isUpdating;
+export const selectProfileUpdateError = (state: {
+  userProfile: UserProfileState;
+}) => state.userProfile.updateError;
+export const getUser_id = (state: { userProfile: UserProfileState }) =>
+  state.userProfile.profile?.user_id;
 
- 
 export default userProfileSlice.reducer;

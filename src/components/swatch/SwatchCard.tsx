@@ -36,7 +36,8 @@ import { cn } from "@/lib/utils";
 import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
 import { toggleFavorite } from "@/redux/slices/swatchSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
+import { updateUserProfile } from "@/redux/slices/userProfileSlice";
 
 interface SwatchCardProps {
   swatch: MaterialModel;
@@ -55,40 +56,71 @@ export function SwatchCard({
 }: SwatchCardProps) {
   // const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   // const { favorites } = useSelector((state: RootState) => state.swatches);
+  const { profile, isUpdating } = useSelector(
+    (state: RootState) => state.userProfile
+  );
+
+  const isFavorite = profile?.favorite_materials?.includes(swatch.id);
 
   const [isHovered, setIsHovered] = useState(false);
-  const [favorites, setFavorites] = useState<number[]>([]);
+  // const [favorites, setFavorites] = useState<number[]>([]);
   // const [imageLoaded, setImageLoaded] = useState(false);
   const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
   const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
-  const handleToggleFavorite = async (e: React.MouseEvent, id: number) => {
+  const handleToggleFavorite = async (
+    e: React.MouseEvent,
+    id: number,
+    profile: any
+  ) => {
     e.stopPropagation();
-    const getAllFavorite = (await JSON.parse(
-      localStorage.getItem("fav_swatch") || "[]"
-    )) as number[];
-
-    if (!getAllFavorite.includes(id)) {
-      getAllFavorite.push(id);
-      await localStorage.setItem("fav_swatch", JSON.stringify(getAllFavorite));
-      setFavorites(getAllFavorite); // update state
+    const fav =
+      profile?.favorite_materials == null ? [] : profile.favorite_materials;
+    const newFav = [...fav];
+    if (fav.includes(id)) {
+      await dispatch(
+        updateUserProfile({
+          userId: profile !== null ? profile.user_id! : "",
+          updates: {
+            favorite_materials: newFav.filter((idx) => idx !== id),
+          },
+        })
+      );
     } else {
-      const filteredData = getAllFavorite.filter((d) => d !== id);
-      await localStorage.setItem("fav_swatch", JSON.stringify(filteredData));
-      setFavorites(filteredData);
+      newFav.push(id);
+      await dispatch(
+        updateUserProfile({
+          userId: profile !== null ? profile.user_id! : "",
+          updates: {
+            favorite_materials: newFav,
+          },
+        })
+      );
     }
 
-    // await dispatch(toggleFavorite(swatch.id));
-    // toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+    // const getAllFavorite = (await JSON.parse(
+    //   localStorage.getItem("fav_swatch") || "[]"
+    // )) as number[];
+
+    // if (!getAllFavorite.includes(id)) {
+    //   getAllFavorite.push(id);
+    //   await localStorage.setItem("fav_swatch", JSON.stringify(getAllFavorite));
+    //   setFavorites(getAllFavorite); // update state
+    // } else {
+    //   const filteredData = getAllFavorite.filter((d) => d !== id);
+    //   await localStorage.setItem("fav_swatch", JSON.stringify(filteredData));
+    //   setFavorites(filteredData);
+    // }
   };
 
-  useEffect(() => {
-    const stored = JSON.parse(
-      localStorage.getItem("fav_swatch") || "[]"
-    ) as number[];
-    setFavorites(stored);
-  }, []);
+  // useEffect(() => {
+
+  //   // const stored = JSON.parse(
+  //   //   localStorage.getItem("fav_swatch") || "[]"
+  //   // ) as number[];
+  //   // setFavorites(stored);
+  // }, []);
 
   const handleViewDetails = (id: number) => {
     const path = `/app/swatchbook/${id}`;
@@ -275,17 +307,22 @@ export function SwatchCard({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={(e) => handleToggleFavorite(e, swatch.id)}
+                    onClick={(e) => handleToggleFavorite(e, swatch.id, profile)}
                     className={cn(
                       "h-6 w-6 p-0 bg-white/90 hover:bg-white",
-                      favorites.includes(swatch.id) &&
+                      profile?.favorite_materials !== null &&
+                        profile?.favorite_materials !== undefined &&
+                        profile?.favorite_materials.includes(swatch.id) &&
                         "text-red-500 hover:text-red-600"
                     )}
                   >
                     <Heart
                       className={cn(
                         "h-3 w-3",
-                        favorites.includes(swatch.id) && "fill-current"
+                        profile?.favorite_materials !== null &&
+                          profile?.favorite_materials !== undefined &&
+                          profile?.favorite_materials.includes(swatch.id) &&
+                          "fill-current"
                       )}
                     />
                   </Button>
@@ -407,23 +444,36 @@ export function SwatchCard({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => handleToggleFavorite(e, swatch.id)}
+                            onClick={(e) =>
+                              handleToggleFavorite(e, swatch.id, profile)
+                            }
                             className={cn(
                               "h-8 w-8 p-0",
-                              favorites.includes(swatch.id) &&
+                              profile?.favorite_materials !== null &&
+                                profile?.favorite_materials !== undefined &&
+                                profile?.favorite_materials.includes(
+                                  swatch.id
+                                ) &&
                                 "text-red-500 hover:text-red-600"
                             )}
                           >
                             <Heart
                               className={cn(
                                 "h-4 w-4",
-                                favorites.includes(swatch.id) && "fill-current"
+                                profile?.favorite_materials !== null &&
+                                  profile?.favorite_materials !== undefined &&
+                                  profile?.favorite_materials.includes(
+                                    swatch.id
+                                  ) &&
+                                  "fill-current"
                               )}
                             />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          {favorites.includes(swatch.id)
+                          {profile?.favorite_materials !== null &&
+                          profile?.favorite_materials !== undefined &&
+                          profile?.favorite_materials.includes(swatch.id)
                             ? "Remove from favorites"
                             : "Add to favorites"}
                         </TooltipContent>
@@ -537,23 +587,30 @@ export function SwatchCard({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={(e) => handleToggleFavorite(e, swatch.id)}
+                    onClick={(e) => handleToggleFavorite(e, swatch.id, profile)}
                     className={cn(
                       "h-8 w-8 p-0 bg-white/90 hover:bg-white",
-                      favorites.includes(swatch.id) &&
+                      profile?.favorite_materials !== null &&
+                        profile?.favorite_materials !== undefined &&
+                        profile?.favorite_materials.includes(swatch.id) &&
                         "text-red-500 hover:text-red-600"
                     )}
                   >
                     <Heart
                       className={cn(
                         "h-4 w-4",
-                        favorites.includes(swatch.id) && "fill-current"
+                        profile?.favorite_materials !== null &&
+                          profile?.favorite_materials !== undefined &&
+                          profile?.favorite_materials.includes(swatch.id) &&
+                          "fill-current"
                       )}
                     />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {favorites.includes(swatch.id)
+                  {profile?.favorite_materials !== null &&
+                  profile?.favorite_materials !== undefined &&
+                  profile?.favorite_materials.includes(swatch.id)
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </TooltipContent>

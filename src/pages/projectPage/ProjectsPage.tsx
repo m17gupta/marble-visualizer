@@ -146,8 +146,6 @@ export function ProjectsPage() {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
       if (jobId) {
-
-       
         dispatch(addbreadcrumb("Studio"));
         dispatch(setCurrentImageUrl(projectImage || ""));
         dispatch(addHouseImage(projectImage || ""));
@@ -514,8 +512,6 @@ export function ProjectsPage() {
           )}
         </motion.div>
       )}
-
-      <UserProfileHome />
 
       {isCreateDialogOpen && (
         <VisualToolHome resetProjectCreated={handleResetProjectCreated} />

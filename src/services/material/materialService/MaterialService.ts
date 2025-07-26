@@ -1,12 +1,15 @@
-import { 
-  MaterialApi, 
-  CreateMaterialRequest, 
-  UpdateMaterialRequest, 
-  MaterialFilters, 
+import {
+  MaterialApi,
+  CreateMaterialRequest,
+  UpdateMaterialRequest,
+  MaterialFilters,
   MaterialApiResponse,
-  PaginatedMaterialResponse 
-} from './MaterialApi';
-import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
+  PaginatedMaterialResponse,
+} from "./MaterialApi";
+import {
+  MaterialModel,
+  SingleMaterialResponse,
+} from "@/models/swatchBook/material/MaterialModel";
 
 interface ServiceResult<T> {
   success: boolean;
@@ -16,9 +19,14 @@ interface ServiceResult<T> {
 }
 
 export class MaterialService {
-
   // serve for get wall materials
-  static async getWallMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+  static async getWallMaterials({
+    page = 0,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }): Promise<ServiceResult<MaterialModel[]>> {
     try {
       const result = await MaterialApi.getAllSegmentMaterials("Wall");
       if (result.success) {
@@ -29,18 +37,25 @@ export class MaterialService {
       }
       return {
         success: false,
-        error: result.error || 'Failed to fetch wall materials',
+        error: result.error || "Failed to fetch wall materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getWallMaterials:', error);
+      console.error("Error in MaterialService.getWallMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
   // serve for get door materials
-  static async getDoorMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+  static async getDoorMaterials({
+    page = 0,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }): Promise<ServiceResult<MaterialModel[]>> {
     try {
       const result = await MaterialApi.getAllSegmentMaterials("Door");
       if (result.success) {
@@ -51,19 +66,26 @@ export class MaterialService {
       }
       return {
         success: false,
-        error: result.error || 'Failed to fetch wall materials',
+        error: result.error || "Failed to fetch wall materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getWallMaterials:', error);
+      console.error("Error in MaterialService.getWallMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
 
   // roof material
-  static async getRoofMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+  static async getRoofMaterials({
+    page = 0,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }): Promise<ServiceResult<MaterialModel[]>> {
     try {
       const result = await MaterialApi.getAllSegmentMaterials("Roof");
       if (result.success) {
@@ -74,19 +96,26 @@ export class MaterialService {
       }
       return {
         success: false,
-        error: result.error || 'Failed to fetch roof materials',
+        error: result.error || "Failed to fetch roof materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getRoofMaterials:', error);
+      console.error("Error in MaterialService.getRoofMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
 
   // fetch window materials
-  static async getWindowMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+  static async getWindowMaterials({
+    page = 0,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }): Promise<ServiceResult<MaterialModel[]>> {
     try {
       const result = await MaterialApi.getAllSegmentMaterials("Window");
       if (result.success) {
@@ -97,19 +126,26 @@ export class MaterialService {
       }
       return {
         success: false,
-        error: result.error || 'Failed to fetch window materials',
+        error: result.error || "Failed to fetch window materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getWindowMaterials:', error);
+      console.error("Error in MaterialService.getWindowMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
 
   // fetch trim materials
-  static async getTrimMaterials({page = 0, limit = 10}: {page?: number, limit?: number}): Promise<ServiceResult<MaterialModel[]>> {
+  static async getTrimMaterials({
+    page = 0,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }): Promise<ServiceResult<MaterialModel[]>> {
     try {
       const result = await MaterialApi.getAllSegmentMaterials("Trim");
       if (result.success) {
@@ -120,13 +156,14 @@ export class MaterialService {
       }
       return {
         success: false,
-        error: result.error || 'Failed to fetch trim materials',
+        error: result.error || "Failed to fetch trim materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getTrimMaterials:', error);
+      console.error("Error in MaterialService.getTrimMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -134,55 +171,57 @@ export class MaterialService {
   /**
    * Create a new material with validation
    */
-  static async createMaterial(materialData: CreateMaterialRequest): Promise<ServiceResult<MaterialModel>> {
+  static async createMaterial(
+    materialData: CreateMaterialRequest
+  ): Promise<ServiceResult<MaterialModel>> {
     try {
       // Validate required fields
       if (!materialData.title?.trim()) {
         return {
           success: false,
-          error: 'Material title is required',
+          error: "Material title is required",
         };
       }
 
       if (!materialData.user_id) {
         return {
           success: false,
-          error: 'User ID is required',
+          error: "User ID is required",
         };
       }
 
       if (!materialData.role_id) {
         return {
           success: false,
-          error: 'Role ID is required',
+          error: "Role ID is required",
         };
       }
 
       if (!materialData.material_category_id) {
         return {
           success: false,
-          error: 'Material category is required',
+          error: "Material category is required",
         };
       }
 
       if (!materialData.material_brand_id) {
         return {
           success: false,
-          error: 'Material brand is required',
+          error: "Material brand is required",
         };
       }
 
       if (!materialData.material_brand_style_id) {
         return {
           success: false,
-          error: 'Material brand style is required',
+          error: "Material brand style is required",
         };
       }
 
       if (!materialData.material_type_id?.trim()) {
         return {
           success: false,
-          error: 'Material type is required',
+          error: "Material type is required",
         };
       }
 
@@ -191,7 +230,8 @@ export class MaterialService {
         ...materialData,
         title: materialData.title.trim(),
         description: materialData.description?.trim(),
-        manufacturer_request_note: materialData.manufacturer_request_note?.trim(),
+        manufacturer_request_note:
+          materialData.manufacturer_request_note?.trim(),
       };
 
       const result = await MaterialApi.createMaterial(sanitizedData);
@@ -200,19 +240,20 @@ export class MaterialService {
         return {
           success: true,
           data: result.data,
-          message: 'Material created successfully',
+          message: "Material created successfully",
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Failed to create material',
+        error: result.error || "Failed to create material",
       };
     } catch (error) {
-      console.error('Error in MaterialService.createMaterial:', error);
+      console.error("Error in MaterialService.createMaterial:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -220,7 +261,9 @@ export class MaterialService {
   /**
    * Get materials with pagination and filtering
    */
-  static async getMaterials(filters: MaterialFilters = {}): Promise<ServiceResult<PaginatedMaterialResponse>> {
+  static async getMaterials(
+    filters: MaterialFilters = {}
+  ): Promise<ServiceResult<PaginatedMaterialResponse>> {
     try {
       // Validate and sanitize filters
       const sanitizedFilters = {
@@ -242,26 +285,28 @@ export class MaterialService {
 
       return {
         success: false,
-        error: result.error || 'Failed to fetch materials',
+        error: result.error || "Failed to fetch materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getMaterials:', error);
+      console.error("Error in MaterialService.getMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
-
   /**
    * Get material by ID
    */
-  static async getMaterialById(id: number): Promise<ServiceResult<MaterialModel>> {
+  static async getMaterialById(
+    id: number
+  ): Promise<ServiceResult<SingleMaterialResponse>> {
     try {
       if (!id || id <= 0) {
         return {
           success: false,
-          error: 'Valid material ID is required',
+          error: "Valid material ID is required",
         };
       }
 
@@ -271,19 +316,20 @@ export class MaterialService {
         return {
           success: true,
           data: result.data,
-          message: 'Material found successfully',
+          message: "Material found successfully",
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Material not found',
+        error: result.error || "Material not found",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getMaterialById:', error);
+      console.error("Error in MaterialService.getMaterialById:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -293,35 +339,44 @@ export class MaterialService {
    */
   static async getMaterialsByCategoryId(
     categoryId: number,
-    filters: Omit<MaterialFilters, 'material_category_id'> = {}
+    filters: Omit<MaterialFilters, "material_category_id"> = {}
   ): Promise<ServiceResult<PaginatedMaterialResponse>> {
     try {
       if (!categoryId || categoryId <= 0) {
         return {
           success: false,
-          error: 'Valid category ID is required',
+          error: "Valid category ID is required",
         };
       }
 
-      const result = await MaterialApi.getMaterialsByCategoryId(categoryId, filters);
+      const result = await MaterialApi.getMaterialsByCategoryId(
+        categoryId,
+        filters
+      );
 
       if (result.success) {
         return {
           success: true,
           data: result.data,
-          message: `Found ${result.data?.materials.length || 0} materials in category`,
+          message: `Found ${
+            result.data?.materials.length || 0
+          } materials in category`,
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Failed to fetch materials by category',
+        error: result.error || "Failed to fetch materials by category",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getMaterialsByCategoryId:', error);
+      console.error(
+        "Error in MaterialService.getMaterialsByCategoryId:",
+        error
+      );
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -331,13 +386,13 @@ export class MaterialService {
    */
   static async getMaterialsByBrandId(
     brandId: number,
-    filters: Omit<MaterialFilters, 'material_brand_id'> = {}
+    filters: Omit<MaterialFilters, "material_brand_id"> = {}
   ): Promise<ServiceResult<PaginatedMaterialResponse>> {
     try {
       if (!brandId || brandId <= 0) {
         return {
           success: false,
-          error: 'Valid brand ID is required',
+          error: "Valid brand ID is required",
         };
       }
 
@@ -347,19 +402,22 @@ export class MaterialService {
         return {
           success: true,
           data: result.data,
-          message: `Found ${result.data?.materials.length || 0} materials for brand`,
+          message: `Found ${
+            result.data?.materials.length || 0
+          } materials for brand`,
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Failed to fetch materials by brand',
+        error: result.error || "Failed to fetch materials by brand",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getMaterialsByBrandId:', error);
+      console.error("Error in MaterialService.getMaterialsByBrandId:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -367,12 +425,14 @@ export class MaterialService {
   /**
    * Update material with validation
    */
-  static async updateMaterial(materialData: UpdateMaterialRequest): Promise<ServiceResult<MaterialModel>> {
+  static async updateMaterial(
+    materialData: UpdateMaterialRequest
+  ): Promise<ServiceResult<MaterialModel>> {
     try {
       if (!materialData.id || materialData.id <= 0) {
         return {
           success: false,
-          error: 'Valid material ID is required',
+          error: "Valid material ID is required",
         };
       }
 
@@ -380,7 +440,7 @@ export class MaterialService {
       if (materialData.title !== undefined && !materialData.title.trim()) {
         return {
           success: false,
-          error: 'Material title cannot be empty',
+          error: "Material title cannot be empty",
         };
       }
 
@@ -389,7 +449,8 @@ export class MaterialService {
         ...materialData,
         title: materialData.title?.trim(),
         description: materialData.description?.trim(),
-        manufacturer_request_note: materialData.manufacturer_request_note?.trim(),
+        manufacturer_request_note:
+          materialData.manufacturer_request_note?.trim(),
       };
 
       const result = await MaterialApi.updateMaterial(sanitizedData);
@@ -398,19 +459,20 @@ export class MaterialService {
         return {
           success: true,
           data: result.data,
-          message: 'Material updated successfully',
+          message: "Material updated successfully",
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Failed to update material',
+        error: result.error || "Failed to update material",
       };
     } catch (error) {
-      console.error('Error in MaterialService.updateMaterial:', error);
+      console.error("Error in MaterialService.updateMaterial:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -423,7 +485,7 @@ export class MaterialService {
       if (!id || id <= 0) {
         return {
           success: false,
-          error: 'Valid material ID is required',
+          error: "Valid material ID is required",
         };
       }
 
@@ -433,19 +495,20 @@ export class MaterialService {
         return {
           success: true,
           data: true,
-          message: 'Material deleted successfully',
+          message: "Material deleted successfully",
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Failed to delete material',
+        error: result.error || "Failed to delete material",
       };
     } catch (error) {
-      console.error('Error in MaterialService.deleteMaterial:', error);
+      console.error("Error in MaterialService.deleteMaterial:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -453,12 +516,14 @@ export class MaterialService {
   /**
    * Toggle material status
    */
-  static async toggleMaterialStatus(id: number): Promise<ServiceResult<MaterialModel>> {
+  static async toggleMaterialStatus(
+    id: number
+  ): Promise<ServiceResult<MaterialModel>> {
     try {
       if (!id || id <= 0) {
         return {
           success: false,
-          error: 'Valid material ID is required',
+          error: "Valid material ID is required",
         };
       }
 
@@ -468,19 +533,22 @@ export class MaterialService {
         return {
           success: true,
           data: result.data,
-          message: `Material ${result.data?.status ? 'activated' : 'deactivated'} successfully`,
+          message: `Material ${
+            result.data?.status ? "activated" : "deactivated"
+          } successfully`,
         };
       }
 
       return {
         success: false,
-        error: result.error || 'Failed to toggle material status',
+        error: result.error || "Failed to toggle material status",
       };
     } catch (error) {
-      console.error('Error in MaterialService.toggleMaterialStatus:', error);
+      console.error("Error in MaterialService.toggleMaterialStatus:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -490,13 +558,13 @@ export class MaterialService {
    */
   static async getMaterialsByTypeId(
     typeId: string,
-    filters: Omit<MaterialFilters, 'material_type_id'> = {}
+    filters: Omit<MaterialFilters, "material_type_id"> = {}
   ): Promise<ServiceResult<PaginatedMaterialResponse>> {
     try {
       if (!typeId?.trim()) {
         return {
           success: false,
-          error: 'Valid type ID is required',
+          error: "Valid type ID is required",
         };
       }
 
@@ -506,7 +574,9 @@ export class MaterialService {
         return {
           success: true,
           data: result.data,
-          message: `Found ${result.data?.materials.length || 0} materials with type ${typeId}`,
+          message: `Found ${
+            result.data?.materials.length || 0
+          } materials with type ${typeId}`,
         };
       }
 
@@ -515,20 +585,21 @@ export class MaterialService {
         error: result.error || `Failed to fetch materials by type ${typeId}`,
       };
     } catch (error) {
-      console.error('Error in MaterialService.getMaterialsByTypeId:', error);
+      console.error("Error in MaterialService.getMaterialsByTypeId:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
 
-
-
   /**
    * Get material count
    */
-  static async getMaterialCount(filters: Omit<MaterialFilters, 'page' | 'limit'> = {}): Promise<ServiceResult<number>> {
+  static async getMaterialCount(
+    filters: Omit<MaterialFilters, "page" | "limit"> = {}
+  ): Promise<ServiceResult<number>> {
     try {
       const result = await MaterialApi.getMaterialCount(filters);
 
@@ -542,13 +613,14 @@ export class MaterialService {
 
       return {
         success: false,
-        error: result.error || 'Failed to get material count',
+        error: result.error || "Failed to get material count",
       };
     } catch (error) {
-      console.error('Error in MaterialService.getMaterialCount:', error);
+      console.error("Error in MaterialService.getMaterialCount:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -561,16 +633,16 @@ export class MaterialService {
       if (!ids || ids.length === 0) {
         return {
           success: false,
-          error: 'Material IDs are required',
+          error: "Material IDs are required",
         };
       }
 
       // Validate all IDs
-      const validIds = ids.filter(id => id > 0);
+      const validIds = ids.filter((id) => id > 0);
       if (validIds.length !== ids.length) {
         return {
           success: false,
-          error: 'All material IDs must be valid positive numbers',
+          error: "All material IDs must be valid positive numbers",
         };
       }
 
@@ -586,13 +658,14 @@ export class MaterialService {
 
       return {
         success: false,
-        error: result.error || 'Failed to delete materials',
+        error: result.error || "Failed to delete materials",
       };
     } catch (error) {
-      console.error('Error in MaterialService.deleteMaterials:', error);
+      console.error("Error in MaterialService.deleteMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
@@ -600,54 +673,56 @@ export class MaterialService {
   /**
    * Update materials order
    */
-//   static async updateMaterialsOrder(materials: { id: number; sort_order: number }[]): Promise<ServiceResult<boolean>> {
-//     try {
-//       if (!materials || materials.length === 0) {
-//         return {
-//           success: false,
-//           error: 'Materials data is required',
-//         };
-//       }
+  //   static async updateMaterialsOrder(materials: { id: number; sort_order: number }[]): Promise<ServiceResult<boolean>> {
+  //     try {
+  //       if (!materials || materials.length === 0) {
+  //         return {
+  //           success: false,
+  //           error: 'Materials data is required',
+  //         };
+  //       }
 
-//       // Validate materials data
-//       const validMaterials = materials.filter(
-//         material => material.id > 0 && typeof material.sort_order === 'number'
-//       );
+  //       // Validate materials data
+  //       const validMaterials = materials.filter(
+  //         material => material.id > 0 && typeof material.sort_order === 'number'
+  //       );
 
-//       if (validMaterials.length !== materials.length) {
-//         return {
-//           success: false,
-//           error: 'All materials must have valid ID and sort order',
-//         };
-//       }
+  //       if (validMaterials.length !== materials.length) {
+  //         return {
+  //           success: false,
+  //           error: 'All materials must have valid ID and sort order',
+  //         };
+  //       }
 
-//       const result = await MaterialApi.updateMaterialsOrder(validMaterials);
+  //       const result = await MaterialApi.updateMaterialsOrder(validMaterials);
 
-//       if (result.success) {
-//         return {
-//           success: true,
-//           data: true,
-//           message: 'Materials order updated successfully',
-//         };
-//       }
+  //       if (result.success) {
+  //         return {
+  //           success: true,
+  //           data: true,
+  //           message: 'Materials order updated successfully',
+  //         };
+  //       }
 
-//       return {
-//         success: false,
-//         error: result.error || 'Failed to update materials order',
-//       };
-//     } catch (error) {
-//       console.error('Error in MaterialService.updateMaterialsOrder:', error);
-//       return {
-//         success: false,
-//         error: error instanceof Error ? error.message : 'Unknown error occurred',
-//       };
-//     }
-//   }
+  //       return {
+  //         success: false,
+  //         error: result.error || 'Failed to update materials order',
+  //       };
+  //     } catch (error) {
+  //       console.error('Error in MaterialService.updateMaterialsOrder:', error);
+  //       return {
+  //         success: false,
+  //         error: error instanceof Error ? error.message : 'Unknown error occurred',
+  //       };
+  //     }
+  //   }
 
   /**
    * Get active materials only
    */
-  static async getActiveMaterials(filters: Omit<MaterialFilters, 'status'> = {}): Promise<ServiceResult<PaginatedMaterialResponse>> {
+  static async getActiveMaterials(
+    filters: Omit<MaterialFilters, "status"> = {}
+  ): Promise<ServiceResult<PaginatedMaterialResponse>> {
     return this.getMaterials({
       ...filters,
       status: true,
@@ -657,12 +732,15 @@ export class MaterialService {
   /**
    * Search materials with advanced filters
    */
-  static async searchMaterials(searchQuery: string, filters: Omit<MaterialFilters, 'search'> = {}): Promise<ServiceResult<PaginatedMaterialResponse>> {
+  static async searchMaterials(
+    searchQuery: string,
+    filters: Omit<MaterialFilters, "search"> = {}
+  ): Promise<ServiceResult<PaginatedMaterialResponse>> {
     try {
       if (!searchQuery?.trim()) {
         return {
           success: false,
-          error: 'Search query is required',
+          error: "Search query is required",
         };
       }
 
@@ -671,15 +749,22 @@ export class MaterialService {
         search: searchQuery.trim(),
       });
     } catch (error) {
-      console.error('Error in MaterialService.searchMaterials:', error);
+      console.error("Error in MaterialService.searchMaterials:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   }
 }
 
 // Export types for external use
-export type { CreateMaterialRequest, UpdateMaterialRequest, MaterialFilters, MaterialApiResponse, PaginatedMaterialResponse };
+export type {
+  CreateMaterialRequest,
+  UpdateMaterialRequest,
+  MaterialFilters,
+  MaterialApiResponse,
+  PaginatedMaterialResponse,
+};
 export { MaterialApi };

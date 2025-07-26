@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fetchSwatchBySlug, toggleFavorite } from "@/redux/slices/swatchSlice";
+import { getMaterialById } from "@/services/material";
 
 export function SwatchDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -43,6 +44,15 @@ export function SwatchDetailsPage() {
   const { currentSwatch, swatches, favorites, isLoading, error } = useSelector(
     (state: RootState) => state.swatches
   );
+
+  useEffect(() => {
+    const fetchMaterialById = async (id: number) => {
+      const data = await getMaterialById(id);
+      console.log(data);
+    };
+
+    fetchMaterialById(id);
+  }, []);
 
   // const { materials, isLoading, error, pagination } = useSelector(
   //     (state: RootState) => state.materials

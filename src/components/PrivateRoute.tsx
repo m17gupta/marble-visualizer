@@ -17,17 +17,12 @@ export function PrivateRoute({
   requiredRole = "user",
 }: PrivateRouteProps) {
   const dispatch = useDispatch<AppDispatch>();
+
   const { isAuthenticated, isLoading, isInitialized, user } = useSelector(
     (state: RootState) => state.auth
   );
   const { profile } = useSelector((state: RootState) => state.userProfile);
   const location = useLocation();
-
-  const {
-    list: projects,
-    error,
-    isUpdating,
-  } = useSelector((state: RootState) => state.projects);
 
   // Initialize auth on mount
   useEffect(() => {

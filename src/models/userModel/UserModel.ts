@@ -8,8 +8,7 @@ export interface User {
   last_login?: string;
   created_at: string;
   modified_at: string;
-   // UUID reference to session
-
+  // UUID reference to session
 }
 
 export interface UserProfile {
@@ -20,10 +19,10 @@ export interface UserProfile {
   profile_image?: string; // URL to profile image
   subscription_id?: string; // UUID reference to subscription
   session_id?: string;
-  status: boolean
+  status: boolean;
   created_at?: string;
   updated_at?: string;
-
+  favorite_materials?: number[];
 }
 
 export type UserRole = "admin" | "designer" | "viewer" | "vendor" | "user";
@@ -35,7 +34,7 @@ export interface CreateUserRequest {
   role: string;
   profile_image?: string; // URL to profile image
   subscription_id?: string; // UUID reference to subscription
-  status: boolean
+  status: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -51,10 +50,10 @@ export interface CreateUserResponse {
 }
 
 export interface UpdateUserProfileRequest {
-   user_id: string; // UUID reference to user
+  user_id: string; // UUID reference to user
   full_name: string;
   role: string;
   profile_image?: string; // URL to profile image
   subscription_id?: string; // UUID reference to subscription
-  status: boolean
+  status: boolean;
 }
