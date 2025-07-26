@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { updateAddSegMessage, UpdateOtherSegmentDrawn } from '@/redux/slices/segmentsSlice';
- import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface AddSegmentModalProps {
   open: boolean;
@@ -49,13 +48,19 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
         selectedMasterArray.allSegments &&
         selectedMasterArray.allSegments.length >0){
       setSegType(selectedMasterArray.name);
+      
       setAllCategories(selectedMasterArray.categories || []);
          const allSeg = selectedMasterArray.allSegments.length;
             if (allSeg>1) {
+              let count;
        selectedMasterArray.allSegments.forEach((seg) => {
          setGroupArray(prev => [...prev, seg.groupName]);
-         
+          const allSegs= seg.segments.length;
+          count= allSegs;
        });
+       setGroupName(selectedMasterArray.allSegments[0].groupName);
+       setShortName(`${selectedMasterArray.short_code}${count}`);
+       setChildName(`${selectedMasterArray.allSegments[0].groupName}+${count}`);
     }
     }
   },[selectedMasterArray])
@@ -84,19 +89,21 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
     // setChildName(newGroupName);
    }
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" keyboard={false} centered size="lg">
-      <Modal.Header closeButton>
-        <div className="flex items-center justify-between w-full">
-          <div className="text-sm text-gray-500">
-            <a href="#" className="text-purple-600 underline mr-1">{segType}</a>
-            /
-            <a href="#" className="text-purple-600 underline mx-1">{groupName}</a>
-            /
-            <span className="ml-1">{shortName}</span>
-          </div>
-        </div>
-      </Modal.Header>
-      <Modal.Body>
+    <Dialog open={open} onOpenChange={open => { if (!open) onClose(); }}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
+            <div className="flex items-center justify-between w-full">
+              <div className="text-sm text-gray-500">
+                <a href="#" className="text-purple-600 underline mr-1">{segType}</a>
+                /
+                <a href="#" className="text-purple-600 underline mx-1">{groupName}</a>
+                /
+                <span className="ml-1">{shortName}</span>
+              </div>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
         <div className="flex-1 overflow-auto p-6 flex flex-col gap-4">
           {/* Wall and Categories Dropdowns in one line */}
           <div className="bg-purple-50 rounded-lg p-3 flex items-center justify-between gap-4">
@@ -114,7 +121,7 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
                 ))}
               </select>
               <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
-              onClick={handleAddGroup}
+                onClick={handleAddGroup}
               >+</button>
             </div>
             {/* Categories Dropdown */}
@@ -133,24 +140,26 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
             </div>
           </div>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          variant="outline-secondary"
-          className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100"
-          onClick={onClose}
-        >
-          Delete
-        </Button>
-        <Button
-          variant="primary"
-          className="px-6 py-2 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700"
-          onClick={handleSave}
-        >
-          Save
-        </Button>
-      </Modal.Footer>
-    </Modal>
+        <DialogFooter className="flex flex-row gap-2 justify-end">
+          <DialogClose asChild>
+            <Button
+              variant="outline"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100"
+              onClick={onClose}
+            >
+              Delete
+            </Button>
+          </DialogClose>
+          <Button
+            variant="default"
+            className="px-6 py-2 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700"
+            onClick={handleSave}
+          >
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
