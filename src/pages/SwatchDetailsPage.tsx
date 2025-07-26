@@ -41,14 +41,44 @@ export function SwatchDetailsPage() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { currentSwatch, swatches, favorites, isLoading, error } = useSelector(
+  const { swatches, favorites, isLoading, error } = useSelector(
     (state: RootState) => state.swatches
   );
+
+  const currentSwatch = {
+    _id: "static-id-123",
+    title: "Ocean Breeze Blue",
+    brand: "NovaPaints",
+    sku: "NP-OBB-001",
+    description: "A calming oceanic blue perfect for bedrooms and lounges.",
+    category: "Interior",
+    style: "Modern",
+    finish: "Matte",
+    coating_type: "Acrylic",
+    pricing: {
+      per_gallon: 39.99,
+      per_sqft: 0.45,
+    },
+    dry_time_touch: "30 mins",
+    dry_time_recoat: "2 hours",
+    tags: ["soothing", "trendy", "calm"],
+    segment_types: ["residential", "hospitality"],
+    certifications: ["GreenGuard Certified", "LEED Compliant"],
+    container_sizes: ["Quart", "Gallon", "5 Gallon"],
+    application: {
+      recommended_substrates: ["Drywall", "Plaster", "Wood"],
+      coverage_sqft_per_gal: 350,
+    },
+    color: {
+      hex: "#3BAFDA",
+      rgb: "59, 175, 218",
+      lrv: 65,
+    },
+  };
 
   useEffect(() => {
     const fetchMaterialById = async (id: number) => {
       const data = await getMaterialById(id);
-      console.log(data);
     };
 
     fetchMaterialById(id);
@@ -176,17 +206,17 @@ export function SwatchDetailsPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="space-y-6 p-6"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
-          onClick={() => navigate("/swatchbook")}
+          onClick={() => navigate("/app/swatchbook")}
           className="flex items-center space-x-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to SwatchBook</span>
+          <span>Back to Materials</span>
         </Button>
 
         <div className="flex items-center space-x-2">
