@@ -37,13 +37,15 @@ const AllSegments = () => {
 
   return (
     <>
-      <h1 className=" text-lg font-bold">Segment Jobs</h1>
+      
 
       {masterArray &&
         masterArray !== undefined &&
+        masterArray.name &&
         masterArray.allSegments &&
         masterArray.allSegments.length == 0 ? (
         <>
+        <h1 className=" text-lg font-bold">No segment available in {masterArray.name??""}. Please add segment</h1>
           <div className="flex items-center justify-between mb-4">
             <TooltipProvider >
               <Tooltip>
@@ -72,6 +74,7 @@ const AllSegments = () => {
         {masterArray &&
           masterArray.allSegments &&
           masterArray.allSegments.length > 0 && (
+            
             <Tabs defaultValue={masterArray.allSegments[0].groupName} className="mb-4">
               <TabsList className="flex w-full h-9 overflow-x-auto no-scrollbar">
                
@@ -83,7 +86,27 @@ const AllSegments = () => {
                       </TabsTrigger>
                     </div>
                   ))}
-              
+               <TooltipProvider >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="bg-white text-black hover:bg-gray-100"
+                    onClick={handleAddSegment}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-plus-icon lucide-house-plus">
+                      <path d="M12.662 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v2.475" />
+                      <path d="M14.959 12.717A1 1 0 0 0 14 12h-4a1 1 0 0 0-1 1v8" />
+                      <path d="M15 18h6" />
+                      <path d="M18 15v6" />
+                    </svg>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Add Segment</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
               </TabsList>
               {/* TabsContent per group */}
               {masterArray.allSegments.map((group) => (

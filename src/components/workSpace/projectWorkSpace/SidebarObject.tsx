@@ -11,11 +11,12 @@ import {
 import { renderPolygonMaskToFile } from "@/components/canvasUtil/GenerateMask";
 import { RootState } from "@/redux/store";
 import { useParams } from "react-router-dom";
+import { ProjectModel } from "@/models/projectModel/ProjectModel";
 //import objectimg from "../../../../dist/assets/object-img-f9e-Kvp6.jpeg"; // Adjust the path as necessary
 const SidebarObject = () => {
   const { list: projects } = useSelector((state: RootState) => state.projects);
   const { id } = useParams();
-  const [project, setProject] = useState(projects.find((d) => d.id == id));
+  const [project, setProject] = useState<ProjectModel | undefined>(projects.find((d) => d.id == id));
 
   const [isOpen, setIsOpen] = useState(false);
   const [generatedMaskUrl, setGeneratedMaskUrl] = useState<string | null>(null);
@@ -86,26 +87,25 @@ const SidebarObject = () => {
           {project &&
           project.analysed_data &&
           project.analysed_data.segments_detected &&
-          project.analysed_data.segments_detected.length > 0 &&
-          project?.analysed_data.segments_detected.map(
-            (name: string, idx: number) => {
+          Object.keys(project.analysed_data.segments_detected).length > 0 &&
+          Object.entries(project.analysed_data.segments_detected).map(
+            ([key, value], idx) => {
               return (
                 <button
                   key={idx}
                   className="relative rounded-xl py-1.5 m-0 text-sm border border-gray-300 bg-transparent"
                 >
-                 
-                    {name}
-                    <Badge
-                      className="absolute -top-2 -right-2 rounded-full bg-red-600 text-white px-2 py-0.5 pt-0 text-xs "
-                      variant="default"
-                    >
-                      x
-                    </Badge>
-                  </button>
-                );
-              }
-            )}
+                  {key}
+                  <Badge
+                    className="absolute -top-2 -right-2 rounded-full bg-red-600 text-white px-2 py-0.5 pt-0 text-xs "
+                    variant="default"
+                  >
+                    x
+                  </Badge>
+                </button>
+              );
+            }
+          )}
         </div>
 
         <div className="relative flex border border-gray-300 rounded-xl p-2 align-super justify-between">

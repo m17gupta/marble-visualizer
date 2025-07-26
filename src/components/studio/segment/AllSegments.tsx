@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,50 @@ import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
 import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
 
 const AllSegments = () => {
-  const { segments } = useSelector(
+
+  const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
+ 
+  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
+ 
+
+    const { currentProject } = useSelector((state: RootState) => state.projects);
+
+ const { segments } = useSelector(
     (state: RootState) => state.materialSegments
   );
-  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
-  const [activeSegment, setActiveSegment] = useState<number | null>(
-    segments[0].id
+   const [activeSegment, setActiveSegment] = useState<number | null>(
+   null
   );
+    useEffect(() => {
+      
+      if(segments &&
+        segments.length > 0 &&
+        currentProject && currentProject.analysed_data &&
+        currentProject.analysed_data.segments_detected
+       
+      ) {
+        const detectedSeg:MaterialSegmentModel[]=[]
+          if(Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
+           const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
+           console.log("All Detected Segments:", allDetectedSegments);
+            allDetectedSegments.forEach((seg) => {
+              const foundSegment = segments.find((item) => (item.name).toLowerCase().startsWith(seg));
+              if (foundSegment) {
+                detectedSeg.push(foundSegment);
+              }
+            });
+          }
+        setActiveSegment(detectedSeg[0]?.id || null);
+       setDetectedSegment(detectedSeg);
+         dispatch(selectMaterialSegment(detectedSeg[0]));
+      dispatch(addSelectedMasterArray(detectedSeg[0]?.name));
+      }else{
+        setActiveSegment(segments[0]?.id || null);
+        setDetectedSegment(segments);
+      }
+    },[segments, currentProject]);
+
+    console.log("Detected Segments:", detectedSegment);
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MaterialSegmentModel) => {
@@ -32,22 +69,22 @@ const AllSegments = () => {
 
       //segMent tye in tab slice
       dispatch(setSegmentType(selectedSeg.name));
-       dispatch(setActiveTab("segment"));
+       dispatch(setActiveTab("studio-segment"));
     }
   };
 
-  const handleMouseEnter = (segmentId: number, color: string) => {
+  // const handleMouseEnter = (segmentId: number, color: string) => {
    
-  };
+  // };
 
-  const handleMouseLeave = (segmentId: number) => {};
+  // const handleMouseLeave = (segmentId: number) => {};
 
   return (
     <TooltipProvider>
       <div className="flex flex-col space-y-2 p-2">
-        {segments &&
-          segments.length > 0 &&
-          segments.map((segment: MaterialSegmentModel, index: number) => {
+        {detectedSegment &&
+          detectedSegment.length > 0 &&
+          detectedSegment.map((segment: MaterialSegmentModel, index: number) => {
             const isActive = activeSegment === segment.id;
             const isHovered = hoveredSegment === segment.id;
 
@@ -72,10 +109,10 @@ const AllSegments = () => {
                           : "transparent",
                       }}
                       onClick={() => handleSegmentClick(segment)}
-                      onMouseEnter={() =>
-                        handleMouseEnter(segment.id, segment.color_code || "")
-                      }
-                      onMouseLeave={() => handleMouseLeave(segment.id)}
+                      // onMouseEnter={() =>
+                      //   handleMouseEnter(segment.id, segment.color_code || "")
+                      // }
+                      // onMouseLeave={() => handleMouseLeave(segment.id)}
                     >
                       <span className="icon w-100 h-100 flex items-center justify-center">
                         {segment.icon && segment.icon.trim() !== "" ? (
