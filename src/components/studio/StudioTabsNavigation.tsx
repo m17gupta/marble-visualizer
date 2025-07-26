@@ -96,7 +96,7 @@ StudioTabsNavigationProps) {
       {/* Scrollable Tab Content */}
       <ScrollArea className="flex-1 px-4">
         <div className="py-4 space-y-6">
-          <TabsContent value="segment" className="space-y-6 mt-0">
+          <TabsContent value="studio-segment" className="space-y-6 mt-0">
             <SegmentHome />
           </TabsContent>
 
