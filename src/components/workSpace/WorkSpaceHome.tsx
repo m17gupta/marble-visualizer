@@ -1,4 +1,3 @@
-
 import StudioPageMobile from "@/pages/StudioPageMobile";
 import React, { useEffect, useState } from "react";
 import GenAiImages from "./compareGenAiImages/GenAiImages";

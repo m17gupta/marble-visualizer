@@ -68,13 +68,13 @@ export function StudioPage() {
 
  
   const { currentImageUrl } = useSelector((state: RootState) => state.studio);
-   const {addSegMessage} = useSelector((state: RootState) => state.segments); 
+  const { addSegMessage } = useSelector((state: RootState) => state.segments);
 
   const [loadingMessage, setLoadingMessage] = useState("");
-   // update message 
+  // update message
 
   useEffect(() => {
-    if (addSegMessage ) {
+    if (addSegMessage) {
       setLoadingMessage(addSegMessage);
     } else {
       setLoadingMessage("");
@@ -126,42 +126,38 @@ export function StudioPage() {
     dispatch(setIsCanvasModalOpen(false));
   };
 
-
-  const handleBackToProject=()=>{
-      dispatch(resetSegmentSlice())
-      dispatch(clearCurrentJob());
-      dispatch(clearMasterArray())
-       navigate("/projects")
-  }
+  const handleBackToProject = () => {
+    dispatch(resetSegmentSlice());
+    dispatch(clearCurrentJob());
+    dispatch(clearMasterArray());
+    navigate("/projects");
+  };
   return (
     <>
-  
-{ loadingMessage && loadingMessage.trim() !== "" &&
-  <LoadingOverlay
-    message={loadingMessage}
-   
-  />}
+      {loadingMessage && loadingMessage.trim() !== "" && (
+        <LoadingOverlay message={loadingMessage} />
+      )}
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
         {/* <Breadcrumb /> */}
         <div className="w-full md:w-1/4 border-r overflow-hidden hidden md:block">
           <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
             <div className="text-start">
-              {/* <Link to="/"> */}
-                {" "}
-                <img
-                  className="w-44 text-center"
-                  src={dzinlylogo}
-                  alt="dzinly logo"
-                ></img>
+              {/* <Link to="/"> */}{" "}
+              <img
+                className="w-44 text-center"
+                src={dzinlylogo}
+                alt="dzinly logo"
+              ></img>
               {/* </Link> */}
             </div>
             {/* <Link to="/"> */}
-              <Button className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
+            <Button
+              className="flex items-center space-x-2 h-8 mt-1 py-1 rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
               onClick={handleBackToProject}
-              >
-                <IoMdArrowRoundBack className="w-4 h-4" />
-                <span>Back</span>
-              </Button>
+            >
+              <IoMdArrowRoundBack className="w-4 h-4" />
+              <span>Back</span>
+            </Button>
             {/* </Link> */}
           </div>
           <StudioMainTabs />
@@ -199,12 +195,12 @@ export function StudioPage() {
             onClose={handleCloseMask}
           />
         )}
-   
+
         <CreateMaterArray />
       </div>
 
       <CanvasAdddNewSegmentHome />
- {/* get all segments based on job Id */}
+      {/* get all segments based on job Id */}
       <GetSegments />
     </>
   );
