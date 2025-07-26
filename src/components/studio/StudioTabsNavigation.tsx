@@ -6,7 +6,7 @@ import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations
 import { StudioDesignTab } from "@/components/studio/StudioDesignTab";
 // import { DesignSettings, Job } from './types';
 import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
-import SegmentHome from "./segment/SegmentHome";
+import SegmentHome from "@/components/studio/tabContent/sudio-segment/SegmentHome.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
