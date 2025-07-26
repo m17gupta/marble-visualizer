@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
@@ -34,16 +34,19 @@ import {
 import { cn } from "@/lib/utils";
 import { fetchSwatchBySlug, toggleFavorite } from "@/redux/slices/swatchSlice";
 import { getMaterialById } from "@/services/material";
+import { updateUserProfile } from "@/redux/slices/userProfileSlice";
 
 export function SwatchDetailsPage() {
+  const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
+  const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
   const params = useParams<{ id: string }>();
   const id = params.id !== undefined ? parseInt(params.id) : 0;
-
+  const { profile } = useSelector((state: RootState) => state.userProfile);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { swatches, favorites, isLoading, error } = useSelector(
-    (state: RootState) => state.swatches
-  );
+  // const { swatches, favorites, isLoading, error } = useSelector(
+  //   (state: RootState) => state.swatches
+  // );
 
   const currentSwatch = {
     _id: "static-id-123",
@@ -75,18 +78,22 @@ export function SwatchDetailsPage() {
       lrv: 65,
     },
   };
+  // useEffect(() => {
+  //   const fetchMaterialById = async (id: number) => {
+  //     const data = await getMaterialById(id);
+  //   };
 
-  useEffect(() => {
-    const fetchMaterialById = async (id: number) => {
-      const data = await getMaterialById(id);
-    };
+  //   fetchMaterialById(id);
+  // }, []);
 
-    fetchMaterialById(id);
-  }, []);
-
-  // const { materials, isLoading, error, pagination } = useSelector(
-  //     (state: RootState) => state.materials
-  //   );
+  const { materials, isLoading, error, pagination } = useSelector(
+    (state: RootState) => state.materials
+  );
+  const material = useMemo(() => {
+    return materials.find((d) => {
+      return d.id == id;
+    });
+  }, [materials]);
 
   // const currentSwatch = materials.find((d)=>d.id==id)
 
@@ -100,13 +107,38 @@ export function SwatchDetailsPage() {
   // }, [id, dispatch]);
 
   const isFavorite = currentSwatch
-    ? favorites.includes(currentSwatch._id)
+    ? profile?.favorite_materials!.includes(id)
     : false;
 
-  const handleToggleFavorite = async () => {
-    if (!currentSwatch) return;
-
-    await dispatch(toggleFavorite(currentSwatch._id));
+  const handleToggleFavorite = async (
+    e: MouseEvent,
+    id: number,
+    profile: any
+  ) => {
+    e.stopPropagation();
+    const fav =
+      profile?.favorite_materials == null ? [] : profile.favorite_materials;
+    const newFav = [...fav];
+    if (isFavorite) {
+      await dispatch(
+        updateUserProfile({
+          userId: profile !== null ? profile.user_id! : "",
+          updates: {
+            favorite_materials: newFav.filter((idx) => idx !== id),
+          },
+        })
+      );
+    } else {
+      newFav.push(id);
+      await dispatch(
+        updateUserProfile({
+          userId: profile !== null ? profile.user_id! : "",
+          updates: {
+            favorite_materials: newFav,
+          },
+        })
+      );
+    }
     toast.success(isFavorite ? "Removed from favorites" : "Added to favorites");
   };
 
@@ -228,8 +260,11 @@ export function SwatchDetailsPage() {
           <Button
             variant={isFavorite ? "default" : "outline"}
             size="sm"
-            onClick={handleToggleFavorite}
-            className={cn(isFavorite && "text-red-500 hover:text-red-600")}
+            onClick={(e) => handleToggleFavorite(e, id, profile)}
+            className={cn(
+              isFavorite &&
+                "text-red-500 hover:text-red-600 bg-white border-red-400"
+            )}
           >
             <Heart
               className={cn("h-4 w-4 mr-2", isFavorite && "fill-current")}
@@ -249,10 +284,17 @@ export function SwatchDetailsPage() {
         >
           <Card className="overflow-hidden">
             <div className="relative aspect-square">
-              <div
-                className="w-full h-full transition-all duration-300"
-                style={{ backgroundColor: currentSwatch.color.hex }}
-              />
+              <div className="w-full h-full transition-all duration-300">
+                <img
+                  className="w-full"
+                  src={
+                    `${material?.bucket_path}` === "default"
+                      ? `${path}/${material?.photo}`
+                      : `${newPath}/${material?.bucket_path}`
+                  }
+                  alt=""
+                />
+              </div>
 
               {/* Color overlay info */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -301,7 +343,7 @@ export function SwatchDetailsPage() {
           <div>
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h1 className="text-3xl font-bold">{currentSwatch.title}</h1>
+                <h1 className="text-3xl font-bold">{material?.title}</h1>
                 <p className="text-lg text-muted-foreground">
                   {currentSwatch.brand}
                 </p>
@@ -312,7 +354,7 @@ export function SwatchDetailsPage() {
             </div>
 
             <p className="text-muted-foreground mb-4">
-              {currentSwatch.description}
+              {material?.description}
             </p>
 
             <div className="flex flex-wrap gap-2 mb-4">

@@ -33,7 +33,7 @@ const navigation = [
   },
 
   {
-    name: "SwatchBook",
+    name: "Materials Library",
     href: "/app/swatchbook",
     icon: Paintbrush,
   },

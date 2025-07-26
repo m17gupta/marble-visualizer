@@ -14,7 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Paintbrush,
-  
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,13 +34,11 @@ const navigation = [
   //   icon: Package,
   // },
   {
-    name: "SwatchBook",
+    name: "Materials Library",
     href: "/app/swatchbook",
     icon: Paintbrush,
   },
 ];
-
-
 
 export function SideBar() {
   const location = useLocation();
@@ -59,11 +56,10 @@ export function SideBar() {
   //   // Navigation is handled within the thunk
   // };
 
-    const handleSignIn = () => {
+  const handleSignIn = () => {
     // Handle sign-in logic here
-    navigate("/login")
+    navigate("/login");
   };
-
 
   const isActivePath = (path: string) => {
     return (
@@ -77,24 +73,24 @@ export function SideBar() {
         <motion.div
           initial={false}
           animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
-          className="flex items-center space-x-3 cursor-pointer" 
+          className="flex items-center space-x-3 cursor-pointer"
         >
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Settings className="h-5 w-5 text-primary-foreground" />
 
-{/* <User
+            {/* <User
   className="h-5 w-5 text-white bg-purple-600 rounded-lg p-1 cursor-pointer hover:bg-purple-700 transition-colors"
   onClick={handleSignIn}
 /> */}
-
-
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-xl font-bold text-foreground cursor-pointer" onClick={handleSignIn}>Sign In
-                  {/* <p className="text-sm "> Click to sign In account</p> */}
+            <span
+              className="text-xl font-bold text-foreground cursor-pointer"
+              onClick={handleSignIn}
+            >
+              Sign In
+              {/* <p className="text-sm "> Click to sign In account</p> */}
             </span>
-            
-     
           )}
         </motion.div>
         {!mobile && (
@@ -117,7 +113,7 @@ export function SideBar() {
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(item.href);
-
+          console.log(item.name);
           return (
             <motion.button
               key={item.name}
@@ -186,8 +182,6 @@ export function SideBar() {
           <SidebarContent mobile />
         </SheetContent>
       </Sheet>
-
-    
     </div>
   );
 }
