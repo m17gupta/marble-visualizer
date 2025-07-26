@@ -140,24 +140,24 @@ const LeftPage = () => {
           </div>
           <div className="flex-1">
             <StudioSidebar
-              currentUserRole={currentUserRole}
-              canEdit={canEdit}
-              canAdmin={canAdmin}
+              // currentUserRole={currentUserRole}
+              // canEdit={canEdit}
+              // canAdmin={canAdmin}
               activeTab={activeTabFromStore ?? "design-hub"}
               onTabChange={handleChangeTab}
-              onShareClick={() => setShareDialogOpen(true)}
+              // onShareClick={() => setShareDialogOpen(true)}
               projectId={projectId}
-              isJobRunning={isJobRunning}
-              jobError={jobError}
+              // isJobRunning={isJobRunning}
+              // jobError={jobError}
         
-              jobProgress={jobProgress}
-              onStyleChange={handleStyleChange}
-              onLevelChange={handleLevelChange}
-              onPreserveToggle={handlePreserveToggle}
-              onToneChange={handleToneChange}
-              onIntensityChange={handleIntensityChange}
-              onGenerate={handleGenerate}
-              onCancelJob={handleCancelJob}
+              // jobProgress={jobProgress}
+              // onStyleChange={handleStyleChange}
+              // onLevelChange={handleLevelChange}
+              // onPreserveToggle={handlePreserveToggle}
+              // onToneChange={handleToneChange}
+              // onIntensityChange={handleIntensityChange}
+              // onGenerate={handleGenerate}
+              // onCancelJob={handleCancelJob}
             />
           </div>
         </TabsContent>

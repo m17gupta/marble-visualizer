@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { RootState } from "@/redux/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +14,7 @@ import {
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-const SegmentHome = () => {
+const AllSegments = () => {
   const { list: jobs } = useSelector((state: RootState) => state.jobs);
 
   const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
@@ -112,4 +113,4 @@ const SegmentHome = () => {
   );
 };
 
-export default SegmentHome;
+export default AllSegments;

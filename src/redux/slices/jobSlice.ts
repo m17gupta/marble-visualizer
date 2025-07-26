@@ -193,7 +193,7 @@ const jobSlice = createSlice({
     updateSidebarHeaderCollapse: (state, action: PayloadAction<boolean>) => {
       state.isSidebarHeaderCollapsed = action.payload;
     },
-    updateCurrentJobSegments: (state, action: PayloadAction<string>) => {
+    updateCurrentJobSegments: (state) => {
       if (state.currentJob) {
         // state.currentJob.segements = action.payload;
         // state.currentJob.updated_at = new Date().toISOString();

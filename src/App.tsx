@@ -8,7 +8,6 @@ import { AppRouter } from "./routes/AppRouter";
 // import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Toaster } from "@/components/ui/sonner";
 import ReduxDebugger from "./components/ui/ReduxDebugger";
-import Breadcrumb from "./components/breadcrumbs/Breadcrumb";
 
 function App() {
   useEffect(() => {
@@ -20,12 +19,7 @@ function App() {
     <Provider store={store}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <BrowserRouter>
-          {/* Show connection status in development
-          {import.meta.env.DEV && (
-            <div className="fixed top-[54px] right-4 z-50 w-80">
-              <ConnectionStatus />
-            </div>
-          )} */}
+          
 
           <AppRouter />
           <Toaster />

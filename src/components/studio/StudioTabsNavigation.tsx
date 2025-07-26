@@ -6,10 +6,11 @@ import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations
 import { StudioDesignTab } from "@/components/studio/StudioDesignTab";
 // import { DesignSettings, Job } from './types';
 import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
-import SegmentHome from "./segment/SegmentHome";
+
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
+import AllSegments from "../designHub/AllSegments";
 
 interface StudioTabsNavigationProps {
   activeTab: string;
@@ -71,7 +72,7 @@ StudioTabsNavigationProps) {
     >
       <div className="px-4 pt-2 flex-shrink-0">
         <TabsList className="grid w-full grid-cols-6 h-9">
-          <TabsTrigger value="segment" className="text-xs p-1">
+          <TabsTrigger value="studio-segment" className="text-xs p-1">
             <Square className="h-3 w-3" />
             {/* <span className="sr-only">Segment</span> */}
           </TabsTrigger>
@@ -96,8 +97,8 @@ StudioTabsNavigationProps) {
       {/* Scrollable Tab Content */}
       <ScrollArea className="flex-1 px-4">
         <div className="py-4 space-y-6">
-          <TabsContent value="segment" className="space-y-6 mt-0">
-            <SegmentHome />
+          <TabsContent value="studio-segment" className="space-y-6 mt-0">
+            <AllSegments />
           </TabsContent>
 
           <TabsContent value="design" className="space-y-6 mt-0">
