@@ -277,24 +277,24 @@ const LandingHome = () => {
         {/* lg:pl-80 */}
         {/* Header */}
         <div className='bg-white px-6 py-4 rounded-lg'>
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 ">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Let's get started!</h2>
           </div>
 
           {/* Tabs Section */}
           <Tabs defaultValue="homeOwner" className="w-full">
-            <TabsList className="grid w-full max-w-lg mx-auto grid-cols-4 mb-8 gap-3 h-14">
+            <TabsList className="grid w-full  max-w-lg mx-auto grid-cols-2 md:grid-cols-4 mb-8 gap-3 h-32 md:14 rounded-lg">
 
-              <TabsTrigger value="homeOwner" className="flex items-center gap-2 px-4 py-2 rounded-md">
+              <TabsTrigger value="homeOwner" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
                 🏠 Home Owner
               </TabsTrigger>
-              <TabsTrigger value="realtor" className="flex items-center gap-2 px-4 py-2 rounded-md">
+              <TabsTrigger value="realtor" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
                 🏖️ Realtor
               </TabsTrigger>
-              <TabsTrigger value="trade" className="flex items-center gap-2 px-4 py-2 rounded-md">
+              <TabsTrigger value="trade" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
                 🏢 Trade
               </TabsTrigger>
-              <TabsTrigger value="distributor" className="flex items-center gap-2 px-4 py-2 rounded-md">
+              <TabsTrigger value="distributor" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
                 🏢 Distributor
               </TabsTrigger>
             </TabsList>

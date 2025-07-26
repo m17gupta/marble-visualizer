@@ -12,10 +12,10 @@ const ProjectHeader = ({ createProject }: Props) => {
     }
   return (
    <>
-    <div className="flex justify-between items-center 1">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
-              <p className="text-muted-foreground">
+    <div className="md:flex grid justify-between items-center">
+            <div className='pb-4 md:pb-0'>
+              <h1 className="text-3xl font-bold tracking-tight pb-1">Projects</h1>
+              <p className="text-muted-foreground text-sm">
                 Manage your projects and track progress
               </p>
             </div>

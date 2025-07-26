@@ -70,7 +70,7 @@ StudioTabsNavigationProps) {
       onValueChange={handleChangeTab}
       className="flex-1 flex flex-col"
     >
-      <div className="px-4 pt-2 flex-shrink-0">
+      <div className=" pt-2 flex-shrink-0">
         <TabsList className="grid w-full grid-cols-6 h-9">
           <TabsTrigger value="studio-segment" className="text-xs p-1">
             <Square className="h-3 w-3" />

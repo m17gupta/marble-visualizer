@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,21 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import ShareModal from "@/components/ShareModal";
 import {
-  BookOpen, 
-  // CreditCard, 
-  FolderOpen, 
-  Layout, 
-  Package, 
-  Palette, 
-  Plus, 
-  Settings, 
-  User, 
+  BookOpen,
+  FolderOpen,
+  Layout,
+  Package,
+  Palette,
+  Plus,
+  Settings,
+  User,
   Users,
   Home,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  Share2
+  Share2,
+  Menu
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -41,14 +41,6 @@ const sidebarSections: {
   title: string;
   items: SidebarItem[];
 }[] = [
-  // {
-  //   title: 'ACCOUNT',
-  //   items: [
-  //     { id: 'profile', label: 'Profile', icon: User, href: '/app/profile' },
-  //     { id: 'settings', label: 'Settings', icon: Settings, href: '/app/settings' },
-  //     { id: 'billing', label: 'Billing', icon: CreditCard, href: '/app/billing' },
-  //   ],
-  // },
   {
     title: 'ORGANIZATIONS',
     items: [
@@ -90,8 +82,12 @@ const SideBarVisual = () => {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Auto-close mobile menu on route change
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   const handleLogin = () => {
-    // If the user is logged in, log them out, otherwise navigate to login
     try {
       dispatch(logoutUser());
     } catch (error) {
@@ -102,27 +98,21 @@ const SideBarVisual = () => {
 
   const isActivePath = (path: string) => {
     if (!path) return false;
-    return (
-      location.pathname === path || location.pathname.startsWith(path + "/")
-    );
+    return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
   const handleItemClick = (item: SidebarItem) => {
-    if (item.isAction) {
-      // Handle action items (like "Add Orga  console.log(`Action: ${item.label}`);
-      return;
-    }
-    
+    if (item.isAction) return;
+
     if (item.id === 'share-project') {
-      // Open share modal for the current project
-      setSelectedProjectId('current-project'); // Replace with actual project ID
+      setSelectedProjectId('current-project'); // Replace with real project ID
       setShareModalOpen(true);
       return;
     }
-    
+
     if (item.href) {
       navigate(item.href);
-      if (mobileMenuOpen) setMobileMenuOpen(false);
+      setMobileMenuOpen(false);
     }
   };
 
@@ -142,6 +132,7 @@ const SideBarVisual = () => {
             <span className="text-xl font-bold text-foreground">Visual Studio</span>
           )}
         </motion.div>
+
         {!mobile && (
           <Button
             variant="ghost"
@@ -158,77 +149,69 @@ const SideBarVisual = () => {
         )}
       </div>
 
-      {/* Navigation Sections */}
+      {/* Navigation */}
       <nav className="flex-1 px-4 space-y-6 overflow-y-auto">
-        {sidebarSections.map((section) => {
-          return (
-            <div key={section.title} className="space-y-2">
-              {/* Section Header */}
-              {(!sidebarCollapsed || mobile) && (
-                <div className="px-2">
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    {section.title}
-                  </h3>
-                </div>
-              )}
-
-              {/* Section Items */}
-              <div className="space-y-1">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActivePath(item.href || '');
-
-                  return (
-                    <motion.button
-                      key={item.id}
-                      onClick={() => handleItemClick(item)}
-                      className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                        active
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : item.isAction
-                          ? "text-primary hover:bg-primary/10"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      )}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="flex items-center">
-                        <Icon className="h-5 w-5 flex-shrink-0" />
-                        <AnimatePresence>
-                          {(!sidebarCollapsed || mobile) && (
-                            <motion.span
-                              initial={{ opacity: 0, width: 0 }}
-                              animate={{ opacity: 1, width: "auto" }}
-                              exit={{ opacity: 0, width: 0 }}
-                              className="ml-3"
-                            >
-                              {item.label}
-                            </motion.span>
-                          )}
-                        </AnimatePresence>
-                      </div>
-
-                      {/* Right side elements */}
-                      {(!sidebarCollapsed || mobile) && (
-                        <div className="flex items-center space-x-2">
-                          {item.badge && (
-                            <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-full">
-                              {item.badge}
-                            </span>
-                          )}
-                          {item.hasChevron && (
-                            <ChevronDown className="h-4 w-4" />
-                          )}
-                        </div>
-                      )}
-                    </motion.button>
-                  );
-                })}
+        {sidebarSections.map((section) => (
+          <div key={section.title} className="space-y-2">
+            {(!sidebarCollapsed || mobile) && (
+              <div className="px-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {section.title}
+                </h3>
               </div>
+            )}
+            <div className="space-y-1">
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const active = isActivePath(item.href || "");
+
+                return (
+                  <motion.button
+                    key={item.id}
+                    onClick={() => handleItemClick(item)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      active
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : item.isAction
+                        ? "text-primary hover:bg-primary/10"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center">
+                      <Icon className="h-5 w-5 flex-shrink-0" />
+                      <AnimatePresence>
+                        {(!sidebarCollapsed || mobile) && (
+                          <motion.span
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: "auto" }}
+                            exit={{ opacity: 0, width: 0 }}
+                            className="ml-3"
+                          >
+                            {item.label}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {(!sidebarCollapsed || mobile) && (
+                      <div className="flex items-center space-x-2">
+                        {item.badge && (
+                          <span className="px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded-full">
+                            {item.badge}
+                          </span>
+                        )}
+                        {item.hasChevron && <ChevronDown className="h-4 w-4" />}
+                      </div>
+                    )}
+                  </motion.button>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </nav>
 
       {/* Footer */}
@@ -250,9 +233,30 @@ const SideBarVisual = () => {
   );
 
   return (
+
+    <>
+    <Button
+  variant="ghost"
+  size="icon"
+  onClick={() => setMobileMenuOpen(true)}
+  className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md rounded-full"
+>
+  <Menu className="h-6 w-6" />
+</Button>
+
     <div className="min-h-screen bg-background">
+      {/* Toggle Mobile Sidebar Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md rounded-full"
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
+
       {/* Share Modal */}
-      <ShareModal 
+      <ShareModal
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
         projectId={selectedProjectId || ''}
@@ -263,7 +267,7 @@ const SideBarVisual = () => {
       <motion.aside
         initial={false}
         animate={{ width: sidebarCollapsed ? 80 : 280 }}
-        className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border"
+        className="fixed inset-y-0 left-0 z-40 lg:block bg-card border-r border-border"
       >
         <SidebarContent />
       </motion.aside>
@@ -275,6 +279,7 @@ const SideBarVisual = () => {
         </SheetContent>
       </Sheet>
     </div>
+    </>
   );
 };
 

@@ -154,13 +154,13 @@ const Setting: React.FC<SettingProps> = ({ isOpen, onClose }) => {
             className="fixed top-0 left-0 bottom-0 bg-card border-r border-border z-50 w-80 overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="flex items-center justify-between py-2 px-4 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">Settings</h2>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="rounded-full"
+                className="rounded-full py-3 px-2 border-black/10 hover:bg-muted bg-white" 
               >
                 <X className="h-4 w-4" />
               </Button>
