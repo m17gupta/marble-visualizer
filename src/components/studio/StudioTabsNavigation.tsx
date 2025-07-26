@@ -6,10 +6,11 @@ import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations
 import { StudioDesignTab } from "@/components/studio/StudioDesignTab";
 // import { DesignSettings, Job } from './types';
 import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
-import SegmentHome from "@/components/studio/tabContent/sudio-segment/SegmentHome.tsx";
+
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
+import AllSegments from "../designHub/AllSegments";
 
 interface StudioTabsNavigationProps {
   activeTab: string;
@@ -97,7 +98,7 @@ StudioTabsNavigationProps) {
       <ScrollArea className="flex-1 px-4">
         <div className="py-4 space-y-6">
           <TabsContent value="studio-segment" className="space-y-6 mt-0">
-            <SegmentHome />
+            <AllSegments />
           </TabsContent>
 
           <TabsContent value="design" className="space-y-6 mt-0">

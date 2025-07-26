@@ -44,6 +44,19 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
           setChildName(firstSeg);
         }
     }
+    } else if(selectedMasterArray &&
+        selectedMasterArray.name &&
+        selectedMasterArray.allSegments &&
+        selectedMasterArray.allSegments.length >0){
+      setSegType(selectedMasterArray.name);
+      setAllCategories(selectedMasterArray.categories || []);
+         const allSeg = selectedMasterArray.allSegments.length;
+            if (allSeg>1) {
+       selectedMasterArray.allSegments.forEach((seg) => {
+         setGroupArray(prev => [...prev, seg.groupName]);
+         
+       });
+    }
     }
   },[selectedMasterArray])
 
@@ -62,6 +75,14 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
     onSave()
   };
 
+   const handleAddGroup = () => {
+    const groupLength = groupArray.length;
+    const newGroupName = `${segType}${groupLength + 1}`;
+    setGroupArray([...groupArray, newGroupName]);
+    // setGroupName(newGroupName);
+    // setShortName(`${selectedMasterArray.short_code}${groupLength + 1}`);
+    // setChildName(newGroupName);
+   }
   return (
     <Modal show={open} onHide={onClose} backdrop="static" keyboard={false} centered size="lg">
       <Modal.Header closeButton>
@@ -92,7 +113,9 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
                   <option key={index} value={group}>{group}</option>
                 ))}
               </select>
-              <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold">+</button>
+              <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
+              onClick={handleAddGroup}
+              >+</button>
             </div>
             {/* Categories Dropdown */}
             <div className="flex items-center gap-2">

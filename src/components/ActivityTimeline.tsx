@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { RootState } from '@/redux/store';
 import { ActivityLog } from '@/redux/slices/activityLogsSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

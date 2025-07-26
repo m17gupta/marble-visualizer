@@ -11,33 +11,32 @@ import { StudioTabsNavigation } from "./StudioTabsNavigation";
 // } from "lucide-react";
 
 interface StudioSidebarProps {
-  currentUserRole: "admin" | "editor" | "viewer" | null;
-  canEdit: boolean;
-  canAdmin: boolean;
-  activeTab: string;
+  // currentUserRole: "admin" | "editor" | "viewer" | null;
+  // canEdit: boolean;
+  // canAdmin: boolean;
+   activeTab: string;
   onTabChange: (value: string) => void;
-  onShareClick: () => void;
+  // onShareClick: () => void;
   projectId?: string;
   // selectedSegmentType: string | null;
   // designSettings: DesignSettings;
-  isJobRunning: boolean;
-  jobError: string | null;
+  // isJobRunning: boolean;
+  // jobError: string | null;
   // currentJob: Job | null;
   // currentImageUrl: string | null;
   // isUploading: boolean;
-  jobProgress: number;
-  onStyleChange: (value: string) => void;
-  onLevelChange: (checked: boolean) => void;
-  onPreserveToggle: (id: string) => void;
-  onToneChange: (value: string) => void;
-  onIntensityChange: (value: number) => void;
-  onGenerate: () => void;
-  onCancelJob: () => void;
+  // jobProgress: number;
+  // onStyleChange: (value: string) => void;
+  // onLevelChange: (checked: boolean) => void;
+  // onPreserveToggle: (id: string) => void;
+  // onToneChange: (value: string) => void;
+  // onIntensityChange: (value: number) => void;
+  // onGenerate: () => void;
+  // onCancelJob: () => void;
 }
 
 export function StudioSidebar({
   // canEdit,
-
   activeTab,
   onTabChange,
   projectId,
