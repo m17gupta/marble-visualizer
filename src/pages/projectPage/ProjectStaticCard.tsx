@@ -30,7 +30,7 @@ const ProjectStaticCard = () => {
   return (
     <>
       {/* <ProjectAccordion/> */}
-      <Accordion type="single" collapsible className="block md:hidden">
+      <Accordion type="single" collapsible className="block md:hidden" style={{marginTop: "8px"}}>
         <AccordionItem value="item-1" className="border rounded-lg">
           <AccordionTrigger className="py-2 bg-gray-200 rounded-md">View all</AccordionTrigger>
           <AccordionContent className="p-2">

@@ -224,9 +224,9 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
         isCreatingProject={isCreatingProject}
         isCreatingJob={isCreatingJob}
       />
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         {/* Header */}
-        <div className=" border-b border-gray-200 py-6">
+        <div className=" border-b border-gray-200 py-6 pt-10">
           <div className="max-w-6xl mx-auto px-2 md:px-6">
             <div className="text-center relative flex items-center justify-center ">
               {/* Back button positioned absolutely in header */}
