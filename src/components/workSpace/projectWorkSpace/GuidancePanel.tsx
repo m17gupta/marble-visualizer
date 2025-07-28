@@ -360,24 +360,8 @@ const GuidancePanel: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 justify-end">
-            {/* <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="btn bg-transparent rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 p-2"
-                    onClick={() => setShowGuide(true)}
-                  >
-                    <FcIdea className="text-2xl" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-black text-white text-xs px-2 py-1 rounded-md"
-                >
-                  Suggested Next Steps
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
             <button
+            className="text-sm border-0 border-gray-300 bg-transparent flex items-center justify-center gap-1 rounded-md md:px-3 md:py-2 px-3 py-1 focus:outline-none focus:ring-0"
               onClick={() => {
                 if (suggestedPrompt !== null) {
                   setSuggestedPrompt(null);
@@ -387,9 +371,9 @@ const GuidancePanel: React.FC = () => {
               }}
             >
               {suggestedPrompt !== null ? (
-                <TbBulb size={15} />
+                <TbBulb size={28} />
               ) : (
-                <TbBulbFilled size={15} />
+                <TbBulbFilled size={28}  className="text-yellow-300"/>
               )}
             </button>
             <button
@@ -403,9 +387,7 @@ const GuidancePanel: React.FC = () => {
             </button>
           </div>
         </div>
-        {/* <div className="flex items-center gap-2">
-          <GenAiImages/>
-          </div> */}
+
       </div>
 
       {/* Only render Call_task_id when there's an active task */}

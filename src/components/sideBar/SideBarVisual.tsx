@@ -7,6 +7,8 @@ import { logoutUser } from "@/redux/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import ShareModal from "@/components/ShareModal";
+import { AiOutlineMenuFold } from "react-icons/ai";
+
 import {
   BookOpen,
   FolderOpen,
@@ -235,24 +237,26 @@ const SideBarVisual = () => {
   return (
 
     <>
-    <Button
+    {/* <Button
   variant="ghost"
   size="icon"
   onClick={() => setMobileMenuOpen(true)}
   className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md rounded-full"
 >
   <Menu className="h-6 w-6" />
-</Button>
+</Button> */}
 
     <div className="min-h-screen bg-background">
       {/* Toggle Mobile Sidebar Button */}
       <Button
         variant="ghost"
-        size="icon"
+        size="sm"
         onClick={() => setMobileMenuOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md rounded-full"
+        className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md rounded-full h-11 "
       >
-        <Menu className="h-6 w-6" />
+        <AiOutlineMenuFold className="h-5 w-5"/>
+
+        {/* <Menu className="h-6 w-6" /> */}
       </Button>
 
       {/* Share Modal */}
@@ -267,7 +271,7 @@ const SideBarVisual = () => {
       <motion.aside
         initial={false}
         animate={{ width: sidebarCollapsed ? 80 : 280 }}
-        className="fixed inset-y-0 left-0 z-40 lg:block bg-card border-r border-border"
+        className="fixed inset-y-0 left-0 z-40 lg:block bg-card border-r border-border md:block hidden"
       >
         <SidebarContent />
       </motion.aside>
