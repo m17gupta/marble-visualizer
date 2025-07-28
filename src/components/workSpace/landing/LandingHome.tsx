@@ -283,18 +283,18 @@ const LandingHome = () => {
 
           {/* Tabs Section */}
           <Tabs defaultValue="homeOwner" className="w-full">
-            <TabsList className="grid w-full  max-w-lg mx-auto grid-cols-2 md:grid-cols-4 mb-8 gap-3 h-32 md:14 rounded-lg">
+            <TabsList className="grid w-full  max-w-xl px-4 mx-auto grid-cols-2 md:grid-cols-4 mb-8 gap-3 h-32 md:h-14 rounded-lg bg-black/5 ">
 
-              <TabsTrigger value="homeOwner" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
+              <TabsTrigger value="homeOwner" className="flex items-center gap-2 px-4 py-2 rounded-md bg-black/70 text-white ">
                 🏠 Home Owner
               </TabsTrigger>
-              <TabsTrigger value="realtor" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
+              <TabsTrigger value="realtor" className="flex items-center gap-2 px-4 py-2 rounded-md bg-black/70 text-white ">
                 🏖️ Realtor
               </TabsTrigger>
-              <TabsTrigger value="trade" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
+              <TabsTrigger value="trade" className="flex items-center gap-2 px-4 py-2 rounded-md bg-black/50 text-white ">
                 🏢 Trade
               </TabsTrigger>
-              <TabsTrigger value="distributor" className="flex items-center gap-2 px-4 py-2 rounded-md bg-white/80">
+              <TabsTrigger value="distributor" className="flex items-center gap-2 px-4 py-2 rounded-md bg-black/50 text-white ">
                 🏢 Distributor
               </TabsTrigger>
             </TabsList>

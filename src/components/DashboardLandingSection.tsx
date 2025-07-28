@@ -23,7 +23,7 @@ export const DashboardLandingSection = () => {
     <>
 
     
-    <div className="flex min-h-screen bg-gray-100 border-2">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
       {/* <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200"> */}
 
@@ -33,8 +33,8 @@ export const DashboardLandingSection = () => {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all w-screen duration-300 lg:pl-80 bg-gray-50 border-2",
-          sidebarCollapsed && "lg:pl-20"
+          "transition-all w-screen duration-300 lg:pl-80 bg-gray-50 ",
+           sidebarCollapsed && "lg:pl-20"
         )}
       >
         {workspace_type == "workspace" && <LandingHome />}
