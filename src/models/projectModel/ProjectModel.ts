@@ -31,7 +31,10 @@ export interface UpdateProjectRequest {
   user_id?: string;
 }
 
-
+export interface HouseSegmentModel {
+  home_url: string;
+  segment_prompt: string [];
+}
 export interface AnalyseImageModel {
   structure: {
     stories: number;

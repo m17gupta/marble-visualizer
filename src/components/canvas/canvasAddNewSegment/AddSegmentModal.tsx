@@ -109,13 +109,14 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
           <div className="bg-purple-50 rounded-lg p-3 flex items-center justify-between gap-4">
             {/* Wall Dropdown */}
             <div className="flex items-center gap-2">
-              <span>{groupName}</span>
+              {/* <span>{groupName}</span> */}
+              <span>select group</span>
               <select
                 className="bg-transparent outline-none"
                 value={groupName}
                 onChange={e => setGroupName(e.target.value)}
               >
-                <option value="">Select Wall</option>
+                <option value="">Select Group</option>
                 {groupArray.map((group, index) => (
                   <option key={index} value={group}>{group}</option>
                 ))}

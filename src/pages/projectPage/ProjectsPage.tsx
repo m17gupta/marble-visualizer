@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useFetcher, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppDispatch, RootState } from "@/redux/store";
 import { ProjectModel } from "@/models/projectModel/ProjectModel";
@@ -69,11 +69,15 @@ import ProjectStaticCard from "./ProjectStaticCard";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { CiSquareInfo } from "react-icons/ci";
 import AnalyzedDataModal from "@/components/Modal";
+import AnalyseImage from "./analyseProjectImage/AnalyseImage";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const [userProjects, setUserProjects] = useState<ProjectModel[]>([]);
+    const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
+
   const {
     list: projects,
     isLoading,
@@ -99,8 +103,16 @@ export function ProjectsPage() {
     setIsOpen(newState);
   };
 
-  const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
 
+
+  /// update userProjects
+  useEffect(() => {
+    if( projects && projects.length > 0) {
+      setUserProjects(projects);
+    }else{
+      setUserProjects([]);
+    }
+  },[ projects]);
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
   const isProject = useRef(true);
@@ -120,6 +132,7 @@ export function ProjectsPage() {
   useEffect(() => {
     // Only fetch if user exists and projects list is empty
     if (user?.id && projects.length === 0 && !isLoading && isProject.current) {
+      console.log("Fetching projects for user:", user.id);
       isProject.current = false;
       dispatch(fetchProjects(user.id));
     }
@@ -288,7 +301,7 @@ export function ProjectsPage() {
           {/* Projects Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
-              {projects.map((project, index) => (
+              {userProjects.map((project, index) => (
                 <motion.div
                   key={project.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -492,7 +505,7 @@ export function ProjectsPage() {
             </AnimatePresence>
           </div>
 
-          {projects.length === 0 && !isLoading && (
+          {userProjects.length === 0 && !isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -519,6 +532,8 @@ export function ProjectsPage() {
       <SwatchBookDataHome />
 
       <MaterialData />
+
+      <AnalyseImage/>
     </>
   );
 }

@@ -64,6 +64,7 @@ StudioTabsNavigationProps) {
   // console.log("SegmentHome jobs", jobs);
 
   return (
+    <>
     <Tabs
       defaultValue="segment"
       value={designhubactivetab}
@@ -123,5 +124,8 @@ StudioTabsNavigationProps) {
         </div>
       </ScrollArea>
     </Tabs>
+
+    <SwatchRecommendations />
+    </>
   );
 }

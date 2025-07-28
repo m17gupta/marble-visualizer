@@ -36,14 +36,15 @@ import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 
 import { MdPhotoSizeSelectLarge, MdBrokenImage } from "react-icons/md";
 import { PiImagesDuotone } from "react-icons/pi";
+import { setIsAnalyseImage, setJobUrl, setProjectId } from "@/redux/slices/projectAnalyseSlice";
 
 
-type Props={
+type Props = {
   resetProjectCreated: () => void;
 }
-const VisualToolHome = ({resetProjectCreated}: Props) => {
+const VisualToolHome = ({ resetProjectCreated }: Props) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-    const { profile } = useSelector((state: RootState) => state.userProfile);
+  const { profile } = useSelector((state: RootState) => state.userProfile);
   const { list: projectList } = useSelector((state: RootState) => state.projects);
   const { workspace_type } = useSelector((state: RootState) => state.workspace);
 
@@ -67,7 +68,7 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
 
   const createdProjectId = useRef<number | null>(null);
 
- 
+
   // Upload a file for a given view
   const handleFileUpload = (file: File, view: ViewType) => {
     setViewFile(view, file);
@@ -166,24 +167,28 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
           jobType: typeView,
           dispatch: dispatch,
         };
+
+        dispatch(setJobUrl(result.fileUrl));
+        dispatch(setProjectId(createdProjectId.current ?? 0));
+        dispatch(setIsAnalyseImage(true));
         // console.log('Creating job with data:', jobData);
         setIsCreatingJob(true);
         CreateJob(jobData, {
           resetForm: () => {
-          ;
+            ;
             setIsCreatingJob(false);
-            
+
             // Navigate to the project page or workspace after job creation
             if (workspace_type === "renovate") {
               if (isAuthenticated) {
                 resetProjectCreated();
                 // navigate(`/app/studio/project/${createdProjectId.current}`);
               } else {
-                dispatch(setCurrentImageUrl(result?.fileUrl??""));
-              navigate(`/workspace/project/${createdProjectId.current}`);
+                dispatch(setCurrentImageUrl(result?.fileUrl ?? ""));
+                navigate(`/workspace/project/${createdProjectId.current}`);
               }
             } else if (workspace_type === "design-hub") {
-              dispatch(setCurrentImageUrl(result?.fileUrl??""));
+              dispatch(setCurrentImageUrl(result?.fileUrl ?? ""));
               navigate(`/design-hub/project/${createdProjectId.current}`);
             }
           },
@@ -307,10 +312,10 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
                       {/* <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div> */}
                       {/* </div> */}
                       {/* <img src={Camera} alt="Camera Icon" className="h-18 w-32 object-contain" /> */}
-                    <LuImageUp className="h-10 w-10 text-gray-600"/>
-                      
+                      <LuImageUp className="h-10 w-10 text-gray-600" />
 
-                    </div> 
+
+                    </div>
                     <div>
                       <p className="text-sm text-gray-700">
                         Project images need to be a min. of 1MB in landscape
@@ -326,9 +331,9 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
                   <div className="flex items-center space-x-3">
                     <div className="w-16 h-16  rounded-full flex items-center justify-center">
                       {/* <Home className="h-8 w-8 text-gray-600" /> */}
-                        {/* <img src={Homeimage} alt="Home Icon" className="h-18 w-36 object-contain" /> */}
-                     {/* <LuImageUp className="text-2xl text-gray-700 mt-1"/> */}
-                     <PiImagesDuotone className="h-10 w-10 text-gray-600"/>
+                      {/* <img src={Homeimage} alt="Home Icon" className="h-18 w-36 object-contain" /> */}
+                      {/* <LuImageUp className="text-2xl text-gray-700 mt-1"/> */}
+                      <PiImagesDuotone className="h-10 w-10 text-gray-600" />
 
 
 
@@ -398,16 +403,15 @@ const VisualToolHome = ({resetProjectCreated}: Props) => {
             <Button
               onClick={handleContinue}
               disabled={!hasAnyFiles || !projectName.trim()}
-              className={`py-4 text-sm font-semibold rounded-lg transition-all ${
-                hasAnyFiles && projectName.trim()
+              className={`py-4 text-sm font-semibold rounded-lg transition-all ${hasAnyFiles && projectName.trim()
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}>
+                }`}>
               {!projectName.trim()
                 ? "Please enter a project name"
                 : hasAnyFiles
-                ? `Continue with (${typeView} view)`
-                : "Upload at least one view to continue"}
+                  ? `Continue with (${typeView} view)`
+                  : "Upload at least one view to continue"}
             </Button>
           </div>
 

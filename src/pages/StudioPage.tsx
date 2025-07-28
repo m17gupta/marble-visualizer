@@ -40,6 +40,7 @@ import { clearMasterArray } from "@/redux/slices/MasterArraySlice";
 import GetSegments from "@/components/getSegments/GetSegments";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
+import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -160,6 +161,8 @@ export function StudioPage() {
             {/* </Link> */}
           </div>
           <StudioMainTabs />
+           
+          
 
         </div>
 

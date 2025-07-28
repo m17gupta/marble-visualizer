@@ -65,12 +65,12 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
 
   const changeZoomMode = () => {
     
-    if(zoomMode === 'center') {
-      dispatch(setZoomMode('mouse'));
-    }else{
-      dispatch(setZoomMode('center'));
-    }
-    toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
+    // if(zoomMode === 'center') {
+    //   dispatch(setZoomMode('mouse'));
+    // }else{
+    //   dispatch(setZoomMode('center'));
+    // }
+    // toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
   };
   return (
     <Card>
@@ -249,19 +249,19 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
                   </TooltipTrigger>
                   <TooltipContent>Zoom out</TooltipContent>
                 </Tooltip>
-                <Tooltip>
+                {/* <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-4 w-4 p-0"
                       onClick={changeZoomMode}
-                      // onClick={() => {
-                      //   dispatch(toggleZoomMode());
-                      //   toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
-                      // }}
+                      onClick={() => {
+                        dispatch(toggleZoomMode());
+                        toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
+                      }}
                     >
-                      <span className="text-xs">{zoomMode === 'center' ? 'C' : 'M'}</span>
+                     <span className="text-xs">{zoomMode === 'center' ? 'C' : 'M'}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -269,7 +269,7 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
                       ? 'Zoom centered on canvas (click to change)'
                       : 'Zoom centered on mouse (click to change)'}
                   </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
               </div>
               <span className="w-px h-4 bg-gray-300"></span>
               <span>X: {mousePosition.x}</span>

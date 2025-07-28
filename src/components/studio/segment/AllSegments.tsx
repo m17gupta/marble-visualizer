@@ -58,7 +58,7 @@ const AllSegments = () => {
       }
     },[segments, currentProject]);
 
-    console.log("Detected Segments:", detectedSegment);
+ 
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MaterialSegmentModel) => {

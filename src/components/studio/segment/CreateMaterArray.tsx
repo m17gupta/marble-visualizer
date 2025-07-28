@@ -43,10 +43,10 @@ const CreateMasterArray = () => {
         const grpName = segment.name;
         const sameGrpSeg: MasterGroupModel[] = [];
         const allsameGrp = allSegments.filter((item) => item.segment_type === grpName);
-        const getallGrpName = Array.from(new Set(allsameGrp.map((item) => item.group_name)));
+        const getallGrpName = Array.from(new Set(allsameGrp.map((item) => item.group_label_system)));
 
         getallGrpName.forEach((grp) => {
-          const sameGrp = allsameGrp.filter((item) => item.group_name === grp);
+          const sameGrp = allsameGrp.filter((item) => item.group_label_system === grp);
           sameGrpSeg.push({
             groupName: grp ?? "",
             segments: sameGrp,

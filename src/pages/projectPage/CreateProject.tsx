@@ -18,6 +18,7 @@ import { UploadImage } from '@/components/uploadImageS3';
 import { ProjectModel } from '@/models/projectModel/ProjectModel';
 
 import { CreateJob, CreateJobParams } from '@/utils/CreateJob';
+import { setIsAnalyseImage, setJobUrl, setProjectId } from '@/redux/slices/projectAnalyseSlice';
 
 // Form validation schema
 const createProjectSchema = z.object({
@@ -178,7 +179,11 @@ export function CreateProjectDialog({ open,user_id, onOpenChange, onJobCreated }
         jobType: form.getValues('jobType'),
         dispatch: dispatch,
       };
-  // create job
+      // s=dspatch job url and projectId  for image Analyse
+      dispatch(setJobUrl(jobUrl));
+      dispatch(setProjectId(createdProjectId));
+      dispatch(setIsAnalyseImage(true));
+  // create job 
       CreateJob(jobData, {
         resetForm: () => form.reset(),
         clearProjectId: () => setCreatedProjectId(null),

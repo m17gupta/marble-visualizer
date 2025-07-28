@@ -1,40 +1,73 @@
 
 import { Button } from "@/components/ui/button";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MasterModel } from "@/models/jobModel/JobModel";
+import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
+import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { set } from "date-fns";
 // import { Swiper, SwiperSlide } from 'swiper/react';
 
 const AllSegments = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { list: jobs } = useSelector((state: RootState) => state.jobs);
 
-  const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
+  const { selectedMasterArray, selectedGroupSegment} = useSelector((state: RootState) => state.masterArray);
 
   const [masterArray, setmasterArray] = useState<MasterModel | null>(null);
-
-
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [currentSelectedGroupSegment, setCurrentSelectedGroupSegment] = useState<MasterGroupModel | null>(null);
   // update the selected MasterArray
   useEffect(() => {
     if (selectedMasterArray) {
       setmasterArray(selectedMasterArray);
+       setmasterArray(selectedMasterArray);
+      if(selectedMasterArray && selectedMasterArray.allSegments && selectedMasterArray.allSegments.length > 0) {
+        // console.log("Selected Master Array:", selectedMasterArray);
+        // dispatch(updatedSelectedGroupSegment(selectedMasterArray.allSegments[0]));
+        setActiveTab(selectedMasterArray.allSegments[0].groupName);
+      }
     } else {
       setmasterArray(null);
     }
   }, [selectedMasterArray]);
 
-  const handleAddSegment = () => {
-    // Logic to add a new segment
-  }
+  // update the active 
+  useEffect(() => {
+    if (selectedGroupSegment &&
+       selectedGroupSegment.groupName &&
+        selectedGroupSegment.segments.length > 0
+    ) {
+      setActiveTab(selectedGroupSegment.groupName);
+      setCurrentSelectedGroupSegment(selectedGroupSegment);
+    }else{
+      setCurrentSelectedGroupSegment(null);
+    }
+  }, [selectedGroupSegment]);
 
+  const handleAddSegment = () => {
+    console.log("Add Segment Clicked",currentSelectedGroupSegment);
+      if(currentSelectedGroupSegment== null) {
+        alert("please select the group segment")
+      }
+    
+  } 
+
+
+  const handldeGroupSegmentClick = (group: MasterGroupModel) => {
+    console.log("Group clicked:", group)
+    setActiveTab(group.groupName);
+    dispatch(updatedSelectedGroupSegment(group));
+  }
   return (
     <>
       
@@ -80,7 +113,12 @@ const AllSegments = () => {
                
                   {masterArray.allSegments.map((group) => (
                     <div key={group.groupName} style={{ width: 'auto', display: 'inline-block' }}>
-                      <TabsTrigger value={group.groupName} className="text-xs p-1 flex items-center">
+                      <TabsTrigger
+                        value={group.groupName}
+                        className={`text-xs p-1 flex items-center ${activeTab === group.groupName ? 'bg-blue-100 text-blue-700 font-bold' : ''}`}
+
+                        onClick={() => handldeGroupSegmentClick(group)}
+                      >
                         <Home className="h-3 w-3 mr-1" />
                         {group.groupName}
                       </TabsTrigger>

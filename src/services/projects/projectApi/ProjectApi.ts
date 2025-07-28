@@ -14,12 +14,13 @@ const handleError = (
     error: defaultMessage,
   };
 };
-import { ProjectModel } from "@/models/projectModel/ProjectModel";
+import { HouseSegmentModel, ProjectModel } from "@/models/projectModel/ProjectModel";
 import { supabase } from "@/lib/supabase";
 import { JobModel } from "@/models";
 import { toast } from "sonner";
 import axios from "axios";
 import { JobService } from "@/services/jobService/JobService";
+import { PiCheckerboard } from "react-icons/pi";
 
 // Project API Response Types
 export interface ProjectApiResponse {
@@ -43,7 +44,7 @@ export interface ProjectListResponse {
 }
 
 const BASE_URL =
-  import.meta.env.VITE_APP_BACKEND_URL || "https://nexus.dzinly.org/api/v1/";
+  import.meta.env.VITE_APP_BACKEND_URL || "https://nexus.dzinly.org/api/v1/ai/ai";
 
 export class ProjectAPI {
   private static baseUrl = BASE_URL;
@@ -235,6 +236,67 @@ export class ProjectAPI {
       return handleError(
         error,
         "Failed to update and analyse house"
+      ) as ProjectApiResponse;
+    }
+  }
+
+  //for house segment
+  static async houseSegment(
+   houseSegData: HouseSegmentModel
+  ): Promise<ProjectApiResponse> {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/house-segment`,
+        houseSegData,
+        {
+          headers: {
+            Accept: "application/json",
+            "X-API-Key": "dorg_sk_ioLOcqR2HTPtXNv44ItBW3RCL4NjLeuWitgP-vJuO3s",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(
+          response.data.message || "Failed to submit GenAI request"
+        );
+      }
+
+      return response.data;
+    } catch (error: unknown) {
+      return handleError(
+        error,
+        "Failed to segment house"
+      ) as ProjectApiResponse;
+    }
+  }
+
+  // for color PiCheckerboard
+  static async getColorPiCheckerboard(): Promise<ProjectApiResponse> {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/color-picker`,
+        {
+          headers: {
+            Accept: "application/json",
+            "X-API-Key": "dorg_sk_ioLOcqR2HTPtXNv44ItBW3RCL4NjLeuWitgP-vJuO3s",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(
+          response.data.message || "Failed to fetch color PiCheckerboard"
+        );
+      }
+
+      return response.data;
+    } catch (error: unknown) {
+      return handleError(
+        error,
+        "Failed to fetch color PiCheckerboard"
       ) as ProjectApiResponse;
     }
   }
