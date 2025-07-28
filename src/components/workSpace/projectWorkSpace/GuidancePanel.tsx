@@ -48,6 +48,8 @@ import { useParams } from "react-router-dom";
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 const GuidancePanel: React.FC = () => {
+  const [showActionButtons, setShowActionButtons] = useState(false);
+
   const dispatch = useDispatch<AppDispatch>();
   const { list: projects } = useSelector((state: RootState) => state.projects);
 
@@ -236,43 +238,39 @@ const GuidancePanel: React.FC = () => {
     }
   };
 
-  const handleSuggestion=()=>{
-    setIsSuggestion(!isSuggestion);
+  // Ref for suggestions panel
+  const suggestionsRef = React.useRef<HTMLDivElement | null>(null);
+
+ const handleBulbClick = () => {
+  if (!showActionButtons) {
+    setSuggestedPrompt(randomSuggestions);
+    setShowActionButtons(true);
+
+    // Wait for the DOM to update, then scroll
+    setTimeout(() => {
+      suggestionsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100); // Small delay to ensure render
+  } else {
+    setShowActionButtons(false);
+    setSuggestedPrompt(null);
   }
+};
+
+
+
+  // const [showActionButtons, setShowActionButtons] = useState(false);
+  // const [suggestedPrompt, setSuggestedPrompt] = useState<any[] | null>(null);
+
   return (
     <>
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
       <div className="bg-white rounded-sm p-4">
-        <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3">
-          {isSuggestion && suggestedPrompt !== null &&
-            suggestedPrompt.map((suggestion: any, idx: number) => (
-              <div
-                key={idx}
-                className="bg-white/10 rounded-xl p-3 border  flex items-center justify-between border-black/10"
-              >
-                <div>
-                <h3 className="text-base font-semibold text-gray-900 mb-1">
-                  {suggestion.title}
-                </h3>
-                <p className="text-sm text-gray-800 leading-snug mb-2">
-                  {suggestion.prompt}
-                </p>
-                </div>
-
-                <button
-                  onClick={() => handleRandomPromptSelection(suggestion.prompt)}
-                  className="px-3 py-1 bg-black text-white text-xs rounded-md hover:bg-gray-900 transition"
-                >
-                  Apply
-                </button>
-              </div>
-            ))}
-        </div>
-
         <div className="flex items-center">
           <h2 className="text-lg font-semibold ">AI Guidance</h2>
-
           <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -291,10 +289,8 @@ const GuidancePanel: React.FC = () => {
 
             <VoiceRecognition />
           </TooltipProvider>
-
           {/* provide mic icon  */}
         </div>
-
         <textarea
           className="w-full p-2 ps-0 pt-0 border-0 focus:outline-none focus:ring-0 rounded mb-1 resize-none"
           placeholder="Enter guidance..."
@@ -366,16 +362,18 @@ const GuidancePanel: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 justify-end">
+            {/* Toggle Button - Always Visible */}
             <button
-            className="text-sm border-0 border-gray-300 bg-transparent flex items-center justify-center gap-1 rounded-md md:px-3 md:py-2 px-3 py-1 focus:outline-none focus:ring-0"
-              onClick={handleSuggestion}
+              className="text-sm border border-gray-300 rounded-full bg-transparent flex items-center justify-center gap-1 px-1 py-1 focus:outline-none focus:ring-0"
+              onClick={handleBulbClick}
             >
-              {!isSuggestion ? (
-                <TbBulb size={28} />
+              {showActionButtons ? (
+                <TbBulbFilled size={28} className="text-yellow-300" />
               ) : (
-                <TbBulbFilled size={28}  className="text-yellow-300"/>
+                <TbBulb size={28} />
               )}
             </button>
+
             <button
               className={`px-4 py-1 ${
                 isTask ? "bg-gray-400" : "bg-blue-600"
@@ -387,6 +385,35 @@ const GuidancePanel: React.FC = () => {
             </button>
           </div>
         </div>
+
+      {showActionButtons && suggestedPrompt && (
+          <div
+            ref={suggestionsRef}
+            className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3 mt-6"
+          >
+            {suggestedPrompt.map((suggestion, idx) => (
+              <div
+                key={idx}
+                className="bg-white/10 rounded-xl p-3 border flex items-center justify-between border-black/10"
+              >
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 mb-1">
+                    {suggestion.title}
+                  </h3>
+                  <p className="text-sm text-gray-800 leading-snug mb-2">
+                    {suggestion.prompt}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleRandomPromptSelection(suggestion.prompt)}
+                  className="px-3 py-1 bg-black text-white text-xs rounded-md hover:bg-gray-900 transition"
+                >
+                  Apply
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
 

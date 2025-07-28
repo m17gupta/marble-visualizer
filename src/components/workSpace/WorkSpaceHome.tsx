@@ -49,7 +49,7 @@ const WorkSpaceHome = () => {
 
         <div className="mt-4 ">
           <GuidancePanel />
-          <GenAiImages />
+          {/* <GenAiImages /> */}
         </div>
       </div>
       <div className="md:hidden block">
