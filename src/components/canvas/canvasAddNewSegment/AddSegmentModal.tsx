@@ -50,17 +50,20 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
       setSegType(selectedMasterArray.name);
       
       setAllCategories(selectedMasterArray.categories || []);
-         const allSeg = selectedMasterArray.allSegments.length;
-            if (allSeg>1) {
-              let count;
-       selectedMasterArray.allSegments.forEach((seg) => {
-         setGroupArray(prev => [...prev, seg.groupName]);
+      const allSeg = selectedMasterArray.allSegments.length;
+      if (allSeg > 0) {
+        let count: number = 0;
+        const allArray: string[] = [];
+        setGroupArray([]);
+        selectedMasterArray.allSegments.forEach((seg) => {
+          allArray.push(seg.groupName);
           const allSegs= seg.segments.length;
           count= allSegs;
        });
+       setGroupArray(allArray);
        setGroupName(selectedMasterArray.allSegments[0].groupName);
-       setShortName(`${selectedMasterArray.short_code}${count}`);
-       setChildName(`${selectedMasterArray.allSegments[0].groupName}+${count}`);
+       setShortName(`${selectedMasterArray.short_code}${count + 1}`);
+       setChildName(`${selectedMasterArray.name}${count + 1}`);
     }
     }
   },[selectedMasterArray])

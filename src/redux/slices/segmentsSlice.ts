@@ -226,6 +226,14 @@ const segmentsSlice = createSlice({
     updateAddSegMessage: (state, action: PayloadAction<string>) => {
       state.addSegMessage = action.payload;
     },
+    updateNewSegmentDrawn: (state, action) => {
+      if(state.allSegments && state.allSegments.length > 0) {
+        const newSegment = action.payload;
+        state.allSegments.push(newSegment);
+      }else{
+        state.allSegments = [action.payload];
+      }
+    },
 
     undo: (state) => {
       if (state.historyIndex > 0) {
@@ -328,7 +336,8 @@ export const {
   updateIsAddSegmentModalOpen,
   updateIsMasterDataAnnotationOpen,
   resetSegmentSlice,
-  updateAddSegMessage
+  updateAddSegMessage,
+  updateNewSegmentDrawn
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

@@ -33,6 +33,8 @@ import {
 } from "@/components/canvasUtil/canvasAutoPan";
 import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
+import { collectPoints } from "../canvasUtil/CreatePolygon";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 export type DrawingTool = "select" | "polygon";
 
@@ -93,19 +95,21 @@ export function CanvasEditor({
   const allSegmentsCount = useRef<number>(0);
 
   const { canvasType } = useSelector((state: RootState) => state.canvas);
-
+  const {allSegments:allSegmentArray}= useSelector((state: RootState) => state.segments);
  
 
-
+const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
   const {selectedMasterArray}= useSelector((state: RootState) => state.masterArray);
-  // const [hoveredSegmentId] = useState<string | null>(null);
 
-  // update Zoom Mode
-  // useEffect(() => {
-  //   if (zoomMode) {
-  //     updatedZoomMode.current = zoomMode;
-  //   }
-  // }, [zoomMode]);
+  // const [hoveredSegmentId] = useState<string | null>(null);
+// upate all segmnet Array
+useEffect(() => {
+  if( allSegmentArray && allSegmentArray.length > 0) {
+  setAllSegArray(allSegmentArray);
+  }else{
+    setAllSegArray([]);
+  }
+}, [allSegmentArray]);
 
   // update the canavasActiveTool
   useEffect(() => {
@@ -173,17 +177,7 @@ export function CanvasEditor({
 
   // Delete selected segment
   const handleDeleteSelected = useCallback(() => {
-    // if (!activeSegmentId || !fabricCanvasRef.current) return;
-    // // Also remove from allSegments if it exists there
-    // if (allSegments.current && Object.keys(allSegments.current).includes(activeSegmentId)) {
-    //   const updatedSegments = { ...allSegments.current };
-    //   delete updatedSegments[activeSegmentId];
-    //   allSegments.current = updatedSegments;
-    //   // Update Redux store with the modified segments
-    //   dispatch(updateSegmentDrawn(updatedSegments));
-    // }
-    // saveCanvasState();
-    // toast.success('Segment deleted');
+
   }, []);
 
   const handleCancelDrawing = useCallback(() => {
@@ -790,6 +784,7 @@ export function CanvasEditor({
       if (!fabricCanvasRef.current) return;
 
       const canvas = fabricCanvasRef.current;
+      console.log("Mouse move event:", canvas);
       const pointer = canvas.getPointer(e.e);
       const currentZoom = canvas.getZoom();
 
@@ -941,6 +936,33 @@ export function CanvasEditor({
     }
   }, [deleteMaskId, fabricCanvasRef, dispatch]);
 
+  const {segments} = useSelector((state: RootState) => state.materialSegments); 
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if(!canvas || allSegArray.length === 0) return;
+
+    allSegArray.map(seg => {
+      const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
+      const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
+      const isFill = true;
+      if (
+        !annotation_points_float || annotation_points_float.length === 0 ||
+        !segment_bb_float || segment_bb_float.length === 0 ||
+        !group_label_system || !short_title || !segment_type || !segColor || !fabricCanvasRef.current
+      ) return;
+      
+      collectPoints(
+        annotation_points_float,
+        short_title,
+        segment_bb_float,
+        segment_type,
+        group_label_system,
+        segColor,
+        fabricCanvasRef, // Pass the actual Canvas instance, not the ref
+        isFill
+      );
+    });
+  }, [allSegArray, segments,fabricCanvasRef])
   return (
     <>
     <TooltipProvider>

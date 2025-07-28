@@ -3,9 +3,9 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import MasterDataAnnotation from './MasterDataAnnotation';
 import AddSegmentModal from './AddSegmentModal';
-import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen } from '@/redux/slices/segmentsSlice';
+import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen, updateNewSegmentDrawn } from '@/redux/slices/segmentsSlice';
 import { SegmentModal, MsterDataAnnotationResponse } from '@/models/jobSegmentsModal/JobSegmentModal';
-import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray, updatedSelectedGroupSegment } from '@/redux/slices/MasterArraySlice';
+import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
 
 const CanvasAdddNewSegmentHome = () => {
    const dispatch = useDispatch<AppDispatch>();
@@ -68,7 +68,7 @@ const CanvasAdddNewSegmentHome = () => {
       dispatch(cancelDrawing())
       dispatch(addNewSegmentToMasterArray(response.data));
       dispatch(addNewSegmentToSelectedMasterArray(response.data))
-      // dispatch(updatedSelectedGroupSegment(response.data));
+       dispatch(updateNewSegmentDrawn(response.data));
     }
     setSegmentData(segData);
     dispatch(updateIsMasterDataAnnotationOpen(false));
