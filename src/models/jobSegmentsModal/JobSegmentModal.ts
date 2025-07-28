@@ -4,7 +4,7 @@ export interface SegmentModal {
   job_id?: number;
   title?: string;
   short_title?: string;
-  group_name?: string;
+  group_name_user?: string;
   group_desc?: string;
   segment_type?: string;
   annotation_points_float?: number[];
@@ -16,7 +16,7 @@ export interface SegmentModal {
   seg_skewy?: number;
   created_at?: string;
   updated_at?: string;
-  group_label?: string;
+  group_label_system?: string;
 }
 
 

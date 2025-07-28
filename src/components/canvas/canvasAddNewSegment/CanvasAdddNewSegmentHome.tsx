@@ -5,7 +5,7 @@ import MasterDataAnnotation from './MasterDataAnnotation';
 import AddSegmentModal from './AddSegmentModal';
 import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen } from '@/redux/slices/segmentsSlice';
 import { SegmentModal, MsterDataAnnotationResponse } from '@/models/jobSegmentsModal/JobSegmentModal';
-import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
+import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray, updatedSelectedGroupSegment } from '@/redux/slices/MasterArraySlice';
 
 const CanvasAdddNewSegmentHome = () => {
    const dispatch = useDispatch<AppDispatch>();
@@ -44,7 +44,7 @@ const CanvasAdddNewSegmentHome = () => {
       job_id: list[0]?.id,
       title: segmentDrawn.category,
       short_title: segmentDrawn.shortName,
-      group_name: segmentDrawn.groupName,
+      group_name_user: segmentDrawn.groupName,
       group_desc:"",
       segment_type: segmentDrawn.segType,
       annotation_points_float: data.annotation,
@@ -56,7 +56,7 @@ const CanvasAdddNewSegmentHome = () => {
       seg_skewy: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      group_label: segmentDrawn.childName,
+      group_label_system: segmentDrawn.childName,
       
     }
      const response = await dispatch(addSegment(segData)).unwrap();
@@ -68,6 +68,7 @@ const CanvasAdddNewSegmentHome = () => {
       dispatch(cancelDrawing())
       dispatch(addNewSegmentToMasterArray(response.data));
       dispatch(addNewSegmentToSelectedMasterArray(response.data))
+      // dispatch(updatedSelectedGroupSegment(response.data));
     }
     setSegmentData(segData);
     dispatch(updateIsMasterDataAnnotationOpen(false));

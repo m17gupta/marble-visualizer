@@ -61,6 +61,8 @@ const GuidancePanel: React.FC = () => {
     randomSuggestions
   );
 
+  const [isSuggestion ,setIsSuggestion] = useState(false);
+
   const [isModel, setIsModel] = React.useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
@@ -233,13 +235,17 @@ const GuidancePanel: React.FC = () => {
       dispatch(addPrompt(prompt));
     }
   };
+
+  const handleSuggestion=()=>{
+    setIsSuggestion(!isSuggestion);
+  }
   return (
     <>
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
       <div className="bg-white rounded-sm p-4">
         <div className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3">
-          {suggestedPrompt !== null &&
+          {isSuggestion && suggestedPrompt !== null &&
             suggestedPrompt.map((suggestion: any, idx: number) => (
               <div
                 key={idx}
@@ -362,15 +368,9 @@ const GuidancePanel: React.FC = () => {
           <div className="flex items-center gap-2 justify-end">
             <button
             className="text-sm border-0 border-gray-300 bg-transparent flex items-center justify-center gap-1 rounded-md md:px-3 md:py-2 px-3 py-1 focus:outline-none focus:ring-0"
-              onClick={() => {
-                if (suggestedPrompt !== null) {
-                  setSuggestedPrompt(null);
-                } else {
-                  setSuggestedPrompt(randomSuggestions);
-                }
-              }}
+              onClick={handleSuggestion}
             >
-              {suggestedPrompt !== null ? (
+              {!isSuggestion ? (
                 <TbBulb size={28} />
               ) : (
                 <TbBulbFilled size={28}  className="text-yellow-300"/>

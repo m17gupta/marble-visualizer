@@ -1,7 +1,7 @@
 import { CanvasModel } from '@/models/canvasModel/CanvasModel';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // Define the types for canvas state
-export type ZoomMode = 'center' | 'mouse';
+export type ZoomMode =  'mouse';
 
 // Define the types for mouse coordinates
 export interface MouseCoordinates {
@@ -61,7 +61,7 @@ const canvasSlice = createSlice({
 
     // Toggle the zoom mode between 'center' and 'mouse'
     toggleZoomMode(state) {
-      state.zoomMode = state.zoomMode === 'center' ? 'mouse' : 'center';
+     // state.zoomMode = state.zoomMode === 'center' ? 'mouse' : 'center';
     },
 
     // Set canvas readiness state

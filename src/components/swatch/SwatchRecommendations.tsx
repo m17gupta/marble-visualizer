@@ -59,7 +59,7 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
     }
   }, [selectedMaterialSegment, wallMaterials, doorMaterials, roofMaterials, windowMaterials, trimMaterials, materials]);
 
-  console.log('Recommended Swatches:', recommendedSwatches);
+ 
 
   return (
     <Card >

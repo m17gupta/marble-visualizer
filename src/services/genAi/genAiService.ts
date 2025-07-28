@@ -47,7 +47,7 @@ class GenAiService {
   // get task id from the response
   async getChatTaskId(request: string) {
     try {
-      console.log("_____<<<statrted");
+     
       const response = await axios.get(
         `${this.baseUrl}/generate-image/status/${request}`,
         {

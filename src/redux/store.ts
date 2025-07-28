@@ -23,6 +23,7 @@ import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; //
 import workspaceSlice from './slices/visualizerSlice/workspaceSlice'; 
 import  tabControlSlice from './slices/TabControlSlice'; // New tab control slice
 import masterArraySlice from './slices/MasterArraySlice'; // New master array slice
+import projectAnalyseSlice from './slices/projectAnalyseSlice';
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -46,7 +47,9 @@ export const store = configureStore({
     subscriptionPlan: subscriptionPlanSlice,
     workspace: workspaceSlice, // New workspace slice
     studio: studioSlice,
-    tabControl: tabControlSlice
+    tabControl: tabControlSlice 
+    ,
+    projectAnalyse: projectAnalyseSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

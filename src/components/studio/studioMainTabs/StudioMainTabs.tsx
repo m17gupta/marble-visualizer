@@ -44,6 +44,7 @@ const StudioMainTabs = () => {
         dispatch(updateActiveTab("layers"));
     };
     return (
+      <>
         <TooltipProvider>
             <Tabs
                 value={activeTabFromStore ?? "inspiration"}
@@ -124,6 +125,8 @@ const StudioMainTabs = () => {
                 </TabsContent>
             </Tabs>
         </TooltipProvider>
+        
+        </>
     )
 }
 

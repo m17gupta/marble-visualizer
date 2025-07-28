@@ -509,12 +509,12 @@ export function CanvasEditor({
   }, [activeTool, isCanvasReady, setIsAutoPanning]);
 
   // Control whether zoom is centered on mouse position or canvas center
-  const getIsCenterZooms = useRef(zoomMode === "center");
+  // const getIsCenterZooms = useRef(zoomMode === "center");
 
   // Update zoom mode ref when zoomMode changes
-  useEffect(() => {
-    getIsCenterZooms.current = zoomMode === "center";
-  }, [zoomMode]);
+  // useEffect(() => {
+  //   getIsCenterZooms.current = zoomMode === "center";
+  // }, [zoomMode]);
 
   const handleMouseWheel = (event: fabric.TEvent) => {
     // Cast the event to WheelEvent to access deltaY
@@ -530,29 +530,20 @@ export function CanvasEditor({
       const delta = deltaE.deltaY;
       let zoom = fabricCanvasRef.current.getZoom();
 
+
       // Calculate new zoom level based on wheel direction
       // Using 0.999^delta for smoother zooming
       zoom *= 0.999 ** delta;
-
-      // Enforce zoom boundaries
-      const wouldGoTooSmall = zoom < 1;
       if (zoom > 20) zoom = 20; // Set maximum zoom level
-      if (zoom < 1) zoom = 1; // Set minimum zoom level
+      if (zoom < 1) zoom = 1;   // Set minimum zoom level
 
       // Optional: Draw reference lines for better visual feedback
       drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
 
-      // Apply the zoom based on mode preference
-      // if (updatedZoomMode.current === "center" && !wouldGoTooSmall) {
-      //   ZoomCanvas(fabricCanvasRef, zoom);
-      //   event.e.stopPropagation();
-      //   event.e.preventDefault();
-      // } else
-         if ( !wouldGoTooSmall) {
-        ZoomCanvasMouse(fabricCanvasRef, zoom, mousePosition);
-        event.e.stopPropagation();
-        event.e.preventDefault();
-      }
+      // Always zoom towards mouse position, regardless of zoom boundaries or mode
+      ZoomCanvasMouse(fabricCanvasRef, zoom, { x: Math.round(pointer.x), y: Math.round(pointer.y) });
+      event.e.stopPropagation();
+      event.e.preventDefault();
 
       // Update the zoom state
       dispatch(setZoom(zoom));
@@ -906,19 +897,11 @@ export function CanvasEditor({
     if (fabricCanvasRef.current) {
       const zoom = fabricCanvasRef.current.getZoom() * 1.1;
       const limitedZoom = Math.min(20, zoom);
-      if (zoomMode === "center") {
-        const center = fabricCanvasRef.current.getCenter();
-        fabricCanvasRef.current.zoomToPoint(
-          new fabric.Point(center.left, center.top),
-          limitedZoom
-        );
-      } else {
-        const center = { x: mousePosition.x, y: mousePosition.y };
-        fabricCanvasRef.current.zoomToPoint(
-          new fabric.Point(center.x, center.y),
-          limitedZoom
-        );
-      }
+      const center = { x: mousePosition.x, y: mousePosition.y };
+      fabricCanvasRef.current.zoomToPoint(
+        new fabric.Point(center.x, center.y),
+        limitedZoom
+      );
       dispatch(setZoom(limitedZoom));
     }
   };
@@ -927,29 +910,11 @@ export function CanvasEditor({
     if (fabricCanvasRef.current) {
       const zoom = fabricCanvasRef.current.getZoom() * 0.9;
       const limitedZoom = Math.max(1, zoom);
-
-      // Check if we need to force center alignment due to minimum zoom
-      const wouldGoTooSmall = zoom < 1;
-
-      if (zoomMode === "center" || wouldGoTooSmall) {
-        // Always use center zoom when hitting minimum zoom level
-        const center = fabricCanvasRef.current.getCenter();
-        fabricCanvasRef.current.zoomToPoint(
-          new fabric.Point(center.left, center.top),
-          limitedZoom
-        );
-
-        // Show a notification if we're forcing center alignment
-        if (wouldGoTooSmall && zoomMode !== "center") {
-          toast.info("Minimum zoom reached - centering view");
-        }
-      } else {
-        const center = { x: mousePosition.x, y: mousePosition.y };
-        fabricCanvasRef.current.zoomToPoint(
-          new fabric.Point(center.x, center.y),
-          limitedZoom
-        );
-      }
+      const center = { x: mousePosition.x, y: mousePosition.y };
+      fabricCanvasRef.current.zoomToPoint(
+        new fabric.Point(center.x, center.y),
+        limitedZoom
+      );
       dispatch(setZoom(limitedZoom));
     }
   };

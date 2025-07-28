@@ -1,15 +1,17 @@
-import { MasterModel } from "@/models";
+import { MasterGroupModel, MasterModel } from "@/models";
 import { createSlice } from "@reduxjs/toolkit";
 
 
 interface MasterArrayState {
   masterArray: MasterModel[];
   selectedMasterArray?: MasterModel | null;
+  selectedGroupSegment: MasterGroupModel | null;
 }
 
 const initialState: MasterArrayState = {
   masterArray: [],
   selectedMasterArray: null,
+  selectedGroupSegment: null,
 };
 
 const masterArraySlice = createSlice({
@@ -28,6 +30,10 @@ const masterArraySlice = createSlice({
     removeFromMasterArray: (state, action) => {
       state.masterArray = state.masterArray.filter(item => item !== action.payload);
     },
+    updatedSelectedGroupSegment: (state, action) => {
+      const groupSegment = action.payload;
+      state.selectedGroupSegment = groupSegment;
+    },
     addNewSegmentToMasterArray: (state, action) => {
       const newSegment = action.payload;
       const existingSegment = state.masterArray.find(
@@ -39,7 +45,7 @@ const masterArraySlice = createSlice({
         if(allGroups.length>0){
         // Check if group already exists
         const existingGroup = allGroups.find(
-          (group) => group.groupName === newSegment.group_name
+          (group) => group.groupName === newSegment.group_label_system
         );
 
         if (existingGroup) {
@@ -48,13 +54,13 @@ const masterArraySlice = createSlice({
         } else {
           // Add new group with this segment
           allGroups.push({
-            groupName: newSegment.group_name,
+            groupName: newSegment.group_label_system,
             segments: [newSegment],
           });
         }
       }else{
         existingSegment.allSegments = [{
-          groupName: newSegment.group_name,
+          groupName: newSegment.group_label_system,
           segments: [newSegment],
         }];
       }
@@ -70,7 +76,7 @@ const masterArraySlice = createSlice({
         // Check if group already exists
         if (allGroups.length > 0) {
           const existingGroup = allGroups.find(
-            (group) => group.groupName === newSegment.group_name
+            (group) => group.groupName === newSegment.group_label_system
         );
 
         if (existingGroup) {
@@ -79,13 +85,13 @@ const masterArraySlice = createSlice({
         } else {
           // Add new group with this segment
           allGroups.push({
-            groupName: newSegment.group_name,
+            groupName: newSegment.group_label_system,
             segments: [newSegment],
           });
         }
       }else{
         state.selectedMasterArray.allSegments = [{
-          groupName: newSegment.group_name,
+          groupName: newSegment.group_label_system,
           segments: [newSegment],
         }];
       }
@@ -94,6 +100,7 @@ const masterArraySlice = createSlice({
     clearMasterArray: (state) => {
       state.masterArray = [];
       state.selectedMasterArray = null;
+      state.selectedGroupSegment = null;
     }
   },
 });
@@ -104,7 +111,8 @@ export const {
   removeFromMasterArray,
   clearMasterArray,
   addNewSegmentToMasterArray,
-  addNewSegmentToSelectedMasterArray
+  addNewSegmentToSelectedMasterArray,
+  updatedSelectedGroupSegment
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;
