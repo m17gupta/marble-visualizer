@@ -13,6 +13,8 @@ import {
   fetchMaterials,
 } from "@/redux/slices/materialSlices/materialsSlice";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 type ViewMode = "grid" | "list";
 type LayoutMode = "compact" | "detailed";
@@ -24,6 +26,7 @@ interface SwatchBookMainContentProps {
   showFavoritesOnly: boolean;
   setShowFavoritesOnly: (show: boolean) => void;
   getActiveFiltersCount: () => number;
+  onOpenChange: (id: number) => void;
 }
 
 export function SwatchBookMainContent({
@@ -33,12 +36,29 @@ export function SwatchBookMainContent({
   showFavoritesOnly,
   setShowFavoritesOnly,
   getActiveFiltersCount,
+  onOpenChange,
 }: SwatchBookMainContentProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { materials, isLoading, error, pagination } = useSelector(
+  const { isLoading, error, pagination } = useSelector(
     (state: RootState) => state.materials
   );
+  // const { materials, isLoading, error, pagination } = useSelector(
+  //   (state: RootState) => state.materials
+  // );
 
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const getAllMaterials = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.from("products").select("*");
+      if (!error) {
+        setMaterials(data);
+        setLoading(false);
+      }
+    };
+    getAllMaterials();
+  }, []);
   //   const filteredSwatches = showFavoritesOnly
   //     ? swatches.filter(swatch => favorites.includes(swatch._id))
   //     : swatches;
@@ -218,6 +238,7 @@ export function SwatchBookMainContent({
                     transition={{ duration: 0.3, delay: index * 0.02 }}
                   >
                     <SwatchCard
+                      onOpenChange={onOpenChange}
                       swatch={material}
                       variant={viewMode}
                       layoutMode={layoutMode}

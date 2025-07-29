@@ -26,6 +26,16 @@ export function SwatchBookPage() {
   const { filters, pagination } = useSelector(
     (state: RootState) => state.swatches
   );
+  const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState<number | null>(null);
+  const handleOpen = () => {
+    setOpen((prev) => !prev);
+    setEdit(null);
+  };
+  const handleEditOpen = (id: number) => {
+    setOpen(true);
+    setEdit(id);
+  };
 
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("compact");
@@ -75,7 +85,7 @@ export function SwatchBookPage() {
       className="space-y-6 px-8"
     >
       {/* Header */}
-      <SwatchBookHeader />
+      <SwatchBookHeader open={open} onOpenChange={handleOpen} edit={edit} />
 
       {/* Search and Controls */}
       <SwatchBookControls
@@ -96,6 +106,7 @@ export function SwatchBookPage() {
 
       {/* Main Content */}
       <SwatchBookMainContent
+        onOpenChange={handleEditOpen}
         viewMode={viewMode}
         layoutMode={layoutMode}
         showFilters={showFilters}

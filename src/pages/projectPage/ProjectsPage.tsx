@@ -70,6 +70,7 @@ import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { CiSquareInfo } from "react-icons/ci";
 import AnalyzedDataModal from "@/components/Modal";
 import AnalyseImage from "./analyseProjectImage/AnalyseImage";
+import ProjectAnalyseSegmentApiCall from "./analyseProjectImage/ProjectAnalyseSegmentApiCall";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -138,10 +139,10 @@ export function ProjectsPage() {
     }
   }, [user?.id, projects.length, isLoading]);
 
-  useEffect(() => {
-    // Set breadcrumb to "Projects" when component mounts
-    dispatch(updateBreadCrumbs("Projects"));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // Set breadcrumb to "Projects" when component mounts
+  //   dispatch(updateBreadCrumbs("Projects"));
+  // }, [dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -533,7 +534,7 @@ export function ProjectsPage() {
 
       <MaterialData />
 
-      <AnalyseImage/>
+      <ProjectAnalyseSegmentApiCall />
     </>
   );
 }

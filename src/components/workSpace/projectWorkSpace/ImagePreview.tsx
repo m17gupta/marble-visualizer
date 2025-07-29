@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Download, Expand, X } from "lucide-react"; // Optional, or use inline SVGs
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
+import { RootState } from "@/redux/store";
+import React  from "react";
+import { useSelector } from "react-redux";
+
 import { useParams } from "react-router-dom";
-import { fetchJobsByProject } from "@/redux/slices/jobSlice";
+
 // import sampleImg from "@/assets/kitchen.jpg"; // Replace with your actual image path
 
 const ImageCard: React.FC = () => {
@@ -13,19 +13,8 @@ const ImageCard: React.FC = () => {
   const id = param.id !== undefined ? parseInt(param.id) : 0;
   const { list: projects } = useSelector((state: RootState) => state.projects);
   const findProject = projects.find((d) => d.id == id);
-  const handleFullscreen = () => {
-    console.log("Fullscreen clicked");
-  };
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    // link.href = sampleImg;
-    link.download = "image.jpg";
-    link.click();
-  };
 
-  const handleClose = () => {
-    console.log("Close clicked");
-  };
+ 
 
   return (
     <div className="border rounded-md bg-white shadow-sm p-2 relative w-full mx-auto">

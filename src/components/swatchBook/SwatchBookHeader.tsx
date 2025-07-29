@@ -3,10 +3,25 @@ import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Plus, Upload } from "lucide-react";
 import { RootState } from "@/redux/store";
+import { useEffect, useState } from "react";
+import SwatchBookAddModal from "./SwatchBookAddModal";
+import { supabase } from "@/lib/supabase";
+import AttributeSetAddModal from "./AttributeSetAddModal";
 
-export function SwatchBookHeader() {
+export function SwatchBookHeader({ open, onOpenChange, edit }: any) {
   const navigate = useNavigate();
   const { profile } = useSelector((state: RootState) => state.userProfile);
+  const [categories, setCategories] = useState<any[] | null>([]);
+
+  useEffect(() => {
+    const getMaterialCategory = async () => {
+      const { data, error } = await supabase
+        .from("materialcategories")
+        .select("*");
+      setCategories(data);
+    };
+    getMaterialCategory();
+  }, []);
 
   const canImport = profile?.role === "admin" || profile?.role === "vendor";
 
@@ -22,15 +37,18 @@ export function SwatchBookHeader() {
       </div>
 
       <div className="flex items-center space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/swatch/create")}
-        >
+        <AttributeSetAddModal />
+        <Button variant="outline" size="sm" onClick={onOpenChange}>
           <Plus className="h-4 w-4 mr-2" />
-          Create Swatch
+          Add Product
         </Button>
 
+        <SwatchBookAddModal
+          open={open}
+          categories={categories !== null ? categories : []}
+          onOpenChange={onOpenChange}
+          edit={edit}
+        />
         {canImport && (
           <Button
             variant="outline"
