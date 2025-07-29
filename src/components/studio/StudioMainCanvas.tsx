@@ -8,13 +8,14 @@ import {
   Upload,
   Image as ImageIcon,
   Loader2,
-  X,
+
   Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import GenAiImages from "../workSpace/compareGenAiImages/GenAiImages";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import PolygonOverlay from "../canvas/PolygonOverlay";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -29,25 +30,26 @@ export function StudioMainCanvas({
   // currentCanvasImage,
   isUploading,
   canEdit,
-  isJobRunning,
   onFileUpload,
-  onClearImage
 }: StudioMainCanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
-const { currentImageUrl } = useSelector((state: RootState) => state.studio);
-
+  const { currentImageUrl } = useSelector((state: RootState) => state.studio);
+  const [canvasMode, setCanvasMode] = useState("");
+  const { canvasType } = useSelector((state: RootState) => state.canvas);
   // // update the canvas image
-  // useEffect(() => {
-  //   if (currentImageUrl && currentImageUrl !== "") {
-  //     setCanvasImage(currentImageUrl);
-  //   } else {
-  //     setCanvasImage(null);
-  //     setImageLoading(false);
-  //   }
-  // }, [currentImageUrl]);
+  useEffect(() => {
+    if (canvasType) {
+      setCanvasMode(canvasType);
+    } else {
+      setCanvasMode("");
+
+    }
+  }, [canvasType]);
+
+  console.log("Canvas Mode:", canvasMode);
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
@@ -90,6 +92,8 @@ const { currentImageUrl } = useSelector((state: RootState) => state.studio);
     if (file) onFileUpload(file);
   };
 
+
+
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
       <ScrollArea className="flex-1">
@@ -103,127 +107,137 @@ const { currentImageUrl } = useSelector((state: RootState) => state.studio);
           <div className="relative flex gap-4">
             {/* Main Canvas Section */}
             <div className="flex-1">
-          
+
 
               <AnimatePresence mode="wait">
-              {canvasImage ? (
-                <motion.div
-                  key={`canvas-${canvasImage}`}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="relative"
-                >
-                  {/* Image Loading Overlay */}
-                  {imageLoading && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg"
-                    >
-                      <div className="flex flex-col items-center space-y-4">
-                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                        <p className="text-sm text-muted-foreground">Loading image...</p>
-                      </div>
-                    </motion.div>
-                  )}
-                  {/* canvas  */}
-                  <CanvasEditor
-                    key={`canvas-editor-${canvasImage}`}
-                    imageUrl={canvasImage}
-                    width={800}
-                    height={600}
-                    className="mb-6"
-                    onImageLoad={handleImageLoad}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="upload"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                >
-                  <Card
-                    className={cn(
-                      "h-96 border-2 border-dashed transition-colors",
-                      canEdit ? "cursor-pointer" : "cursor-not-allowed",
-                      dragActive && canEdit
-                        ? "border-primary bg-primary/5"
-                        : "border-muted-foreground/25 hover:border-primary/50 bg-muted/10"
-                    )}
-                    onDrop={canEdit ? handleDrop : undefined}
-                    onDragOver={canEdit ? handleDragOver : undefined}
-                    onDragLeave={canEdit ? handleDragLeave : undefined}
-                    onClick={
-                      canEdit
-                        ? () => fileInputRef.current?.click()
-                        : undefined
-                    }
+                {canvasImage ? (
+                  <motion.div
+                    key={`canvas-${canvasImage}`}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="relative"
                   >
-                    <CardContent className="h-full flex flex-col items-center justify-center p-8 text-center">
+                    {/* Image Loading Overlay */}
+                    {imageLoading && (
                       <motion.div
-                        animate={{ scale: dragActive && canEdit ? 1.1 : 1 }}
-                        transition={{ duration: 0.2 }}
-                        className="space-y-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg"
                       >
-                        {isUploading ? (
-                          <>
-                            <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto" />
-                            <div>
-                              <h3 className="text-lg font-semibold text-foreground">
-                                Uploading...
-                              </h3>
-                              <p className="text-muted-foreground">
-                                Please wait while we process your image
-                              </p>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="p-4 rounded-full bg-primary/10 mx-auto w-fit">
-                              {canEdit ? (
-                                <Upload className="h-8 w-8 text-primary" />
-                              ) : (
-                                <Lock className="h-8 w-8 text-muted-foreground" />
-                              )}
-                            </div>
-                            <div>
-                              <h3 className="text-xl font-semibold mb-2 text-foreground">
-                                {canEdit
-                                  ? "Upload Your Image"
-                                  : "No Image Uploaded"}
-                              </h3>
-                              <p className="text-muted-foreground mb-4">
-                                {canEdit
-                                  ? "Drag and drop an image here, or click to browse"
-                                  : "Contact an admin to upload images to this project"}
-                              </p>
-                              {canEdit && (
-                                <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
-                                  <span>PNG, JPEG up to 10MB</span>
-                                </div>
-                              )}
-                            </div>
-                            {canEdit && (
-                              <Button variant="outline" className="mt-4">
-                                <ImageIcon className="mr-2 h-4 w-4" />
-                                Choose File
-                              </Button>
-                            )}
-                          </>
-                        )}
+                        <div className="flex flex-col items-center space-y-4">
+                          <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                          <p className="text-sm text-muted-foreground">Loading image...</p>
+                        </div>
                       </motion.div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    )}
+                    {/* canvas  */}
+                    {canvasMode == "hover" && <PolygonOverlay
+                      key={`canvas-editor-${canvasImage}`}
+                      imageUrl={canvasImage}
+                      width={800}
+                      height={600}
+                      className="mb-6"
+                      onImageLoad={handleImageLoad}
+                    />}
+
+                    
+                    {canvasMode == "draw" && <CanvasEditor
+                      key={`canvas-editor-${canvasImage}`}
+                      imageUrl={canvasImage}
+                      width={800}
+                      height={600}
+                      className="mb-6"
+                      onImageLoad={handleImageLoad}
+                    />}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="upload"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <Card
+                      className={cn(
+                        "h-96 border-2 border-dashed transition-colors",
+                        canEdit ? "cursor-pointer" : "cursor-not-allowed",
+                        dragActive && canEdit
+                          ? "border-primary bg-primary/5"
+                          : "border-muted-foreground/25 hover:border-primary/50 bg-muted/10"
+                      )}
+                      onDrop={canEdit ? handleDrop : undefined}
+                      onDragOver={canEdit ? handleDragOver : undefined}
+                      onDragLeave={canEdit ? handleDragLeave : undefined}
+                      onClick={
+                        canEdit
+                          ? () => fileInputRef.current?.click()
+                          : undefined
+                      }
+                    >
+                      <CardContent className="h-full flex flex-col items-center justify-center p-8 text-center">
+                        <motion.div
+                          animate={{ scale: dragActive && canEdit ? 1.1 : 1 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-4"
+                        >
+                          {isUploading ? (
+                            <>
+                              <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto" />
+                              <div>
+                                <h3 className="text-lg font-semibold text-foreground">
+                                  Uploading...
+                                </h3>
+                                <p className="text-muted-foreground">
+                                  Please wait while we process your image
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="p-4 rounded-full bg-primary/10 mx-auto w-fit">
+                                {canEdit ? (
+                                  <Upload className="h-8 w-8 text-primary" />
+                                ) : (
+                                  <Lock className="h-8 w-8 text-muted-foreground" />
+                                )}
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-semibold mb-2 text-foreground">
+                                  {canEdit
+                                    ? "Upload Your Image"
+                                    : "No Image Uploaded"}
+                                </h3>
+                                <p className="text-muted-foreground mb-4">
+                                  {canEdit
+                                    ? "Drag and drop an image here, or click to browse"
+                                    : "Contact an admin to upload images to this project"}
+                                </p>
+                                {canEdit && (
+                                  <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
+                                    <span>PNG, JPEG up to 10MB</span>
+                                  </div>
+                                )}
+                              </div>
+                              {canEdit && (
+                                <Button variant="outline" className="mt-4">
+                                  <ImageIcon className="mr-2 h-4 w-4" />
+                                  Choose File
+                                </Button>
+                              )}
+                            </>
+                          )}
+                        </motion.div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
           <div className="px-4">
-            <GenAiImages />
+            {canvasMode === "draw" && <GenAiImages />}
           </div>
           {canEdit && (
             <input

@@ -26,7 +26,7 @@ const StudioMainTabs = () => {
         // setActiveTab("design-hub");
         // console.log("Design Hub tab clicked");
         dispatch(updateActiveTab("design-hub"));
-        dispatch(setCanvasType("draw"));
+       // dispatch(setCanvasType("draw"));
     };
 
     const handleInspirationClick = () => {

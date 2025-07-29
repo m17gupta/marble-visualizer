@@ -11,8 +11,6 @@ import { useParams } from "react-router-dom";
 
 import {
   fetchGenAiChat,
-  resetGenAiState,
-  setCurrentGenAiImage,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 
 const WorkSpaceHome = () => {
@@ -25,10 +23,7 @@ const WorkSpaceHome = () => {
     findProject?.jobData !== undefined ? findProject.jobData[0].id : 0;
   const {
     genAiImages,
-    requests,
-    error,
-    isFetchingGenAiImages,
-    currentGenAiImage,
+   
   } = useSelector((state: RootState) => state.genAi);
   const dispatch = useDispatch<AppDispatch>();
 

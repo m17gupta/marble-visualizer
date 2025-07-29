@@ -13,13 +13,12 @@ import {
 } from "@/components/ui/tooltip";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
-import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { set } from "date-fns";
+import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
+
 // import { Swiper, SwiperSlide } from 'swiper/react';
 
 const AllSegments = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { list: jobs } = useSelector((state: RootState) => state.jobs);
 
   const { selectedMasterArray, selectedGroupSegment} = useSelector((state: RootState) => state.masterArray);
 
@@ -58,6 +57,8 @@ const AllSegments = () => {
     console.log("Add Segment Clicked",currentSelectedGroupSegment);
       if(currentSelectedGroupSegment== null) {
         alert("please select the group segment")
+      }else{
+        dispatch(setCanvasType("draw"));
       }
     
   } 
@@ -67,11 +68,30 @@ const AllSegments = () => {
     console.log("Group clicked:", group)
     setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
+    
   }
 
   const handleAddSegment=()=>{
-    
+     dispatch(setCanvasType("draw"));
   }
+
+  const handleGroupHover = (group: MasterGroupModel) => {
+    console.log("Group hovered:", group.groupName);
+    const allSeg= group?.segments || [];
+    const allSegName:string []=[]
+    if(allSeg && allSeg.length > 0) {
+      allSeg.forEach(seg => {
+        allSegName.push(seg.short_title??"");
+      });
+    }
+   dispatch(updateHoverGroup(allSegName));
+    // You can add any additional logic here if needed
+  };
+
+  const handleLeaveGroupHover = () => {
+    dispatch(updateHoverGroup(null));
+  };
+
   return (
     <>
       
@@ -120,7 +140,8 @@ const AllSegments = () => {
                       <TabsTrigger
                         value={group.groupName}
                         className={`text-xs p-1 flex items-center ${activeTab === group.groupName ? 'bg-blue-100 text-blue-700 font-bold' : ''}`}
-
+                      onMouseEnter={() => handleGroupHover(group)}
+                      onMouseLeave={handleLeaveGroupHover}
                         onClick={() => handldeGroupSegmentClick(group)}
                       >
                         <Home className="h-3 w-3 mr-1" />

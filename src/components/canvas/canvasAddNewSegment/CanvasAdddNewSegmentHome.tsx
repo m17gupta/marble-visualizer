@@ -6,6 +6,7 @@ import AddSegmentModal from './AddSegmentModal';
 import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen, updateNewSegmentDrawn } from '@/redux/slices/segmentsSlice';
 import { SegmentModal, MsterDataAnnotationResponse } from '@/models/jobSegmentsModal/JobSegmentModal';
 import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
+import { setCanvasType } from '@/redux/slices/canvasSlice';
 
 const CanvasAdddNewSegmentHome = () => {
    const dispatch = useDispatch<AppDispatch>();
@@ -56,7 +57,7 @@ const CanvasAdddNewSegmentHome = () => {
       seg_skewy: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      group_label_system: segmentDrawn.childName,
+      group_label_system: segmentDrawn.groupName,
       
     }
      const response = await dispatch(addSegment(segData)).unwrap();
@@ -71,6 +72,7 @@ const CanvasAdddNewSegmentHome = () => {
        dispatch(updateNewSegmentDrawn(response.data));
     }
     setSegmentData(segData);
+    dispatch(setCanvasType("hover"))
     dispatch(updateIsMasterDataAnnotationOpen(false));
   }
 
