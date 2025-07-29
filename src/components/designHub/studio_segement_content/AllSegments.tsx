@@ -54,7 +54,7 @@ const AllSegments = () => {
     }
   }, [selectedGroupSegment]);
 
-  const handleAddSegment = () => {
+  const handleAddGroupSegment = () => {
     console.log("Add Segment Clicked",currentSelectedGroupSegment);
       if(currentSelectedGroupSegment== null) {
         alert("please select the group segment")
@@ -67,6 +67,10 @@ const AllSegments = () => {
     console.log("Group clicked:", group)
     setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
+  }
+
+  const handleAddSegment=()=>{
+    
   }
   return (
     <>
@@ -130,7 +134,7 @@ const AllSegments = () => {
                   <Button
                     variant="outline"
                     className="bg-white text-black hover:bg-gray-100"
-                    onClick={handleAddSegment}
+                    onClick={handleAddGroupSegment}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-plus-icon lucide-house-plus">
                       <path d="M12.662 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v2.475" />
