@@ -4,17 +4,18 @@ import { SideBar } from './SideBar';
 import { RootState } from '@/redux/store';
 import SideBarVisual from './SideBarVisual';
 
-const SideBarHome = () => {
-    const {isAuthenticated}= useSelector((state: RootState) => state.auth);
+
+const SideBarHome = ({ sidebarCollapsed, setSidebarCollapsed }: { sidebarCollapsed: boolean, setSidebarCollapsed: (v: boolean) => void }) => {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   return (
     <div>
       {isAuthenticated ? (
-        <SideBar/>
+        <SideBar sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} />
       ) : (
-        <SideBarVisual/>
+        <SideBarVisual sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} />
       )}
     </div>
-  )
+  );
 }
 
 export default SideBarHome
