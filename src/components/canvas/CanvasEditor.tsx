@@ -35,6 +35,7 @@ import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { collectPoints } from "../canvasUtil/CreatePolygon";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from "../canvasUtil/canvasImageUtils";
 
 export type DrawingTool = "select" | "polygon";
 
@@ -236,8 +237,7 @@ useEffect(() => {
       handleMouseMove(event);
     });
     canvas.on("mouse:dblclick", handleDoubleClick);
-    // canvas.on('selection:created', handleSelection);
-    // canvas.on('selection:updated', handleSelection);
+ 
     canvas.on("selection:cleared", () => {
       // dispatch(selectSegment(null));
     });
@@ -246,9 +246,7 @@ useEffect(() => {
       handleMouseWheel(event);
       dispatch(setZoom(canvas.getZoom()));
     });
-    // canvas.on('object:modified', handleObjectModified);
-    // canvas.on('mouse:over', handleMouseOver);
-    // canvas.on('mouse:out', handleMouseOut);
+    
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -316,177 +314,64 @@ useEffect(() => {
   }, [width, height, activeSegment, dispatch]);
 
   // Load background image with comprehensive CORS and fallback handling
-  useEffect(() => {
-    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-      return;
-    }
+useEffect(() => {
+  if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+    return;
+  }
 
-    const canvas = fabricCanvasRef.current;
+  const canvas = fabricCanvasRef.current;
 
-    // Remove existing background image (ensure full cleanup)
-    if (backgroundImageRef.current) {
-      canvas.remove(backgroundImageRef.current);
-      backgroundImageRef.current = null;
-      // Deselect any active object and force render
-      canvas.discardActiveObject();
-      canvas.renderAll();
-    }
+  // Remove existing background image (ensure full cleanup)
+  if (backgroundImageRef.current) {
+    canvas.remove(backgroundImageRef.current);
+    backgroundImageRef.current = null;
+    canvas.discardActiveObject();
+    canvas.renderAll();
+  }
 
-    // Helper function to create and add fabric image to canvas
-    const addImageToCanvas = (imgElement: HTMLImageElement) => {
-      const fabricImage = new fabric.Image(imgElement, {
-        selectable: false,
-        evented: false,
-        excludeFromExport: false,
-      });
-
-      // Calculate scaling to fit canvas
-      const canvasAspect = width / height;
-      const imgAspect = imgElement.width / imgElement.height;
-
-      let scale;
-      if (imgAspect > canvasAspect) {
-        scale = width / imgElement.width;
-      } else {
-        scale = height / imgElement.height;
-      }
-
-      fabricImage.scale(scale);
-      fabricImage.set({
-        left: (width - imgElement.width * scale) / 2,
-        top: (height - imgElement.height * scale) / 2,
-      });
-
-      // Store reference and add to canvas
-      backgroundImageRef.current = fabricImage;
-      canvas.add(fabricImage);
-      canvas.sendObjectToBack(fabricImage);
-      canvas.renderAll();
-
-      // console.log(`Background image loaded successfully via ${loadMethod}`);
-      // toast.success('Background image loaded successfully');
-
-      // Call the onImageLoad callback if provided
-      if (onImageLoad) {
-        onImageLoad();
-      }
-    };
-
-    // Strategy 1: Try with different CORS modes
-    const loadImageWithCORS = (corsMode: string | null = "anonymous") => {
-      return new Promise<HTMLImageElement>((resolve, reject) => {
-        const imgElement = new Image();
-
-        if (corsMode) {
-          imgElement.crossOrigin = corsMode;
-        }
-
-        imgElement.onload = () => {
-          resolve(imgElement);
-        };
-
-        imgElement.onerror = (error) => {
-          reject(error);
-        };
-
-        imgElement.src = imageUrl;
-      });
-    };
-
-    // Strategy 2: Try with fetch and different CORS modes
-    const loadImageWithFetch = async (fetchMode: RequestMode) => {
+  const tryLoadImage = async () => {
+    // Strategy 1: Try different CORS modes
+    const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+    for (const corsMode of corsOptions) {
       try {
-        const response = await fetch(imageUrl, {
-          mode: fetchMode,
-          credentials: "omit",
-          cache: "no-cache",
-          headers: {
-            Accept: "image/*",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-
-        return new Promise<HTMLImageElement>((resolve, reject) => {
-          const imgElement = new Image();
-
-          imgElement.onload = () => {
-            URL.revokeObjectURL(objectUrl);
-            resolve(imgElement);
-          };
-
-          imgElement.onerror = () => {
-            URL.revokeObjectURL(objectUrl);
-            reject(new Error("Failed to load image from blob"));
-          };
-
-          imgElement.src = objectUrl;
-        });
+        const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+        AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
+        return;
       } catch (error) {
-        throw new Error(`Fetch failed with mode ${fetchMode}: ${error}`);
+        console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
       }
-    };
+    }
 
-    // Try all loading strategies in sequence
-    const tryLoadImage = async () => {
-      // Strategy 1: Try different CORS modes
-      const corsOptions = ["anonymous", null, "use-credentials"];
-
-      for (const corsMode of corsOptions) {
-        try {
-          const imgElement = await loadImageWithCORS(corsMode);
-
-          addImageToCanvas(imgElement);
-          return; // Success, exit
-        } catch (error) {
-          console.warn(
-            `Failed to load with CORS mode: ${corsMode || "none"}`,
-            error
-          );
-        }
+    // Strategy 2: Try different fetch modes
+    const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+    for (const fetchMode of fetchModes) {
+      try {
+        const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+        AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
+        return;
+      } catch (error) {
+        console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
       }
+    }
 
-      // Strategy 2: Try different fetch modes
-      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+    // All strategies failed
+    console.error("All image loading strategies failed for URL:", imageUrl);
+    const errorMessage = imageUrl.includes("s3.")
+      ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+      : "Failed to load background image. The image server may not allow cross-origin requests.";
 
-      for (const fetchMode of fetchModes) {
-        try {
-          const imgElement = await loadImageWithFetch(fetchMode);
+    toast.error(errorMessage, {
+      duration: 6000,
+      description: "Check browser console for detailed error information.",
+    });
 
-          addImageToCanvas(imgElement);
-          return; // Success, exit
-        } catch (error) {
-          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
-        }
-      }
+    if (onImageLoad) {
+      onImageLoad();
+    }
+  };
 
-      // All strategies failed
-      console.error("All image loading strategies failed for URL:", imageUrl);
-
-      // Provide detailed error message with suggestions
-      const errorMessage = imageUrl.includes("s3.")
-        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
-        : "Failed to load background image. The image server may not allow cross-origin requests.";
-
-      toast.error(errorMessage, {
-        duration: 6000,
-        description: "Check browser console for detailed error information.",
-      });
-
-      // Call the onImageLoad callback even on error to clear loading state
-      if (onImageLoad) {
-        onImageLoad();
-      }
-    };
-
-    tryLoadImage();
-  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
-
+  tryLoadImage();
+}, [imageUrl, isCanvasReady, width, height, onImageLoad]);
   // Update tool behavior
   useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady) return;
@@ -936,33 +821,33 @@ useEffect(() => {
     }
   }, [deleteMaskId, fabricCanvasRef, dispatch]);
 
-  const {segments} = useSelector((state: RootState) => state.materialSegments); 
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if(!canvas || allSegArray.length === 0) return;
+  // const {segments} = useSelector((state: RootState) => state.materialSegments); 
+  // useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if(!canvas || allSegArray.length === 0) return;
 
-    allSegArray.map(seg => {
-      const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
-      const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
-      const isFill = true;
-      if (
-        !annotation_points_float || annotation_points_float.length === 0 ||
-        !segment_bb_float || segment_bb_float.length === 0 ||
-        !group_label_system || !short_title || !segment_type || !segColor || !fabricCanvasRef.current
-      ) return;
+  //   allSegArray.map(seg => {
+  //     const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
+  //     const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
+  //     const isFill = true;
+  //     if (
+  //       !annotation_points_float || annotation_points_float.length === 0 ||
+  //       !segment_bb_float || segment_bb_float.length === 0 ||
+  //       !group_label_system || !short_title || !segment_type || !segColor || !fabricCanvasRef.current
+  //     ) return;
       
-      collectPoints(
-        annotation_points_float,
-        short_title,
-        segment_bb_float,
-        segment_type,
-        group_label_system,
-        segColor,
-        fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-        isFill
-      );
-    });
-  }, [allSegArray, segments,fabricCanvasRef])
+  //     collectPoints(
+  //       annotation_points_float,
+  //       short_title,
+  //       segment_bb_float,
+  //       segment_type,
+  //       group_label_system,
+  //       segColor,
+  //       fabricCanvasRef, // Pass the actual Canvas instance, not the ref
+  //       isFill
+  //     );
+  //   });
+  // }, [allSegArray, segments,fabricCanvasRef])
   return (
     <>
     <TooltipProvider>

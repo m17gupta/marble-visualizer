@@ -75,7 +75,7 @@ export const makePolygon = (
             canvasRef.current.remove(currentObject);
         }
 
-        const text = new fabric.Text(subGroupName, {
+        const text = new fabric.Text(polyName, {
             left: coordinate[0],
             top: coordinate[1],
             fontFamily: "Arial",
@@ -83,8 +83,8 @@ export const makePolygon = (
             fontSize: 18,
             fill: "#fff",
             selectable: true,
-            visible: true,
-            data: { name: "text" },
+            visible: false,
+            data: { name: polyName},
         });
 
         const polygon = new fabric.Polygon(point, {
@@ -97,10 +97,10 @@ export const makePolygon = (
             stroke: color,
             strokeWidth: 2,
             opacity: 0.4,
-            visible: true,
+            visible: false,
             lockMovementX: true,
             lockMovementY: true,
-            // data: { name: polyName },
+             data: { name: polyName },
         });
 
         // Only pass valid Fabric.Group options

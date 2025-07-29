@@ -8,11 +8,12 @@ export interface MouseCoordinates {
   x: number;
   y: number;
 }
-export type CanvasMode = "mask" | "draw" | "edit" | "reannotation";
+export type CanvasMode = "hover" | "draw" | "edit" | "reannotation";
 
 // Define the state interface
 interface CanvasState {
   currentZoom: number;
+  
   zoomMode: ZoomMode;
   mousePosition: MouseCoordinates;
   isCanvasReady: boolean;
@@ -21,9 +22,10 @@ interface CanvasState {
   canavasActiveTool: string;
   isCanvasModalOpen: boolean;
   masks: CanvasModel[];
-  canvasType: "mask" | "draw" | "edit" | "reannotation" ;
-  deleteMaskId: number | null; 
-   isGenerateMask: boolean; 
+  canvasType: CanvasMode;
+  deleteMaskId: number | null;
+  isGenerateMask: boolean;
+  hoverGroup:string[] | null; // Track the group being hovered
 }
 
 // Initial state
@@ -37,9 +39,10 @@ const initialState: CanvasState = {
   canavasActiveTool: "",
   isCanvasModalOpen: false,
   masks: [],
-  canvasType:"draw",
+  canvasType:"hover", // Default canvas type
   deleteMaskId: null, // Initialize as null
   isGenerateMask: false,
+  hoverGroup: null, // Initialize hoverGroup as null
 };
 
 // Create the canvas slice
@@ -47,6 +50,14 @@ const canvasSlice = createSlice({
   name: 'canvas',
   initialState,
   reducers: {
+    // Set the type of canvas (e.g., hover, draw, edit)
+    setCanvasType(state, action: PayloadAction<CanvasMode>) {
+      state.canvasType = action.payload;
+    },
+
+    updateHoverGroup(state, action: PayloadAction<string []| null>) {
+      state.hoverGroup = action.payload; // Update the hoverGroup state
+    },
     // Set the current zoom level
     setZoom(state, action: PayloadAction<number>) {
       // Ensure zoom level stays within reasonable bounds
@@ -60,7 +71,7 @@ const canvasSlice = createSlice({
     },
 
     // Toggle the zoom mode between 'center' and 'mouse'
-    toggleZoomMode(state) {
+    toggleZoomMode() {
      // state.zoomMode = state.zoomMode === 'center' ? 'mouse' : 'center';
     },
 
@@ -88,9 +99,7 @@ const canvasSlice = createSlice({
     setCanvasError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
-    setCanvasType(state, action: PayloadAction<"mask" | "draw" | "edit" | "reannotation">) {
-      state.canvasType = action.payload;
-    },
+    
 
     updateMasks(state, action: PayloadAction<CanvasModel>) {
       const updatedMask = action.payload;
@@ -120,6 +129,7 @@ const canvasSlice = createSlice({
       state.isBusy = false;
       state.error = null;
       state.masks=[];
+      state.canvasType = "hover"; // Reset to default canvas type
       // Zoom mode is not reset as it's a user preference
     },
   },
@@ -127,6 +137,8 @@ const canvasSlice = createSlice({
 
 // Export actions
 export const {
+  setCanvasType,
+  updateHoverGroup,
   setZoom,
   setZoomMode,
   toggleZoomMode,
@@ -137,11 +149,11 @@ export const {
   resetCanvas,
   setIsCanvasModalOpen,
   setCanvasActiveTool,
-  setCanvasType,
   updateMasks,
   deleteMask,
   setDeleteMMaskId,
    updateIsGenerateMask,
+   
 } = canvasSlice.actions;
 
 // Export reducer

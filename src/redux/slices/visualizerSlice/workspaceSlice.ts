@@ -52,7 +52,9 @@ const workspaceSlice = createSlice({
   reducers: {
 
 
-
+    resetWorkspace: () => {
+      return initialState;
+    },
 
     addCurrentView: (state, action: PayloadAction<{ view: ViewType; file: File | null }>) => {
       const { view, file } = action.payload;
@@ -175,7 +177,8 @@ export const {
   setSubActiveTab,
   addbreadcrumb,
   clearBreadcrumbs,
-  updateBreadCrumbs
+  updateBreadCrumbs,
+  resetWorkspace
 } = workspaceSlice.actions;
 
 // Export reducer

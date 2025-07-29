@@ -1,4 +1,5 @@
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
+import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 //import { updateGeneratedImage, updateOriginalHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
@@ -37,6 +38,7 @@ const GenAiImages = () => {
   }, [genAiImages]);
 
   const handleImageSelect = (imageSet: GenAiChat) => {
+    // dispatch(setCanvasType("draw"));
     dispatch(setIsGenerated(true));
     dispatch(setCurrentTabContent("compare"));
     dispatch(setCurrentGenAiImage(imageSet));

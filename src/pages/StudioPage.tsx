@@ -14,7 +14,7 @@ import {  StudioMainCanvas } from "@/components/studio";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { toast } from "sonner";
 
-import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { resetWorkspace, updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
@@ -24,6 +24,7 @@ import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import JobHome from "@/components/job/JobHome";
 import {
   
+  resetCanvas,
   setIsCanvasModalOpen,
 } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
@@ -40,7 +41,6 @@ import { clearMasterArray } from "@/redux/slices/MasterArraySlice";
 import GetSegments from "@/components/getSegments/GetSegments";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
-import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -131,6 +131,8 @@ export function StudioPage() {
     dispatch(resetSegmentSlice());
     dispatch(clearCurrentJob());
     dispatch(clearMasterArray());
+    dispatch(resetCanvas());
+    dispatch(resetWorkspace())
     navigate("/projects");
   };
   return (
