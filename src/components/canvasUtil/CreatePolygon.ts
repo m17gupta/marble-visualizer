@@ -84,11 +84,12 @@ export const makePolygon = (
             fill: "#fff",
             selectable: true,
             visible: false,
-            data: { name: polyName},
         });
 
+        // Attach custom property after creation
+        (text as any).name = polyName;
+
         const polygon = new fabric.Polygon(point, {
-           
             fill: color,
             originX: "left",
             originY: "top",
@@ -100,8 +101,8 @@ export const makePolygon = (
             visible: false,
             lockMovementX: true,
             lockMovementY: true,
-             data: { name: polyName },
         });
+        (polygon as any).name = polyName;
 
         // Only pass valid Fabric.Group options
         const group = new fabric.Group([polygon, text], {

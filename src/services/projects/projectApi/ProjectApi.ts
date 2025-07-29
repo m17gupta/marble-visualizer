@@ -14,13 +14,12 @@ const handleError = (
     error: defaultMessage,
   };
 };
-import { HouseSegmentModel, ProjectModel } from "@/models/projectModel/ProjectModel";
+import { AnalyseImageModel, HouseSegmentModel, HouseSegmentResponse, ProjectModel } from "@/models/projectModel/ProjectModel";
 import { supabase } from "@/lib/supabase";
 import { JobModel } from "@/models";
 import { toast } from "sonner";
 import axios from "axios";
 import { JobService } from "@/services/jobService/JobService";
-import { PiCheckerboard } from "react-icons/pi";
 
 // Project API Response Types
 export interface ProjectApiResponse {
@@ -210,7 +209,7 @@ export class ProjectAPI {
 
   static async save_analysed_data(
     projectId: number,
-    analysed_data: any
+    analysed_data: AnalyseImageModel
   ): Promise<ProjectApiResponse> {
     try {
       console.log(projectId);
@@ -243,7 +242,7 @@ export class ProjectAPI {
   //for house segment
   static async houseSegment(
    houseSegData: HouseSegmentModel
-  ): Promise<ProjectApiResponse> {
+  ): Promise<HouseSegmentResponse> {
     try {
       const response = await axios.post(
         `${this.baseUrl}/house-segment`,
@@ -265,10 +264,14 @@ export class ProjectAPI {
 
       return response.data;
     } catch (error: unknown) {
-      return handleError(
-        error,
-        "Failed to segment house"
-      ) as ProjectApiResponse;
+      // Return a HouseSegmentResponse shaped error object
+      return {
+        status: "error",
+        results: [],
+        success: false,
+        error: (error instanceof Error ? error.message : "Failed to segment house"),
+        message: "Failed to segment house"
+      } as HouseSegmentResponse;
     }
   }
 

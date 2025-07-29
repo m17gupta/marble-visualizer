@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '@/redux/store';
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getSegmentsByJobId } from "@/redux/slices/segmentsSlice";
 
@@ -29,7 +29,7 @@ const GetSegments = () => {
 
     const getAllSegments = async (jobId: number) => {
         try {
-            const response = await dispatch(getSegmentsByJobId(jobId)).unwrap();
+            await dispatch(getSegmentsByJobId(jobId)).unwrap();
         } catch (error) {
             console.error("Error fetching segments:", error);
         }

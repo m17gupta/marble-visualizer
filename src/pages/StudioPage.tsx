@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
@@ -10,7 +10,7 @@ import {
 } from "@/redux/slices/jobSlice";
 
 import { canEditProject } from "@/middlewares/authMiddleware";
-import {  StudioMainCanvas } from "@/components/studio";
+import { StudioMainCanvas } from "@/components/studio";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { toast } from "sonner";
 
@@ -23,7 +23,7 @@ import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
 import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import JobHome from "@/components/job/JobHome";
 import {
-  
+
   resetCanvas,
   setIsCanvasModalOpen,
 } from "@/redux/slices/canvasSlice";
@@ -41,17 +41,20 @@ import { clearMasterArray } from "@/redux/slices/MasterArraySlice";
 import GetSegments from "@/components/getSegments/GetSegments";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
+import { clearCurrentProject } from "@/redux/slices/projectSlice";
+import { ProjectModel } from "@/models/projectModel/ProjectModel";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
+  const [selectedProject, setSelectedProject] = useState<ProjectModel | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const {
-  
+
     error: jobError,
     isCreating: isJobRunning,
   } = useSelector((state: RootState) => state.jobs);
-  const {  currentProject } = useSelector(
+  const { currentProject } = useSelector(
     (state: RootState) => state.projects
   );
   const { activeTab: activeTabFromStore } = useSelector(
@@ -59,7 +62,7 @@ export function StudioPage() {
   );
 
   // const activeTab = useRef<string>("inspiration");
- 
+
   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
 
   const { isCanvasModalOpen } = useSelector((state: RootState) => state.canvas);
@@ -67,7 +70,7 @@ export function StudioPage() {
   // Check permissions
   const canEdit = projectId ? canEditProject(projectId) : false;
 
- 
+
   const { currentImageUrl } = useSelector((state: RootState) => state.studio);
   const { addSegMessage } = useSelector((state: RootState) => state.segments);
 
@@ -81,6 +84,7 @@ export function StudioPage() {
       setLoadingMessage("");
     }
   }, [addSegMessage]);
+
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
@@ -96,6 +100,17 @@ export function StudioPage() {
       dispatch(clearJobError());
     }
   }, [jobError, dispatch]);
+
+
+  // update current SelectedProject
+  useEffect(() => {
+    if (currentProject === null) {
+      setSelectedProject(null);
+
+    } else if (currentProject && currentProject.id) {
+      setSelectedProject(currentProject);
+    }
+  }, [currentProject]);
 
 
   const handleFileUpload = async (file: File) => {
@@ -130,6 +145,7 @@ export function StudioPage() {
   const handleBackToProject = () => {
     dispatch(resetSegmentSlice());
     dispatch(clearCurrentJob());
+    dispatch(clearCurrentProject())
     dispatch(clearMasterArray());
     dispatch(resetCanvas());
     dispatch(resetWorkspace())
@@ -154,7 +170,7 @@ export function StudioPage() {
               {/* </Link> */}
             </div>
             {/* <Link to="/"> */}
-              <Button className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
+            <Button className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
               onClick={handleBackToProject}
             >
               <IoMdArrowRoundBack className="w-4 h-4" />
@@ -163,8 +179,8 @@ export function StudioPage() {
             {/* </Link> */}
           </div>
           <StudioMainTabs />
-           
-          
+
+
 
         </div>
 
@@ -191,7 +207,9 @@ export function StudioPage() {
         {/* get all GenAi Image based on job ID */}
         {/* <GetGenAiImageJobIdBased /> */}
 
-        <JobHome selectedProjectId={currentProject?.id || undefined} />
+       { selectedProject &&
+        selectedProject.id &&
+       <JobHome selectedProjectId={selectedProject?.id} />}
 
         {isCanvasModalOpen && (
           <ModelCanvas

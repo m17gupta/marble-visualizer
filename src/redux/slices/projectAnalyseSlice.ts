@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProjectAnalyseState {
-  jobUrl: string;
-  projectId: number;
+  jobUrl: string|null;
+  projectId: number|null;
   isAnalyseImage: boolean;
   isAnalyseProcess: boolean;
   isAnalyseFinish: boolean;
 }
-
+  
 const initialState: ProjectAnalyseState = {
-  jobUrl: '',
-  projectId: 0,
+  jobUrl: null  ,
+  projectId: null,
   isAnalyseImage: false,
   isAnalyseProcess: false,
   isAnalyseFinish: false,
@@ -20,10 +20,10 @@ const projectAnalyseSlice = createSlice({
   name: 'projectAnalyse',
   initialState,
   reducers: {
-    setJobUrl(state, action: PayloadAction<string>) {
+    setJobUrl(state, action: PayloadAction<string|null>) {
       state.jobUrl = action.payload;
     },
-    setProjectId(state, action: PayloadAction<number>) {
+    setProjectId(state, action: PayloadAction<number|null>) {
       state.projectId = action.payload;
     },
     setIsAnalyseImage(state, action: PayloadAction<boolean>) {

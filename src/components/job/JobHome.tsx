@@ -18,7 +18,7 @@ const JobHome = ({ selectedProjectId }: Props) => {
       if(selectedProjectId &&
         getAllJob && getAllJob.length===0
       ) {
-       
+         
         setIsFetchJob(true);
       
 

@@ -1,5 +1,5 @@
 import { JobModel } from "@/models/jobModel/JobModel";
-import { ProjectModel } from "@/models/projectModel/ProjectModel";
+import { HouseSegmentModel, HouseSegmentResponse, ProjectModel } from "@/models/projectModel/ProjectModel";
 import { ProjectAPI } from "@/services/projects/projectApi";
 import { ProjectService } from "@/services/projects/ProjectsService";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -16,6 +16,7 @@ interface ProjectState {
   list: ProjectModel[];
   currentProject: ProjectModel | null;
   currentUserRole: "admin" | "editor" | "viewer" | null;
+  houseSegments?: HouseSegmentResponse|null;
   projectAccess: ProjectAccess[];
   isLoading: boolean;
   isCreating: boolean;
@@ -29,6 +30,7 @@ const initialState: ProjectState = {
   list: [],
   currentProject: null,
   currentUserRole: null,
+  houseSegments: null,
   projectAccess: [],
   isLoading: false,
   isCreating: false,
@@ -134,6 +136,20 @@ export const updateProjectAnalysis = createAsyncThunk(
   }
 );
 
+// create thunk for HouseSegment
+export const fetchHouseSegments = createAsyncThunk(
+  "projects/fetchHouseSegments",
+  async (houseSegData: HouseSegmentModel, { rejectWithValue }) => {
+    try {
+     await ProjectService.getHouseSegment(houseSegData);
+     
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch house segments"
+      );
+    }
+  }
+);
 // Async thunk to fetch project access list
 export const fetchProjectAccess = createAsyncThunk(
   "projects/fetchProjectAccess",
@@ -309,6 +325,22 @@ const projectSlice = createSlice({
 
       .addCase(updateProjectAnalysis.rejected, (state, action) => {
         state.isUpdating = false;
+        state.error = action.payload as string;
+      })
+
+
+      // fetch house segments
+      .addCase(fetchHouseSegments.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchHouseSegments.fulfilled, (state, action) => {
+        
+        state.isLoading = false;
+        state.houseSegments = action.payload;
+      })
+      .addCase(fetchHouseSegments.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload as string;
       })
 

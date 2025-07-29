@@ -1,4 +1,4 @@
-import { ProjectModel } from '@/models/projectModel/ProjectModel';
+import { HouseSegmentModel, HouseSegmentResponse, ProjectModel } from '@/models/projectModel/ProjectModel';
 import { ProjectAPI } from "./projectApi/ProjectApi";
 
 
@@ -23,4 +23,9 @@ export class ProjectService {
   static async deleteProjectById(projectId: number) {
     return await ProjectAPI.deleteProject(projectId);
 }
+
+// get House Segment
+static async getHouseSegment(houseSegData: HouseSegmentModel): Promise<HouseSegmentResponse> {
+    return await ProjectAPI.houseSegment(houseSegData);
+  }
 }
