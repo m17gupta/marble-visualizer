@@ -49,9 +49,9 @@ const StudioMainTabs = () => {
             <Tabs
                 value={activeTabFromStore ?? "inspiration"}
                 onValueChange={handleChangeTab}
-                className="w-full h-full flex flex-col "
+                className="w-full h-full flex flex-col"
             >
-                <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 rounded-xl shadow-sm  p-1 gap-2 px-3">
+                <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 rounded-0 shadow-sm   gap-2 px-3 py-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <TabsTrigger

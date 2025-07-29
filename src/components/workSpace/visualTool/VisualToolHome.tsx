@@ -226,7 +226,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
       />
       <div className="min-h-screen bg-white">
         {/* Header */}
-        <div className=" border-b border-gray-200 py-6 pt-10">
+        <div className=" border-b border-gray-200 py-6 pt-10 md:pt-0">
           <div className="max-w-6xl mx-auto px-2 md:px-6">
             <div className="text-center relative flex items-center justify-center ">
               {/* Back button positioned absolutely in header */}

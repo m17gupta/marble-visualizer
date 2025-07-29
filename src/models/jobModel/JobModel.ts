@@ -115,6 +115,7 @@ export  interface GroupSegmentModel {
 
 
 export interface MasterGroupModel {
+ items: any;
  groupName: string;
  segments: SegmentModal[];
 }
