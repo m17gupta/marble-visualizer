@@ -31,6 +31,7 @@ import {
   Copy,
   ExternalLink,
   Heart,
+  Edit2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
@@ -45,6 +46,7 @@ interface SwatchCardProps {
   layoutMode?: "compact" | "detailed";
   showActions?: boolean;
   className?: string;
+  onOpenChange: (id: number) => void;
 }
 
 export function SwatchCard({
@@ -53,6 +55,7 @@ export function SwatchCard({
   layoutMode = "detailed",
   showActions = true,
   className,
+  onOpenChange,
 }: SwatchCardProps) {
   // const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -325,6 +328,17 @@ export function SwatchCard({
                           "fill-current"
                       )}
                     />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenChange(swatch.id);
+                    }}
+                    className={cn("h-6 w-6 p-0 bg-white/90 hover:bg-white")}
+                  >
+                    <Edit2 className={cn("h-3 w-3")} />
                   </Button>
                 </motion.div>
               )}
