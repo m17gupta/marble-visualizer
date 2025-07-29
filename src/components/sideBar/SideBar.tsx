@@ -40,7 +40,7 @@ const navigation = [
   },
 ];
 
-export function SideBar() {
+export function SideBar({ sidebarCollapsed, setSidebarCollapsed }: { sidebarCollapsed: boolean, setSidebarCollapsed: (v: boolean) => void }) {
   const location = useLocation();
   const navigate = useNavigate();
   // const dispatch = useDispatch<AppDispatch>();
@@ -48,7 +48,7 @@ export function SideBar() {
   // const { user } = useSelector((state: RootState) => state.auth);
   // const { profile } = useSelector((state: RootState) => state.userProfile);
 
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // sidebarCollapsed and setSidebarCollapsed are now controlled from parent
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // const handleLogout = () => {
