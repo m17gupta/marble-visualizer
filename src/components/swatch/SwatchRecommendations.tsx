@@ -63,14 +63,17 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
 
   return (
     <Card >
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 p-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Target className="h-5 w-5 mr-2" />
-            Recommended for {selectedMaterialSegment?.name || 'All Materials'}
+         {selectedMaterialSegment?.name || 'All Materials'}
+             {/* Recommended for */}
           </CardTitle>
-          <Badge variant="secondary" className="text-xs">
-            {recommendedSwatches.length} swatches
+          <Badge variant="secondary" className="text-xs cursor-pointer">
+            {/* {recommendedSwatches.length} swatches */}
+   View All
+
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -78,15 +81,16 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
         </p>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-3">
         {recommendedSwatches &&
           recommendedSwatches.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 gap-3">
             <AnimatePresence>
               {recommendedSwatches.map((swatch) => (
                 <Card
                   key={swatch.id}
-                  className="cursor-pointer hover:shadow-md transition-all duration-300 overflow-hidden bg-card border-border"
+                   className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl"
+
                 >
                   {/* Image/Color Preview */}
                   <div className="aspect-square relative overflow-hidden">

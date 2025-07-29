@@ -208,10 +208,11 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  
+                  className='py-0 px-3 '
                   onClick={handleResetZoom}
                 >
-                  <span className="text-xs font-bold">Reset </span>
+                  <span className="text-xs font-bold ">Reset </span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Reset zoom to 100%</TooltipContent>

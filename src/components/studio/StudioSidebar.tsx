@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 // import { Progress } from '@/components/ui/progress';
 
 import { StudioTabsNavigation } from "./StudioTabsNavigation";
+import SegmentGroup from "../designHub/studio_segement_content/SegmentGroup";
+import StudioSegmentsTabs from "./StudioSegmentsTabs";
 // import { DesignSettings, Job } from './types';
 // import {
 //   Sparkles,
@@ -54,11 +56,13 @@ export function StudioSidebar({
 
 StudioSidebarProps) {
   return (
+    <>
+    {/* <StudioSegmentsTabs/> */}
     <motion.aside
       initial={{ x: -288, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sm:w-80 w-full bg-card border-r border-border flex flex-col"
+      className="sm:w-80 w-100 w-full bg-card border-r border-border flex flex-col"
     >
       {/* Tabs Navigation */}
       <StudioTabsNavigation
@@ -78,5 +82,6 @@ StudioSidebarProps) {
         // onIntensityChange={onIntensityChange}
       />
     </motion.aside>
+    </>
   );
 }

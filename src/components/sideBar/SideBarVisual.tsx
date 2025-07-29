@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import ShareModal from "@/components/ShareModal";
 import { AiOutlineMenuFold } from "react-icons/ai";
-
+import dzinlylogo from "../../../public/assets/image/dzinlylogo-icon.svg";
 import {
   BookOpen,
   FolderOpen,
@@ -127,12 +127,15 @@ const SideBarVisual = ({ sidebarCollapsed, setSidebarCollapsed }: { sidebarColla
           animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
           className="flex items-center space-x-3"
         >
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8  rounded-lg flex items-center justify-center">
             <Home className="h-5 w-5 text-primary-foreground" />
+            <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
+            {/* <img src */}
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-xl font-bold text-foreground">Visual Studio</span>
+            <span className="text-lg font-bold text-foreground">Visual Studio</span>
           )}
+
         </motion.div>
 
         {!mobile && (

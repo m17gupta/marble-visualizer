@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Setting from "./Setting";
@@ -68,13 +68,18 @@ export function MainLayout() {
           animate={{ opacity: sidebarCollapsed && !mobile ? 0 : 1 }}
           className="flex items-center space-x-3"
         >
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center pt-0">
+          <div className="w-10 h-10 rounded-lg flex items-baseline justify-center pt-0">
             {/* <Home className="h-5 w-5 text-primary-foreground" /> */}
-            <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
+            <Link to="/">
+              <img src={dzinlylogo} alt="Dzinly Logo" className="w-52" />
+            </Link>
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-xl font-bold text-foreground pt-1">Dashboard</span>
+            <Link to="/" >
+              <span className="text-xl font-bold text-foreground mt-2">Dashboard</span>
+            </Link>
           )}
+          
         </motion.div>
         {!mobile && (
           <Button

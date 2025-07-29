@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-    font-family: Poppins, system-ui;
+  font-family: Poppins, system-ui;
   line-height: 1.5;
   font-weight: 400;
 
@@ -70,7 +70,7 @@ button {
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
+ font-family:"Poppins", sans-serif;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
@@ -198,3 +198,16 @@ button:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Custom scrollbar styling and position fix */
+.swiper-scrollbar {
+  bottom: 0 !important; /* place it at the bottom */
+  height: 4px;
+  background: transparent;
+}
+
+.swiper-scrollbar-drag {
+  background-color: #333;
+  border-radius: 9999px;
+}
+

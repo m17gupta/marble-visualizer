@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {  useNavigate, useParams } from "react-router-dom";
+import {  Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
@@ -145,13 +145,13 @@ export function StudioPage() {
         <div className="w-full md:w-1/4 border-r overflow-hidden hidden md:block">
           <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
             <div className="text-start">
-              {/* <Link to="/"> */}{" "}
+              <Link to="/">
               <img
                 className="w-44 text-center"
                 src={dzinlylogo}
                 alt="dzinly logo"
               ></img>
-              {/* </Link> */}
+              </Link>
             </div>
             {/* <Link to="/"> */}
               <Button className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "

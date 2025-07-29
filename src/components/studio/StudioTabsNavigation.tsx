@@ -71,26 +71,26 @@ StudioTabsNavigationProps) {
       onValueChange={handleChangeTab}
       className="flex-1 flex flex-col"
     >
-      <div className=" pt-2 flex-shrink-0">
-        <TabsList className="grid w-full grid-cols-6 h-9">
-          <TabsTrigger value="studio-segment" className="text-xs p-1">
-            <Square className="h-3 w-3" />
+      <div className="flex-shrink-0">
+        <TabsList className="grid w-full grid-cols-6 h-11">
+          <TabsTrigger value="studio-segment" className="text-xs p-1 border-gray-300">
+            <Square className="h-4 w-4" />
             {/* <span className="sr-only">Segment</span> */}
           </TabsTrigger>
-          <TabsTrigger value="design" className="text-xs p-1">
-            <Palette className="h-3 w-3" />
+          <TabsTrigger value="design" className="text-xs p-1 border-gray-300">
+            <Palette className="h-4 w-4" />
           </TabsTrigger>
-          <TabsTrigger value="segments" className="text-xs p-1">
-            <Shapes className="h-3 w-3" />
+          <TabsTrigger value="segments" className="text-xs p-1 border-gray-300">
+            <Shapes className="h-4 w-4" />
           </TabsTrigger>
-          <TabsTrigger value="swatches" className="text-xs p-1">
+          {/* <TabsTrigger value="swatches" className="text-xs p-1">
             <Target className="h-3 w-3" />
+          </TabsTrigger> */}
+          <TabsTrigger value="history" className="text-xs p-1 border-gray-300">
+            <History className="h-4 w-4" />
           </TabsTrigger>
-          <TabsTrigger value="history" className="text-xs p-1">
-            <History className="h-3 w-3" />
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs p-1">
-            <Clock className="h-3 w-3" />
+          <TabsTrigger value="activity" className="text-xs p-1 border-gray-300">
+            <Clock className="h-4 w-4" />
           </TabsTrigger>
         </TabsList>
       </div>

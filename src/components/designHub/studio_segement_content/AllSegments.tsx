@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/tooltip";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { set } from "date-fns";
+import SegmentGroup from "./SegmentGroup";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 
 // import { Swiper, SwiperSlide } from 'swiper/react';
@@ -94,7 +97,7 @@ const AllSegments = () => {
 
   return (
     <>
-      
+       {/* <SegmentGroup/> */}
 
       {masterArray &&
         masterArray !== undefined &&
@@ -102,7 +105,7 @@ const AllSegments = () => {
         masterArray.allSegments &&
         masterArray.allSegments.length == 0 ? (
         <>
-        <h1 className=" text-lg font-bold">No segment available in {masterArray.name??""}. Please add segment</h1>
+        <h1 className="text-sm font-light">No segment available in {masterArray.name??""}. Please add segment</h1>
           <div className="flex items-center justify-between mb-4">
             <TooltipProvider >
               <Tooltip>
@@ -126,17 +129,23 @@ const AllSegments = () => {
               </Tooltip>
             </TooltipProvider>
           </div>
+
+             
+        
         </>
       ) : (<>
         {masterArray &&
           masterArray.allSegments &&
           masterArray.allSegments.length > 0 && (
             
-            <Tabs defaultValue={masterArray.allSegments[0].groupName} className="mb-4">
-              <TabsList className="flex w-full h-9 overflow-x-auto no-scrollbar">
+
+        
+            <Tabs defaultValue={masterArray.allSegments[0].groupName} className="mb-0 pb-0">
+
+              <TabsList className="flex justify-between w-full h-9  bg-transprent no-scrollbar px-0 ">
                
                   {masterArray.allSegments.map((group) => (
-                    <div key={group.groupName} style={{ width: 'auto', display: 'inline-block' }}>
+                    <div key={group.groupName} className=" rounded-md " style={{ width: 'auto', display: 'inline-block' }}>
                       <TabsTrigger
                         value={group.groupName}
                         className={`text-xs p-1 flex items-center ${activeTab === group.groupName ? 'bg-blue-100 text-blue-700 font-bold' : ''}`}
@@ -149,6 +158,7 @@ const AllSegments = () => {
                       </TabsTrigger>
                     </div>
                   ))}
+
                <TooltipProvider >
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -171,9 +181,11 @@ const AllSegments = () => {
               </Tooltip>
             </TooltipProvider>
               </TabsList>
+
+
               {/* TabsContent per group */}
               {masterArray.allSegments.map((group) => (
-                <TabsContent key={group.groupName} value={group.groupName} className="space-y-6 mt-0">
+                <TabsContent key={group.groupName} value={group.groupName} className="space-y-6 mt-0 ">
                   <h2>Tab content for {group.groupName}</h2>
                 </TabsContent>
               ))}
