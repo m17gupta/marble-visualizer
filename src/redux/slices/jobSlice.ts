@@ -180,6 +180,9 @@ const jobSlice = createSlice({
   name: "jobs",
   initialState,
   reducers: {
+    updateJobList:(state,action) => {
+      state.list = action.payload;
+    },
     setCurrentJob: (state, action: PayloadAction<JobModel>) => {
       state.currentJob = action.payload;
     },
@@ -332,6 +335,7 @@ const jobSlice = createSlice({
 });
 
 export const {
+  updateJobList,
   setCurrentJob,
   clearCurrentJob,
   clearError,

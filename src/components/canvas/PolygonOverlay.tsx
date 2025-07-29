@@ -260,6 +260,7 @@ const PolygonOverlay = ({
             if (target!==undefined) {
                 const targetName = target.name;
                 console.log("Target name:", targetName);
+                
                 if (targetName) {
                     handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
                 }
