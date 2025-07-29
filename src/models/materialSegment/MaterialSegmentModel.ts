@@ -12,6 +12,7 @@ export interface MaterialSegmentModel {
   short_code: string;
   categories: string[];
   gallery: string[];
+  isDisabled?: boolean;
 }
 
 export interface CreateMaterialSegmentRequest {

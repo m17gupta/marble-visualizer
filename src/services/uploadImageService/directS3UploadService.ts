@@ -346,7 +346,9 @@ export class DirectS3UploadService {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
     const extension = fileName.split('.').pop() || '';
-    const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
+    // Remove extension, then replace spaces with underscores and remove any leading/trailing whitespace
+    let nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
+    nameWithoutExtension = nameWithoutExtension.trim().replace(/\s+/g, '_');
     
     // Use user profile ID if provided, otherwise fall back to date-based structure
     if (userProfileId) {

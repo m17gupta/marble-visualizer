@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { initializeAuth } from "@/redux/slices/authSlice";
 import { Loader2 } from "lucide-react";
 import { UserRole } from "@/types/auth";
-import { fetchProjects } from "@/redux/slices/projectSlice";
+// import { fetchProjects } from "@/redux/slices/projectSlice";
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -23,11 +23,7 @@ export function PrivateRoute({
   const { profile } = useSelector((state: RootState) => state.userProfile);
   const location = useLocation();
 
-  const {
-    list: projects,
-    error,
-    isUpdating,
-  } = useSelector((state: RootState) => state.projects);
+
 
   // Initialize auth on mount
   useEffect(() => {
@@ -36,11 +32,11 @@ export function PrivateRoute({
     }
   }, [dispatch, isInitialized]);
 
-  useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      dispatch(fetchProjects(user.id));
-    }
-  }, [dispatch, isAuthenticated, user?.id]);
+  // useEffect(() => {
+  //   if (isAuthenticated && user?.id) {
+  //    // dispatch(fetchProjects(user.id));
+  //   }
+  // }, [ isAuthenticated, user?.id]);
 
   // Show loading spinner while initializing or checking authentication
   if (isLoading || !isInitialized) {

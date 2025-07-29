@@ -48,8 +48,8 @@ export interface AnalyseImageModel {
     gutters?: SegmentDetail<GutterVariant>;
     trim?: SegmentDetail<TrimVariant>;
     shutters?: SegmentDetail<ShutterVariant>;
-    columns?: SegmentDetail<any>;
-    railing?: SegmentDetail<any>;
+    columns?: SegmentDetail<TrimVariant>;
+    railing?: SegmentDetail<TrimVariant>;
   };
   summary: string;
   style_suggestions: StyleSuggestions[];
@@ -111,4 +111,17 @@ interface StyleSuggestions {
   title: string;
   prompt: string;
   target_region: string[];
+}
+
+
+ export interface HouseSegmentResponse {
+  status: string;
+  results: DetectionResult[];
+}
+
+interface DetectionResult {
+  label: string;           // e.g. "Door.", "Window."
+  score: number;           // confidence score, e.g. 0.83
+  box: [number, number, number, number]; // bounding box: [x1, y1, x2, y2]
+  polygon: [number, number][]; // polygon shape: array of [x, y] points
 }

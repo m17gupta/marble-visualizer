@@ -12,11 +12,12 @@ const GetSelectedJob = ({ selectedProjectId }: Props) => {
      
   React.useEffect(() => {
     if (selectedProjectId) {
+      console.log("Selected Project ID:----", selectedProjectId);
       fetchJob();
     } else {
       console.warn('No project selected to fetch jobs for.'); 
     }
-  }, [selectedProjectId, dispatch]);
+  }, [selectedProjectId]);
 
   const fetchJob = async () => {
     try {
