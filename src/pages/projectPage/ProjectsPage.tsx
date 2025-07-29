@@ -57,7 +57,7 @@ import {
   updateWorkspaceType,
   updateBreadCrumbs,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
-import { updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
+import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import {
   addHouseImage,
   resetGenAiState,
@@ -159,6 +159,7 @@ export function ProjectsPage() {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
       if (jobId) {
+        dispatch(updateJobList(project.jobData));
         dispatch(addbreadcrumb("Studio"));
         dispatch(setCurrentImageUrl(projectImage || ""));
         dispatch(addHouseImage(projectImage || ""));

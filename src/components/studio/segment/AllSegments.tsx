@@ -10,10 +10,15 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
+
+// Extend MaterialSegmentModel to include allSegments for local use
+interface MaterialSegmentWithGroups extends MaterialSegmentModel {
+  allSegments: any;
+}
 import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSegmentSlice";
 import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
 import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
-import { MasterModel } from "@/models/jobModel/JobModel";
+import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateHoverGroup } from "@/redux/slices/canvasSlice";
 
 const AllSegments = () => {
@@ -30,45 +35,103 @@ const AllSegments = () => {
 
   const { segments } = useSelector((state: RootState) => state.materialSegments);
 
-  const {masterArray} = useSelector((state: RootState) => state.masterArray);
+  const { masterArray } = useSelector((state: RootState) => state.masterArray);
+  const { allSegments } = useSelector((state: RootState) => state.segments);
 
   // update master Array
   useEffect(() => {
-    if(masterArray && masterArray.length > 0) {
+    if (masterArray && masterArray.length > 0) {
       setUpdatedMasterArray(masterArray);
-    }else {
+    } else {
       setUpdatedMasterArray(null);
     }
-  },[masterArray]);
+  }, [masterArray]);
 
   useEffect(() => {
+    if (allSegments && allSegments.length === 0) {
+      if (segments &&
+        segments.length > 0 &&
+        currentProject && currentProject.analysed_data &&
+        currentProject.analysed_data.segments_detected
 
-    if (segments &&
-      segments.length > 0 &&
-      currentProject && currentProject.analysed_data &&
-      currentProject.analysed_data.segments_detected
+      ) {
+        const detectedSeg: MaterialSegmentModel[] = []
+        if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
+          const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
 
-    ) {
-      const detectedSeg: MaterialSegmentModel[] = []
-      if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
-        const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
-        console.log("All Detected Segments:", allDetectedSegments);
-        allDetectedSegments.forEach((seg) => {
-          const foundSegment = segments.find((item) => (item.name).toLowerCase().startsWith(seg));
-          if (foundSegment) {
-            detectedSeg.push(foundSegment);
-          }
-        });
+          allDetectedSegments.forEach((seg) => {
+            const foundSegment = segments.find((item) => {
+              const itemName = (item.name || '').toLowerCase();
+              const segLower = (seg || '').toLowerCase();
+              return itemName.startsWith(segLower) || segLower.startsWith(itemName);
+            });
+
+            if (foundSegment) {
+              detectedSeg.push(foundSegment);
+            }
+          });
+        }
+        if( detectedSeg && detectedSeg.length > 0) {
+        setActiveSegment(detectedSeg[0]?.id || null);
+        setDetectedSegment(detectedSeg);
+        dispatch(selectMaterialSegment(detectedSeg[0]));
+        dispatch(addSelectedMasterArray(detectedSeg[0]?.name));
+        }
       }
-      setActiveSegment(detectedSeg[0]?.id || null);
-      setDetectedSegment(detectedSeg);
-      dispatch(selectMaterialSegment(detectedSeg[0]));
-      dispatch(addSelectedMasterArray(detectedSeg[0]?.name));
-    } else {
-      setActiveSegment(segments[0]?.id || null);
-      setDetectedSegment(segments);
+    } else if (allSegments &&
+      allSegments.length > 0 &&
+      segments &&
+      segments.length > 0) {
+      const segData: MaterialSegmentModel[] = [];
+      segments.map((seg) => {
+        const foundSegment = allSegments.filter((item) => item.segment_type === seg.name);
+
+        const allGroups: string[] = [];
+        const sameGrpSeg: MasterGroupModel[] = [];
+        if (foundSegment) {
+          segData.push(seg)
+          // foundSegment.map((item) => {
+          //   const groupLabels = item.group_label_system;
+          //   allGroups.push(groupLabels || "");
+          // })
+        }
+        // Log only unique strings
+        // const uniqueGroups = Array.from(new Set(allGroups));
+        // if (uniqueGroups.length > 0) {
+        //   uniqueGroups.map(grp => {
+        //     const sameGrp = foundSegment.filter((item) => item.group_label_system === grp);
+        //     const data = {
+        //       groupName: grp ?? "",
+        //       segments: sameGrp,
+        //     }
+        //     sameGrpSeg.push(data);
+        //   })
+        // }
+        // if (sameGrpSeg && sameGrpSeg.length > 0) {
+        //   segData.push({
+        //     id: seg.id,
+        //     name: seg.name,
+        //     color: seg.color,
+        //     color_code: seg.color_code,
+        //     short_code: seg.short_code,
+        //     categories: seg.categories,
+        //     icon: seg.icon,
+        
+        //     allSegments: sameGrpSeg,
+        //   } as MaterialSegmentWithGroups);
+        // }
+      })
+      if (segData && segData.length > 0) {
+        // setUpdatedMasterArray(segData);
+        setDetectedSegment(segData);
+      setActiveSegment(segData[0]?.id || null);
+      dispatch(selectMaterialSegment(segData[0]));
+      dispatch(addSelectedMasterArray(segData[0]?.name));
+      }
+      
     }
-  }, [segments, currentProject]);
+
+  }, [segments, currentProject, allSegments]);
 
 
 
@@ -86,13 +149,13 @@ const AllSegments = () => {
   };
 
   const handleMouseEnter = (sgtype: string) => {
-    const segNameArray:string [] = [];
-  const curenMasterArray= updatedMasterArray?.find((item) => item.name === sgtype);
+    const segNameArray: string[] = [];
+    const curenMasterArray = updatedMasterArray?.find((item) => item.name === sgtype);
     if (curenMasterArray && curenMasterArray.allSegments &&
       curenMasterArray.allSegments.length > 0) {
       curenMasterArray.allSegments.forEach((group) => {
-        const segArray= group.segments || [];
-        if(segArray && segArray.length > 0) {
+        const segArray = group.segments || [];
+        if (segArray && segArray.length > 0) {
           segArray.forEach((seg) => {
             segNameArray.push(seg.short_title || "");
           });
@@ -104,8 +167,8 @@ const AllSegments = () => {
   };
 
   const handleMouseLeave = () => {
-      dispatch(updateHoverGroup(null))
-   };
+    dispatch(updateHoverGroup(null))
+  };
 
   const handleAddSegment = () => { }
   return (

@@ -2,7 +2,7 @@
 import * as fabric from "fabric";
 
 // Custom type for objects with a data property containing a name
-type NamedFabricObject = fabric.Object & { data?: { name?: string } };
+type NamedFabricObject = fabric.Object & {   name?: string  };
 
 export const handlePolygonVisibilityOnMouseMove = (canvas: React.RefObject<fabric.Canvas>, name:string) => {
  
@@ -17,7 +17,7 @@ export const handlePolygonVisibilityOnMouseMove = (canvas: React.RefObject<fabri
                 const allGroupObjects = (obj as fabric.Group).getObjects();
                 allGroupObjects.forEach((groupObj) => {
                     const namedGroupObj = groupObj as NamedFabricObject;
-                    const polyName = namedGroupObj.data?.name;
+                    const polyName = namedGroupObj.name;
                     console.log("Group object name:", polyName);
                     if (polyName === targetName) {
                         namedGroupObj.set({ visible: true });
