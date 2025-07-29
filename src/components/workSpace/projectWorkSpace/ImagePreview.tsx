@@ -30,7 +30,7 @@ const ImageCard: React.FC = () => {
   return (
     <div className="border rounded-md bg-white shadow-sm p-2 relative w-full mx-auto">
       {/* Action icons in top-right */}
-      <div className="absolute top-4 right-4 flex space-x-2 z-10">
+      {/* <div className="absolute top-4 right-4 flex space-x-2 z-10">
         <button
           onClick={handleFullscreen}
           className="text-gray-700 hover:text-black"
@@ -52,7 +52,7 @@ const ImageCard: React.FC = () => {
         >
           <X className="w-5 h-5" />
         </button>
-      </div>
+      </div> */}
 
       {/* Image section */}
       {!findProject || findProject.jobData == undefined ? (

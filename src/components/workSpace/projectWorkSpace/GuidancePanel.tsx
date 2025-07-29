@@ -328,7 +328,7 @@ const GuidancePanel: React.FC = () => {
             )}
         </div>
 
-        <div className="grid gap-3 md-gap-0 md:flex justify-between items-between">
+        <div className="flex gap-3 md-gap-0 md:flex justify-between items-between">
           <div className="flex items-center">
             <ProjectHistory />
 
@@ -357,7 +357,7 @@ const GuidancePanel: React.FC = () => {
               className="text-sm border border-gray-300 flex align-middle gap-1 md:px-3 md:py-2 px-3 py-1 rounded-md"
               onClick={handleAddInspirational}
             >
-              <CiImageOn className="text-lg" /> Add Inspiration
+              <CiImageOn className="text-lg" /> <span className="hidden md:block">Add Inspiration</span>
             </button>
           </div>
 
@@ -368,9 +368,9 @@ const GuidancePanel: React.FC = () => {
               onClick={handleBulbClick}
             >
               {showActionButtons ? (
-                <TbBulbFilled size={28} className="text-yellow-300" />
+                <TbBulbFilled size={28} className="text-yellow-300 w-6 h-6" />
               ) : (
-                <TbBulb size={28} />
+                <TbBulb size={28} className="w-6 h-6" />
               )}
             </button>
 

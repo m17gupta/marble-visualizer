@@ -23,7 +23,7 @@ export const DashboardLandingSection = () => {
     <>
 
     
-    <div className="flex min-h-screen bg-gray-100 border-2">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar */}
       {/* <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200"> */}
 

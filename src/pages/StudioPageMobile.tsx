@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import LeftPage from "./mobilePage/LeftPage";
 
+import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowUp } from "react-icons/io";
 
 const styles = [
   "Modern",
@@ -24,12 +26,17 @@ const StudioPageMobile = () => {
       } overflow-hidden`}
     >
       {/* Toggle Button */}
-      <div
-        className="flex justify-center items-center h-14 cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="w-8 h-1.5 bg-gray-400 rounded-full" />
-      </div>
+    <div
+  className="flex justify-center items-center h-14 cursor-pointer"
+  onClick={() => setIsOpen(!isOpen)}
+>
+  {isOpen ? (
+   
+      <IoIosArrowDown className="text-5xl" />
+  ) : (
+  <IoIosArrowUp className="text-5xl " />
+  )}
+</div>
 
       {/* Drawer Content */}
       <div className="px-4 pb-6 overflow-y-auto max-h-[calc(80vh-56px)]">

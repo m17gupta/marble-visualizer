@@ -7,7 +7,7 @@ const MainLandingPage = () => {
     <>
       {/* <ProfilePage /> */}
 
-      <div className="min-h-screen bg-gray-50 border-2 border-black">
+      <div className="min-h-screen bg-gray-50">
         <DashboardLandingSection />
       </div>
     </>

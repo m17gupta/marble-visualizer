@@ -165,7 +165,7 @@ export function MainLayout() {
         <motion.aside
           initial={false}
           animate={{ width: sidebarCollapsed ? 80 : 280 }}
-          className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border"
+          className="fixed inset-y-0 left-0 z-50 hidden lg:block bg-card border-r border-border "
         >
           <SidebarContent />
         </motion.aside>
