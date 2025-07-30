@@ -3,6 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Button } from "@/components/ui/button";
+import { MasterGroupModel } from "@/models/jobModel/JobModel";
+import { setCanvasType } from "@/redux/slices/canvasSlice";
+import { setActiveTab } from "@/redux/slices/TabControlSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
 
 const wallToDefaultTab: Record<string, string> = {
   account: "w1",
@@ -46,6 +51,39 @@ const StudioTabs = () => {
       });
   };
 
+   const [activeTab, setActiveTab] = useState<string | null>(null);
+   
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { selectedMasterArray, selectedGroupSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
+
+  const [currentSelectedGroupSegment, setCurrentSelectedGroupSegment] =
+    useState<MasterGroupModel | null>(null);
+  // update the active
+  useEffect(() => {
+    if (
+      selectedGroupSegment &&
+      selectedGroupSegment.groupName &&
+      selectedGroupSegment.segments.length > 0
+    ) {
+      setActiveTab(selectedGroupSegment.groupName);
+      setCurrentSelectedGroupSegment(selectedGroupSegment);
+    } else {
+      setCurrentSelectedGroupSegment(null);
+    }
+  }, [selectedGroupSegment]);
+
+  const handleAddGroupSegment = () => {
+    console.log("Add Segment Clicked", currentSelectedGroupSegment);
+    if (currentSelectedGroupSegment == null) {
+      alert("please select the group segment");
+    } else {
+      dispatch(setCanvasType("draw"));
+    }
+  };
+
   return (
     <Tabs
       defaultValue="account"
@@ -84,7 +122,7 @@ const StudioTabs = () => {
         <Button
           variant="ghost"
           className="ml-2 p-2 bg-white hover:bg-gray-200 rounded-md shadow-sm"
-          //  onClick={handleAddSegment}
+          onClick={handleAddGroupSegment}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
