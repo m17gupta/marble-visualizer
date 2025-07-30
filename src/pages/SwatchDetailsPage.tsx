@@ -824,13 +824,38 @@ import { ArrowLeft, Layers } from "lucide-react";
 import { RootState } from "@/redux/store";
 import { supabase } from "@/lib/supabase";
 
+interface Attribute {
+  unit: string | number;
+  value: string | number;
+  keyname: string;
+}
+
+interface Variant {
+  price: number;
+  [attributeName: string]: number | Attribute; // dynamic attribute keys like "Thickness"
+}
+
+interface Product {
+  id: number;
+  title: string;
+  description?: string;
+  sku?: string;
+  material_subcategory_id?: number;
+  brand_id?: number;
+  image_url?: string;
+  is_available: boolean;
+  created_at: string;
+  attribute_values: Variant[]; // <<--- your dynamic variants
+  price?: Record<string, any>; // if you're storing pricing elsewhere too
+}
+
 export function SwatchDetailsPage() {
   const params = useParams<{ id: string }>();
   const id = params.id ? parseInt(params.id) : 0;
   const navigate = useNavigate();
   const { profile } = useSelector((state: RootState) => state.userProfile);
 
-  const [currentSwatch, setCurrentSwatch] = useState<any>(null);
+  const [currentSwatch, setCurrentSwatch] = useState<Product | null>(null);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -968,13 +993,14 @@ export function SwatchDetailsPage() {
                     const options = attr.value
                       .split(",")
                       .map((opt: string) => opt.trim());
+                    console.log(options);
                     return (
                       <div key={key}>
                         <Label className="text-xs text-muted-foreground">
                           {attr.keyname}
                         </Label>
                         <select className="w-full mt-1 border rounded p-1 text-sm">
-                          {options.map((opt, i) => (
+                          {options.map((opt: string, i: number) => (
                             <option key={i}>{opt}</option>
                           ))}
                         </select>
