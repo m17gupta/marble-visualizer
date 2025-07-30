@@ -13,10 +13,9 @@ import {
 } from "@/components/ui/tooltip";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
-import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { set } from "date-fns";
-import SegmentGroup from "./SegmentGroup";
+
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
+import EachGroupSegment from "./eachGroupSegment/EachGroupSegment";
 
 // import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -55,7 +54,7 @@ const AllSegments = () => {
       setCurrentSelectedGroupSegment(null);
     }
   }, [selectedGroupSegment]);
-
+  
   const handleAddGroupSegment = () => {
     console.log("Add Segment Clicked",currentSelectedGroupSegment);
       if(currentSelectedGroupSegment== null) {
@@ -65,6 +64,7 @@ const AllSegments = () => {
       }
     
   } 
+
 
 
   const handldeGroupSegmentClick = (group: MasterGroupModel) => {
@@ -186,7 +186,9 @@ const AllSegments = () => {
               {/* TabsContent per group */}
               {masterArray.allSegments.map((group) => (
                 <TabsContent key={group.groupName} value={group.groupName} className="space-y-6 mt-0 ">
-                  <h2>Tab content for {group.groupName}</h2>
+              
+
+                  <EachGroupSegment groupName={group.groupName} segments={group.segments} />
                 </TabsContent>
               ))}
             </Tabs>
