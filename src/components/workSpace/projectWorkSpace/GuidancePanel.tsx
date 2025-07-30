@@ -42,7 +42,7 @@ import {
 } from "@/models/genAiModel/GenAiModel";
 import Call_task_id from "./Call_task_id";
 import { toast } from "sonner";
-import WebhookEventsListener from "@/components/webBook/WebBook";
+
 import VoiceRecognition from "./VoiceRecognition";
 import { useParams } from "react-router-dom";
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
@@ -63,7 +63,6 @@ const GuidancePanel: React.FC = () => {
     randomSuggestions
   );
 
-  const [isSuggestion ,setIsSuggestion] = useState(false);
 
   const [isModel, setIsModel] = React.useState(false);
   const [showGuide, setShowGuide] = useState(false);
@@ -426,8 +425,7 @@ const GuidancePanel: React.FC = () => {
         />
       )}
 
-      {/* <WebhookEventsListener /> */}
-      <WebhookEventsListener />
+     
     </>
   );
 };
