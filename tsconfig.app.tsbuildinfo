@@ -32,8 +32,6 @@
         "./src/components/canvasutil/canvasautopan.ts",
         "./src/components/canvasutil/canvasimageutils.ts",
         "./src/components/designhub/studio_segement_content/allsegments.tsx",
-        "./src/components/designhub/studio_segement_content/allsegmentstab.tsx",
-        "./src/components/designhub/studio_segement_content/segmentgroup.tsx",
         "./src/components/getsegments/getsegments.tsx",
         "./src/components/homepage/ctasection.tsx",
         "./src/components/homepage/featuressection.tsx",
@@ -61,7 +59,6 @@
         "./src/components/sidebar/sidebarvisual.tsx",
         "./src/components/studio/studiodesigntab.tsx",
         "./src/components/studio/studiomaincanvas.tsx",
-        "./src/components/studio/studiosegmentstabs.tsx",
         "./src/components/studio/studiosidebar.tsx",
         "./src/components/studio/studiosidebarheader.tsx",
         "./src/components/studio/studiotabsnavigation.tsx",
@@ -236,8 +233,6 @@
         "./src/pages/projectpage/projectstaticcard.tsx",
         "./src/pages/projectpage/projectspage.tsx",
         "./src/pages/projectpage/analyseprojectimage/analyseimage.tsx",
-        "./src/pages/projectpage/analyseprojectimage/gethousesegments.tsx",
-        "./src/pages/projectpage/analyseprojectimage/projectanalysesegmentapicall.tsx",
         "./src/redux/hooks.ts",
         "./src/redux/store.ts",
         "./src/redux/slices/masterarrayslice.ts",
@@ -299,6 +294,7 @@
         "./src/services/materialsegment/materialsegmentapi.ts",
         "./src/services/projects/projectsservice.ts",
         "./src/services/projects/projectapi/projectapi.ts",
+        "./src/services/projects/projectapi/projectservice.example.ts",
         "./src/services/projects/projectapi/index.ts",
         "./src/services/segment/segmentapi.ts",
         "./src/services/segment/segmentservice.ts",
@@ -321,5 +317,5 @@
         "./src/utils/tests3config.ts"
     ],
     "errors": true,
-    "version": "5.8.3"
+    "version": "5.6.3"
 }
