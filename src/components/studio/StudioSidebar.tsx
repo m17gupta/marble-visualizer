@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { StudioTabsNavigation } from "./StudioTabsNavigation";
 import SegmentGroup from "../designHub/studio_segement_content/SegmentGroup";
 import StudioSegmentsTabs from "./StudioSegmentsTabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 // import { DesignSettings, Job } from './types';
 // import {
 //   Sparkles,
@@ -57,7 +58,10 @@ export function StudioSidebar({
 StudioSidebarProps) {
   return (
     <>
-    {/* <StudioSegmentsTabs/> */}
+    <StudioSegmentsTabs/>
+    
+
+
     <motion.aside
       initial={{ x: -288, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}

@@ -22,18 +22,21 @@ import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateHoverGroup } from "@/redux/slices/canvasSlice";
 
 const AllSegments = () => {
-
-  const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
+  const [detectedSegment, setDetectedSegment] = useState<
+    MaterialSegmentModel[]
+  >([]);
 
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
-  const [activeSegment, setActiveSegment] = useState<number | null>(
-    null
-  );
+  const [activeSegment, setActiveSegment] = useState<number | null>(null);
 
-  const [updatedMasterArray, setUpdatedMasterArray] = useState<MasterModel[] | null>(null);
+  const [updatedMasterArray, setUpdatedMasterArray] = useState<
+    MasterModel[] | null
+  >(null);
   const { currentProject } = useSelector((state: RootState) => state.projects);
 
-  const { segments } = useSelector((state: RootState) => state.materialSegments);
+  const { segments } = useSelector(
+    (state: RootState) => state.materialSegments
+  );
 
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { allSegments } = useSelector((state: RootState) => state.segments);
@@ -49,21 +52,28 @@ const AllSegments = () => {
 
   useEffect(() => {
     if (allSegments && allSegments.length === 0) {
-      if (segments &&
+      if (
+        segments &&
         segments.length > 0 &&
-        currentProject && currentProject.analysed_data &&
+        currentProject &&
+        currentProject.analysed_data &&
         currentProject.analysed_data.segments_detected
-
       ) {
-        const detectedSeg: MaterialSegmentModel[] = []
-        if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
-          const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
+        const detectedSeg: MaterialSegmentModel[] = [];
+        if (
+          Object.keys(currentProject.analysed_data.segments_detected).length > 0
+        ) {
+          const allDetectedSegments = Object.keys(
+            currentProject.analysed_data.segments_detected
+          );
 
           allDetectedSegments.forEach((seg) => {
             const foundSegment = segments.find((item) => {
-              const itemName = (item.name || '').toLowerCase();
-              const segLower = (seg || '').toLowerCase();
-              return itemName.startsWith(segLower) || segLower.startsWith(itemName);
+              const itemName = (item.name || "").toLowerCase();
+              const segLower = (seg || "").toLowerCase();
+              return (
+                itemName.startsWith(segLower) || segLower.startsWith(itemName)
+              );
             });
 
             if (foundSegment) {
@@ -71,25 +81,29 @@ const AllSegments = () => {
             }
           });
         }
-        if( detectedSeg && detectedSeg.length > 0) {
-        setActiveSegment(detectedSeg[0]?.id || null);
-        setDetectedSegment(detectedSeg);
-        dispatch(selectMaterialSegment(detectedSeg[0]));
-        dispatch(addSelectedMasterArray(detectedSeg[0]?.name));
+        if (detectedSeg && detectedSeg.length > 0) {
+          setActiveSegment(detectedSeg[0]?.id || null);
+          setDetectedSegment(detectedSeg);
+          dispatch(selectMaterialSegment(detectedSeg[0]));
+          dispatch(addSelectedMasterArray(detectedSeg[0]?.name));
         }
       }
-    } else if (allSegments &&
+    } else if (
+      allSegments &&
       allSegments.length > 0 &&
       segments &&
-      segments.length > 0) {
+      segments.length > 0
+    ) {
       const segData: MaterialSegmentModel[] = [];
       segments.map((seg) => {
-        const foundSegment = allSegments.filter((item) => item.segment_type === seg.name);
+        const foundSegment = allSegments.filter(
+          (item) => item.segment_type === seg.name
+        );
 
         const allGroups: string[] = [];
         const sameGrpSeg: MasterGroupModel[] = [];
         if (foundSegment) {
-          segData.push(seg)
+          segData.push(seg);
           // foundSegment.map((item) => {
           //   const groupLabels = item.group_label_system;
           //   allGroups.push(groupLabels || "");
@@ -116,24 +130,20 @@ const AllSegments = () => {
         //     short_code: seg.short_code,
         //     categories: seg.categories,
         //     icon: seg.icon,
-        
+
         //     allSegments: sameGrpSeg,
         //   } as MaterialSegmentWithGroups);
         // }
-      })
+      });
       if (segData && segData.length > 0) {
         // setUpdatedMasterArray(segData);
         setDetectedSegment(segData);
-      setActiveSegment(segData[0]?.id || null);
-      dispatch(selectMaterialSegment(segData[0]));
-      dispatch(addSelectedMasterArray(segData[0]?.name));
+        setActiveSegment(segData[0]?.id || null);
+        dispatch(selectMaterialSegment(segData[0]));
+        dispatch(addSelectedMasterArray(segData[0]?.name));
       }
-      
     }
-
   }, [segments, currentProject, allSegments]);
-
-
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MaterialSegmentModel) => {
@@ -150,9 +160,14 @@ const AllSegments = () => {
 
   const handleMouseEnter = (sgtype: string) => {
     const segNameArray: string[] = [];
-    const curenMasterArray = updatedMasterArray?.find((item) => item.name === sgtype);
-    if (curenMasterArray && curenMasterArray.allSegments &&
-      curenMasterArray.allSegments.length > 0) {
+    const curenMasterArray = updatedMasterArray?.find(
+      (item) => item.name === sgtype
+    );
+    if (
+      curenMasterArray &&
+      curenMasterArray.allSegments &&
+      curenMasterArray.allSegments.length > 0
+    ) {
       curenMasterArray.allSegments.forEach((group) => {
         const segArray = group.segments || [];
         if (segArray && segArray.length > 0) {
@@ -167,79 +182,84 @@ const AllSegments = () => {
   };
 
   const handleMouseLeave = () => {
-    dispatch(updateHoverGroup(null))
+    dispatch(updateHoverGroup(null));
   };
 
-  const handleAddSegment = () => { }
+  const handleAddSegment = () => {};
+  const [hoveredSegmentName, setHoveredSegmentName] = useState<string | null>(
+    null
+  );
+
   return (
     <TooltipProvider>
       <div className="flex flex-col space-y-2 p-2">
         {detectedSegment &&
           detectedSegment.length > 0 &&
-          detectedSegment.map((segment: MaterialSegmentModel, index: number) => {
-            const isActive = activeSegment === segment.id;
-            const isHovered = hoveredSegment === segment.id;
+          detectedSegment.map(
+            (segment: MaterialSegmentModel, index: number) => {
+              const isActive = activeSegment === segment.id;
+              const isHovered = hoveredSegment === segment.id;
 
-            return (
-              <div key={segment.id || index} className="relative">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant={isActive ? "default" : "outline"}
-                      size="icon"
-                      className={cn(
-                        "w-12 h-12 transition-all duration-200 border-2 p-0",
-                        isActive && "ring-2 ring-offset-2 ring-primary",
-                        isHovered && "scale-105 shadow-md"
-                      )}
-                      style={{
-                        borderColor: segment.color_code,
-                        backgroundColor: isActive
-                          ? `${segment.color_code}50`
-                          : isHovered
+              return (
+                <div key={segment.id || index} className="relative">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={isActive ? "default" : "outline"}
+                        size="icon"
+                        className={cn(
+                          "w-12 h-12 border-2 p-0 transition-all duration-200",
+                          isActive && "ring-2 ring-offset-2 ring-primary",
+                          isHovered && "shadow-md"
+                          // scale-105 
+                        )}
+                        style={{
+                          borderColor: segment.color_code,
+                          backgroundColor: isActive
+                            ? `${segment.color_code}50`
+                            : isHovered
                             ? `${segment.color_code}20`
                             : "transparent",
-                      }}
-                      onClick={() => handleSegmentClick(segment)}
-                      onMouseEnter={() =>
-                        handleMouseEnter(segment.name ?? "")
-                      }
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <span className="icon w-100 h-100 flex items-center justify-center">
-                        {segment.icon && segment.icon.trim() !== "" ? (
-                          <img
-                            src={segment.icon}
-                            alt={segment.name || "Segment Icon"}
-                            style={{
-                              width: "24px", // ya '100%' for full fit
-                              height: "24px",
-                              display: "block",
-                              objectFit: "contain",
-                              filter: "brightness(0) saturate(100%)",
-                            }}
-                          />
-                        ) : (
-                          // Fallback icon based on segment name or default icon
-                          <div
-                            className="w-10 h-10 rounded-sm flex items-center justify-center text-white text-sm font-bold"
-                            style={{
-                              backgroundColor: segment.color_code || "#3B82F6",
-                            }}
-                          >
-                            {segment.name?.charAt(0)?.toUpperCase() || "?"}
-                          </div>
-                        )}
-                      </span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>{segment.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            );
-          })}
+                        }}
+                        onClick={() => handleSegmentClick(segment)}
+                        onMouseEnter={() => {
+                          setHoveredSegment(segment.id); // 👈 ADD THIS
+                          handleMouseEnter(segment.name ?? ""); // 👈 KEEP THIS
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredSegment(null); // 👈 ADD THIS
+                          handleMouseLeave(); // 👈 KEEP THIS
+                        }}
+                      >
+                        <span className="w-full h-full flex items-center justify-center">
+                          {segment.icon && segment.icon.trim() !== "" ? (
+                            <img
+                              src={segment.icon}
+                              alt={segment.name || "Segment Icon"}
+                              className="w-6 h-6 object-contain brightness-0 saturate-100"
+                            />
+                          ) : (
+                            <div
+                              className="w-10 h-10 rounded-sm flex items-center justify-center text-white text-sm font-bold"
+                              style={{
+                                backgroundColor:
+                                  segment.color_code || "#3B82F6",
+                              }}
+                            >
+                              {segment.name?.charAt(0)?.toUpperCase() || "?"}
+                            </div>
+                          )}
+                        </span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{segment.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              );
+            }
+          )}
 
         {segments.length === 0 && (
           <div className="text-center py-8 text-gray-500">
@@ -249,7 +269,7 @@ const AllSegments = () => {
         )}
 
         <div className="flex items-center justify-between mb-4">
-          <TooltipProvider >
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -257,7 +277,18 @@ const AllSegments = () => {
                   className="bg-white text-black hover:bg-gray-100"
                   onClick={handleAddSegment}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-plus-icon lucide-house-plus">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-house-plus-icon lucide-house-plus"
+                  >
                     <path d="M12.662 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v2.475" />
                     <path d="M14.959 12.717A1 1 0 0 0 14 12h-4a1 1 0 0 0-1 1v8" />
                     <path d="M15 18h6" />
