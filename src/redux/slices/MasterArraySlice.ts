@@ -6,12 +6,14 @@ interface MasterArrayState {
   masterArray: MasterModel[];
   selectedMasterArray?: MasterModel | null;
   selectedGroupSegment: MasterGroupModel | null;
+  isCreatedMasterArray?: boolean;
 }
 
 const initialState: MasterArrayState = {
   masterArray: [],
   selectedMasterArray: null,
   selectedGroupSegment: null,
+  isCreatedMasterArray: false,
 };
 
 const masterArraySlice = createSlice({
@@ -20,12 +22,12 @@ const masterArraySlice = createSlice({
   reducers: {
     setMasterArray: (state, action) => {
       state.masterArray = action.payload;
+      state.isCreatedMasterArray = true;
     },
     addSelectedMasterArray: (state, action) => {
-      const segName = action.payload
-      state.selectedMasterArray = state.masterArray.find(
-        (item) => item.name === segName
-      ) || null;
+      const mastArray = action.payload
+      state.selectedMasterArray=mastArray
+     
     },
     removeFromMasterArray: (state, action) => {
       state.masterArray = state.masterArray.filter(item => item !== action.payload);
@@ -101,6 +103,7 @@ const masterArraySlice = createSlice({
       state.masterArray = [];
       state.selectedMasterArray = null;
       state.selectedGroupSegment = null;
+      state.isCreatedMasterArray = false;
     }
   },
 });

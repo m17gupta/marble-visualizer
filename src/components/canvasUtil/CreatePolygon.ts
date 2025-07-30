@@ -4,12 +4,12 @@ interface PointModel {
     x: number;
     y: number;
 }
-interface CustomGroupOptions extends fabric.Group {
-  groupName?: string;
-  subGroupName?: string;
-  name?: string;
-  isActived?: boolean;
-}
+// interface CustomGroupOptions extends fabric.Group {
+//   groupName?: string;
+//   subGroupName?: string;
+//   name?: string;
+//   isActived?: boolean;
+// }
 export const collectPoints = (
     annotation: number[],
     segName: string,
@@ -22,12 +22,15 @@ export const collectPoints = (
 
 ) => {
 
+    //  if(!canvasRef.current) return;
+    //  const scaleX= canvasRef.current.getWidth()/1280
+    //  const scaleY= canvasRef.current.getHeight()/720
     if (annotation) {
         const point: PointModel[] = [];
         const polyName = segName;
         for (let i = 0; i < annotation.length; i += 2) {
-            const x = annotation[i];
-            const y = annotation[i + 1];
+            const x = annotation[i] ;
+            const y = annotation[i + 1] ;
             point.push({ x, y });
         }
 

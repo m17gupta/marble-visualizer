@@ -18,7 +18,7 @@ export const handlePolygonVisibilityOnMouseMove = (canvas: React.RefObject<fabri
                 allGroupObjects.forEach((groupObj) => {
                     const namedGroupObj = groupObj as NamedFabricObject;
                     const polyName = namedGroupObj.name;
-                    console.log("Group object name:", polyName);
+                
                     if (polyName === targetName) {
                         namedGroupObj.set({ visible: true });
                     } 

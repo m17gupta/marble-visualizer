@@ -224,7 +224,7 @@ const PolygonOverlay = ({
     useEffect(() => {
         const canvas = fabricCanvasRef.current;
         if (!canvas || allSegArray.length === 0) return;
-
+    
         allSegArray.map(seg => {
             const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
             const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
@@ -260,7 +260,6 @@ const PolygonOverlay = ({
             if (target!==undefined) {
                 const targetName = target.name;
                 console.log("Target name:", targetName);
-                
                 if (targetName) {
                     handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
                 }
@@ -302,8 +301,8 @@ const PolygonOverlay = ({
                     >
                         <Card className="overflow-hidden">
                             <CardContent className="p-0">
-
-                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
+                                                                                                                                {/* min-h-[600px] min-w-[800px]" */}
+                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[800px] min-w-[1000px]">
                                     <canvas
                                         ref={canvasRef}
                                         className="border-0 block"

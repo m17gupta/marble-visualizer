@@ -107,7 +107,7 @@ interface ShutterVariant {
   units_count: number;
 }
 
-interface StyleSuggestions {
+export interface StyleSuggestions {
   title: string;
   prompt: string;
   target_region: string[];

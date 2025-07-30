@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CiImageOn } from "react-icons/ci";
-import { FaMicrophone } from "react-icons/fa";
+
 import AddInspiration from "./AddInspiration";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -45,6 +45,7 @@ import { toast } from "sonner";
 
 import VoiceRecognition from "./VoiceRecognition";
 import { useParams } from "react-router-dom";
+import { StyleSuggestions } from "@/models/projectModel/ProjectModel";
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 const GuidancePanel: React.FC = () => {
@@ -59,7 +60,7 @@ const GuidancePanel: React.FC = () => {
   const randomSuggestions = suggestions
     ? [...suggestions].sort(() => Math.random() - 0.5).slice(0, 3)
     : [];
-  const [suggestedPrompt, setSuggestedPrompt] = useState<any[] | null>(
+  const [suggestedPrompt, setSuggestedPrompt] = useState<StyleSuggestions[] | null>(
     randomSuggestions
   );
 

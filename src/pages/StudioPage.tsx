@@ -31,7 +31,7 @@ import {
 } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
 
-import CreateMaterArray from "@/components/studio/segment/CreateMaterArray";
+import CreateMaterArrays from "@/components/studio/segment/CreateMaterArrays";
 import dzinlylogo from "../../public/assets/image/dzinly-logo.svg";
 import { Button } from "@/components/ui/button";
 import CanvasAdddNewSegmentHome from "@/components/canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome";
@@ -220,7 +220,7 @@ export function StudioPage() {
           />
         )}
 
-        <CreateMaterArray />
+        <CreateMaterArrays />
       </div>
 
       <CanvasAdddNewSegmentHome />

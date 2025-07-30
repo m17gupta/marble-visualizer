@@ -1,30 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import axios from 'axios';
 
+interface WebhookData {
+  id: string;
+  message: string;
+  timestamp: string;
+}
+
 function WebhookUpdates() {
-  const [data, setData] = useState(null);
+   const [data, setData] = useState<WebhookData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchUpdate = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/latest-update');
+    useEffect(() => {
+    // Replace with your actual ngrok URL
+    const webhookUrl = 'https://https://nexus.dzinly.org.ngrok.io/webhook';
+
+    axios.get<WebhookData[]>(webhookUrl)
+      .then((response) => {
         setData(response.data);
-      } catch (error) {
-        console.error('Error fetching update:', error);
-      }
-    };
-
-    fetchUpdate();
-    const interval = setInterval(fetchUpdate, 5000); // Poll every 5 seconds
-
-    return () => clearInterval(interval);
+        setLoading(false);
+      })
+      .catch((err: unknown) => {
+        setError('Failed to fetch webhook data');
+        setLoading(false);
+      });
   }, []);
 
   return (
-    <div>
-      <h2>Latest Webhook Update:</h2>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
+   null
   );
 }
 

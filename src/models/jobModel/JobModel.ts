@@ -1,6 +1,25 @@
 import { SegmentModal } from "../jobSegmentsModal/JobSegmentModal";
 
 
+
+export interface MasterGroupModel {
+//  items: any;
+ groupName: string;
+ segments: SegmentModal[];
+}
+
+export interface MasterModel{
+  id:number,
+  name:string,
+  icon?: string,
+  color: string,
+  color_code: string,
+  short_code: string,
+   overAllSwatch: Swatch[];
+   categories?: string[];
+  allSegments: MasterGroupModel[]  //all walls
+}
+
 export interface ISkewModel{
   skew_x?:number;
   skew_y?:number;
@@ -114,22 +133,6 @@ export  interface GroupSegmentModel {
 // }
 
 
-export interface MasterGroupModel {
-//  items: any;
- groupName: string;
- segments: SegmentModal[];
-}
-
-export interface MasterModel{
-  id:number,
-  name:string,
-  color: string,
-  color_code: string,
-  short_code: string,
-   overAllSwatch: Swatch[];
-   categories?: string[];
-  allSegments: MasterGroupModel[]  //all walls
-}
 
 
 

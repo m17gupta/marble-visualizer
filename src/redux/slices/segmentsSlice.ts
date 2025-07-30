@@ -49,9 +49,14 @@ interface SegmentsState {
     shortName: string;
     category: string;
   };
+  isLoadingSegments: boolean;
+  isSegmentLoaded: boolean;
+  isLoadingSegmentsError: string | null;
+  allSegments: SegmentModal[];
+  addSegMessage: string;
   isAddSegmentModalOpen: boolean;
   isMasterDataAnnotationOpen: boolean;
-  
+
   // segmentDrawn: {
   //   [key: string]: fabric.Point[];
   // };
@@ -69,10 +74,7 @@ interface SegmentsState {
   manualAnnotationError: string | null;
 
   // loading segmnet
-  isLoadingSegments: boolean;
-  isLoadingSegmentsError: string | null;
- allSegments: SegmentModal[];
- addSegMessage: string;
+
 }
 
 const initialState: SegmentsState = {
@@ -87,7 +89,7 @@ const initialState: SegmentsState = {
     groupName: '',
     childName: '',
     shortName: '',
-    category:""
+    category: ""
   },
   isAddSegmentModalOpen: false,
   isMasterDataAnnotationOpen: false,
@@ -106,8 +108,9 @@ const initialState: SegmentsState = {
   // loading segmnet
   isLoadingSegments: false,
   isLoadingSegmentsError: null,
-  allSegments: [], 
+  allSegments: [],
   addSegMessage: "",
+  isSegmentLoaded: false,
 };
 
 // Create segment service instance
@@ -140,7 +143,7 @@ export const addSegment = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-       return await segmentService.createSegment(segmentData);
+      return await segmentService.createSegment(segmentData);
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -227,10 +230,10 @@ const segmentsSlice = createSlice({
       state.addSegMessage = action.payload;
     },
     updateNewSegmentDrawn: (state, action) => {
-      if(state.allSegments && state.allSegments.length > 0) {
+      if (state.allSegments && state.allSegments.length > 0) {
         const newSegment = action.payload;
         state.allSegments.push(newSegment);
-      }else{
+      } else {
         state.allSegments = [action.payload];
       }
     },
@@ -262,7 +265,7 @@ const segmentsSlice = createSlice({
     clearManualAnnotationResult: (state) => {
       state.manualAnnotationResult = null;
     },
-    resetSegmentSlice:()=>{
+    resetSegmentSlice: () => {
       return initialState;
     }
   },
@@ -289,7 +292,7 @@ const segmentsSlice = createSlice({
         state.isLoadingManualAnnotation = true;
         state.manualAnnotationError = null;
       })
-      .addCase(addSegment.fulfilled, (state, action) => {
+      .addCase(addSegment.fulfilled, (state) => {
         state.isLoadingManualAnnotation = false;
         // state.newSegment = action.payload;
         state.manualAnnotationError = null;
@@ -297,7 +300,7 @@ const segmentsSlice = createSlice({
       .addCase(addSegment.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
-      }); 
+      });
 
     builder
       // Handle getSegmentsByJobId thunk  
@@ -308,6 +311,7 @@ const segmentsSlice = createSlice({
       .addCase(getSegmentsByJobId.fulfilled, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.allSegments = action.payload;
+        state.isSegmentLoaded = true;
         state.manualAnnotationError = null;
       })
       .addCase(getSegmentsByJobId.rejected, (state, action) => {
