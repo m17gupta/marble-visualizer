@@ -19,18 +19,30 @@ export const collectPoints = (
     color: string,
     canvasRef: React.RefObject<fabric.Canvas>,
     isFillPolygon: boolean,
+    imageHeight: number,
+    imageWidth: number
 
 ) => {
 
-    //  if(!canvasRef.current) return;
-    //  const scaleX= canvasRef.current.getWidth()/1280
-    //  const scaleY= canvasRef.current.getHeight()/720
+      if(!canvasRef.current) return;
+    //  const canvasWidth = canvasRef.current.getWidth()
+    //   const canvasHeight = canvasRef.current.getHeight()
+    //   let scaleX = 1, scaleY = 1;
+    //     if (imageWidth && imageHeight && canvasWidth && canvasHeight) {
+    //         scaleX = canvasWidth / imageWidth;
+    //         scaleY = canvasHeight / imageHeight;
+    //     }
+        // console.log("ScaleX:", scaleX, "ScaleY:", scaleY);
+        // console.log("Canvas Width:", canvasWidth, "Canvas Height:", canvasHeight);
+        // console.log("Image Width:", imageWidth, "Image Height:", imageHeight);
     if (annotation) {
         const point: PointModel[] = [];
         const polyName = segName;
         for (let i = 0; i < annotation.length; i += 2) {
             const x = annotation[i] ;
             const y = annotation[i + 1] ;
+            //   x = x;
+            // y = y;
             point.push({ x, y });
         }
 

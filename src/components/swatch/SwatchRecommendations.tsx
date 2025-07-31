@@ -16,10 +16,10 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
   const { selectedMaterialSegment } = useSelector((state: RootState) => state.materialSegments);
   const [recommendedSwatches, setRecommendedSwatches] = useState<MaterialModel[]>([]);
 
-
+ const {selectedMasterArray} = useSelector((state: RootState) => state.masterArray);
   // update the selected Swatch recommentation
   useEffect(() => {
-    if (selectedMaterialSegment &&
+    if (selectedMasterArray &&
       wallMaterials && wallMaterials.length > 0 &&
       doorMaterials && doorMaterials.length > 0 &&
       roofMaterials && roofMaterials.length > 0 &&
@@ -31,7 +31,7 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
         // Here you would typically call an API to get the recommended swatches
         // For now, we will just filter the materials based on the selected segment type
         let filteredMaterials: MaterialModel[] = [];
-        const title = selectedMaterialSegment.name
+        const title = selectedMasterArray.name
         switch (title) {
           case 'Wall':
             filteredMaterials = wallMaterials;
@@ -57,7 +57,7 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
 
       fetchRecommendedSwatches();
     }
-  }, [selectedMaterialSegment, wallMaterials, doorMaterials, roofMaterials, windowMaterials, trimMaterials, materials]);
+  }, [selectedMasterArray, wallMaterials, doorMaterials, roofMaterials, windowMaterials, trimMaterials, materials]);
 
  
 

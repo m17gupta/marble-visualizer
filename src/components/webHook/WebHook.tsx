@@ -1,35 +1,41 @@
-import  { useEffect, useState } from 'react';
-import axios from 'axios';
+import { RootState } from "@/redux/store";
+import  { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-interface WebhookData {
-  id: string;
-  message: string;
-  timestamp: string;
-}
+const WebhookListener = () => {
+  const {task_id} = useSelector((state: RootState) => state.genAi);
+  const [webhookData, setWebhookData] = useState<any>(null);
 
-function WebhookUpdates() {
-   const [data, setData] = useState<WebhookData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+      if(!task_id && task_id!=null) return;
+      
+      const ws =  getWebhookData();
+  }, [task_id]);
 
-    useEffect(() => {
-    // Replace with your actual ngrok URL
-    const webhookUrl = 'https://https://nexus.dzinly.org.ngrok.io/webhook';
 
-    axios.get<WebhookData[]>(webhookUrl)
-      .then((response) => {
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((err: unknown) => {
-        setError('Failed to fetch webhook data');
-        setLoading(false);
-      });
-  }, []);
+  const getWebhookData = () => {
+const ws = new WebSocket("wss://nexus.dzinly.org/ws");
 
+
+    ws.onopen = () => {
+      console.log("✅ WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📦 Webhook received in React:", data);
+      setWebhookData(data);
+    };
+
+    ws.onclose = () => {
+      console.log("❌ WebSocket disconnected");
+    };
+
+    return () => ws.close();
+  }
   return (
-   null
+    null
   );
-}
+};
 
-export default WebhookUpdates;
+export default WebhookListener;

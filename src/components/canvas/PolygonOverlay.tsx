@@ -48,7 +48,8 @@ const PolygonOverlay = ({
     const backgroundImageRef = useRef<fabric.Image | null>(null)
     const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
     const { segments } = useSelector((state: RootState) => state.materialSegments);
-
+  const [imageWidth, setImageWidth] = useState<number>(0);
+  const [imageHeight, setImageHeight] = useState<number>(0);
 
     // upate all segmnet Array
     useEffect(() => {
@@ -181,6 +182,8 @@ const PolygonOverlay = ({
             for (const corsMode of corsOptions) {
                 try {
                     const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+                    setImageWidth(imgElement.width);
+                    setImageHeight(imgElement.height);
                     AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
                     return;
                 } catch (error) {
@@ -223,8 +226,8 @@ const PolygonOverlay = ({
 
     useEffect(() => {
         const canvas = fabricCanvasRef.current;
-        if (!canvas || allSegArray.length === 0) return;
-    
+        if (!canvas || allSegArray.length === 0 || imageHeight === 0 || imageWidth === 0) return;
+
         allSegArray.map(seg => {
             const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
             const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
@@ -243,10 +246,12 @@ const PolygonOverlay = ({
                 group_label_system,
                 segColor,
                 fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-                isFill
+                isFill,
+                 imageHeight,
+                  imageWidth
             );
         });
-    }, [allSegArray, segments, fabricCanvasRef])
+    }, [allSegArray, segments, fabricCanvasRef, imageHeight, imageWidth])
 
 
     const handleMouseMove = useCallback(

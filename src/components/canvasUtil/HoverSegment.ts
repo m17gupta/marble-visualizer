@@ -5,7 +5,7 @@ import * as fabric from "fabric";
 type NamedFabricObject = fabric.Object & {   name?: string  };
 
 export const handlePolygonVisibilityOnMouseMove = (canvas: React.RefObject<fabric.Canvas>, name:string) => {
- 
+      HideAllSegments(canvas);
     if (name) {
         if(!canvas.current) return; // Ensure canvas is defined
     

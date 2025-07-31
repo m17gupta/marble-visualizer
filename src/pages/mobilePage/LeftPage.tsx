@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { StudioPage } from "../StudioPage";
+// import { StudioPage } from "../StudioPage";
 import AllSegments from "@/components/studio/segment/AllSegments";
 import { useDispatch } from "react-redux";
 import { StudioSidebar } from "@/components/studio/StudioSidebar";

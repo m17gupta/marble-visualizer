@@ -3,18 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
-import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
-import { setCanvasType } from "@/redux/slices/canvasSlice";
-import InspirationContent from "./tabContent/InspirationContent";
-import DesignHubContent from "./tabContent/DesignHubContent";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import MeasurementContent from "./tabContent/MeasurementContent";
-import LayerContent from "./tabContent/LayerContent";
+import { updateActiveTab } from '@/redux/slices/visualizerSlice/workspaceSlice';
+
+import InspirationContent from './tabContent/InspirationContent';
+import DesignHubContent from './tabContent/DesignHubContent';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import MeasurementContent from './tabContent/MeasurementContent';
+import LayerContent from './tabContent/LayerContent';
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeTab: activeTabFromStore } = useSelector(

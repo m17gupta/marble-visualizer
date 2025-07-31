@@ -5,12 +5,13 @@ import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
 import { StudioDesignTab } from "@/components/studio/StudioDesignTab";
 // import { DesignSettings, Job } from './types';
-import { Palette, Shapes, Target, History, Clock, Square } from "lucide-react";
+import { Palette, Shapes, History, Clock, Square } from "lucide-react";
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
-import AllSegments from "../designHub/studio_segement_content/AllSegments";
+import AllSegments from "./segment/AllSegments";
+
 
 interface StudioTabsNavigationProps {
   activeTab: string;
