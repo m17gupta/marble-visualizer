@@ -216,3 +216,9 @@ button:focus-visible {
 
 }
 
+.swiper {
+  width: 100%;
+}
+.swiper-slide {
+  width: auto !important;
+}
