@@ -43,91 +43,6 @@ const AllSegments = () => {
     }
   }, [masterArray]);
 
-  // useEffect(() => {
-  //   if (allSegments && allSegments.length === 0) {
-  //     if (segments &&
-  //       segments.length > 0 &&
-  //       currentProject && currentProject.analysed_data &&
-  //       currentProject.analysed_data.segments_detected
-
-  //     ) {
-  //       const detectedSeg: MaterialSegmentModel[] = []
-  //       if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
-  //         const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
-
-  //         allDetectedSegments.forEach((seg) => {
-  //           const foundSegment = segments.find((item) => {
-  //             const itemName = (item.name || '').toLowerCase();
-  //             const segLower = (seg || '').toLowerCase();
-  //             return itemName.startsWith(segLower) || segLower.startsWith(itemName);
-  //           });
-
-  //           if (foundSegment) {
-  //             detectedSeg.push(foundSegment);
-  //           }
-  //         });
-  //       }
-  //       if( detectedSeg && detectedSeg.length > 0) {
-  //       setActiveSegment(detectedSeg[0]?.id || null);
-  //       setDetectedSegment(detectedSeg);
-  //       dispatch(selectMaterialSegment(detectedSeg[0]));
-  //       dispatch(addSelectedMasterArray(detectedSeg[0]?.name));
-  //       }
-  //     }
-  //   } else if (allSegments &&
-  //     allSegments.length > 0 &&
-  //     segments &&
-  //     segments.length > 0) {
-  //     const segData: MaterialSegmentModel[] = [];
-  //     segments.map((seg) => {
-  //       const foundSegment = allSegments.filter((item) => item.segment_type === seg.name);
-
-  //       const allGroups: string[] = [];
-  //       const sameGrpSeg: MasterGroupModel[] = [];
-  //       if (foundSegment) {
-  //         segData.push(seg)
-  //         // foundSegment.map((item) => {
-  //         //   const groupLabels = item.group_label_system;
-  //         //   allGroups.push(groupLabels || "");
-  //         // })
-  //       }
-  //       // Log only unique strings
-  //       // const uniqueGroups = Array.from(new Set(allGroups));
-  //       // if (uniqueGroups.length > 0) {
-  //       //   uniqueGroups.map(grp => {
-  //       //     const sameGrp = foundSegment.filter((item) => item.group_label_system === grp);
-  //       //     const data = {
-  //       //       groupName: grp ?? "",
-  //       //       segments: sameGrp,
-  //       //     }
-  //       //     sameGrpSeg.push(data);
-  //       //   })
-  //       // }
-  //       // if (sameGrpSeg && sameGrpSeg.length > 0) {
-  //       //   segData.push({
-  //       //     id: seg.id,
-  //       //     name: seg.name,
-  //       //     color: seg.color,
-  //       //     color_code: seg.color_code,
-  //       //     short_code: seg.short_code,
-  //       //     categories: seg.categories,
-  //       //     icon: seg.icon,
-
-  //       //     allSegments: sameGrpSeg,
-  //       //   } as MaterialSegmentWithGroups);
-  //       // }
-  //     })
-  //     if (segData && segData.length > 0) {
-  //       // setUpdatedMasterArray(segData);
-  //       setDetectedSegment(segData);
-  //     setActiveSegment(segData[0]?.id || null);
-  //     dispatch(selectMaterialSegment(segData[0]));
-  //     dispatch(addSelectedMasterArray(segData[0]?.name));
-  //     }
-
-  //   }
-
-  // }, [segments, currentProject, allSegments]);
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
@@ -144,13 +59,10 @@ const AllSegments = () => {
 
   const handleMouseEnter = (sgtype: MasterModel) => {
     const segNameArray: string[] = [];
-    const curenMasterArray = sgtype;
+    const curenMasterArray = sgtype
 
-    if (
-      curenMasterArray &&
-      curenMasterArray.allSegments &&
-      curenMasterArray.allSegments.length > 0
-    ) {
+    if (curenMasterArray && curenMasterArray.allSegments &&
+      curenMasterArray.allSegments.length > 0) {
       curenMasterArray.allSegments.forEach((group) => {
         const segArray = group.segments || [];
         if (segArray && segArray.length > 0) {
@@ -168,7 +80,7 @@ const AllSegments = () => {
     dispatch(updateHoverGroup(null));
   };
 
-  const handleAddSegment = () => {};
+  const handleAddSegment = () => { };
   const [hoveredSegmentName, setHoveredSegmentName] = useState<string | null>(
     null
   );
@@ -193,19 +105,25 @@ const AllSegments = () => {
                         "w-12 h-12 border-2 p-0 transition-all duration-200",
                         isActive && "ring-2 ring-offset-2 ring-primary",
                         isHovered && "shadow-md"
-                        // scale-105
+                        // scale-105 
                       )}
                       style={{
                         borderColor: segment.color_code,
                         backgroundColor: isActive
                           ? `${segment.color_code}50`
                           : isHovered
-                          ? `${segment.color_code}20`
-                          : "transparent",
+                            ? `${segment.color_code}20`
+                            : "transparent",
                       }}
                       onClick={() => handleSegmentClick(segment)}
-                      onMouseEnter={() => handleMouseEnter(segment)}
-                      onMouseLeave={handleMouseLeave}
+                      onMouseEnter={() => {
+                        setHoveredSegment(segment.id);
+                        handleMouseEnter(segment);
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredSegment(null);
+                        handleMouseLeave();
+                      }}
                     >
                       <span className="icon w-100 h-100 flex items-center justify-center">
                         {segment.icon && segment.icon.trim() !== "" ? (

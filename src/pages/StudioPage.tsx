@@ -180,6 +180,8 @@ export function StudioPage() {
             </Button>
             {/* </Link> */}
           </div>
+
+          
           <StudioMainTabs />
 
 

@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import {
   fetchGenAiChat,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
+import WebhookListener from "../webHook/WebHook";
 
 const WorkSpaceHome = () => {
   const { currentTabContent } = useSelector((state: RootState) => state.studio);
@@ -50,6 +51,8 @@ const WorkSpaceHome = () => {
       <div className="md:hidden block">
         <StudioPageMobile />
       </div>
+
+      <WebhookListener/>
     </>
   );
 };

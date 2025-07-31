@@ -18,7 +18,7 @@ interface GenAiState {
   currentRequestId: string | null;
 
   isSubmitGenAiFailed?: boolean;
-  task_id?: string;
+  task_id?: string |null;
   isFetchingGenAiImages: boolean;
 }
 
@@ -42,7 +42,7 @@ const initialState: GenAiState = {
   error: null,
   currentRequestId: null,
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
-  task_id: "", // Optional field for storing task ID
+  task_id: null, // Optional field for storing task ID
   isFetchingGenAiImages: false,
 };
 
