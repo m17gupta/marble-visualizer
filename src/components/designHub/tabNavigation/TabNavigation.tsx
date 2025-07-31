@@ -27,7 +27,7 @@ const TabNavigation = () => {
     }, [tabControlActiveTab]);
     return (
         <Tabs
-            defaultValue="segment"
+            defaultValue="recommendations-swatches"
             value={designhubactivetab}
             onValueChange={handleChangeTab}
             className="flex flex-col w-full"

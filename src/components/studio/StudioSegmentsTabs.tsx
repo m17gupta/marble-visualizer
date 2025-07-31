@@ -5,7 +5,7 @@ import "swiper/css";
 import { Button } from "@/components/ui/button";
 import { MasterGroupModel } from "@/models/jobModel/JobModel";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
-import { setActiveTab } from "@/redux/slices/TabControlSlice";
+// import { setActiveTab } from "@/redux/slices/TabControlSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
