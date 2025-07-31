@@ -20,6 +20,7 @@ import MainLandingPage from "@/pages/MainLandingPage";
 import WorkspaceProjectPage from "@/pages/WorkspaceProjectPage";
 import Homepage from "@/pages/Homepage";
 import ProjectPdf from "@/pages/ProjectPdf";
+import SwatchAddPage from "@/components/swatchBook/SwatchAddPage";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -78,6 +79,7 @@ export function AppRouter() {
         <Route path="studio/:id" element={<StudioPage />} />
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
+        <Route path="addSwatch" element={<SwatchAddPage />} />
         <Route path="swatchbook/:id" element={<SwatchDetailsPage />} />
       </Route>
 

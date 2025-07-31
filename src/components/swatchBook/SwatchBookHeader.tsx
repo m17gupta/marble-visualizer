@@ -38,17 +38,23 @@ export function SwatchBookHeader({ open, onOpenChange, edit }: any) {
 
       <div className="flex items-center space-x-2">
         <AttributeSetAddModal />
-        <Button variant="outline" size="sm" onClick={onOpenChange}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            navigate("/app/addSwatch");
+          }}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add Product
         </Button>
 
-        <SwatchBookAddModal
+        {/* <SwatchBookAddModal
           open={open}
           categories={categories !== null ? categories : []}
           onOpenChange={onOpenChange}
           edit={edit}
-        />
+        /> */}
         {canImport && (
           <Button
             variant="outline"

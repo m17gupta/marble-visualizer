@@ -51,7 +51,7 @@ const StudioTabs = () => {
       });
   };
 
-   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
 

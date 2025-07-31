@@ -18,13 +18,14 @@ import { updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
 
 const AllSegments = () => {
-
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
 
   const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
   const [activeSegment, setActiveSegment] = useState<number | null>(null);
 
-  const [updatedMasterArray, setUpdatedMasterArray] = useState<MasterModel[] | null>(null);
+  const [updatedMasterArray, setUpdatedMasterArray] = useState<
+    MasterModel[] | null
+  >(null);
 
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
@@ -35,7 +36,7 @@ const AllSegments = () => {
   // update master Array
   useEffect(() => {
     if (masterArray && masterArray.length > 0) {
-        dispatch(addSelectedMasterArray(masterArray[0]));
+      dispatch(addSelectedMasterArray(masterArray[0]));
       setUpdatedMasterArray(masterArray);
     } else {
       setUpdatedMasterArray(null);
@@ -111,7 +112,7 @@ const AllSegments = () => {
   //       //     short_code: seg.short_code,
   //       //     categories: seg.categories,
   //       //     icon: seg.icon,
-        
+
   //       //     allSegments: sameGrpSeg,
   //       //   } as MaterialSegmentWithGroups);
   //       // }
@@ -123,7 +124,7 @@ const AllSegments = () => {
   //     dispatch(selectMaterialSegment(segData[0]));
   //     dispatch(addSelectedMasterArray(segData[0]?.name));
   //     }
-      
+
   //   }
 
   // }, [segments, currentProject, allSegments]);
@@ -143,10 +144,13 @@ const AllSegments = () => {
 
   const handleMouseEnter = (sgtype: MasterModel) => {
     const segNameArray: string[] = [];
-    const curenMasterArray = sgtype
-    
-    if (curenMasterArray && curenMasterArray.allSegments &&
-      curenMasterArray.allSegments.length > 0) {
+    const curenMasterArray = sgtype;
+
+    if (
+      curenMasterArray &&
+      curenMasterArray.allSegments &&
+      curenMasterArray.allSegments.length > 0
+    ) {
       curenMasterArray.allSegments.forEach((group) => {
         const segArray = group.segments || [];
         if (segArray && segArray.length > 0) {
@@ -171,38 +175,36 @@ const AllSegments = () => {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col space-y-2 p-2">
+      <div className="w-full flex flex-col p-1">
         {updatedMasterArray &&
           updatedMasterArray.length > 0 &&
           updatedMasterArray.map((segment: MasterModel, index: number) => {
             const isActive = activeSegment === segment.id;
             const isHovered = hoveredSegment === segment.id;
 
-              return (
-                <div key={segment.id || index} className="relative">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={isActive ? "default" : "outline"}
-                        size="icon"
-                        className={cn(
-                          "w-12 h-12 border-2 p-0 transition-all duration-200",
-                          isActive && "ring-2 ring-offset-2 ring-primary",
-                          isHovered && "shadow-md"
-                          // scale-105 
-                        )}
-                        style={{
-                          borderColor: segment.color_code,
-                          backgroundColor: isActive
-                            ? `${segment.color_code}50`
-                            : isHovered
-                            ? `${segment.color_code}20`
-                            : "transparent",
+            return (
+              <div key={segment.id || index} className="relative">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={isActive ? "default" : "outline"}
+                      size="icon"
+                      className={cn(
+                        "w-12 h-12 border-2 p-0 transition-all duration-200",
+                        isActive && "ring-2 ring-offset-2 ring-primary",
+                        isHovered && "shadow-md"
+                        // scale-105
+                      )}
+                      style={{
+                        borderColor: segment.color_code,
+                        backgroundColor: isActive
+                          ? `${segment.color_code}50`
+                          : isHovered
+                          ? `${segment.color_code}20`
+                          : "transparent",
                       }}
                       onClick={() => handleSegmentClick(segment)}
-                      onMouseEnter={() =>
-                        handleMouseEnter(segment)
-                      }
+                      onMouseEnter={() => handleMouseEnter(segment)}
                       onMouseLeave={handleMouseLeave}
                     >
                       <span className="icon w-100 h-100 flex items-center justify-center">

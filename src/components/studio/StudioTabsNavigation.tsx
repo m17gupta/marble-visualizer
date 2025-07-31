@@ -44,36 +44,40 @@ export function StudioTabsNavigation({
 // onToneChange,
 // onIntensityChange
 StudioTabsNavigationProps) {
-  const [designhubactivetab, setDesignHubActiveTab] = useState("studio-segment");
+  const [designhubactivetab, setDesignHubActiveTab] =
+    useState("studio-segment");
 
-  const {activeTab: tabControlActiveTab} = useSelector((state: RootState) => state.tabControl);
+  const { activeTab: tabControlActiveTab } = useSelector(
+    (state: RootState) => state.tabControl
+  );
   const handleChangeTab = (value: string) => {
     console.log("Tab changed to:", value);
     setDesignHubActiveTab(value);
   };
 
-
   // update te active tab
 
   useEffect(() => {
-    if(tabControlActiveTab) {
-    handleChangeTab(tabControlActiveTab);
-  }
+    if (tabControlActiveTab) {
+      handleChangeTab(tabControlActiveTab);
+    }
   }, [tabControlActiveTab]);
   //  const { list: jobs } = useSelector((state: RootState) => state.jobs);
   // console.log("SegmentHome jobs", jobs);
 
   return (
     <>
-    <Tabs
-      defaultValue="segment"
-      value={designhubactivetab}
-      onValueChange={handleChangeTab}
-      className=" flex flex-col"
-    >
-      <div className="">
-        <TabsList className="grid w-full grid-cols-6 h-11 ">
-          <TabsTrigger value="studio-segment" className="text-xs p-1 border-gray-300">
+      <Tabs
+        defaultValue="segment"
+        value={designhubactivetab}
+        onValueChange={handleChangeTab}
+        className="flex flex-col w-full"
+      >
+        <TabsList className="grid grid-cols-5 gap-1 w-full h-11 ">
+          <TabsTrigger
+            value="studio-segment"
+            className="text-xs p-1 border-gray-300"
+          >
             <Square className="h-4 w-4" />
             {/* <span className="sr-only">Segment</span> */}
           </TabsTrigger>
@@ -93,39 +97,41 @@ StudioTabsNavigationProps) {
             <Clock className="h-4 w-4" />
           </TabsTrigger>
         </TabsList>
-      </div>
 
-      {/* Scrollable Tab Content */}
-      <ScrollArea className="flex-1 px-4">
-        <div className="py-4 space-y-6">
-          <TabsContent value="studio-segment" className="space-y-6 mt-0">
-            <AllSegments />
-          </TabsContent>
+        {/* Scrollable Tab Content */}
+        <ScrollArea className="px-4">
+          <div className="py-4 space-y-6">
+            <TabsContent value="studio-segment" className="space-y-6 mt-0">
+              <AllSegments />
+            </TabsContent>
 
-          <TabsContent value="design" className="space-y-6 mt-0">
-            <StudioDesignTab />
-          </TabsContent>
+            <TabsContent value="design" className="space-y-6 mt-0">
+              <StudioDesignTab />
+            </TabsContent>
 
-          <TabsContent value="segments" className="space-y-4 mt-0 ">
-            {projectId && <SegmentsList projectId={projectId} />}
-          </TabsContent>
+            <TabsContent
+              value="segments"
+              className="space-y-4 mt-0 max-w-full overflow-hidden"
+            >
+              {projectId && <SegmentsList projectId={projectId} />}
+            </TabsContent>
 
-          <TabsContent value="swatches" className="mt-0">
-            <SwatchRecommendations />
-          </TabsContent>
+            <TabsContent value="swatches" className="mt-0">
+              <SwatchRecommendations />
+            </TabsContent>
 
-          <TabsContent value="history" className="mt-0">
-            {/* {projectId && <VersionHistory projectId={projectId} />} */}
-          </TabsContent>
+            <TabsContent value="history" className="mt-0">
+              {/* {projectId && <VersionHistory projectId={projectId} />} */}
+            </TabsContent>
 
-          <TabsContent value="activity" className="mt-0">
-            {projectId && <ActivityTimeline projectId={projectId} />}
-          </TabsContent>
-        </div>
-      </ScrollArea>
-    </Tabs>
+            <TabsContent value="activity" className="mt-0">
+              {projectId && <ActivityTimeline projectId={projectId} />}
+            </TabsContent>
+          </div>
+        </ScrollArea>
+      </Tabs>
 
-    <SwatchRecommendations />
+      <SwatchRecommendations />
     </>
   );
 }

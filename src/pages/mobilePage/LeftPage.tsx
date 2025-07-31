@@ -15,23 +15,21 @@ import { logActivity } from "@/redux/slices/activityLogsSlice";
 import InspirationSidebar from "@/components/workSpace/projectWorkSpace/InspirationSidebar";
 // Dummy components and handlers for demonstration
 
-
-
 const LeftPage = () => {
-      const { currentImageUrl } = useSelector((state: RootState) => state.studio);
-      const { id: projectId } = useParams<{ id: string }>();
+  const { currentImageUrl } = useSelector((state: RootState) => state.studio);
+  const { id: projectId } = useParams<{ id: string }>();
   const { currentUserRole, currentProject } = useSelector(
     (state: RootState) => state.projects
   );
   const canEdit = projectId ? canEditProject(projectId) : false;
-    const canAdmin = projectId ? canAdminProject(projectId) : false;
+  const canAdmin = projectId ? canAdminProject(projectId) : false;
   const [activeTabFromStore, setActiveTabFromStore] =
     React.useState<string>("inspiration");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   // Dummy handlers
   const handleInspirationClick = () => setActiveTabFromStore("inspiration");
   const handleDesignHubClick = () => setActiveTabFromStore("design-hub");
-  const jobProgress = 0; 
+  const jobProgress = 0;
   const handleChangeTab = (value: string) => {
     dispatch(updateActiveTab(value));
     console.log("Tab changed to:", value);
@@ -39,15 +37,14 @@ const LeftPage = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  const handleStyleChange = (value: string) => {
+    if (!canEdit) {
+      toast.error("You do not have permission to change design settings");
+      return;
+    }
+  };
 
-    const handleStyleChange = (value: string) => {
-      if (!canEdit) {
-        toast.error("You do not have permission to change design settings");
-        return;
-      }
-    };
-
-      const handlePreserveToggle = (id: string) => {
+  const handlePreserveToggle = (id: string) => {
     if (canEdit) {
       // dispatch(togglePreserveObject(id));
     }
@@ -65,7 +62,7 @@ const LeftPage = () => {
     }
   };
 
-    const handleGenerate = async () => {
+  const handleGenerate = async () => {
     if (!canEdit) {
       toast.error("You do not have permission to generate designs");
       return;
@@ -82,13 +79,12 @@ const LeftPage = () => {
     }
   };
 
-  
   const {
     currentJob,
     error: jobError,
     isCreating: isJobRunning,
   } = useSelector((state: RootState) => state.jobs);
-          const handleCancelJob = () => {
+  const handleCancelJob = () => {
     if (currentJob) {
       dispatch(clearCurrentJob());
     }
@@ -106,13 +102,12 @@ const LeftPage = () => {
     }
   };
 
-    const handleLevelChange = (checked: boolean) => {
-      if (!canEdit) {
-        toast.error("You do not have permission to change design settings");
-        return;
-      }
-    };
-  
+  const handleLevelChange = (checked: boolean) => {
+    if (!canEdit) {
+      toast.error("You do not have permission to change design settings");
+      return;
+    }
+  };
 
   return (
     <div>
@@ -131,14 +126,11 @@ const LeftPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent
-          value="design-hub"
-          className="flex-grow overflow-auto flex"
-        >
+        <TabsContent value="design-hub" className=" overflow-auto flex">
           <div className="flex border-r">
             <AllSegments />
           </div>
-          <div className="flex-1">
+          <div className="">
             <StudioSidebar
               // currentUserRole={currentUserRole}
               // canEdit={canEdit}
@@ -149,7 +141,7 @@ const LeftPage = () => {
               projectId={projectId}
               // isJobRunning={isJobRunning}
               // jobError={jobError}
-        
+
               // jobProgress={jobProgress}
               // onStyleChange={handleStyleChange}
               // onLevelChange={handleLevelChange}

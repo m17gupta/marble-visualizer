@@ -458,13 +458,13 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   const renderSegmentsList = (segments: Segment[]) => {
     if (segments.length === 0) {
       return (
-        <div className="text-center py-8 text-muted-foreground space-y-2">
+        <div className=" text-center py-8 text-muted-foreground space-y-2">
           <Shapes className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">No segments in this category</p>
 
           {searchQuery ? (
             // Show search-specific message when filtering
-            <div className="text-xs">
+            <div className="text-xs ">
               <p>No results match your search query.</p>
               <Button
                 variant="ghost"
@@ -477,7 +477,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
             </div>
           ) : activeTab !== "all" ? (
             // Show category-specific message
-            <div className="text-xs">
+            <div className="text-xs ">
               <p>Use the canvas tools to draw {activeTab} segments</p>
               <Button
                 variant="ghost"
@@ -538,7 +538,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   };
 
   return (
-    <div className={cn("space-y-4 w-full", className)}>
+    <div className={cn("space-y-4 w-full ", className)}>
       {/* Toolbar */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -591,7 +591,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
         </div>
 
         {/* Search & Sort controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 ">
           <div className="relative flex-1">
             <Input
               placeholder="Search segments..."
