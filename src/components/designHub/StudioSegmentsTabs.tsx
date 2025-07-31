@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Button } from "@/components/ui/button";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
-
+ 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
@@ -13,39 +13,40 @@ import EachSegmentTabs from "./EachSegmentTabs";
 import { Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { TooltipContent } from "../ui/tooltip";
 import TabNavigation from "./tabNavigation/TabNavigation";
-
+import TestSlider from "./TestSlider";
+ 
 const StudioTabs = () => {
-
+ 
   const dispatch = useDispatch<AppDispatch>();
-
+ const SegTypeRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
   const [activeTab, setActiveTab] = useState<string>("");
   const [innerTabMap, setInnerTabMap] = useState<Record<string, string>>({});
   const [masterArray, setmasterArray] = useState<MasterModel | null>(null);
-
+  const [innerTabvalue, setInnerTabValue] = useState<string>("");
   const { selectedMasterArray, selectedGroupSegment } = useSelector(
     (state: RootState) => state.masterArray
   );
-
+ 
   const [currentSelectedGroupSegment, setCurrentSelectedGroupSegment] =
     useState<MasterGroupModel | null>(null);
-
-
+ 
+ 
   // update the selected MasterArray
   useEffect(() => {
     if (selectedMasterArray) {
       setmasterArray(selectedMasterArray);
       setmasterArray(selectedMasterArray);
       if (selectedMasterArray && selectedMasterArray.allSegments && selectedMasterArray.allSegments.length > 0) {
-
+ 
         setActiveTab(selectedMasterArray.allSegments[0].groupName);
-
+        setInnerTabValue(selectedMasterArray.allSegments[0].segments[0]?.short_title ?? "");
         setCurrentSelectedGroupSegment(selectedMasterArray.allSegments[0]);
       }
     } else {
       setmasterArray(null);
     }
   }, [selectedMasterArray]);
-
+ 
   useEffect(() => {
     if (
       selectedGroupSegment &&
@@ -57,7 +58,7 @@ const StudioTabs = () => {
       setCurrentSelectedGroupSegment(null);
     }
   }, [selectedGroupSegment]);
-
+ 
   const handleAddGroupSegment = () => {
     if (currentSelectedGroupSegment == null) {
       alert("Please select a group segment");
@@ -65,11 +66,31 @@ const StudioTabs = () => {
       dispatch(setCanvasType("draw"));
     }
   };
-
+ 
+ 
+  // update the slider
+    useEffect(() => {
+      // const defaultInnerTab = wallToDefaultTab[activeWall];
+      // const el = tabRefs.current[defaultInnerTab];
+      // if (el)
+      //   el.scrollIntoView({
+      //     behavior: "smooth",
+      //     inline: "center",
+      //     block: "nearest",
+      //   });
+ 
+      const wallEl = SegTypeRefs.current[activeTab];
+      if (wallEl)
+        wallEl.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+    }, [activeTab]);
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
     setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
-
+ 
     // Set default inner tab for this wall
     if (group.segments && group.segments.length > 0) {
       setInnerTabMap((prev) => ({
@@ -78,20 +99,21 @@ const StudioTabs = () => {
       }));
     }
   };
-
+ 
   const handleInnerTabClick = (wall: string, shortTitle: string) => {
+    setInnerTabValue(shortTitle);
     setInnerTabMap((prev) => ({
       ...prev,
       [wall]: shortTitle,
     }));
   };
-
+ 
   const handleAddSegment = () => {
     dispatch(setCanvasType("draw"));
   }
-
+ 
   const handleGroupHover = (group: MasterGroupModel) => {
-
+ 
     const allSeg = group?.segments || [];
     const allSegName: string[] = []
     if (allSeg && allSeg.length > 0) {
@@ -102,22 +124,22 @@ const StudioTabs = () => {
     dispatch(updateHoverGroup(allSegName));
     // You can add any additional logic here if needed
   };
-
+ 
   const handleLeaveGroupHover = () => {
     dispatch(updateHoverGroup(null));
   };
   return (
-
+ 
     <>
-
-
+      {/* <TestSlider /> */}
+ 
       {
         masterArray &&
           masterArray.allSegments &&
           masterArray.allSegments.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500">No segments available. Please add a segment.</p>
-
+ 
             <div className="flex items-center justify-between mb-4">
               <TooltipProvider >
                 <Tooltip>
@@ -144,17 +166,25 @@ const StudioTabs = () => {
           </div>
         ) : (
           <Tabs
+          defaultValue={masterArray?.allSegments[0]?.groupName || ""}
             value={activeTab}
             onValueChange={setActiveTab}
-            className="w-full">
-          
-
-                 <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-2 w-42">
-                   <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar px-2 py-1 bg-white">
-                <Swiper spaceBetween={8} slidesPerView="auto" className="max-w-[100%] flex-1 ml-0 gap-0">
+             className="w-80"
+            >
+ 
+ 
+            <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-2 w-42">
+              <TabsList className=" w-48 flex-1 overflow-x-visible whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent ">
+ 
+                <Swiper
+                  spaceBetween={8}
+                  slidesPerView="auto"
+                  className="max-w-[100%] flex-1 ml-0 gap-0"
+                >
                   {masterArray?.allSegments.map((tab) => (
                     <SwiperSlide key={tab.groupName} className="!w-auto">
                       <TabsTrigger
+                        ref={(el) => (SegTypeRefs.current[tab.groupName] = el)}
                         onClick={() => handleGroupSegmentClick(tab)}
                         onMouseEnter={() => handleGroupHover(tab)}
                         onMouseLeave={handleLeaveGroupHover}
@@ -166,8 +196,9 @@ const StudioTabs = () => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
+ 
               </TabsList>
-
+ 
               <Button
                 variant="ghost"
                 className="ml-2 p-2 bg-white hover:bg-gray-200 rounded-md shadow-sm"
@@ -190,7 +221,7 @@ const StudioTabs = () => {
                 </svg>
               </Button>
             </div>
-
+ 
             {/* Wall Content Tabs */}
             {masterArray?.allSegments.map((wall) => (
               <TabsContent value={wall.groupName} key={wall.groupName}>
@@ -198,28 +229,33 @@ const StudioTabs = () => {
                   <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar py-1 bg-white !min-w-0 !w-full">
                     <div className="flex min-w-0 w-full">
                       <Swiper spaceBetween={8} slidesPerView="auto" className="flex min-w-0 w-full">
-                        <EachSegmentTabs
-                          groupSegments={wall}
-                          onTabClick={(tabId) => handleInnerTabClick(wall.groupName, tabId)}
-                        />
+                        <SwiperSlide className="!w-auto">
+                          <EachSegmentTabs
+                            groupSegments={wall}
+                            onTabClick={(tabId) => handleInnerTabClick(wall.groupName, tabId)}
+                          />
+                        </SwiperSlide>
                       </Swiper>
                     </div>
                   </TabsList>
-
+ 
                   {currentSelectedGroupSegment?.segments.map((segment) => (
                     <TabsContent key={segment.short_title} value={segment.short_title ?? ""} className="p-4">
-                      <div className="text-gray-700 font-medium">
-                        <TabNavigation />
-                      </div>
+                      {innerTabvalue === segment.short_title &&
+                        <div className="text-gray-700 font-medium">
+                          <TabNavigation />
+                        </div>}
                     </TabsContent>
-                   ))} 
+                  ))}
                 </Tabs>
               </TabsContent>
             ))}
           </Tabs>)}
     </>
-
+ 
   );
 };
-
+ 
 export default StudioTabs;
+ 
+ 

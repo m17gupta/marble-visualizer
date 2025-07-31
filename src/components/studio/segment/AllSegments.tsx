@@ -16,6 +16,7 @@ import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
 // import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
+import AddSegSidebar from "@/components/canvas/canvasAddNewSegment/AddSegSidebar";
 
 const AllSegments = () => {
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
@@ -53,7 +54,7 @@ const AllSegments = () => {
 
       //segMent tye in tab slice
       dispatch(setSegmentType(selectedSeg.name));
-      dispatch(setActiveTab("studio-segment"));
+      dispatch(setActiveTab("recommendations-swatches"));
     }
   };
 
@@ -87,7 +88,7 @@ const AllSegments = () => {
 
   return (
     <TooltipProvider>
-      <div className="w-full flex flex-col p-1">
+      <div className="w-full flex flex-col p-1 gap-2">
         {updatedMasterArray &&
           updatedMasterArray.length > 0 &&
           updatedMasterArray.map((segment: MasterModel, index: number) => {
@@ -194,13 +195,16 @@ const AllSegments = () => {
                     <path d="M18 15v6" />
                   </svg>
                 </Button>
+                
               </TooltipTrigger>
               <TooltipContent>
                 <p>Add Segment</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+        
         </div>
+          <AddSegSidebar/>
       </div>
     </TooltipProvider>
   );

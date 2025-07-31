@@ -3,7 +3,7 @@ import React  from "react";
 import { useSelector } from "react-redux";
 
 import { useParams } from "react-router-dom";
-
+import { Skeleton } from "@/components/ui/skeleton"
 // import sampleImg from "@/assets/kitchen.jpg"; // Replace with your actual image path
 
 const ImageCard: React.FC = () => {
@@ -45,7 +45,7 @@ const ImageCard: React.FC = () => {
 
       {/* Image section */}
       {!findProject || findProject.jobData == undefined ? (
-        <h1>Loading</h1>
+ <Skeleton className="h-[90vh] w-[100%] rounded-2" />
       ) : (
         <img
           src={

@@ -92,6 +92,7 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
     // setChildName(newGroupName);
    }
   return (
+    <>
     <Dialog open={open} onOpenChange={open => { if (!open) onClose(); }}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
@@ -164,6 +165,12 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+
+
+
+
+    </>
   );
 };
 
