@@ -95,14 +95,14 @@ const AllSegments = () => {
             const isHovered = hoveredSegment === segment.id;
 
             return (
-              <div key={segment.id || index} className="relative">
+              <div key={segment.id || index} className="relative pb-[10px]" >
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant={isActive ? "default" : "outline"}
                       size="icon"
                       className={cn(
-                        "w-12 h-12 border-2 p-0 transition-all duration-200",
+                        "w-12 h-12 border-2 p-1 pb-[10px] transition-all duration-200",
                         isActive && "ring-2 ring-offset-2 ring-primary",
                         isHovered && "shadow-md"
                         // scale-105 
