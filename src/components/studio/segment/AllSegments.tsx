@@ -82,9 +82,7 @@ const AllSegments = () => {
   };
 
   const handleAddSegment = () => { };
-  const [hoveredSegmentName, setHoveredSegmentName] = useState<string | null>(
-    null
-  );
+
 
   return (
     <TooltipProvider>

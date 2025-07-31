@@ -79,6 +79,12 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
       shortName: shortName,
       category:selectedCatogory
     }))
+    setGroupName('');
+    setShortName(''); 
+    setChildName('');
+    setSegType('');
+    setSelectedCategory('');
+    setGroupArray([]);
     dispatch(updateAddSegMessage(" Getting segment details..."));
     onSave()
   };

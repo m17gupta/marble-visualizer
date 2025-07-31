@@ -1,11 +1,12 @@
 import React, { useRef } from 'react';
-import { SwiperSlide } from 'swiper/react';
+
 import { TabsTrigger } from '../ui/tabs';
 import { MasterGroupModel } from '@/models/jobModel/JobModel';
 import { updateHoverGroup } from '@/redux/slices/canvasSlice';
 
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
+import { SwiperSlide } from 'swiper/react';
 
 type Props = {
   groupSegments: MasterGroupModel;
@@ -29,7 +30,7 @@ const EachSegmentTabs = ({ groupSegments, onTabClick }: Props) => {
     <>
     
       {groupSegments.segments.map((tab) => (
-     
+        
           <TabsTrigger
             value={tab.short_title ?? ""}
             ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
@@ -40,7 +41,7 @@ const EachSegmentTabs = ({ groupSegments, onTabClick }: Props) => {
           >
             {tab.short_title}
           </TabsTrigger>
-        // </SwiperSlide>
+       
       ))}
     </>
   );

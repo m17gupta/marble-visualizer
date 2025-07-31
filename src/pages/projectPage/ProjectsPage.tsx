@@ -409,6 +409,7 @@ export function ProjectsPage() {
                           >
                             <Share2 className="h-4 w-4" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="sm"
@@ -470,6 +471,10 @@ export function ProjectsPage() {
                               </span>
                             </Button>
                           )}
+
+                          <Button>
+                           
+                          </Button>
                         </div>
 
                         <DropdownMenu>
