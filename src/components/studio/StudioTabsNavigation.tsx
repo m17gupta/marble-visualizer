@@ -69,10 +69,10 @@ StudioTabsNavigationProps) {
       defaultValue="segment"
       value={designhubactivetab}
       onValueChange={handleChangeTab}
-      className="flex-1 flex flex-col"
+      className=" flex flex-col"
     >
-      <div className="flex-shrink-0">
-        <TabsList className="grid w-full grid-cols-6 h-11">
+      <div className="">
+        <TabsList className="grid w-full grid-cols-6 h-11 ">
           <TabsTrigger value="studio-segment" className="text-xs p-1 border-gray-300">
             <Square className="h-4 w-4" />
             {/* <span className="sr-only">Segment</span> */}
@@ -106,7 +106,7 @@ StudioTabsNavigationProps) {
             <StudioDesignTab />
           </TabsContent>
 
-          <TabsContent value="segments" className="space-y-4 mt-0">
+          <TabsContent value="segments" className="space-y-4 mt-0 ">
             {projectId && <SegmentsList projectId={projectId} />}
           </TabsContent>
 

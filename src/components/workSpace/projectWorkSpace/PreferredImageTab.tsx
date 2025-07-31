@@ -61,7 +61,7 @@ const StyleAndRenovationPanel: React.FC = () => {
     dispatch(addInspirationImage(image));
   };
   return (
-    <div className="max-w-md mx-auto p-1 space-y-6 py-1 px-2">
+    <div className=" mx-auto p-1 space-y-6 py-1 px-2">
       {/* Tabs */}
 
 

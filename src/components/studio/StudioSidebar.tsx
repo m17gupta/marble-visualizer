@@ -66,7 +66,7 @@ StudioSidebarProps) {
       initial={{ x: -288, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sm:w-80 w-100 w-full bg-card border-r border-border flex flex-col"
+      className=" w-full bg-card border-r border-border flex flex-col"
     >
       {/* Tabs Navigation */}
       <StudioTabsNavigation

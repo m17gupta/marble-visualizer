@@ -538,7 +538,7 @@ export function SegmentsList({ projectId, className }: SegmentsListProps) {
   };
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-4 w-full", className)}>
       {/* Toolbar */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
