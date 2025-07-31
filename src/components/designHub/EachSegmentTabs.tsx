@@ -27,8 +27,9 @@ const EachSegmentTabs = ({ groupSegments, onTabClick }: Props) => {
   };
   return (
     <>
+    
       {groupSegments.segments.map((tab) => (
-        <SwiperSlide key={tab.short_title} className="!w-auto">
+     
           <TabsTrigger
             value={tab.short_title ?? ""}
             ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
@@ -39,7 +40,7 @@ const EachSegmentTabs = ({ groupSegments, onTabClick }: Props) => {
           >
             {tab.short_title}
           </TabsTrigger>
-        </SwiperSlide>
+        // </SwiperSlide>
       ))}
     </>
   );

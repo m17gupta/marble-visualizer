@@ -8,6 +8,7 @@ import { setCanvasType } from "@/redux/slices/canvasSlice";
 // import { setActiveTab } from "@/redux/slices/TabControlSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
+import AddSegSidebar from "../canvas/canvasAddNewSegment/AddSegSidebar";
 
 const wallToDefaultTab: Record<string, string> = {
   account: "w1",
@@ -164,6 +165,8 @@ const StudioTabs = () => {
 
           <TabsContent value="w1" className="p-4">
             Content for W1
+
+            <AddSegSidebar />
           </TabsContent>
           <TabsContent value="w2" className="p-4">
             Content for W2

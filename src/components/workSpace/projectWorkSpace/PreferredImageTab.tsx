@@ -119,7 +119,6 @@ const StyleAndRenovationPanel: React.FC = () => {
                     alt={style.name}
                     className="w-24 h-24 object-cover rounded-xl "
                   />
-
                 </div>
               ))
           )}
