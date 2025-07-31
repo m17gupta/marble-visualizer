@@ -52,7 +52,7 @@ const StudioTabs = () => {
   };
 
    const [activeTab, setActiveTab] = useState<string | null>(null);
-   
+
   const dispatch = useDispatch<AppDispatch>();
 
   const { selectedMasterArray, selectedGroupSegment } = useSelector(
@@ -89,7 +89,7 @@ const StudioTabs = () => {
       defaultValue="account"
       value={activeWall}
       onValueChange={setActiveWall}
-      className="w-80"
+      className="w-full"
     >
       {/* Wall Tabs + Home Button */}
       <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-2 w-42">
@@ -144,7 +144,7 @@ const StudioTabs = () => {
 
       {/* Inner Tabs for Wall 1 */}
       <TabsContent value="account">
-        <Tabs defaultValue="w1" className="w-80">
+        <Tabs defaultValue="w1" className="w-full">
           <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar px-2 py-1 bg-white">
             <Swiper spaceBetween={8} slidesPerView="auto" className="w-full">
               {["w1", "w2", "w3", "w4"].map((tab) => (
@@ -179,7 +179,7 @@ const StudioTabs = () => {
 
       {/* Other Wall Tabs Content */}
       <TabsContent value="password">
-        <Tabs defaultValue="w1" className="w-80">
+        <Tabs defaultValue="w1" className="w-full">
           <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar px-2 py-1 bg-white">
             <Swiper spaceBetween={8} slidesPerView="auto" className="w-full">
               {["w1", "w2", "w3", "w4"].map((tab) => (
@@ -212,7 +212,7 @@ const StudioTabs = () => {
         </Tabs>
       </TabsContent>
       <TabsContent value="tab3">
-        <Tabs defaultValue="w1" className="w-80">
+        <Tabs defaultValue="w1" className="w-full">
           <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar px-2 py-1 bg-white">
             <Swiper spaceBetween={8} slidesPerView="auto" className="w-full">
               {["w1", "w2", "w3", "w4"].map((tab) => (
@@ -245,7 +245,7 @@ const StudioTabs = () => {
         </Tabs>
       </TabsContent>
       <TabsContent value="tab4">
-        <Tabs defaultValue="w1" className="w-80">
+        <Tabs defaultValue="w1" className="w-full">
           <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar px-2 py-1 bg-white">
             <Swiper spaceBetween={8} slidesPerView="auto" className="w-full">
               {["w1", "w2", "w3", "w4"].map((tab) => (
@@ -278,7 +278,7 @@ const StudioTabs = () => {
         </Tabs>
       </TabsContent>
       <TabsContent value="tab5">
-        <Tabs defaultValue="w1" className="w-80">
+        <Tabs defaultValue="w1" className="w-full">
           <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar px-2 py-1 bg-white">
             <Swiper spaceBetween={8} slidesPerView="auto" className="w-full">
               {["w1", "w2", "w3", "w4"].map((tab) => (
