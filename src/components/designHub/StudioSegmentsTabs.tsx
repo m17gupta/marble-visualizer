@@ -12,6 +12,7 @@ import { Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-toolti
 import { TooltipContent } from "../ui/tooltip";
 import TabNavigation from "./tabNavigation/TabNavigation";
 import TestSlider from "./TestSlider";
+import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
  
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -113,7 +114,7 @@ const StudioTabs = () => {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-2">
+      <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0">
         <TabsList className="flex-1 overflow-x-auto whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent">
           <Swiper spaceBetween={8} slidesPerView="auto" className="max-w-full">
             {masterArray.allSegments.map(tab => (
@@ -164,14 +165,19 @@ const StudioTabs = () => {
             </TabsList>
 
             {currentSelectedGroupSegment?.segments.map(segment => (
-              <TabsContent key={segment.short_title} value={segment.short_title ?? ""} className="p-4">
+              <TabsContent key={segment.short_title} value={segment.short_title ?? ""} className="">
                 {innerTabValue === segment.short_title && (
                   <div className="text-gray-700 font-medium">
-                    <TabNavigation />
+               
                   </div>
                 )}
               </TabsContent>
             ))}
+
+            
+     <TabNavigation />
+         <SwatchRecommendations/>
+            
           </Tabs>
         </TabsContent>
       ))}

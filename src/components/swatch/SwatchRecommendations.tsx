@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Target } from 'lucide-react';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
-
-
+import { FaInfo } from "react-icons/fa6";
+import { CiStar } from "react-icons/ci";
+import { FaRegStar } from "react-icons/fa";
 
 export function SwatchRecommendations() {
 const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
@@ -62,8 +63,8 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
  
 
   return (
-    <Card >
-      <CardHeader className="pb-4 p-3">
+    <Card className='border-none border-gray-200 rounded-lg shadow-sm p-3'>
+      <CardHeader className="pb-4 p-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Target className="h-5 w-5 mr-2" />
@@ -76,20 +77,21 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
 
           </Badge>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground pb-4">
           Choose from curated materials for your {selectedMaterialSegment?.name?.toLowerCase() || 'project'}
         </p>
       </CardHeader>
 
-      <CardContent className="space-y-4 p-3">
+      <CardContent className="space-y-4 p-1 overflow-y-auto max-h-[60vh] sm:max-h-[70vh] pb-40 pt-4">
+
         {recommendedSwatches &&
           recommendedSwatches.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-2">
             <AnimatePresence>
               {recommendedSwatches.map((swatch) => (
                 <Card
                   key={swatch.id}
-                   className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl"
+                   className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl border-gray-900"
 
                 >
                   {/* Image/Color Preview */}
@@ -106,15 +108,23 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
                         target.alt = 'Color swatch';
                       }}
                     />
+                     
+                     <span role='button' className="absolute top-1 left-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-black/80 transition-colors">
+                      <FaInfo className='w-3 h-3'/>
+                     </span>
+
+                      <span role='button' className="absolute top-1 right-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-yellow-400 transition-colors flex items-center">
+                       <FaRegStar className='w-3 h-3'/>
+                     </span>
                   </div>
 
                   {/* Content */}
-                  <div className="p-2">
+                  {/* <div className="p-2">
                     <h3 className="font-medium text-xs truncate text-foreground mb-1">{swatch.title}</h3>
                     <code className="text-xs bg-muted px-1 py-0.5 rounded text-muted-foreground block">
                       {swatch.color ?? "#000000"}
                     </code>
-                  </div>
+                  </div> */}
                 </Card>
               ))}
             </AnimatePresence>
