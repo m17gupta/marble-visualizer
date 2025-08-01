@@ -3,6 +3,7 @@ import {
   GenAiChat,
   GenAiRequest,
   GenAiResponse,
+  SubmitGenAiResponseModel,
 } from "@/models/genAiModel/GenAiModel";
 import genAiService from "@/services/genAi/genAiService";
 
@@ -13,6 +14,7 @@ interface GenAiState {
   inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
   loading: boolean;
+  genAiRequestSubmit: SubmitGenAiResponseModel | null;
 
   error: string | null;
   currentRequestId: string | null;
@@ -38,6 +40,7 @@ const initialState: GenAiState = {
     jobId: "", // Assuming jobId is a number, set to 0 as default
   },
   responses: {},
+  genAiRequestSubmit: null,
   loading: false,
   error: null,
   currentRequestId: null,
@@ -176,6 +179,8 @@ const genAiSlice = createSlice({
         externalUserId: "dzinly-prod",
         jobId: state.requests.jobId, // Reset jobId to its current value
       };
+      state.genAiRequestSubmit = null; // Reset the genAiRequestSubmit to null
+      state.isSubmitGenAiFailed = false; // Reset the submission failure flag
     },
   },
   extraReducers: (builder) => {
@@ -184,11 +189,13 @@ const genAiSlice = createSlice({
       .addCase(submitGenAiRequest.pending, (state) => {
         state.loading = true;
         state.error = null;
+       
         state.isSubmitGenAiFailed = false; // Reset the flag when starting a new request
       })
-      .addCase(submitGenAiRequest.fulfilled, (state) => {
+      .addCase(submitGenAiRequest.fulfilled, (state,action) => {
         state.loading = false;
-        state.isSubmitGenAiFailed = false; // Reset the flag on successful submission
+        state.isSubmitGenAiFailed = false; 
+         state.genAiRequestSubmit=action.payload
       })
       .addCase(submitGenAiRequest.rejected, (state, action) => {
         state.loading = false;

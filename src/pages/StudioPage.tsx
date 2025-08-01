@@ -45,6 +45,8 @@ import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
 import { clearCurrentProject } from "@/redux/slices/projectSlice";
 import { ProjectModel } from "@/models/projectModel/ProjectModel";
+import { resetGenAiState } from "@/redux/slices/visualizerSlice/genAiSlice";
+import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -151,6 +153,7 @@ export function StudioPage() {
     dispatch(clearMasterArray());
     dispatch(resetCanvas());
     dispatch(resetWorkspace())
+    dispatch(resetGenAiState());
     navigate("/projects");
   };
   return (
@@ -228,6 +231,9 @@ export function StudioPage() {
       <CanvasAdddNewSegmentHome />
       {/* get all segments based on job Id */}
       <GetSegments />
+
+{/*  after send request for genAi image -get task id and update the state in GenAiImageGeneration DB and Redux */}
+      <GenAiImageGeneration />
     </>
   );
 }

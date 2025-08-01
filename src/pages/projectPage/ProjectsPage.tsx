@@ -55,7 +55,6 @@ import VisualToolHome from "@/components/workSpace/visualTool/VisualToolHome";
 import {
   addbreadcrumb,
   updateWorkspaceType,
-  updateBreadCrumbs,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import {
@@ -69,7 +68,7 @@ import ProjectStaticCard from "./ProjectStaticCard";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { CiSquareInfo } from "react-icons/ci";
 import AnalyzedDataModal from "@/components/Modal";
-import AnalyseImage from "./analyseProjectImage/AnalyseImage";
+// import AnalyseImage from "./analyseProjectImage/AnalyseImage";
 import ProjectAnalyseSegmentApiCall from "./analyseProjectImage/ProjectAnalyseSegmentApiCall";
 
 export function ProjectsPage() {
@@ -158,15 +157,16 @@ export function ProjectsPage() {
     if (project.id && project.jobData && project.jobData.length > 0) {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
-      if (jobId) {
+      console.log("Project clicked:", project.id, projectImage, jobId);
+      if (jobId && projectImage && project.jobData) {
         dispatch(updateJobList(project.jobData));
         dispatch(addbreadcrumb("Studio"));
-        dispatch(setCurrentImageUrl(projectImage || ""));
-        dispatch(addHouseImage(projectImage || ""));
+        dispatch(setCurrentImageUrl(projectImage));
+        dispatch(addHouseImage(projectImage));
         dispatch(updateSidebarHeaderCollapse(false));
         setSelectedProjectId(project.id);
         // dispatch(updateRequestJobId(jobId?.toString()));
-        dispatch(resetGenAiState());
+        // dispatch(resetGenAiState());
         dispatch(setCurrentProject(project));
         navigate(`/app/studio/${project.id}`);
       }
