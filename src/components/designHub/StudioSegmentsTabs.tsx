@@ -112,7 +112,7 @@ const StudioTabs = () => {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-80">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-2">
         <TabsList className="flex-1 overflow-x-auto whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent">
           <Swiper spaceBetween={8} slidesPerView="auto" className="max-w-full">
