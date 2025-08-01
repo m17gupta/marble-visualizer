@@ -60,21 +60,25 @@ const GuidancePanel: React.FC = () => {
   const randomSuggestions = suggestions
     ? [...suggestions].sort(() => Math.random() - 0.5).slice(0, 3)
     : [];
-  const [suggestedPrompt, setSuggestedPrompt] = useState<StyleSuggestions[] | null>(
-    randomSuggestions
-  );
-
+  const [suggestedPrompt, setSuggestedPrompt] = useState<
+    StyleSuggestions[] | null
+  >(randomSuggestions);
 
   const [isModel, setIsModel] = React.useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
   const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
 
+  const currentPageDetails = projects.find((d) => d.id == id);
+
+  // const url = currentPageDetails?.jobData?[0].full_image
+
   // const taskId = React.useRef<string>("")
 
-  // const isTask = React.useRef<boolean>(false)'
+  // const isTask = React.useRef<boolean>(false)
   const [taskId, setTaskId] = React.useState<string>("");
   const [isTask, setIsTask] = React.useState<boolean>(false);
+
   // Use separate state variables for each popover
 
   const { requests, inspirationNames, isSubmitGenAiFailed } = useSelector(
@@ -83,6 +87,25 @@ const GuidancePanel: React.FC = () => {
   const { isGenLoading } = useSelector((state: RootState) => state.workspace);
   const getIsAddInspirations = useSelector(getIsAddInspiration);
   // update the model open and closing
+
+  const url = currentPageDetails?.jobData?.[0].full_image;
+
+  const [req, setReq] = useState({
+    houseUrl: [url],
+    prompt: ["Change wall color to red"],
+    annotationValue: {},
+    externalUserId: "dzinly-prod",
+    imageQuality: "medium",
+    jobId: "",
+    paletteUrl: [],
+    referenceImageUrl: [],
+  });
+
+  // useEffect(() => {
+  //   const reqe = { ...req };
+  //   reqe.houseUrl.push();
+  //   setReq(reqe);
+  // }, []);
 
   useEffect(() => {
     if (getIsAddInspirations) {
@@ -133,8 +156,11 @@ const GuidancePanel: React.FC = () => {
     dispatch(updateIsGenLoading(true));
     // Logic to generate AI image
     try {
+      // const resultAction = await dispatch(
+      //   submitGenAiRequest(requests as GenAiRequest)
+      // );
       const resultAction = await dispatch(
-        submitGenAiRequest(requests as GenAiRequest)
+        submitGenAiRequest(req as GenAiRequest)
       );
 
       // if (resultAction.type === "genAi/submitRequest/fulfilled") {
@@ -241,25 +267,23 @@ const GuidancePanel: React.FC = () => {
   // Ref for suggestions panel
   const suggestionsRef = React.useRef<HTMLDivElement | null>(null);
 
- const handleBulbClick = () => {
-  if (!showActionButtons) {
-    setSuggestedPrompt(randomSuggestions);
-    setShowActionButtons(true);
+  const handleBulbClick = () => {
+    if (!showActionButtons) {
+      setSuggestedPrompt(randomSuggestions);
+      setShowActionButtons(true);
 
-    // Wait for the DOM to update, then scroll
-    setTimeout(() => {
-      suggestionsRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 100); // Small delay to ensure render
-  } else {
-    setShowActionButtons(false);
-    setSuggestedPrompt(null);
-  }
-};
-
-
+      // Wait for the DOM to update, then scroll
+      setTimeout(() => {
+        suggestionsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100); // Small delay to ensure render
+    } else {
+      setShowActionButtons(false);
+      setSuggestedPrompt(null);
+    }
+  };
 
   // const [showActionButtons, setShowActionButtons] = useState(false);
   // const [suggestedPrompt, setSuggestedPrompt] = useState<any[] | null>(null);
@@ -357,7 +381,8 @@ const GuidancePanel: React.FC = () => {
               className="text-sm border border-gray-300 flex align-middle gap-1 md:px-3 md:py-2 px-3 py-1 rounded-md"
               onClick={handleAddInspirational}
             >
-              <CiImageOn className="text-lg" /> <span className="hidden md:block">Add Inspiration</span>
+              <CiImageOn className="text-lg" />{" "}
+              <span className="hidden md:block">Add Inspiration</span>
             </button>
           </div>
 
@@ -386,7 +411,7 @@ const GuidancePanel: React.FC = () => {
           </div>
         </div>
 
-      {showActionButtons && suggestedPrompt && (
+        {showActionButtons && suggestedPrompt && (
           <div
             ref={suggestionsRef}
             className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3 mt-6"
@@ -414,7 +439,6 @@ const GuidancePanel: React.FC = () => {
             ))}
           </div>
         )}
-
       </div>
 
       {/* Only render Call_task_id when there's an active task */}
@@ -425,8 +449,6 @@ const GuidancePanel: React.FC = () => {
           resetChatTaskFail={handleResetFaiApiCall}
         />
       )} */}
-
-     
     </>
   );
 };

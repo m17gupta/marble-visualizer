@@ -9,9 +9,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 
 import { useParams } from "react-router-dom";
 
-import {
-  fetchGenAiChat,
-} from "@/redux/slices/visualizerSlice/genAiSlice";
+import { fetchGenAiChat } from "@/redux/slices/visualizerSlice/genAiSlice";
 import WebhookListener from "../webHook/WebHook";
 
 const WorkSpaceHome = () => {
@@ -22,10 +20,7 @@ const WorkSpaceHome = () => {
   const findProject = projects.find((d) => d.id == id);
   const jobId =
     findProject?.jobData !== undefined ? findProject.jobData[0].id : 0;
-  const {
-    genAiImages,
-   
-  } = useSelector((state: RootState) => state.genAi);
+  const { genAiImages } = useSelector((state: RootState) => state.genAi);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -45,14 +40,14 @@ const WorkSpaceHome = () => {
 
         <div className="mt-4 ">
           <GuidancePanel />
-          {/* <GenAiImages /> */}
+          <GenAiImages />
         </div>
       </div>
       <div className="md:hidden block">
         <StudioPageMobile />
       </div>
 
-      <WebhookListener/>
+      <WebhookListener />
     </>
   );
 };

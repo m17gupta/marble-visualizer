@@ -1,18 +1,18 @@
-export type ImageQuality = 'low' | 'medium' | 'high';
+export type ImageQuality = "low" | "medium" | "high";
 
 export interface AnnotationValue {
   [key: string]: number[];
 }
 
 export interface GenAiRequest {
-  houseUrl: string[];
-  paletteUrl: string[];
-  referenceImageUrl: string[];
-  prompt: string[];
-  imageQuality: ImageQuality;
-  annotationValue: AnnotationValue;
-   externalUserId: "dzinly-prod";
-  jobId: string;
+  houseUrl?: string[];
+  paletteUrl?: string[];
+  referenceImageUrl?: string[];
+  prompt?: string[];
+  imageQuality?: ImageQuality;
+  annotationValue?: AnnotationValue;
+  externalUserId?: "dzinly-prod";
+  jobId?: string;
 }
 export interface GenAiModel {
   houseUrl: string[];
@@ -27,14 +27,14 @@ export interface TaskApiModel {
   taskId: string;
   prompt: string;
   outputImage: string;
-  openai_metadata?: OpenAIMetadata
+  openai_metadata?: OpenAIMetadata;
 }
 export interface GenAiResponse {
   data: {
     status: string;
     task_id: string;
     message: string;
-  }
+  };
 }
 export interface SubmitGenAiResponseModel {
   status: string;
@@ -44,7 +44,7 @@ export interface SubmitGenAiResponseModel {
 
 export interface GenAiTaskIdResponse {
   status: string;
-  result: { 
+  result: {
     s3_url: string;
     enhanced_prompt: string;
     openai_metadata: OpenAIMetadata;
@@ -77,7 +77,7 @@ export interface OpenAIMetadata {
 
 export interface GenAiChat {
   id: number;
-  project_id: number
+  project_id: number;
   user_id: number;
   job_id: number;
   master_image_path: string;
@@ -85,14 +85,14 @@ export interface GenAiChat {
   reference_img: string;
   user_input_text: string;
   output_image: string;
-  output_urls?: string[];  // Array of output image URLs for multiple variants
+  output_urls?: string[]; // Array of output image URLs for multiple variants
   is_completed: boolean;
   is_show: boolean;
   prompt: string;
   task_id: string;
   created: string;
   updated: string;
-  created_at?: string;  // Alternative date format
+  created_at?: string; // Alternative date format
   openai_metadata?: OpenAIMetadata | string;
 }
 
