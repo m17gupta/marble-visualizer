@@ -7,32 +7,38 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-const AddSegLists = () => {
+
+type Props={
+  segType: string;
+  groupName: string;
+  shortName: string;
+}
+const AddSegLists = ({ segType, groupName, shortName }: Props) => {
   return (
     <div>
       <Breadcrumb>
         <BreadcrumbList className="text-">
           <BreadcrumbItem className="font-semibold text-gray-600">
-            Roof
+         {segType}
           </BreadcrumbItem>
           <BreadcrumbSeparator />
 
              <BreadcrumbItem className="font-semibold text-gray-600">
-            Roof1
+            {groupName}
           </BreadcrumbItem>
           <BreadcrumbSeparator />
 
 
              <BreadcrumbItem className="font-semibold text-gray-600">
-            Roof2
+            {shortName}
           </BreadcrumbItem>
           <BreadcrumbSeparator />
 
-          <BreadcrumbItem>
+          {/* <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <a href="#">Roof3</a>
             </BreadcrumbLink>
-          </BreadcrumbItem>
+          </BreadcrumbItem> */}
         </BreadcrumbList>
       </Breadcrumb>
     </div>

@@ -29,13 +29,7 @@ const StyleAndRenovationPanel: React.FC = () => {
   const handleTabColor = async (tabId: number) => {
     setIsLoading(true);
     setActiveTab(tabId);
-
-    // Add a small delay to show loading state
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    stylesToShow.current = [];
     stylesToShow.current = Inspirational_images.filter((item) => item.color_family_id === tabId);
-
     setIsLoading(false);
   }
   const handleAllTabImage = async () => {

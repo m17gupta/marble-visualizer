@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -23,41 +23,109 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IoMdClose } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { updateAddSegMessage, UpdateOtherSegmentDrawn } from "@/redux/slices/segmentsSlice";
+import { toast } from "sonner";
 
-const AddSegSidebar = () => {
-  const [goal, setGoal] = React.useState(350);
-  const options = ["Red", "Green", "Blue", "Yellow", "Black"];
+interface AddSegmentModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSave: () => void;
+ 
+}
+const AddSegSidebar = ({ open, onClose, onSave }: AddSegmentModalProps) => {
+
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [currentSelection, setCurrentSelection] = useState("");
+
 
   const handleRemove = (item: string) => {
     setSelectedItems((prev) => prev.filter((i) => i !== item));
   };
 
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-house-plus"
-          >
-            <path d="M12.662 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v2.475" />
-            <path d="M14.959 12.717A1 1 0 0 0 14 12h-4a1 1 0 0 0-1 1v8" />
-            <path d="M15 18h6" />
-            <path d="M18 15v6" />
-          </svg>
-        </Button>
-      </SheetTrigger>
+    const dispatch = useDispatch();
+  const [segType, setSegType] = useState('');
+  const [allcatogories, setAllCategories] = useState<string[]>([]);
+  const [groupName, setGroupName] = useState('');
+  const [shortName, setShortName] = useState('');
+  const [childName, setChildName] = useState('');
+ const  [groupArray, setGroupArray] = useState<string[]>([]);
+  const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
+ const [selectedCatogory, setSelectedCategory] = useState<string>('');
+ 
+  useEffect(() => {
+    if( selectedMasterArray &&
+        selectedMasterArray.name &&
+        selectedMasterArray.allSegments &&
+        selectedMasterArray.allSegments.length === 0
+    ) {
+      setSegType(selectedMasterArray.name);
+      setAllCategories(selectedMasterArray.categories || []);
+      const allSeg = selectedMasterArray.allSegments.length;
+      if (allSeg == 0) {
+        setGroupArray([`${selectedMasterArray.name}1`]);
+        const firstSeg =`${selectedMasterArray.name}1`
+        if (firstSeg ) {
+          setGroupName(firstSeg);
+          setShortName(`${selectedMasterArray.short_code}1`);
+          setChildName(firstSeg);
+        }
+    }
+    } else if(selectedMasterArray &&
+        selectedMasterArray.name &&
+        selectedMasterArray.allSegments &&
+        selectedMasterArray.allSegments.length >0){
+      setSegType(selectedMasterArray.name);
+      
+      setAllCategories(selectedMasterArray.categories || []);
+      const allSeg = selectedMasterArray.allSegments.length;
+      if (allSeg > 0) {
+        let count: number = 0;
+        const allArray: string[] = [];
+        setGroupArray([]);
+        selectedMasterArray.allSegments.forEach((seg) => {
+          allArray.push(seg.groupName);
+          const allSegs= seg.segments.length;
+          count= allSegs+count;
+       });
+       setGroupArray(allArray);
+       setGroupName(selectedMasterArray.allSegments[0].groupName);
+       setShortName(`${selectedMasterArray.short_code}${count + 1}`);
+       setChildName(`${selectedMasterArray.name}${count + 1}`);
+    }
+    }
+  },[selectedMasterArray])
 
+
+
+  const handleSave = () => {
+
+    dispatch(UpdateOtherSegmentDrawn({
+      segType,
+      groupName,
+      childName,
+      shortName: shortName,
+      category:selectedCatogory
+    }))
+    setGroupName('');
+    setShortName(''); 
+    setChildName('');
+    setSegType('');
+    setSelectedCategory('');
+    setGroupArray([]);
+    dispatch(updateAddSegMessage(" Getting segment details..."));
+     onSave()
+  };
+
+   const handleAddGroup = () => {
+    const groupLength = groupArray.length;
+    const newGroupName = `${segType}${groupLength + 1}`;
+    setGroupArray([...groupArray, newGroupName]);
+     toast.success(`Group ${newGroupName} added successfully!`);
+   }
+
+  return (
+    <Sheet open={open} onOpenChange={(val) => { if (!val) onClose(); }}>
       <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col h-full">
         
         {/* Scrollable content */}
@@ -65,29 +133,37 @@ const AddSegSidebar = () => {
           <SheetHeader className="border-b pb-3 pt-6">
             <SheetTitle className="text-xl pb-2 -mt-1">Add Segment</SheetTitle>
             <SheetDescription>
-              <AddSegLists />
+              <AddSegLists 
+                segType={segType}
+                groupName={groupName}
+                shortName={shortName}
+              />
             </SheetDescription>
           </SheetHeader>
 
           <div className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-semibold">Select Group</h4>
-              <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold">
+              <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
+               onClick={handleAddGroup}
+              >
                 +
               </button>
             </div>
-            <Select>
+            <Select
+              value={groupName}
+              onValueChange={setGroupName}
+            >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a fruit" />
+                <SelectValue placeholder="Select a group" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Fruits</SelectLabel>
-                  <SelectItem value="apple">Apple</SelectItem>
-                  <SelectItem value="banana">Banana</SelectItem>
-                  <SelectItem value="blueberry">Blueberry</SelectItem>
-                  <SelectItem value="grapes">Grapes</SelectItem>
-                  <SelectItem value="pineapple">Pineapple</SelectItem>
+                  {groupArray && groupArray.map((group, index) => (
+                    <SelectItem key={index} value={group}>
+                      {group} 
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -96,13 +172,17 @@ const AddSegSidebar = () => {
           <div className="w-full pt-6">
             <h4 className="font-semibold pb-3">Categories</h4>
             <Select
-              value={currentSelection}
-              onValueChange={(value) => {
-                if (value && !selectedItems.includes(value)) {
-                  setSelectedItems((prev) => [...prev, value]);
-                }
-                setCurrentSelection("");
-              }}
+              // value={currentSelection}
+              // onValueChange={(value) => {
+              //   if (value && !selectedItems.includes(value)) {
+              //     setSelectedItems((prev) => [...prev, value]);
+              //   }
+              //   setCurrentSelection("");
+              // }}
+                value={selectedCatogory}
+                onValueChange={(value) => {
+                  setSelectedCategory(value);
+                }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a fruit" />
@@ -110,11 +190,13 @@ const AddSegSidebar = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Colors</SelectLabel>
-                  {options.map((opt) => (
-                    <SelectItem key={opt} value={opt}>
-                      {opt}
-                    </SelectItem>
-                  ))}
+                  {allcatogories && allcatogories.length > 0 && (
+                    allcatogories.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -143,7 +225,9 @@ const AddSegSidebar = () => {
 
         {/* Footer fixed to bottom */}
         <SheetFooter className="border-t px-6 py-4 flex justify-end gap-3">
-          <Button className="bg-black text-white hover:bg-gray-800">Submit</Button>
+          <Button className="bg-black text-white hover:bg-gray-800"
+            onClick={handleSave}
+          >Submit</Button>
           <SheetClose asChild>
             <Button variant="outline">Cancel</Button>
           </SheetClose>

@@ -14,9 +14,10 @@ import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSeg
 import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
 import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
 // import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
-import { updateHoverGroup } from "@/redux/slices/canvasSlice";
+import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
-import AddSegSidebar from "@/components/canvas/canvasAddNewSegment/AddSegSidebar";
+import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
+
 
 const AllSegments = () => {
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
@@ -81,7 +82,10 @@ const AllSegments = () => {
     dispatch(updateHoverGroup(null));
   };
 
-  const handleAddSegment = () => { };
+  const handleAddSegment = () => { 
+    dispatch(updateIsNewMasterArray(true));
+    dispatch(setCanvasType("draw"));  
+  };
 
 
   return (
@@ -202,7 +206,7 @@ const AllSegments = () => {
           </TooltipProvider>
         
         </div>
-          <AddSegSidebar/>
+          {/* <AddSegSidebar/> */}
       </div>
     </TooltipProvider>
   );

@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { updateAddSegMessage, UpdateOtherSegmentDrawn } from '@/redux/slices/segmentsSlice';
+
+import { MaterialSegmentModel } from '@/models/materialSegment/MaterialSegmentModel';
+
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+
+import { MasterModel } from '@/models';
+import { selectedNewMasterArray } from '@/redux/slices/segmentsSlice';
 
 interface AddSegmentModalProps {
   open: boolean;
@@ -16,159 +22,109 @@ interface AddSegmentModalProps {
 
 const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave }) => {
   const dispatch = useDispatch();
-  const [segType, setSegType] = useState('');
-  const [allcatogories, setAllCategories] = useState<string[]>([]);
-  const [groupName, setGroupName] = useState('');
-  const [shortName, setShortName] = useState('');
-  const [childName, setChildName] = useState('');
- const  [groupArray, setGroupArray] = useState<string[]>([]);
-  const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
- const [selectedCatogory, setSelectedCategory] = useState<string>('');
- 
+
+  const { masterArray } = useSelector((state: RootState) => state.masterArray);
+  const {segments} = useSelector((state: RootState) => state.materialSegments);
+  const [updatedSegments, setUpdatedSegments] = useState<MaterialSegmentModel[]>([]);
+  const [selectedSegment, setSelectedSegment] = useState<MaterialSegmentModel | null>(null);
+
   useEffect(() => {
-    if( selectedMasterArray &&
-        selectedMasterArray.name &&
-        selectedMasterArray.allSegments &&
-        selectedMasterArray.allSegments.length === 0
-    ) {
-      setSegType(selectedMasterArray.name);
-      setAllCategories(selectedMasterArray.categories || []);
-      const allSeg = selectedMasterArray.allSegments.length;
-      if (allSeg == 0) {
-        setGroupArray([`${selectedMasterArray.name}1`]);
-        const firstSeg =`${selectedMasterArray.name}1`
-        if (firstSeg ) {
-          setGroupName(firstSeg);
-          setShortName(`${selectedMasterArray.short_code}1`);
-          setChildName(firstSeg);
-        }
+    if(masterArray && masterArray.length > 0) {
+      masterArray.forEach((master) => {
+        const updateSeg=segments.map((seg: MaterialSegmentModel) => {
+          if (seg.name=== master.name) {
+            return {
+              ...seg,
+              isDisabled: true, // Ensure isDisabled is set to false
+              
+            };
+          }
+          return seg;
+        });
+        setUpdatedSegments(updateSeg);  
+      })
     }
-    } else if(selectedMasterArray &&
-        selectedMasterArray.name &&
-        selectedMasterArray.allSegments &&
-        selectedMasterArray.allSegments.length >0){
-      setSegType(selectedMasterArray.name);
-      
-      setAllCategories(selectedMasterArray.categories || []);
-      const allSeg = selectedMasterArray.allSegments.length;
-      if (allSeg > 0) {
-        let count: number = 0;
-        const allArray: string[] = [];
-        setGroupArray([]);
-        selectedMasterArray.allSegments.forEach((seg) => {
-          allArray.push(seg.groupName);
-          const allSegs= seg.segments.length;
-          count= allSegs;
-       });
-       setGroupArray(allArray);
-       setGroupName(selectedMasterArray.allSegments[0].groupName);
-       setShortName(`${selectedMasterArray.short_code}${count + 1}`);
-       setChildName(`${selectedMasterArray.name}${count + 1}`);
+  },[masterArray, segments]);
+
+
+;
+
+   const handleAddSegment = (data: MaterialSegmentModel) => {
+
+    const segValue:MasterModel={
+      id: data.id,
+      name: data.name,
+      icon: data.icon,
+      color_code: data.color_code,
+      color: data.color,
+      short_code: data.short_code,
+      overAllSwatch:[],
+      categories: data.categories,
+      allSegments: [],
     }
-    }
-  },[selectedMasterArray])
-
-
-
-  const handleSave = () => {
-
-    dispatch(UpdateOtherSegmentDrawn({
-      segType,
-      groupName,
-      childName,
-      shortName: shortName,
-      category:selectedCatogory
-    }))
-    setGroupName('');
-    setShortName(''); 
-    setChildName('');
-    setSegType('');
-    setSelectedCategory('');
-    setGroupArray([]);
-    dispatch(updateAddSegMessage(" Getting segment details..."));
-    onSave()
-  };
-
-   const handleAddGroup = () => {
-    const groupLength = groupArray.length;
-    const newGroupName = `${segType}${groupLength + 1}`;
-    setGroupArray([...groupArray, newGroupName]);
-    // setGroupName(newGroupName);
-    // setShortName(`${selectedMasterArray.short_code}${groupLength + 1}`);
-    // setChildName(newGroupName);
+     setSelectedSegment(data);
+     dispatch(selectedNewMasterArray(segValue));
    }
+
+   const closeSegmentModal=()=>{
+    onClose()
+   }
+
+     const handleSave = () => {
+    console.log("updatedSegments", )
+    onSave()
+  }
   return (
     <>
     <Dialog open={open} onOpenChange={open => { if (!open) onClose(); }}>
-      <DialogContent className="max-w-2xl">
+
+      <DialogContent className="max-w-4xl h-auto">
         <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center justify-between w-full">
-              <div className="text-sm text-gray-500">
-                <a href="#" className="text-purple-600 underline mr-1">{segType}</a>
-                /
-                <a href="#" className="text-purple-600 underline mx-1">{groupName}</a>
-                /
-                <span className="ml-1">{shortName}</span>
-              </div>
-            </div>
-          </DialogTitle>
+          <DialogTitle>Add Segment</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 overflow-auto p-6 flex flex-col gap-4">
-          {/* Wall and Categories Dropdowns in one line */}
-          <div className="bg-purple-50 rounded-lg p-3 flex items-center justify-between gap-4">
-            {/* Wall Dropdown */}
-            <div className="flex items-center gap-2">
-              {/* <span>{groupName}</span> */}
-              <span>select group</span>
-              <select
-                className="bg-transparent outline-none"
-                value={groupName}
-                onChange={e => setGroupName(e.target.value)}
-              >
-                <option value="">Select Group</option>
-                {groupArray.map((group, index) => (
-                  <option key={index} value={group}>{group}</option>
-                ))}
-              </select>
-              <button className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
-                onClick={handleAddGroup}
-              >+</button>
-            </div>
-            {/* Categories Dropdown */}
-            <div className="flex items-center gap-2">
-              <span>Categories</span>
-              <select
-                className="bg-transparent outline-none"
-                value={selectedCatogory}
-                onChange={e => setSelectedCategory(e.target.value)}
-              >
-                <option value="">Select Category</option>
-                {allcatogories.map((category, index) => (
-                  <option key={index} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
+
+        <div className="mt-4 mb-2 text-lg font-medium text-primary">{selectedSegment?.name}</div>
+
+        <ScrollArea className="h-[300px] pr-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {updatedSegments?.map((item, index) => {
+              const isSelected = item.name === selectedSegment?.name
+              const isDisabled = item.isDisabled
+
+              return (
+                <div
+                  key={index}
+                  onClick={() => !isDisabled && handleAddSegment(item)}
+                  className={`cursor-pointer border rounded-lg p-3 text-center transition 
+                    ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'} 
+                    ${isSelected ? 'bg-blue-100 border-blue-500' : ''}
+                  `}
+                  style={{ borderColor: item.color_code }}
+                >
+                  <div className="w-full h-20 mb-2">
+                    <img
+                            src={item.icon}
+                            alt={item.name || "Segment Icon"}
+                            style={{
+                              width: "100%", // ya '100%' for full fit
+                              height: "100%",
+                              display: "block",
+                              objectFit: "contain",
+                              filter: "brightness(0) saturate(100%)",
+                            }}
+                          />
+                  </div>
+                  <h6 className="text-sm font-medium">{item.name}</h6>
+                </div>
+              )
+            })}
           </div>
+        </ScrollArea>
+
+        <div className="mt-6 flex justify-between">
+          <Button variant="outline" onClick={closeSegmentModal}>Cancel</Button>
+          <Button onClick={handleSave}>Add New Segment</Button>
         </div>
-        <DialogFooter className="flex flex-row gap-2 justify-end">
-          <DialogClose asChild>
-            <Button
-              variant="outline"
-              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100"
-              onClick={onClose}
-            >
-              Delete
-            </Button>
-          </DialogClose>
-          <Button
-            variant="default"
-            className="px-6 py-2 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
 

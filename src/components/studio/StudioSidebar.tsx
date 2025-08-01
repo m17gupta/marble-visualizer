@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 
 import { StudioTabsNavigation } from "./StudioTabsNavigation";
 // import SegmentGroup from "../designHub/studio_segement_content/SegmentGroup";
-import StudioSegmentsTabs from "./StudioSegmentsTabs";
+// import StudioSegmentsTabs from "./StudioSegmentsTabs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import StudioSegmentsTabs from "../designHub/StudioSegmentsTabs";
 // import { DesignSettings, Job } from './types';
 // import {
 //   Sparkles,

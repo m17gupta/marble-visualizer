@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { 
-  MaterialSegmentModel, 
-  MaterialSegmentFilters 
+import {
+  MaterialSegmentModel,
+  MaterialSegmentFilters
 } from '@/models/materialSegment';
 import { MaterialSegmentService } from '@/services/materialSegment/MaterialSegmentService';
 
 export interface MaterialSegmentState {
   segments: MaterialSegmentModel[];
-   detectedSegments : MaterialSegmentModel[]; // Added to store detected segments
-  selectedMaterialSegment: MaterialSegmentModel| null; // Changed to allow null for no selection
+  detectedSegments: MaterialSegmentModel[]; // Added to store detected segments
+  selectedMaterialSegment: MaterialSegmentModel | null; // Changed to allow null for no selection
   segmentLoading: boolean;
   error: string | null;
   filters: MaterialSegmentFilters;
@@ -23,7 +23,7 @@ export interface MaterialSegmentState {
 const initialState: MaterialSegmentState = {
   segments: [],
   detectedSegments: [],
-  selectedMaterialSegment:null ,
+  selectedMaterialSegment: null,
   segmentLoading: false,
   error: null,
   filters: {},
@@ -59,12 +59,12 @@ const materialSegmentSlice = createSlice({
   reducers: {
     selectMaterialSegment: (state, action) => {
 
-         state.selectedMaterialSegment = action.payload;
-    
-  },  
-  updateDetectedSegments: (state, action: PayloadAction<MaterialSegmentModel[]>) => {
+      state.selectedMaterialSegment = action.payload;
+
+    },
+    updateDetectedSegments: (state, action: PayloadAction<MaterialSegmentModel[]>) => {
       state.detectedSegments = action.payload;
-  },
+    },
     clearError: (state) => {
       state.error = null;
     },
@@ -113,7 +113,11 @@ const materialSegmentSlice = createSlice({
         if (action.payload) {
           if ('segments' in action.payload && 'pagination' in action.payload) {
             // Response has pagination structure
-            state.segments = action.payload.segments;
+            state.segments = action.payload.segments.map(seg => ({
+              ...seg,
+              isDisable: false,
+             
+            }));
             state.pagination = action.payload.pagination;
           } else if (Array.isArray(action.payload)) {
             // Response is a direct array
@@ -126,8 +130,8 @@ const materialSegmentSlice = createSlice({
         state.segmentLoading = false;
         state.error = typeof action.payload === 'string' ? action.payload : action.error.message || 'Failed to fetch material segments';
       })
-      
-   
+
+
   },
 });
 

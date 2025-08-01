@@ -1,6 +1,6 @@
 
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { JobModel } from '@/models/jobModel/JobModel';
+import { JobModel, MasterModel } from '@/models/jobModel/JobModel';
 import { SegmentService } from '@/services/segment/SegmentService';
 import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
 
@@ -40,6 +40,7 @@ interface SegmentsState {
   activeSegment: string | null;
   selectedSegmentIds: string[];
   newSegment: SegmentModal;
+  addNewMasterArray: MasterModel | null;
   isDrawing: boolean;
   segmentDrawn: {
     annotation: number[];
@@ -50,6 +51,7 @@ interface SegmentsState {
     category: string;
   };
   isLoadingSegments: boolean;
+  isNewMasterArray: boolean;
   isSegmentLoaded: boolean;
   isLoadingSegmentsError: string | null;
   allSegments: SegmentModal[];
@@ -80,6 +82,8 @@ interface SegmentsState {
 const initialState: SegmentsState = {
   activeSegment: null,
   selectedSegmentIds: [],
+  addNewMasterArray: null,
+  isNewMasterArray: false,
   newSegment: {},
   isDrawing: false,
   // currentPoints: [],
@@ -177,9 +181,7 @@ const segmentsSlice = createSlice({
       state.isDrawing = true;
     },
 
-    // updateSegmentDrawn: (state, action) => {
-    //   state.segmentDrawn = action.payload;
-    // },
+ 
     updateSegmentDrawn: (
       state,
       action
@@ -217,6 +219,13 @@ const segmentsSlice = createSlice({
 
     updateIsMasterDataAnnotationOpen: (state, action: PayloadAction<boolean>) => {
       state.isMasterDataAnnotationOpen = action.payload;
+    },
+    updateIsNewMasterArray: (state, action: PayloadAction<boolean>) => {
+      state.isNewMasterArray = action.payload;
+    },
+
+    selectedNewMasterArray: (state, action) => {
+      state.addNewMasterArray = action.payload;
     },
 
     // Segment management
@@ -326,6 +335,8 @@ export const {
   startDrawing,
   updateSegmentDrawn,
   UpdateOtherSegmentDrawn,
+  selectedNewMasterArray,
+  updateIsNewMasterArray,
   // updateSegmentDrawn,
   // finishDrawing,
   cancelDrawing,

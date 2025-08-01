@@ -166,7 +166,7 @@ const StudioTabs = () => {
           <TabsContent value="w1" className="p-4">
             Content for W1
 
-            <AddSegSidebar />
+            {/* <AddSegSidebar /> */}
           </TabsContent>
           <TabsContent value="w2" className="p-4">
             Content for W2
