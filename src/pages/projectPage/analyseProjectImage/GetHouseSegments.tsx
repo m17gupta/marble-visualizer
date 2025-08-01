@@ -2,7 +2,7 @@ import { HouseSegmentModel } from '@/models/projectModel/ProjectModel';
 import { setIsAnalyseFinish, setJobUrl } from '@/redux/slices/projectAnalyseSlice';
 import { fetchHouseSegments } from '@/redux/slices/projectSlice';
 import { AppDispatch, RootState } from '@/redux/store';
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 const GetHouseSegments = () => {
@@ -33,7 +33,7 @@ const GetHouseSegments = () => {
     }
   }
   return (
-    <div>GetHouseSegments</div>
+   null
   )
 }
 

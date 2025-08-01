@@ -13,6 +13,7 @@ export interface ProjectModel {
   thumbnail?: string;
   jobData?: JobModel[];
   analysed_data?: AnalyseImageModel;
+  house_segments?: string ;
 }
 
 export interface CreateProjectRequest {

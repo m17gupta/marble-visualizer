@@ -11,9 +11,10 @@ import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
 import { Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { TooltipContent } from "../ui/tooltip";
 import TabNavigation from "./tabNavigation/TabNavigation";
-import TestSlider from "./TestSlider";
+// import TestSlider from "./TestSlider";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
  
+
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -84,8 +85,16 @@ const StudioTabs = () => {
   };
 
   const handleAddSegment = () => dispatch(setCanvasType("draw"));
+  const handleEachSegmentHover = (segment: string) => {
+    dispatch(updateHoverGroup(null));
+    dispatch(updateHoverGroup([segment]));
+  };
 
-  // --- Render ---
+
+  // const handleLeaveGroupHover = () => {
+  //   dispatch(updateHoverGroup(null));
+  // };
+
 
   if (!masterArray || masterArray.allSegments.length === 0) {
     return (
@@ -155,6 +164,8 @@ const StudioTabs = () => {
                       value={tab.short_title ?? ""}
                       ref={el => (tabRefs.current[tab.short_title ?? ""] = el)}
                       onClick={() => handleInnerTabClick(tab.short_title ?? "")}
+                      onMouseEnter={() => handleEachSegmentHover(tab.short_title ?? "")}
+                      onMouseLeave={handleLeaveGroupHover}
                       className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600"
                     >
                       {tab.short_title}
@@ -184,7 +195,6 @@ const StudioTabs = () => {
     </Tabs>
   );
 };
- 
+
 export default StudioTabs;
- 
- 
+

@@ -3,10 +3,11 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import MasterDataAnnotation from './MasterDataAnnotation';
 import AddSegmentModal from './AddSegmentModal';
-import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen, updateNewSegmentDrawn } from '@/redux/slices/segmentsSlice';
+import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen, updateIsNewMasterArray, updateNewSegmentDrawn } from '@/redux/slices/segmentsSlice';
 import { SegmentModal, MsterDataAnnotationResponse } from '@/models/jobSegmentsModal/JobSegmentModal';
 import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
 import { setCanvasType } from '@/redux/slices/canvasSlice';
+import AddSegSidebar from './AddSegSidebar';
 
 const CanvasAdddNewSegmentHome = () => {
    const dispatch = useDispatch<AppDispatch>();
@@ -15,7 +16,10 @@ const CanvasAdddNewSegmentHome = () => {
 
   const {segmentDrawn, isAddSegmentModalOpen, isMasterDataAnnotationOpen} = useSelector((state: RootState) => state.segments);  
 
+  const {isNewMasterArray} = useSelector((state: RootState) => state.segments);
   const [isOpenModal, setIsOpenModal] = React.useState(isAddSegmentModalOpen);
+ const [isNewAddedMasterArray, setIsNewAddedMasterArray] = React.useState(isNewMasterArray);
+
     const {list} = useSelector((state: RootState) => state.jobs);
   // update open and close modal
   useEffect(() => {
@@ -27,9 +31,19 @@ const CanvasAdddNewSegmentHome = () => {
   }, [isAddSegmentModalOpen]);
 
 
+  // update new master array modal
+  useEffect(() => {
+    if(isNewMasterArray) {
+      setIsNewAddedMasterArray(isNewMasterArray);
+    }else{  
+      setIsNewAddedMasterArray(false);
+    }   
+  }, [isNewMasterArray]);
+
   const handleCloseModal = () => {
     dispatch(updateIsAddSegmentModalOpen(false));
     setIsOpenModal(false);
+    dispatch(setCanvasType("hover"));
   };
 
   const handleSaveModal = () => {
@@ -79,9 +93,21 @@ const CanvasAdddNewSegmentHome = () => {
   const handleResetModalFail = () => {
     dispatch(updateIsMasterDataAnnotationOpen(false));
   }
+
+  const handleCloseNewMasterArrayModal = () => {
+    setIsNewAddedMasterArray(false);
+    dispatch(updateIsNewMasterArray(false));
+    dispatch(setCanvasType("hover"));
+  };
+
+  const handleSaveNewMasterArrayModal = () => {
+    setIsNewAddedMasterArray(false);
+    dispatch(updateIsNewMasterArray(false));
+    
+  };
   return (
     <>
-   { isOpenModal && <AddSegmentModal
+   { isOpenModal && <AddSegSidebar
       open={isOpenModal}
       onClose={handleCloseModal}
       onSave={handleSaveModal}
@@ -97,6 +123,13 @@ const CanvasAdddNewSegmentHome = () => {
         resetAnnotationPoints={handleResetModal}
         resetAnnotationPointsFail={handleResetModalFail}
       />}
+
+  {/*  add new Master Array modal */}
+      <AddSegmentModal
+        open={isNewAddedMasterArray}
+        onClose={handleCloseNewMasterArrayModal}
+        onSave={handleSaveNewMasterArrayModal}
+      />
     </>
   )
 }

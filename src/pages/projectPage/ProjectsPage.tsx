@@ -45,7 +45,7 @@ import {
   Users,
   Settings,
   Copy,
-  
+
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -60,7 +60,7 @@ import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSl
 import {
   addHouseImage,
   resetGenAiState,
-  
+
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import ProjectHeader from "./ProjectHeader";
@@ -70,13 +70,15 @@ import { CiSquareInfo } from "react-icons/ci";
 import AnalyzedDataModal from "@/components/Modal";
 // import AnalyseImage from "./analyseProjectImage/AnalyseImage";
 import ProjectAnalyseSegmentApiCall from "./analyseProjectImage/ProjectAnalyseSegmentApiCall";
+import ProjectAction from "./ProjectAction";
+import GetHouseSegments from "./analyseProjectImage/GetHouseSegments";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [userProjects, setUserProjects] = useState<ProjectModel[]>([]);
-    const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
+  const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
 
   const {
     list: projects,
@@ -107,12 +109,12 @@ export function ProjectsPage() {
 
   /// update userProjects
   useEffect(() => {
-    if( projects && projects.length > 0) {
+    if (projects && projects.length > 0) {
       setUserProjects(projects);
-    }else{
+    } else {
       setUserProjects([]);
     }
-  },[ projects]);
+  }, [projects]);
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   // const [shareDialogProject, setShareDialogProject] = useState<{ id: string; name: string } | null>(null);
   const isProject = useRef(true);
@@ -173,27 +175,7 @@ export function ProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (project: ProjectModel) => {
-    if (!project.id) return;
 
-    try {
-      // Call the deleteProjectById method from ProjectsService
-      const result = await dispatch(deleteProject(project.id));
-
-      if (deleteProject.fulfilled.match(result)) {
-        toast.success("Project deleted successfully");
-      } else {
-        toast.error((result.payload as string) || "Failed to delete project");
-      }
-    } catch (error) {
-      toast.error("Failed to delete project");
-    }
-  };
-  const handleCopyLink = (project: ProjectModel) => {
-    const projectUrl = `${window.location.origin}/studio/${project.id}`;
-    navigator.clipboard.writeText(projectUrl);
-    toast.success("Project link copied to clipboard!");
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -260,10 +242,15 @@ export function ProjectsPage() {
     );
   }
 
-  // const handleCloseCreateDialog = () => {
-  //   setIsCreateDialogOpen(false);
-
-  // };
+  const handleOpenAnalysedData = (project: ProjectModel) => {
+    const newState = { ...isOpen };
+    // newState.project = project;
+    newState.visible = true;
+    newState.projectId = project.id
+      ? project.id
+      : -1;
+    setIsOpen(newState);
+  }
 
   const handleCreateProject = () => {
     dispatch(updateWorkspaceType("renovate"));
@@ -397,114 +384,13 @@ export function ProjectsPage() {
                       </div>
                       {isUpdating &&
                         updatingProjectId.includes(project.id!) && <Loader />}
-                      <div className="flex items-center justify-between pt-2">
-                        <div className="flex relative items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            // onClick={(e) => {
-                            //   e.stopPropagation();
-                            //   handleShare(project);
-                            // }}
-                          >
-                            <Share2 className="h-4 w-4" />
-                          </Button>
 
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            // onClick={(e) => {
-                            //   e.stopPropagation();
-                            //   handleProjectClick(project.id);
-                            // }}
-                            onClick={() => {}}
-                          >
-                            <Edit3 className="h-4 w-4" />
-                          </Button>
-                          {project.analysed_data ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              // onClick={(e) => {
-                              //   e.stopPropagation();
-                              //   handleProjectClick(project.id);
-                              // }}
-                              onClick={() => {
-                                const newState = { ...isOpen };
-                                // newState.project = project;
-                                newState.visible = true;
-                                newState.projectId = project.id
-                                  ? project.id
-                                  : -1;
-                                setIsOpen(newState);
-                              }}
-                              className="group/info relative"
-                            >
-                              <CiSquareInfo size={18} />
-                              <span
-                                className="pointer-events-none absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap
-               rounded-md bg-white px-3 py-1 text-xs text-black shadow-xl opacity-0 group-hover/info:opacity-100
-               transition-opacity duration-200 z-50"
-                              >
-                                Click to view analysed data.
-                              </span>
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              // onClick={(e) => {
-                              //   e.stopPropagation();
-                              //   handleProjectClick(project.id);
-                              // }}
-                              onClick={() => handleHouseAnalysis(project)}
-                              className="group/info relative"
-                            >
-                              {" "}
-                              <BsIncognito size={15} />
-                              <span
-                                className="pointer-events-none absolute bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap
-               rounded-md bg-white px-3 py-1 text-xs text-black shadow-xl opacity-0 group-hover/info:opacity-100
-               transition-opacity duration-200 z-50"
-                              >
-                                Click to Analyse the Project
-                              </span>
-                            </Button>
-                          )}
 
-                          <Button>
-                           
-                          </Button>
-                        </div>
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleCopyLink(project)}
-                            >
-                              <Copy className="h-4 w-4 mr-2" />
-                              Copy Link
-                            </DropdownMenuItem>
-
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteProject(project)}
-                            >
-                              <Settings className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                      <ProjectAction
+                        project={project}
+                        openAnalysedData={handleOpenAnalysedData}
+                        doHouseAnalysis={handleHouseAnalysis}
+                      />
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -541,6 +427,8 @@ export function ProjectsPage() {
       <MaterialData />
 
       <ProjectAnalyseSegmentApiCall />
+
+      <GetHouseSegments />
     </>
   );
 }

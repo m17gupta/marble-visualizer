@@ -33,7 +33,6 @@ import {
 } from "@/components/canvasUtil/canvasAutoPan";
 import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
-import { collectPoints } from "../canvasUtil/CreatePolygon";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from "../canvasUtil/canvasImageUtils";
 
@@ -65,7 +64,6 @@ export function CanvasEditor({
  
   const {
     deleteMaskId,
-    zoomMode,
     isCanvasReady,
     mousePosition,
     canavasActiveTool,
@@ -82,7 +80,7 @@ export function CanvasEditor({
   const currentMousePositionRef = useRef<{ x: number; y: number } | null>(null);
 
   const activeTool = useRef<DrawingTool>("polygon");
-  const updatedZoomMode = useRef<string>("mouse");
+
 
   // Store original viewport transform
   const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
