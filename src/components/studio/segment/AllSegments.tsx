@@ -86,7 +86,7 @@ const AllSegments = () => {
 
   return (
     <TooltipProvider>
-      <div className="w-full flex flex-col p-1 gap-2">
+      <div className="w-full flex flex-col ps-2 pt-4">
         {updatedMasterArray &&
           updatedMasterArray.length > 0 &&
           updatedMasterArray.map((segment: MasterModel, index: number) => {
@@ -101,8 +101,8 @@ const AllSegments = () => {
                       variant={isActive ? "default" : "outline"}
                       size="icon"
                       className={cn(
-                        "w-12 h-12 border-2 p-1 pb-[10px] transition-all duration-200",
-                        isActive && "ring-2 ring-offset-2 ring-primary",
+                        "w-12 h-12 border-2 p-1  transition-all duration-200 focus:outline-0",
+                        isActive && "ring-0 ring-offset-0",
                         isHovered && "shadow-md"
                         // scale-105 
                       )}
@@ -172,7 +172,7 @@ const AllSegments = () => {
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className="bg-white text-black hover:bg-gray-100"
+                  className="bg-white text-black hover:bg-gray-100 px-3"
                   onClick={handleAddSegment}
                 >
                   <svg
