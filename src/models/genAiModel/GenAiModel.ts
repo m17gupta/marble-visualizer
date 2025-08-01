@@ -36,6 +36,11 @@ export interface GenAiResponse {
     message: string;
   }
 }
+export interface SubmitGenAiResponseModel {
+  status: string;
+  task_id: string;
+  message: string;
+}
 
 export interface GenAiTaskIdResponse {
   status: string;

@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 // import sampleImg from "@/assets/kitchen.jpg"; // Replace with your actual image path
 
 const ImageCard: React.FC = () => {
-  const { currentImageUrl } = useSelector((state: RootState) => state.studio);
+  // const { currentImageUrl } = useSelector((state: RootState) => state.studio);
 
   const param = useParams();
   const id = param.id !== undefined ? parseInt(param.id) : 0;
