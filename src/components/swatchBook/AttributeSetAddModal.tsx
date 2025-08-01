@@ -32,76 +32,74 @@ import {
 } from "@/components/ui/select";
 
 // Types
-interface Attribute {
-  id: number;
-  name: string;
-}
-
-interface Subcategory {
-  id: number;
-  name: string;
-  category_id: number;
-}
 
 export default function AttributeSetAddModal() {
   const [attributeset, setAttributeSet] = useState<{
     name: string;
-    groups: number[]; // Only store attribute IDs
-    sub_category_id: number | null;
+    category_id: number | null;
   }>({
     name: "",
-    groups: [],
-    sub_category_id: null,
+    category_id: null,
   });
 
-  const [allAttributes, setAllAttributes] = useState<Attribute[]>([]);
-  const [allSubcats, setAllSubcats] = useState<Subcategory[]>([]);
+  const [allAttributes, setAllAttributes] = useState<any[]>([]);
+  const [product_categories, setProduct_categories] = useState<any[]>([]);
 
+  const [group, setGroup] = useState([]);
+
+  // const handleAddGroup = () => {
+  //   const gp = [...group]
+  //   gp.push({
+  //     name:
+  //   })
+  // }
+
+  console.log(attributeset);
   useEffect(() => {
     const fetchData = async () => {
       const { data: attributes } = await supabase
-        .from("material_attributes")
+        .from("product_attributes")
         .select("id, name");
 
       const { data: subcats } = await supabase
-        .from("material_subcategories")
+        .from("product_categories")
         .select("*");
 
       if (attributes && subcats) {
         setAllAttributes(attributes);
-        setAllSubcats(subcats);
+        setProduct_categories(subcats);
       }
     };
     fetchData();
   }, []);
 
-  const handleToggleAttribute = (attId: number) => {
-    setAttributeSet((prev) => {
-      const exists = prev.groups.includes(attId);
-      return {
-        ...prev,
-        groups: exists
-          ? prev.groups.filter((id) => id !== attId)
-          : [...prev.groups, attId],
-      };
-    });
-  };
+  // const handleToggleAttribute = (attId: number) => {
+  //   setAttributeSet((prev) => {
+  //     const exists = prev.groups.includes(attId);
+  //     return {
+  //       ...prev,
+  //       groups: exists
+  //         ? prev.groups.filter((id) => id !== attId)
+  //         : [...prev.groups, attId],
+  //     };
+  //   });
+  // };
 
   const handleSaveAttributeSet = async (e: any) => {
     e.stopPropagation();
 
-    const { data, error } = await supabase
-      .from("materials_attribute_sets")
-      .insert({
-        name: attributeset.name,
-        sub_category_id: attributeset.sub_category_id,
-        groups: attributeset.groups,
-      })
-      .select("*");
+    // const { data, error } = await supabase
+    //   .from("materials_attribute_sets")
+    //   .insert({
+    //     name: attributeset.name,
+    //     sub_category_id: attributeset.sub_category_id,
+    //     groups: attributeset.groups,
+    //   })
+    //   .select("*");
 
-    if (!error) {
-      setAttributeSet({ name: "", groups: [], sub_category_id: null });
-    }
+    // if (!error) {
+    //   setAttributeSet({ name: "", groups: [], sub_category_id: null });
+    // }
   };
 
   return (
@@ -127,20 +125,20 @@ export default function AttributeSetAddModal() {
         </div>
 
         <div className="mt-4">
-          <Label htmlFor="subcategory">Material Sub-Category</Label>
+          <Label htmlFor="subcategory">Product Categories</Label>
           <Select
             onValueChange={(value) =>
               setAttributeSet((prev) => ({
                 ...prev,
-                sub_category_id: Number(value),
+                category_id: Number(value),
               }))
             }
           >
             <SelectTrigger id="subcategory">
-              <SelectValue placeholder="Select Subcategory" />
+              <SelectValue placeholder="Select Product Categories" />
             </SelectTrigger>
             <SelectContent>
-              {allSubcats.map((s) => (
+              {product_categories.map((s) => (
                 <SelectItem key={s.id} value={s.id.toString()}>
                   {s.name}
                 </SelectItem>
@@ -150,12 +148,16 @@ export default function AttributeSetAddModal() {
         </div>
 
         <div className="mt-6">
+          <Button>+ Group</Button>
+        </div>
+
+        <div className="mt-6">
           <Label>Select Attributes</Label>
-          <SearchableMultiSelect
+          {/* <SearchableMultiSelect
             allAttributes={allAttributes}
             selectedIds={attributeset.groups}
             onToggle={handleToggleAttribute}
-          />
+          /> */}
         </div>
 
         <DialogFooter>
@@ -177,7 +179,7 @@ function SearchableMultiSelect({
   selectedIds,
   onToggle,
 }: {
-  allAttributes: Attribute[];
+  allAttributes: any[];
   selectedIds: number[];
   onToggle: (id: number) => void;
 }) {
@@ -199,7 +201,7 @@ function SearchableMultiSelect({
         <PopoverContent className="p-0 w-full max-w-md">
           <Command>
             <CommandInput placeholder="Search attributes..." />
-            <CommandList className="max-h-60 overflow-y-auto">
+            <CommandList className="max-h-60 overflow-y-scroll">
               {available.length === 0 && (
                 <p className="px-4 py-2 text-muted-foreground">
                   No attributes left

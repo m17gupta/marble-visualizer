@@ -36,7 +36,7 @@ interface AttributeSet {
 }
 
 interface AttributeValues {
-  [key: number]: string | number | string[];
+  [key: number]: string | number | readonly string[] | boolean | undefined;
 }
 
 interface SearchTerms {
@@ -58,6 +58,7 @@ const SwatchAddPage: React.FC = () => {
   const [showDropdowns, setShowDropdowns] = useState<ShowDropdowns>({});
   const [productdata, setProductData] = useState({
     product_category_id: 1,
+    brand_id: null,
   });
   useEffect(() => {
     const getAttributeSets = async (): Promise<void> => {
@@ -138,7 +139,7 @@ const SwatchAddPage: React.FC = () => {
 
   const handleAttributeChange = (
     attributeId: number,
-    value: string | number | string[]
+    value: string | number | string[] | boolean
   ): void => {
     setAttributeValues((prev) => ({
       ...prev,
@@ -234,7 +235,7 @@ const SwatchAddPage: React.FC = () => {
             </label>
             <input
               type="text"
-              value={currentValue}
+              value={String(currentValue)}
               onChange={(e) => handleAttributeChange(id, e.target.value)}
               className={inputClasses}
               placeholder={`Enter ${name.toLowerCase()}`}
@@ -250,7 +251,7 @@ const SwatchAddPage: React.FC = () => {
             </label>
             <input
               type="number"
-              value={currentValue}
+              value={Number(currentValue)}
               onChange={(e) =>
                 handleAttributeChange(id, parseFloat(e.target.value) || 0)
               }
@@ -402,7 +403,7 @@ const SwatchAddPage: React.FC = () => {
             </label>
             <input
               type="text"
-              value={currentValue}
+              value={String(currentValue)}
               onChange={(e) => handleAttributeChange(id, e.target.value)}
               className={inputClasses}
               placeholder={`Enter ${name.toLowerCase()}`}
