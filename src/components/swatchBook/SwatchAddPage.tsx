@@ -633,8 +633,6 @@
 
 // export default SwatchAddPage;
 
-
-
 import React, { useEffect, useState } from "react";
 import {
   Save,

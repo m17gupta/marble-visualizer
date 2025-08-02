@@ -46,9 +46,11 @@ interface Product {
   brand_id?: number;
   product_category_id?: number;
   product_attribute_set_id?: number;
-  image_url?: string | null;
+  photo?: string | null;
   is_available?: boolean;
   created_at: string;
+  bucket_path?: string;
+  new_bucket?: string;
 }
 
 interface AttributeValue {
@@ -266,6 +268,8 @@ const ArrayValueDisplay: React.FC<ArrayValueDisplayProps> = ({
 };
 
 export function SwatchDetailsPage() {
+  const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
+  const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
   const params = useParams<{ id: string }>();
   const id = params.id ? parseInt(params.id) : 0;
   const navigate = useNavigate();
@@ -275,7 +279,7 @@ export function SwatchDetailsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-
+  console.log(currentSwatch);
   useEffect(() => {
     const fetchMaterialById = async (id: number) => {
       setLoading(true);
@@ -555,10 +559,14 @@ export function SwatchDetailsPage() {
                   </div>
                 </CardHeader>
 
-                {currentSwatch.image_url && (
+                {currentSwatch.photo && (
                   <div className="relative">
                     <img
-                      src={currentSwatch.image_url}
+                      src={
+                        `${currentSwatch.bucket_path}` === "default"
+                          ? `${path}/${currentSwatch.photo}`
+                          : `${newPath}/${currentSwatch.bucket_path}`
+                      }
                       alt="Product"
                       className="w-full h-80 object-cover"
                     />
@@ -783,7 +791,7 @@ export function SwatchDetailsPage() {
                 </CardContent>
               </Card>
             </motion.div> */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
@@ -792,7 +800,7 @@ export function SwatchDetailsPage() {
                 <CardContent className="p-0">
                   <img
                     src={
-                      currentSwatch.image_url ||
+                      currentSwatch.photo ||
                       "https://images.unsplash.com/photo-1523895665936-7bfe172b757d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     }
                     alt="Product"
@@ -800,7 +808,7 @@ export function SwatchDetailsPage() {
                   />
                 </CardContent>
               </Card>
-            </motion.div>
+            </motion.div> */}
 
             {/* Statistics Card */}
             <motion.div
