@@ -7,6 +7,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import info from "@/assets/image/solar--info-square-linear.svg";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AppDispatch } from "@/redux/store";
@@ -30,7 +34,7 @@ const dispatch = useDispatch<AppDispatch>();
         <img
           src="/assets/image/line-md--gauge-loop.svg"
           alt="Materials"
-          className="h-4 w-4"
+          className="h-5 w-5"
         />
       ),
     },
@@ -42,9 +46,9 @@ const dispatch = useDispatch<AppDispatch>();
       id: "measurement",
       icon: (
         <img
-          src="/assets/image/carbon--area.svg"
+          src="/assets/image/line-md--arrows-vertical-alt.svg"
           alt="Information"
-          className="h-4 w-4"
+          className="h-5 w-5"
         />
       ),
     },
@@ -54,7 +58,7 @@ const dispatch = useDispatch<AppDispatch>();
         <img
           src="/assets/image/solar--info-square-linear.svg"
           alt="Information"
-          className="h-4 w-4"
+          className="h-5 w-5"
         />
       ),
     },
@@ -75,26 +79,28 @@ const dispatch = useDispatch<AppDispatch>();
         if (btn.id === "edit") {
           return (
             <DropdownMenu key="edit">
+
               <DropdownMenuTrigger asChild>
-                <button
-                  onClick={() => setActive("edit")}
-                  className={`px-3 py-1 rounded-md border transition-colors ${
-                    active === "edit"
-                      ? "bg-black text-white border-gray-800"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                  }`}
-                >
-                  <img
-                    src="/assets/image/line-md--edit-twotone.svg"
-                    alt="Edit"
-                    className="h-4 w-4"
-                  />
-                </button>
+            <button
+              onClick={() => setActive("edit")}
+              className={`px-3 py-1 rounded-md border transition-colors focus:outline-none ${
+                active === "edit"
+                  ? "bg-blue-50 text-white border-gray-800"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+              }`}
+            >
+              <img
+                src="/assets/image/line-md--edit-twotone.svg"
+                alt="Edit"
+                className="h-5 w-5"
+              />
+            </button>
+
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-44">
                 <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
+                <DropdownMenuItem className="cursor-pointer"
                 onClick={()=>handleEditSegment(segment)}
                 >
                   <img
@@ -112,15 +118,15 @@ const dispatch = useDispatch<AppDispatch>();
                   />
                   Edit Annotation
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                   <img
-                    src="/assets/image/line-md--history-alt.svg"
+                        src="/assets/image/carbon--area.svg"
                     alt="Re-annotate"
                     className="h-4 w-4 mr-2"
                   />
                   Re-Annotation
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                   <img
                     src="/assets/image/line-md--trash.svg"
                     alt="Delete"
@@ -137,9 +143,10 @@ const dispatch = useDispatch<AppDispatch>();
           <button
             key={btn.id}
             onClick={() => setActive(btn.id)}
-            className={`px-3 py-1 rounded-md border transition-colors ${
+            className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
+ ${
               active === btn.id
-                ? "bg-black text-white border-gray-800"
+                ? "bg-blue-100 text-white border-blue-800"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
             }`}
           >

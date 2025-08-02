@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 
 import { fetchGenAiChat } from "@/redux/slices/visualizerSlice/genAiSlice";
 import WebhookListener from "../webHook/WebHook";
+import DesignProject from "./projectWorkSpace/DesignProject";
 
 const WorkSpaceHome = () => {
   const { currentTabContent } = useSelector((state: RootState) => state.studio);
@@ -39,8 +40,10 @@ const WorkSpaceHome = () => {
         {currentTabContent === "compare" && <CompareGenAiHome />}
 
         <div className="mt-4 ">
+          <DesignProject/>
           <GuidancePanel />
           <GenAiImages />
+          
         </div>
       </div>
       <div className="md:hidden block">

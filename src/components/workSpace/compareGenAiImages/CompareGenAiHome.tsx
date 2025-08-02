@@ -59,8 +59,8 @@ const CompareGenAiHome: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full p-6 bg-gray-100">
-      <button onClick={handleInspirationSection}>back to Inspiration</button>
+    <div className="flex flex-col h-full w-full p-2 bg-gray-100">
+      {/* <button onClick={handleInspirationSection}>back to Inspiration</button> */}
       {/* View mode tabs */}
       {/* {showCompareView && currentGenAiImage &&
       currentGenAiImage.master_image_path && currentGenAiImage.output_image && (
@@ -87,7 +87,7 @@ const CompareGenAiHome: React.FC = () => {
       currentGenAiImage &&
       currentGenAiImage.master_image_path &&
       currentGenAiImage.output_image ? (
-        <div className="h-[500px] mb-6">
+       <div className="h-[100vh] mb-6">
           {currentGenAiImage.master_image_path &&
           currentGenAiImage.output_image &&
           viewMode === "slider" ? (
