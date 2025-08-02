@@ -9,7 +9,7 @@ import genAiService from "@/services/genAi/genAiService";
 
 interface GenAiState {
   genAiImages: GenAiChat[];
-  currentGenAiImage?: GenAiChat; // Optional field for the currently selected GenAI image
+  currentGenAiImage?: GenAiChat|null; // Optional field for the currently selected GenAI image
   requests: GenAiRequest;
   inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
@@ -27,7 +27,7 @@ interface GenAiState {
 // Initial state
 const initialState: GenAiState = {
   genAiImages: [],
-  currentGenAiImage: undefined, // Initialize as an empty object
+  currentGenAiImage: null, // Initialize as null
   inspirationNames: "", // Optional field for storing inspiration names
   requests: {
     houseUrl: [],
@@ -116,7 +116,7 @@ const genAiSlice = createSlice({
     },
     setCurrentGenAiImage: (
       state,
-      action: PayloadAction<GenAiChat | undefined>
+      action: PayloadAction<GenAiChat|null >
     ) => {
       state.currentGenAiImage = action.payload;
     },

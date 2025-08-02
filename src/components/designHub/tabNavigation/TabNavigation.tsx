@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -7,32 +7,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 
-const TabNavigation = () => {
-  const [designhubactivetab, setDesignHubActiveTab] = useState(
-    "recommendations-swatches"
-  );
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { AppDispatch } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { updateIsSegmentEdit } from "@/redux/slices/segmentsSlice";
+import { updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 
-  const { activeTab: tabControlActiveTab } = useSelector(
-    (state: RootState) => state.tabControl
-  );
+    
+type Props={
+  title?: string;
+  segment:SegmentModal
+}
+const TabNavigation = ({ title, segment }: Props) => {
 
-  const handleChangeTab = (value: string) => {
-    console.log("Tab changed to:", value);
-    setDesignHubActiveTab(value);
-  };
-
-  useEffect(() => {
-    if (tabControlActiveTab) {
-      handleChangeTab(tabControlActiveTab);
-    }
-  }, [tabControlActiveTab]);
-
-  const [active, setActive] = useState("palette");
-
+const [active, setActive] = useState("palette");
+const dispatch = useDispatch<AppDispatch>();
   const buttons = [
     {
       id: "materials",
@@ -71,8 +61,16 @@ const TabNavigation = () => {
    
   ];
 
+
+  const handleEditSegment = (segment: SegmentModal) => {
+    console.log("Editing segment:", segment);
+    dispatch(updateSelectedSegment(segment));
+    dispatch(updateIsSegmentEdit(true));
+    // Implement your edit logic here
+  };
   return (
-    <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
+    <>
+      <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
       {buttons.map((btn) => {
         if (btn.id === "edit") {
           return (
@@ -96,6 +94,16 @@ const TabNavigation = () => {
               <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                onClick={()=>handleEditSegment(segment)}
+                >
+                  <img
+                    src="/assets/image/line-md--edit-twotone.svg"
+                    alt="Edit"
+                    className="h-4 w-4 mr-2"
+                  />
+                  Edit Segment
+                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <img
                     src="/assets/image/line-md--edit-twotone.svg"
@@ -140,6 +148,8 @@ const TabNavigation = () => {
         );
       })}
     </div>
+    
+    </>
   );
 };
 

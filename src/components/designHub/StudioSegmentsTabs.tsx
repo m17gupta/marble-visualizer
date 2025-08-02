@@ -7,12 +7,13 @@ import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
-import { updatedSelectedGroupSegment } from "@/redux/slices/MasterArraySlice";
+import { updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 import { Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { TooltipContent } from "../ui/tooltip";
 import TabNavigation from "./tabNavigation/TabNavigation";
 // import TestSlider from "./TestSlider";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
  
 
 const StudioTabs = () => {
@@ -65,8 +66,10 @@ const StudioTabs = () => {
     setInnerTabValue(group.segments[0]?.short_title ?? "");
   };
 
-  const handleInnerTabClick = (shortTitle: string) => {
-    setInnerTabValue(shortTitle);
+  const handleInnerTabClick = (seg:SegmentModal) => {
+    if (!seg || !seg.short_title) return;
+    dispatch(updateSelectedSegment(seg));
+    setInnerTabValue(seg.short_title);
   };
 
   const handleGroupHover = (group: MasterGroupModel) => {
@@ -163,7 +166,7 @@ const StudioTabs = () => {
                     <TabsTrigger
                       value={tab.short_title ?? ""}
                       ref={el => (tabRefs.current[tab.short_title ?? ""] = el)}
-                      onClick={() => handleInnerTabClick(tab.short_title ?? "")}
+                      onClick={() => handleInnerTabClick(tab)}
                       onMouseEnter={() => handleEachSegmentHover(tab.short_title ?? "")}
                       onMouseLeave={handleLeaveGroupHover}
                       className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600"
@@ -178,15 +181,16 @@ const StudioTabs = () => {
             {currentSelectedGroupSegment?.segments.map(segment => (
               <TabsContent key={segment.short_title} value={segment.short_title ?? ""} className="">
                 {innerTabValue === segment.short_title && (
-                  <div className="text-gray-700 font-medium">
-               
-                  </div>
+                   <TabNavigation
+                 title={segment.short_title}
+                 segment={segment||{}} 
+                   />
                 )}
               </TabsContent>
             ))}
 
             
-     <TabNavigation />
+    
          <SwatchRecommendations/>
             
           </Tabs>

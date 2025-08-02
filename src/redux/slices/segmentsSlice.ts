@@ -50,6 +50,8 @@ interface SegmentsState {
     shortName: string;
     category: string;
   };
+
+  isSegmentEdit: boolean;
   isLoadingSegments: boolean;
   isNewMasterArray: boolean;
   isSegmentLoaded: boolean;
@@ -86,7 +88,7 @@ const initialState: SegmentsState = {
   isNewMasterArray: false,
   newSegment: {},
   isDrawing: false,
-  // currentPoints: [],
+  isSegmentEdit: false,
   segmentDrawn: {
     annotation: [],
     segType: '',
@@ -246,7 +248,18 @@ const segmentsSlice = createSlice({
         state.allSegments = [action.payload];
       }
     },
-
+    changeGroupSegment: (state, action: PayloadAction<SegmentModal>) => {
+      const updatedSegment = action.payload;
+      const index = state.allSegments.findIndex(seg => seg.id === updatedSegment.id);
+      if (index !== -1) {
+        // remove existed and add new segment
+        const segArray = state.allSegments.filter(seg => seg.id !== updatedSegment.id);
+        state.allSegments = [...segArray, updatedSegment];
+      }
+    },
+    updateIsSegmentEdit: (state, action) => {
+      state.isSegmentEdit = action.payload;
+    },
     undo: (state) => {
       if (state.historyIndex > 0) {
         state.historyIndex--;
@@ -257,6 +270,8 @@ const segmentsSlice = createSlice({
         state.historyIndex++;
       }
     },
+
+
     clearHistory: (state) => {
       state.canvasHistory = [];
       state.historyIndex = -1;
@@ -352,7 +367,9 @@ export const {
   updateIsMasterDataAnnotationOpen,
   resetSegmentSlice,
   updateAddSegMessage,
-  updateNewSegmentDrawn
+  updateNewSegmentDrawn,
+  updateIsSegmentEdit,
+  changeGroupSegment
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

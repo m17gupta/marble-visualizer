@@ -1,4 +1,5 @@
 import { MasterGroupModel, MasterModel } from "@/models";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { createSlice } from "@reduxjs/toolkit";
 
 
@@ -6,6 +7,7 @@ interface MasterArrayState {
   masterArray: MasterModel[];
   selectedMasterArray?: MasterModel | null;
   selectedGroupSegment: MasterGroupModel | null;
+  selectedSegment?: SegmentModal | null;
   isCreatedMasterArray?: boolean;
 }
 
@@ -13,6 +15,8 @@ const initialState: MasterArrayState = {
   masterArray: [],
   selectedMasterArray: null,
   selectedGroupSegment: null,
+  selectedSegment: null,
+  // Initialize isCreatedMasterArray to false
   isCreatedMasterArray: false,
 };
 
@@ -69,6 +73,28 @@ const masterArraySlice = createSlice({
 
         // Assign back if allSegments was undefined (for safety)
         // existingSegment.allSegments = allGroups;
+      }else{
+        const segArray= state.selectedMasterArray
+        if(segArray && segArray.name=== newSegment.segment_type){
+          
+         const newMasterArray:MasterModel={
+           id: segArray.id,
+             name: segArray.name,
+             icon: segArray.icon,
+             color_code: segArray.color_code,
+             color: segArray.color, 
+             short_code: segArray.short_code,
+             overAllSwatch: [],
+             categories: segArray.categories,
+             allSegments: [
+              {
+                groupName: newSegment.group_label_system,
+                segments: [newSegment],
+              }
+             ],
+         }
+         state.masterArray.push(newMasterArray);
+        }
       }
     },
     addNewSegmentToSelectedMasterArray: (state, action) => {
@@ -99,10 +125,56 @@ const masterArraySlice = createSlice({
       }
     }    
   },
-    clearMasterArray: (state) => {
-      state.masterArray = [];
-      state.selectedMasterArray = null;
-      state.selectedGroupSegment = null;
+  changeGroupSelectedSegment: (state, action) => {
+   const {master,updatedSegment} = action.payload;
+    const index = state.masterArray.findIndex(seg => seg.name === updatedSegment.segment_type);
+
+    if (index !== -1 ) {
+      // remove existed and add new segment
+      const segArrayIndex = state.masterArray[index].allSegments.findIndex(seg => seg.groupName === updatedSegment.group_label_system);
+      if (segArrayIndex !== -1) {
+        const existingGroup = state.masterArray[index].allSegments[segArrayIndex];
+        const segmentIndex = existingGroup.segments.findIndex(seg => seg.id === updatedSegment.id);
+        if (segmentIndex !== -1) {
+          existingGroup.segments[segmentIndex] = updatedSegment;
+        } else {
+          existingGroup.segments.push(updatedSegment);
+        }
+      } else {
+        state.masterArray[index].allSegments.push({
+          groupName: updatedSegment.group_label_system,
+          segments: [updatedSegment],
+        });
+      }
+    }else{
+      // If master not found, add new master with segment
+      const newMasterArray: MasterModel = {
+        id: master.id,
+        name: master.name,
+        icon: master.icon,
+        color_code: master.color_code,
+        color: master.color,
+        short_code: master.short_code,
+        overAllSwatch: [],
+        categories: master.categories,
+        allSegments: [{
+          groupName: updatedSegment.group_label_system,
+          segments: [updatedSegment],
+        }],
+      };
+      state.masterArray.push(newMasterArray);
+    }
+  },
+  updateSelectedSegment:(state,action)=>{
+      const segment = action.payload;
+      state.selectedSegment = segment;
+    }
+  ,
+  clearMasterArray: (state) => {
+    state.masterArray = [];
+    state.selectedMasterArray = null;
+    state.selectedGroupSegment = null;
+    state.selectedSegment = null;
       state.isCreatedMasterArray = false;
     }
   },
@@ -115,7 +187,9 @@ export const {
   clearMasterArray,
   addNewSegmentToMasterArray,
   addNewSegmentToSelectedMasterArray,
-  updatedSelectedGroupSegment
+  updatedSelectedGroupSegment,
+  updateSelectedSegment,
+  changeGroupSelectedSegment
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;

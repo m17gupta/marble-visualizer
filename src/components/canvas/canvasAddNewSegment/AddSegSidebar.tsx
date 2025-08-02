@@ -7,10 +7,9 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
+ 
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import AddSegLists from "./AddSegLists";
 
 import {
@@ -27,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { updateAddSegMessage, UpdateOtherSegmentDrawn } from "@/redux/slices/segmentsSlice";
 import { toast } from "sonner";
+import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
 
 interface AddSegmentModalProps {
   open: boolean;
@@ -50,9 +50,12 @@ const AddSegSidebar = ({ open, onClose, onSave }: AddSegmentModalProps) => {
   const [shortName, setShortName] = useState('');
   const [childName, setChildName] = useState('');
  const  [groupArray, setGroupArray] = useState<string[]>([]);
-  const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
+  const { selectedMasterArray , masterArray} = useSelector((state: RootState) => state.masterArray);
  const [selectedCatogory, setSelectedCategory] = useState<string>('');
- 
+ const [isUpdateSegType, setIsUpdateSegType] = useState<boolean>(false);
+
+ const {segments} = useSelector((state: RootState) => state.materialSegments);
+
   useEffect(() => {
     if( selectedMasterArray &&
         selectedMasterArray.name &&
@@ -124,6 +127,44 @@ const AddSegSidebar = ({ open, onClose, onSave }: AddSegmentModalProps) => {
      toast.success(`Group ${newGroupName} added successfully!`);
    }
 
+  //  useEffect(() => {
+  //   if(isUpdateSegType && 
+  //     masterArray && masterArray.length > 0 && 
+  //     segType) {
+  //     console.log("segType", segType)
+  //     setIsUpdateSegType(false);
+  //     handleSegTypeChange(segType);
+  //   }
+  //  },[isUpdateSegType, masterArray,segType])
+   // resegrate teh group type
+   const handleSegTypeChange = (value: string) => {
+    console.log("value", value)
+    console.log("masterArray", masterArray)
+     if(masterArray  && masterArray.length >0){
+       const selectedArray= masterArray.find((master) => master.name === value);
+       if(selectedArray && selectedArray.name) {
+         dispatch(addSelectedMasterArray(selectedArray));
+       }else if(segments && segments.length > 0) {
+         const selectedSegment = segments.find((seg) => seg.name === value);
+         if(selectedSegment && selectedSegment.name) {
+           dispatch(addSelectedMasterArray({
+             id: selectedSegment.id,
+             name: selectedSegment.name,
+             icon: selectedSegment.icon,
+             color_code: selectedSegment.color_code,
+             color: selectedSegment.color,
+             short_code: selectedSegment.short_code,
+             categories: selectedSegment.categories,
+             allSegments: [],
+           }));
+         } else {
+           toast.error("Selected segment not found in master array or segments.");
+         }
+
+       }
+     }
+   }
+
   return (
     <Sheet open={open} onOpenChange={(val) => { if (!val) onClose(); }}>
       <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col h-full">
@@ -141,6 +182,32 @@ const AddSegSidebar = ({ open, onClose, onSave }: AddSegmentModalProps) => {
             </SheetDescription>
           </SheetHeader>
 
+          <div className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-semibold">Select segment type</h4>
+             
+            </div>
+            <Select
+              value={segType}
+              onValueChange={(value) => {
+                setSegType(value);
+                handleSegTypeChange(value);
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a group" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {segments && segments.map((group, index) => (
+                    <SelectItem key={index} value={group.name}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-semibold">Select Group</h4>
@@ -172,24 +239,18 @@ const AddSegSidebar = ({ open, onClose, onSave }: AddSegmentModalProps) => {
           <div className="w-full pt-6">
             <h4 className="font-semibold pb-3">Categories</h4>
             <Select
-              // value={currentSelection}
-              // onValueChange={(value) => {
-              //   if (value && !selectedItems.includes(value)) {
-              //     setSelectedItems((prev) => [...prev, value]);
-              //   }
-              //   setCurrentSelection("");
-              // }}
+              
                 value={selectedCatogory}
                 onValueChange={(value) => {
                   setSelectedCategory(value);
                 }}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a fruit" />
+                <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Colors</SelectLabel>
+                  
                   {allcatogories && allcatogories.length > 0 && (
                     allcatogories.map((opt) => (
                       <SelectItem key={opt} value={opt}>

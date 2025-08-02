@@ -16,6 +16,7 @@ import GenAiImages from "../workSpace/compareGenAiImages/GenAiImages";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import PolygonOverlay from "../canvas/PolygonOverlay";
+import SegmentHome from "../segments/SegmentHome";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -151,6 +152,8 @@ export function StudioMainCanvas({
                       className="mb-6"
                       onImageLoad={handleImageLoad}
                     />}
+
+                     
                   </motion.div>
                 ) : (
                   <motion.div
@@ -250,6 +253,8 @@ export function StudioMainCanvas({
           )}
         </motion.div>
       </ScrollArea>
+
+      
     </main>
   );
 }
