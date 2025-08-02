@@ -83,10 +83,14 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
           <DialogTitle>Add Segment</DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4 mb-2 text-lg font-medium text-primary">{selectedSegment?.name}</div>
+        <div className="mt-4 mb-2 text-lg font-medium text-primary border-ra">
+          <button className="bg-gray-50 text-black rounded px-2 py-1 border border-gray-300 hover:bg-gray-100 transition-colors duration-200 text-sm">
+            {selectedSegment?.name}
+            </button>
+          </div>
 
         <ScrollArea className="h-[300px] pr-2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-12 md:grid-cols-12 lg:grid-cols-8 gap-4">
             {updatedSegments?.map((item, index) => {
               const isSelected = item.name === selectedSegment?.name
               const isDisabled = item.isDisabled
@@ -101,7 +105,7 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
                   `}
                   style={{ borderColor: item.color_code }}
                 >
-                  <div className="w-full h-20 mb-2">
+                  <div className="w-full h-18 mb-2">
                     <img
                             src={item.icon}
                             alt={item.name || "Segment Icon"}
@@ -114,7 +118,7 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
                             }}
                           />
                   </div>
-                  <h6 className="text-sm font-medium">{item.name}</h6>
+                  <h6 className="text-sm font-medium truncate overflow-hidden whitespace-nowrap">{item.name}</h6>
                 </div>
               )
             })}
