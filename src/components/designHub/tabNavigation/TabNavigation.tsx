@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Palette, Shapes, History, Clock, Square } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
 
 const TabNavigation = () => {
   const [designhubactivetab, setDesignHubActiveTab] = useState(
@@ -14,107 +19,127 @@ const TabNavigation = () => {
   const { activeTab: tabControlActiveTab } = useSelector(
     (state: RootState) => state.tabControl
   );
+
   const handleChangeTab = (value: string) => {
     console.log("Tab changed to:", value);
     setDesignHubActiveTab(value);
   };
-
-  // update te active tab
 
   useEffect(() => {
     if (tabControlActiveTab) {
       handleChangeTab(tabControlActiveTab);
     }
   }, [tabControlActiveTab]);
+
+  const [active, setActive] = useState("palette");
+
+  const buttons = [
+    {
+      id: "materials",
+      icon: (
+        <img
+          src="/assets/image/line-md--gauge-loop.svg"
+          alt="Materials"
+          className="h-4 w-4"
+        />
+      ),
+    },
+    {
+      id: "edit",
+      isDropdown: true,
+    },
+    {
+      id: "measurement",
+      icon: (
+        <img
+          src="/assets/image/carbon--area.svg"
+          alt="Information"
+          className="h-4 w-4"
+        />
+      ),
+    },
+    {
+      id: "information",
+      icon: (
+        <img
+          src="/assets/image/solar--info-square-linear.svg"
+          alt="Information"
+          className="h-4 w-4"
+        />
+      ),
+    },
+   
+  ];
+
   return (
-    <>
-      <div className="flex items-center justify-between px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
-        <button className="px-3 py-1 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors">
-          <Palette className="h-4 w-4" />
-        </button>
-        <button className="px-3 py-1 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors">
-          <Square className="h-4 w-4" />
-        </button>
-        <button className="px-3 py-1 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors">
-          <Shapes className="h-4 w-4" />
-        </button>
-        <button className="px-3 py-1 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors">
-          <History className="h-4 w-4" />
-        </button>
-        <button className="px-3 py-1 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors">
-          <Clock className="h-4 w-4" />
-        </button>
-      </div>
+    <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
+      {buttons.map((btn) => {
+        if (btn.id === "edit") {
+          return (
+            <DropdownMenu key="edit">
+              <DropdownMenuTrigger asChild>
+                <button
+                  onClick={() => setActive("edit")}
+                  className={`px-3 py-1 rounded-md border transition-colors ${
+                    active === "edit"
+                      ? "bg-black text-white border-gray-800"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+                  }`}
+                >
+                  <img
+                    src="/assets/image/line-md--edit-twotone.svg"
+                    alt="Edit"
+                    className="h-4 w-4"
+                  />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <img
+                    src="/assets/image/line-md--edit-twotone.svg"
+                    alt="Edit"
+                    className="h-4 w-4 mr-2"
+                  />
+                  Edit Annotation
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <img
+                    src="/assets/image/line-md--history-alt.svg"
+                    alt="Re-annotate"
+                    className="h-4 w-4 mr-2"
+                  />
+                  Re-Annotation
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <img
+                    src="/assets/image/line-md--trash.svg"
+                    alt="Delete"
+                    className="h-4 w-4 mr-2"
+                  />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        }
 
-      {/* <Tabs
-        defaultValue="recommendations-swatches"
-        value={designhubactivetab}
-        onValueChange={handleChangeTab}
-        className="flex flex-col w-full"
-      >
-        <TabsList className="grid grid-cols-5 gap-1 w-full h-11 ">
-          <TabsTrigger
-            value="recommendations-swatches"
-            className="text-xs p-1 border-gray-300"
+        return (
+          <button
+            key={btn.id}
+            onClick={() => setActive(btn.id)}
+            className={`px-3 py-1 rounded-md border transition-colors ${
+              active === btn.id
+                ? "bg-black text-white border-gray-800"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+            }`}
           >
-            <Palette className="h-4 w-4" />
-          </TabsTrigger>
-          <TabsTrigger value="design" className="text-xs p-1 border-gray-300">
-            <Square className="h-4 w-4" />
-          </TabsTrigger>
-          <TabsTrigger value="segments" className="text-xs p-1 border-gray-300">
-            <Shapes className="h-4 w-4" />
-          </TabsTrigger>
-
-          <TabsTrigger value="history" className="text-xs p-1 border-gray-300">
-            <History className="h-4 w-4" />
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs p-1 border-gray-300">
-            <Clock className="h-4 w-4" />
-          </TabsTrigger>
-        </TabsList>
-
-        <ScrollArea className="px-2">
-          <div className="py-4 space-y-6">
-            <TabsContent
-              value="recommendations-swatches"
-              className="space-y-6 mt-0"
-            >
-              <SwatchRecommendations />
-            </TabsContent>
-
-            <TabsContent value="design" className="space-y-6 mt-0">
-              <span className="text-gray-700 font-medium">
-                Design tab content goes here.
-              </span>
-            </TabsContent>
-
-            <TabsContent
-              value="segments"
-              className="space-y-4 mt-0 max-w-full overflow-hidden"
-            ></TabsContent>
-
-            <TabsContent value="swatches" className="mt-0">
-              <span className="text-gray-700 font-medium">
-                Swatches tab content goes here.
-              </span>
-            </TabsContent>
-
-            <TabsContent value="history" className="mt-0">
-              <span className="text-gray-700 font-medium">
-                History tab content goes here.
-              </span>
-            </TabsContent>
-
-            <TabsContent value="activity" className="mt-0">
-              <span className="text-gray-700 font-medium">
-                Activity tab content goes here.
-              </span>
-            </TabsContent>
-          </div>
-        </ScrollArea>
-      </Tabs> */}
-    </>
+            {btn.icon}
+          </button>
+        );
+      })}
+    </div>
   );
 };
 
