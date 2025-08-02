@@ -46,6 +46,7 @@ import { toast } from "sonner";
 import VoiceRecognition from "./VoiceRecognition";
 import { useParams } from "react-router-dom";
 import { StyleSuggestions } from "@/models/projectModel/ProjectModel";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 const GuidancePanel: React.FC = () => {
@@ -101,12 +102,7 @@ const GuidancePanel: React.FC = () => {
     referenceImageUrl: [],
   });
 
-  // useEffect(() => {
-  //   const reqe = { ...req };
-  //   reqe.houseUrl.push();
-  //   setReq(reqe);
-  // }, []);
-
+ 
   useEffect(() => {
     if (getIsAddInspirations) {
       setIsModel(getIsAddInspirations);
@@ -145,6 +141,7 @@ const GuidancePanel: React.FC = () => {
   };
 
   const handleDelete = (data: string) => {
+    dispatch(setCurrentTabContent("home"));
     if (data === "user-prompt") {
       dispatch(addPrompt(""));
     } else if (data === "inspiration-image") {
@@ -153,110 +150,23 @@ const GuidancePanel: React.FC = () => {
   };
 
   const handleGenerateAiImage = async () => {
+    if(!requests.houseUrl || requests.houseUrl.length === 0 || !requests.prompt || requests.prompt.length === 0)  return toast.error("Please provide prompt before generating AI image.");
     dispatch(updateIsGenLoading(true));
     // Logic to generate AI image
     try {
-      // const resultAction = await dispatch(
-      //   submitGenAiRequest(requests as GenAiRequest)
-      // );
-      const resultAction = await dispatch(
+    
+       dispatch(
         submitGenAiRequest(req as GenAiRequest)
       );
 
-      // if (resultAction.type === "genAi/submitRequest/fulfilled") {
-      //   const response = resultAction.payload as {
-      //     message: string;
-      //     task_id: string;
-      //   };
-
-      //   console.log("Response:--->", response);
-      //   if (response && response.message === "Image generation task started.") {
-      //     console.log("AI image generation started successfully:", response);
-      //     // isApiCall.current = true; // Reset the flag for future API calls
-      //     setTaskId(response.task_id); // Store the task ID
-      //     dispatch(updateTaskId(response.task_id)); // Update the task ID in the state
-      //     setIsTask(true);
-      //   }
-      // }
     } catch (error) {
       toast.error("Error generating AI image: " + (error as Error).message);
 
-      // setTaskId(""); // Reset task ID on error
-      // setIsTask(false); // Reset task status
-      // dispatch(updateIsGenLoading(false));
-      // console.error("Error generating AI image:", error);
+  
     }
   };
 
-  const { profile } = useSelector((state: RootState) => state.userProfile);
-  const { list: jobList } = useSelector((state: RootState) => state.jobs);
-  const { list: ProjectList } = useSelector(
-    (state: RootState) => state.projects
-  );
-  // const handleResetStartApiCall = async (data: TaskApiModel) => {
-  //   setTaskId("");
-  //   setIsTask(false);
-
-  //   const genChat: GenAiChat = {
-  //     // Remove the id field to let Supabase generate a UUID automatically
-
-  //     project_id: ProjectList[0]?.id || 0,
-  //     // Fix for user_id - convert to number if string, and handle null profile
-  //     user_id: profile?.id,
-  //     job_id: jobList[0]?.id || 0,
-  //     master_image_path:
-  //       requests.houseUrl && requests.houseUrl[0] ? requests.houseUrl[0] : "",
-  //     palette_image_path:
-  //       requests.paletteUrl && requests.paletteUrl[0]
-  //         ? requests.paletteUrl[0]
-  //         : "",
-  //     reference_img:
-  //       requests.referenceImageUrl && requests.referenceImageUrl[0]
-  //         ? requests.referenceImageUrl[0]
-  //         : "",
-  //     user_input_text:
-  //       requests.prompt && requests.prompt[0] ? requests.prompt[0] : "",
-  //     output_image: data.outputImage,
-  //     is_completed: true,
-  //     is_show: true,
-  //     prompt: data.prompt,
-  //     task_id: data.taskId,
-  //     created: new Date().toISOString(),
-  //     updated: new Date().toISOString(),
-  //     // Fix openai_metadata type issue - convert null to undefined
-  //     openai_metadata: data.openai_metadata
-  //       ? JSON.stringify(data.openai_metadata)
-  //       : undefined,
-  //   } as GenAiChat;
-
-  //   dispatch(setCurrentGenAiImage(genChat));
-
-  //   try {
-  //     const result = await dispatch(insertGenAiChatData(genChat));
-
-  //     if (result.meta.requestStatus === "fulfilled") {
-  //       dispatch(resetRequest());
-  //       dispatch(updateIsGenLoading(false));
-
-  //       dispatch(setIsGenerated(true));
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error in reset start API call: " + (error as Error).message);
-  //     console.error("Error in reset start API call:", error);
-  //   }
-
-  //   // setIsTask(false);
-  //   // isApiCall.current = true;
-  //   // dispatch(resetChatMarking())
-  //   // resetStartApiCall(data); // Reset the parent component's state
-  // };
-  /// fail task Api
-  // Handle API call failure
-  // const handleResetFaiApiCall = (errorMessage: string) => {
-  //   toast.error("Task failed: " + errorMessage);
-  //   setTaskId(""); // Reset task ID on error
-  //   setIsTask(false); // Reset task status
-  // };
+ 
 
   const handleRandomPromptSelection = (prompt: string) => {
     if (prompt) {
@@ -285,9 +195,7 @@ const GuidancePanel: React.FC = () => {
     }
   };
 
-  // const [showActionButtons, setShowActionButtons] = useState(false);
-  // const [suggestedPrompt, setSuggestedPrompt] = useState<any[] | null>(null);
-
+ 
   return (
     <>
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
@@ -339,17 +247,18 @@ const GuidancePanel: React.FC = () => {
           )}
 
           {/* inspiration Image Y  */}
-          {requests.referenceImageUrl &&
-            requests.referenceImageUrl.length > 0 && (
-              <UserInputPopOver
-                inputKey="inspiration-image"
-                name={inspirationNames}
-                value={requests.referenceImageUrl[0]}
-                open={isImagePopoverOpen}
-                setOpen={setIsImagePopoverOpen}
-                deleteData={handleDelete}
-              />
-            )}
+{requests.referenceImageUrl &&
+  requests.referenceImageUrl.length > 0 &&
+  requests.referenceImageUrl[0] !== "" && (
+    <UserInputPopOver
+      inputKey="inspiration-image"
+      name={inspirationNames}
+      value={requests.referenceImageUrl[0]}
+      open={isImagePopoverOpen}
+      setOpen={setIsImagePopoverOpen}
+      deleteData={handleDelete}
+    />
+  )}
         </div>
 
         <div className="flex gap-3 md-gap-0 md:flex justify-between items-between">

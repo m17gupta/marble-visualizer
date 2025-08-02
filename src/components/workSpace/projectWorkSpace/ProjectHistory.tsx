@@ -4,6 +4,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import {
   addHouseImage,
   addInspirationImage,
@@ -20,16 +21,16 @@ const ProjectHistory = () => {
   const { genAiImages, isFetchingGenAiImages } = useSelector(
     (state: RootState) => state.genAi
   );
-  console.log(genAiImages);
+ 
   const dispatch = useDispatch();
   const handleGenAiImageClick = (image: GenAiChat) => {
     dispatch(setCurrentGenAiImage(image));
-
+    dispatch(setCurrentTabContent("compare"));
     // add inspiration image to the state
     dispatch(addInspirationImage(image.reference_img));
     dispatch(addPaletteImage(image.palette_image_path));
     dispatch(addHouseImage(image.master_image_path));
-    dispatch(addPrompt(image.prompt));
+    dispatch(addPrompt(image.user_input_text));
   };
 
   return (
@@ -67,7 +68,7 @@ const ProjectHistory = () => {
                 <div className="flex items-start gap-2 w-full max-w-[calc(100%-2rem)]">
                   <IoTimerOutline className="text-2xl shrink-0 mt-1 text-gray-600" />
                   <p className="text-sm text-gray-800 break-words line-clamp-3">
-                    {image.prompt}
+                    {image.user_input_text}
                   </p>
                 </div>
                 <span className="ms-2 text-lg text-gray-500 cursor-pointer">
