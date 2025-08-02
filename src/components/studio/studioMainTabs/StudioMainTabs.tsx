@@ -17,6 +17,7 @@ const StudioMainTabs = () => {
   const { activeTab: activeTabFromStore } = useSelector(
     (state: RootState) => state.workspace
   );
+  
 
   const handleChangeTab = (value: string) => {
     dispatch(updateActiveTab(value));
