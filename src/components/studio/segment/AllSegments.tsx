@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSegmentSlice";
 import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
-import { addSelectedMasterArray } from "@/redux/slices/MasterArraySlice";
+import { addSelectedMasterArray, updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 // import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
@@ -38,7 +38,18 @@ const AllSegments = () => {
   useEffect(() => {
     if (masterArray && masterArray.length > 0) {
       dispatch(addSelectedMasterArray(masterArray[0]));
-      setUpdatedMasterArray(masterArray);
+      if (masterArray && masterArray[0] &&
+        masterArray[0].allSegments && masterArray[0].allSegments.length > 0) {
+        const firstGroup = masterArray[0].allSegments[0]
+        dispatch(updatedSelectedGroupSegment(firstGroup));
+        if (firstGroup && firstGroup.groupName && firstGroup.segments.length > 0) {
+
+          dispatch(updateSelectedSegment(firstGroup.segments[0]));
+        }
+
+        setUpdatedMasterArray(masterArray);
+      }
+
     } else {
       setUpdatedMasterArray(null);
     }
@@ -115,8 +126,8 @@ const AllSegments = () => {
                         backgroundColor: isActive
                           ? `${segment.color_code}50`
                           : isHovered
-                          ? `${segment.color_code}20`
-                          : "transparent",
+                            ? `${segment.color_code}20`
+                            : "transparent",
                       }}
                       onClick={() => handleSegmentClick(segment)}
                       onMouseEnter={() => {

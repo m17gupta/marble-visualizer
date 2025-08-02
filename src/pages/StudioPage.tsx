@@ -47,6 +47,7 @@ import { clearCurrentProject } from "@/redux/slices/projectSlice";
 import { ProjectModel } from "@/models/projectModel/ProjectModel";
 import { resetGenAiState } from "@/redux/slices/visualizerSlice/genAiSlice";
 import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
+import SegmentHome from "@/components/segments/SegmentHome";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -234,6 +235,8 @@ export function StudioPage() {
 
 {/*  after send request for genAi image -get task id and update the state in GenAiImageGeneration DB and Redux */}
       <GenAiImageGeneration />
+
+       <SegmentHome/>
     </>
   );
 }

@@ -12,6 +12,7 @@ import MeasurementContent from './tabContent/MeasurementContent';
 import LayerContent from './tabContent/LayerContent';
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
+import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeTab: activeTabFromStore } = useSelector(
@@ -29,6 +30,7 @@ const StudioMainTabs = () => {
     // console.log("Design Hub tab clicked");
     dispatch(updateActiveTab("design-hub"));
         dispatch(setCurrentTabContent("home"));
+        dispatch(setCurrentGenAiImage(null)); // Reset current GenAI image when switching tabs
     // dispatch(setCanvasType("draw"));
   };
 
@@ -202,3 +204,4 @@ const StudioMainTabs = () => {
 };
 
 export default StudioMainTabs;
+
