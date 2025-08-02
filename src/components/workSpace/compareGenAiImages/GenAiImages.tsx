@@ -1,7 +1,7 @@
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
-import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 //import { updateGeneratedImage, updateOriginalHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { RootState } from "@/redux/store";
@@ -42,7 +42,12 @@ const GenAiImages = () => {
     dispatch(setIsGenerated(true));
     dispatch(setCurrentTabContent("compare"));
     dispatch(setCurrentGenAiImage(imageSet));
-  };
+    dispatch(addInspirationImage(imageSet.reference_img));
+    dispatch(addPaletteImage(imageSet.palette_image_path));
+    dispatch(addHouseImage(imageSet.master_image_path));
+    dispatch(addPrompt(imageSet.user_input_text));
+
+  };  
 
   return (
     <div className="genai-images-container border border-gray-200 rounded-lg p-4 bg-white mt-4">
@@ -83,11 +88,10 @@ const GenAiImages = () => {
                   alt={`Generated Image ${index + 1}`}
                   width={100}
                   height={100}
-                  className={`rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${
-                    currentGenAiImage && currentGenAiImage.id === imageSet.id
+                  className={`rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${currentGenAiImage && currentGenAiImage.id === imageSet.id
                       ? "border-2 border-blue-500"
                       : "border border-gray-200"
-                  }`}
+                    }`}
                   onClick={() => handleImageSelect(imageSet)}
                   onError={(e) => {
                     console.error(

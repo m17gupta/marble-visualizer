@@ -10,6 +10,7 @@ import DesignHubContent from './tabContent/DesignHubContent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import MeasurementContent from './tabContent/MeasurementContent';
 import LayerContent from './tabContent/LayerContent';
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeTab: activeTabFromStore } = useSelector(
@@ -25,6 +26,7 @@ const StudioMainTabs = () => {
     // setActiveTab("design-hub");
     // console.log("Design Hub tab clicked");
     dispatch(updateActiveTab("design-hub"));
+        dispatch(setCurrentTabContent("home"));
     // dispatch(setCanvasType("draw"));
   };
 

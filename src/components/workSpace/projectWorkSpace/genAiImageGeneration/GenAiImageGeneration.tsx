@@ -23,7 +23,7 @@ const GenAiImageGeneration = () => {
     const { currentProject: ProjectList } = useSelector(
         (state: RootState) => state.projects
     );
-    const { requests, inspirationNames, isSubmitGenAiFailed } = useSelector(
+    const { requests} = useSelector(
         (state: RootState) => state.genAi
     );
 
@@ -72,6 +72,7 @@ const GenAiImageGeneration = () => {
                 : undefined,
         } as GenAiChat;
 
+        console.log("genChat--->", genChat);
         dispatch(setCurrentGenAiImage(genChat));
 
         try {
