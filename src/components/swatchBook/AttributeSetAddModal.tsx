@@ -192,8 +192,6 @@ export default function AttributeSetAddModal() {
     }
   };
 
-  console.log(group);
-
   const handleAddPreDefinedGroup = (selectedGroup: any) => {
     const copy = [...group];
     const isPresent = copy.find((d: any) => d.name === selectedGroup.name);
