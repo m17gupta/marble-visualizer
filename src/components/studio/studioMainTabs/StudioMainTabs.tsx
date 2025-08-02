@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import MeasurementContent from './tabContent/MeasurementContent';
 import LayerContent from './tabContent/LayerContent';
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
+import Comments from "./tabContent/Comments";
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeTab: activeTabFromStore } = useSelector(
@@ -188,6 +189,11 @@ const StudioMainTabs = () => {
           <TabsContent value="layers" className="flex-grow overflow-auto">
             <LayerContent />
           </TabsContent>
+
+          <TabsContent value="comments" className="flex-grow overflow-auto">
+            <Comments />
+          </TabsContent>
+
         </Tabs>
       </TooltipProvider>
     </>

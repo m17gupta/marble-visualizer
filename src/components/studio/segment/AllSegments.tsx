@@ -18,7 +18,6 @@ import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
 
-
 const AllSegments = () => {
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
 
@@ -45,7 +44,6 @@ const AllSegments = () => {
     }
   }, [masterArray]);
 
-
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
     if (selectedSeg) {
@@ -61,10 +59,13 @@ const AllSegments = () => {
 
   const handleMouseEnter = (sgtype: MasterModel) => {
     const segNameArray: string[] = [];
-    const curenMasterArray = sgtype
+    const curenMasterArray = sgtype;
 
-    if (curenMasterArray && curenMasterArray.allSegments &&
-      curenMasterArray.allSegments.length > 0) {
+    if (
+      curenMasterArray &&
+      curenMasterArray.allSegments &&
+      curenMasterArray.allSegments.length > 0
+    ) {
       curenMasterArray.allSegments.forEach((group) => {
         const segArray = group.segments || [];
         if (segArray && segArray.length > 0) {
@@ -82,15 +83,14 @@ const AllSegments = () => {
     dispatch(updateHoverGroup(null));
   };
 
-  const handleAddSegment = () => { 
+  const handleAddSegment = () => {
     dispatch(updateIsNewMasterArray(true));
-    dispatch(setCanvasType("draw"));  
+    dispatch(setCanvasType("draw"));
   };
-
 
   return (
     <TooltipProvider>
-      <div className="w-full flex flex-col ps-2 pt-4">
+      <div className="w-full flex flex-col px-2 pt-4">
         {updatedMasterArray &&
           updatedMasterArray.length > 0 &&
           updatedMasterArray.map((segment: MasterModel, index: number) => {
@@ -98,7 +98,7 @@ const AllSegments = () => {
             const isHovered = hoveredSegment === segment.id;
 
             return (
-              <div key={segment.id || index} className="relative pb-[10px]" >
+              <div key={segment.id || index} className="relative pb-[10px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -108,15 +108,15 @@ const AllSegments = () => {
                         "w-12 h-12 border-2 p-1  transition-all duration-200 focus:outline-0",
                         isActive && "ring-0 ring-offset-0",
                         isHovered && "shadow-md"
-                        // scale-105 
+                        // scale-105
                       )}
                       style={{
                         borderColor: segment.color_code,
                         backgroundColor: isActive
                           ? `${segment.color_code}50`
                           : isHovered
-                            ? `${segment.color_code}20`
-                            : "transparent",
+                          ? `${segment.color_code}20`
+                          : "transparent",
                       }}
                       onClick={() => handleSegmentClick(segment)}
                       onMouseEnter={() => {
@@ -197,16 +197,14 @@ const AllSegments = () => {
                     <path d="M18 15v6" />
                   </svg>
                 </Button>
-                
               </TooltipTrigger>
               <TooltipContent>
                 <p>Add Segment</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        
         </div>
-          {/* <AddSegSidebar/> */}
+        {/* <AddSegSidebar/> */}
       </div>
     </TooltipProvider>
   );
