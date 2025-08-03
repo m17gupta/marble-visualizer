@@ -174,6 +174,21 @@ export const getSegmentsByJobId = createAsyncThunk(
   }
 );
 
+// update segment based on id
+export const updateSegmentById = createAsyncThunk(  
+  'segments/updateSegmentById',
+  async (segmentData: SegmentModal, { rejectWithValue }) => {
+    try {
+      return await segmentService.updateSegmentById(segmentData);
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to update segment');
+    }
+  }
+);
+
 const segmentsSlice = createSlice({
   name: "segments",
   initialState,
@@ -341,7 +356,26 @@ const segmentsSlice = createSlice({
       .addCase(getSegmentsByJobId.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
-      });
+      })
+
+      // Handle updateSegmentById thunk
+      // .addCase(updateSegmentById.pending, (state) => {
+      //   state.isLoadingManualAnnotation = true;
+      //   state.manualAnnotationError = null;
+      // })
+      // .addCase(updateSegmentById.fulfilled, (state, action) => {    
+      //   state.isLoadingManualAnnotation = false;
+      //   const updatedSegment = action.payload.data;
+      //   const index = state.allSegments.findIndex(seg => seg.id === updatedSegment.id);
+      //   if (index !== -1) {
+      //     state.allSegments[index] = updatedSegment; // Update the segment in the array
+      //   }
+      //   state.manualAnnotationError = null;
+      // })
+      // .addCase(updateSegmentById.rejected, (state, action) => {
+      //   state.isLoadingManualAnnotation = false;
+      //   state.manualAnnotationError = action.payload as string;
+      // });
   },
 
 });

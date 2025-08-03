@@ -1,5 +1,5 @@
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { SegmentApi } from "./SegmentApi";
+import { SegmentApi, SegmentApiResponse } from "./SegmentApi";
 
 
 export class SegmentService{
@@ -20,5 +20,9 @@ async createSegment(segmentData: SegmentModal) {
 
 async getSegmentsByJobId(jobId: number): Promise<SegmentModal[]> {
   return this.segmentApi.getSegmentsByJobId(jobId);
+}
+
+async updateSegmentById(segmentData: SegmentModal): Promise<SegmentApiResponse> {
+  return this.segmentApi.updateSegmentBasedOnId(segmentData);
 }
 }
