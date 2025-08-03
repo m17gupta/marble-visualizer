@@ -15,20 +15,20 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import AddSegLists from "../canvas/canvasAddNewSegment/AddSegLists";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store"
+import { AppDispatch, RootState } from "@/redux/store"
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { changeGroupSegment, updateIsSegmentEdit } from "@/redux/slices/segmentsSlice";
-import { changeGroupSelectedSegment, setMasterArray } from "@/redux/slices/MasterArraySlice";
+import { changeGroupSegment, updateIsSegmentEdit, updateSegmentById } from "@/redux/slices/segmentsSlice";
+import { changeGroupSelectedSegment, deletedChangeGroupSegment } from "@/redux/slices/MasterArraySlice";
+
 
 interface EditSegmentModalProps {
   open: boolean;
@@ -37,7 +37,7 @@ interface EditSegmentModalProps {
 
 }
 const SegmentEditModal = ({ open, onClose }: EditSegmentModalProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [segType, setSegType] = useState('');
   const [allcatogories, setAllCategories] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
@@ -49,8 +49,7 @@ const SegmentEditModal = ({ open, onClose }: EditSegmentModalProps) => {
  const [new_master, setNewMaster] = useState<MasterModel | null>(null);
   const { segments } = useSelector((state: RootState) => state.materialSegments);
   const { selectedSegment, masterArray } = useSelector((state: RootState) => state.masterArray);
-  // const [segmentCount, setSegmentCount] = useState(0);
-  // const [ short_title, setShortTitle] = useState("");
+  const [isUpdated, setIsUpdated] = useState(false);
   useEffect(() => {
     if (selectedSegment &&
       selectedSegment.segment_type &&
@@ -101,29 +100,30 @@ const SegmentEditModal = ({ open, onClose }: EditSegmentModalProps) => {
   }
   // update the categories
   useEffect(() => {
-    if (segments && segments.length > 0 && segType) {
+    if (segments && segments.length > 0 && segType && isUpdated) {
       const seg = segments.find((seg) => seg.name === segType);
       const categories = seg?.categories || [];
       const uniqueCategories = Array.from(new Set(categories));
       setAllCategories(uniqueCategories);
       // setShortTitle(seg?.short_code || "");
-      if (masterArray && seg?.short_code) {
-        handleSegGroupName(masterArray, segType, seg?.short_code,seg);
+      if (masterArray && seg?.short_code && seg && seg.name) {
+        handleSegGroupName(masterArray, segType, seg?.short_code, seg as unknown as MasterModel);
       }
     }
-  }, [segments, segType, masterArray]);
+  }, [segments, segType, masterArray,isUpdated]);
 
 
 
 
   const handleAddGroup = () => {
+     setIsUpdated(true);
     const groupLength = groupArray.length;
     const newGroupName = `${segType}${groupLength + 1}`;
     setGroupArray([...groupArray, newGroupName]);
     toast.success(`Group ${newGroupName} added successfully!`);
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!segType || !groupName || !shortName || !selectedSegment) {
       toast.error("Please fill all fields");
       return;
@@ -149,15 +149,35 @@ const SegmentEditModal = ({ open, onClose }: EditSegmentModalProps) => {
       group_desc: selectedSegment.group_desc,
     } as SegmentModal;
 
-     
+       // update in Db
+    const isUpdated = await updateSegmentBasedOnId(newSegment);
+    if (!isUpdated) {
+      return;
+    }
+     setIsUpdated(false);
     // update all Segments Array
     dispatch(changeGroupSegment(newSegment));
+    // update master array
     dispatch(changeGroupSelectedSegment({
       master: new_master,
       updatedSegment: newSegment,
     }));
+
+    //delete the selected segment and  from master array
+    dispatch(deletedChangeGroupSegment(newSegment))
     dispatch(updateIsSegmentEdit(false));
   }
+
+  const updateSegmentBasedOnId = async (segmentData: SegmentModal): Promise<boolean> => {
+    const response = await dispatch(updateSegmentById(segmentData));
+    if (updateSegmentById.fulfilled.match(response)) {
+      toast.success("Segment updated successfully!");
+      return true;
+    } else {
+      toast.error("Failed to update segment.")
+      return false;
+    }
+  };
 
   return (
     <>
@@ -187,6 +207,7 @@ const SegmentEditModal = ({ open, onClose }: EditSegmentModalProps) => {
                 value={segType}
                 onValueChange={(value) => {
                   setSegType(value);
+                  setIsUpdated(true);
                   //handleSegTypeChange(value);
                 }}
               >

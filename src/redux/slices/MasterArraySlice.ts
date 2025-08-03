@@ -125,21 +125,36 @@ const masterArraySlice = createSlice({
       }
     }    
   },
+  deletedChangeGroupSegment: (state, action) => {
+    const   updatedSegment  = action.payload;
+    const oldSeg= state.selectedSegment;
+    if(oldSeg &&
+      oldSeg.segment_type &&
+      oldSeg.group_label_system &&
+      oldSeg.id
+    ){
+      const index = state.masterArray.findIndex(seg => seg.name === oldSeg.segment_type);
+      if (index !== -1) {
+        // remove existed segment
+        const segArrayIndex = state.masterArray[index].allSegments.findIndex(seg => seg.groupName === oldSeg.group_label_system);
+        if (segArrayIndex !== -1) {
+          state.masterArray[index].allSegments[segArrayIndex].segments = state.masterArray[index].allSegments[segArrayIndex].segments.filter(seg => seg.id !== oldSeg.id);
+          state.selectedSegment=updatedSegment
+        }
+      }
+    }
+
+  },
   changeGroupSelectedSegment: (state, action) => {
    const {master,updatedSegment} = action.payload;
+      
     const index = state.masterArray.findIndex(seg => seg.name === updatedSegment.segment_type);
 
     if (index !== -1 ) {
       // remove existed and add new segment
       const segArrayIndex = state.masterArray[index].allSegments.findIndex(seg => seg.groupName === updatedSegment.group_label_system);
       if (segArrayIndex !== -1) {
-        const existingGroup = state.masterArray[index].allSegments[segArrayIndex];
-        const segmentIndex = existingGroup.segments.findIndex(seg => seg.id === updatedSegment.id);
-        if (segmentIndex !== -1) {
-          existingGroup.segments[segmentIndex] = updatedSegment;
-        } else {
-          existingGroup.segments.push(updatedSegment);
-        }
+       state.masterArray[index].allSegments[segArrayIndex].segments.push(updatedSegment);
       } else {
         state.masterArray[index].allSegments.push({
           groupName: updatedSegment.group_label_system,
@@ -189,7 +204,8 @@ export const {
   addNewSegmentToSelectedMasterArray,
   updatedSelectedGroupSegment,
   updateSelectedSegment,
-  changeGroupSelectedSegment
+  changeGroupSelectedSegment,
+  deletedChangeGroupSegment
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;

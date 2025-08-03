@@ -84,5 +84,30 @@ async createSegment(segmentData: SegmentModal): Promise<SegmentApiResponse> {
 
   }
 
+
+  // update jobSegments based on id
+  async updateSegmentBasedOnId(segmentData: SegmentModal): Promise<SegmentApiResponse> {
+    try {
+      const { data, error } = await supabase
+        .from('job_segments')
+        .update(segmentData)
+        .eq('id', segmentData.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return {
+        success: true,
+        data: data,
+      };
+    } catch (error) {
+      console.error('Error updating segment:', error);
+      throw error;
+    }
+  }
+
 }
 
