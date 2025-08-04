@@ -42,7 +42,7 @@ const WorkSpaceHome = () => {
         <div className="mt-4 ">
           <DesignProject/>
           <GuidancePanel />
-          <GenAiImages />
+          {/* <GenAiImages /> */}
           
         </div>
       </div>

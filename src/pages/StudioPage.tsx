@@ -79,14 +79,14 @@ export function StudioPage() {
   const { currentImageUrl } = useSelector((state: RootState) => state.studio);
   const { addSegMessage } = useSelector((state: RootState) => state.segments);
 
-  const [loadingMessage, setLoadingMessage] = useState("");
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
   // update message
 
   useEffect(() => {
     if (addSegMessage) {
       setLoadingMessage(addSegMessage);
     } else {
-      setLoadingMessage("");
+      setLoadingMessage(null);
     }
   }, [addSegMessage]);
 
@@ -159,7 +159,7 @@ export function StudioPage() {
   };
   return (
     <>
-      {loadingMessage && loadingMessage.trim() !== "" && (
+      {loadingMessage && loadingMessage!= null && (
         <LoadingOverlay message={loadingMessage} />
       )}
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">

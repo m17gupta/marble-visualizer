@@ -36,6 +36,7 @@ const StudioMainTabs = () => {
 
   const handleInspirationClick = () => {
     // setActiveTab("inspiration");
+     dispatch(setCurrentTabContent("home"));
     dispatch(updateActiveTab("inspiration"));
   };
 

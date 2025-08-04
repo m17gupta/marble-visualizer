@@ -18,31 +18,7 @@ const ImageCard: React.FC = () => {
 
   return (
     <div className="border rounded-md bg-white shadow-sm p-2 relative w-full mx-auto">
-      {/* Action icons in top-right */}
-      {/* <div className="absolute top-4 right-4 flex space-x-2 z-10">
-        <button
-          onClick={handleFullscreen}
-          className="text-gray-700 hover:text-black"
-          title="Fullscreen"
-        >
-          <Expand className="w-5 h-5" />
-        </button>
-        <button
-          onClick={handleDownload}
-          className="text-gray-700 hover:text-black"
-          title="Download"
-        >
-          <Download className="w-5 h-5" />
-        </button>
-        <button
-          onClick={handleClose}
-          className="text-gray-700 hover:text-black"
-          title="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      </div> */}
-
+      
       {/* Image section */}
       {!findProject || findProject.jobData == undefined ? (
  <Skeleton className="h-[90vh] w-[100%] rounded-2" />

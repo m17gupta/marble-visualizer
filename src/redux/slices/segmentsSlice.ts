@@ -57,7 +57,7 @@ interface SegmentsState {
   isSegmentLoaded: boolean;
   isLoadingSegmentsError: string | null;
   allSegments: SegmentModal[];
-  addSegMessage: string;
+  addSegMessage: string|null;
   isAddSegmentModalOpen: boolean;
   isMasterDataAnnotationOpen: boolean;
 
@@ -243,6 +243,7 @@ const segmentsSlice = createSlice({
 
     selectedNewMasterArray: (state, action) => {
       state.addNewMasterArray = action.payload;
+      
     },
 
     // Segment management
@@ -252,7 +253,7 @@ const segmentsSlice = createSlice({
     selectMultipleSegments: (state, action: PayloadAction<string[]>) => {
       state.selectedSegmentIds = action.payload;
     },
-    updateAddSegMessage: (state, action: PayloadAction<string>) => {
+    updateAddSegMessage: (state, action: PayloadAction<string|null>) => {
       state.addSegMessage = action.payload;
     },
     updateNewSegmentDrawn: (state, action) => {
