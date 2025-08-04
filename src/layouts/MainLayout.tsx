@@ -73,7 +73,9 @@ export function MainLayout() {
       )}
 
       {/* Mobile Sidebar */}
-      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+      <Sheet open={mobileMenuOpen} 
+       onOpenChange={setMobileMenuOpen}
+      >
         <SheetContent side="left" className="p-0 w-80">
           <SidebarContent
             sidebarCollapsed={sidebarCollapsed}

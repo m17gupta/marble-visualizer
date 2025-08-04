@@ -102,10 +102,10 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.style.backgroundColor = swatch.color || '#cccccc';
+                        target.style.backgroundColor = swatch.color || '#908e8eff';
                         target.style.display = 'block';
                         target.src = '';
-                        target.alt = 'Color swatch';
+                        target.alt = swatch.id ?? "image not available";
                       }}
                     />
                      

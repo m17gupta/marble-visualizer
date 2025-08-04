@@ -79,7 +79,7 @@ const CanvasAdddNewSegmentHome = () => {
     if (response && response.success) {
      
       // update into master Array
-          dispatch(updateAddSegMessage(""));
+          dispatch(updateAddSegMessage(null));
       dispatch(cancelDrawing())
       dispatch(addNewSegmentToMasterArray(response.data));
       dispatch(addNewSegmentToSelectedMasterArray(response.data))
@@ -101,6 +101,7 @@ const CanvasAdddNewSegmentHome = () => {
   };
 
   const handleSaveNewMasterArrayModal = () => {
+    dispatch(setCanvasType("draw"))
     setIsNewAddedMasterArray(false);
     dispatch(updateIsNewMasterArray(false));
     

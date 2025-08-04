@@ -10,6 +10,9 @@ import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 import { MasterModel } from '@/models';
 import { selectedNewMasterArray } from '@/redux/slices/segmentsSlice';
+import { setCanvasType } from '@/redux/slices/canvasSlice';
+import { set } from 'date-fns';
+import { addSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
 
 interface AddSegmentModalProps {
   open: boolean;
@@ -26,28 +29,23 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const {segments} = useSelector((state: RootState) => state.materialSegments);
   const [updatedSegments, setUpdatedSegments] = useState<MaterialSegmentModel[]>([]);
-  const [selectedSegment, setSelectedSegment] = useState<MaterialSegmentModel | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<MasterModel | null>(null);
 
   useEffect(() => {
-    if(masterArray && masterArray.length > 0) {
-      masterArray.forEach((master) => {
-        const updateSeg=segments.map((seg: MaterialSegmentModel) => {
-          if (seg.name=== master.name) {
-            return {
-              ...seg,
-              isDisabled: true, // Ensure isDisabled is set to false
-              
-            };
-          }
-          return seg;
-        });
-        setUpdatedSegments(updateSeg);  
-      })
+    if (masterArray && masterArray.length > 0 && segments && segments.length > 0) {
+      const masterNames = masterArray.map((master) => master.name);
+      const updateSeg = segments.map((seg: MaterialSegmentModel) => ({
+        ...seg,
+        isDisabled: masterNames.includes(seg.name),
+      }));
+      setUpdatedSegments(updateSeg);
+    } else {
+      setUpdatedSegments(segments);
     }
-  },[masterArray, segments]);
+  }, [masterArray, segments]);
 
 
-;
+
 
    const handleAddSegment = (data: MaterialSegmentModel) => {
 
@@ -62,8 +60,9 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
       categories: data.categories,
       allSegments: [],
     }
-     setSelectedSegment(data);
-     dispatch(selectedNewMasterArray(segValue));
+     setSelectedSegment(segValue);
+    
+    
    }
 
    const closeSegmentModal=()=>{
@@ -71,7 +70,9 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
    }
 
      const handleSave = () => {
-    console.log("updatedSegments", )
+    dispatch(selectedNewMasterArray(selectedSegment));
+    dispatch(addSelectedMasterArray(selectedSegment));
+    setSelectedSegment(null);
     onSave()
   }
   return (

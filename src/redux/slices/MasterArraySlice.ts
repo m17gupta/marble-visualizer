@@ -36,6 +36,10 @@ const masterArraySlice = createSlice({
     removeFromMasterArray: (state, action) => {
       state.masterArray = state.masterArray.filter(item => item !== action.payload);
     },
+    addNewSegmentType:(state,action)=>{
+      const newSegmentType = action.payload;
+     state.masterArray.push(newSegmentType);
+    },
     updatedSelectedGroupSegment: (state, action) => {
       const groupSegment = action.payload;
       state.selectedGroupSegment = groupSegment;
