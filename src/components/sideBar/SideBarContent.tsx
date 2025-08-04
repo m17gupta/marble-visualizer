@@ -97,7 +97,7 @@ const {isAuthenticated} = useSelector((state: RootState) => state.auth);
   useEffect(() => {
     // Auto-close mobile menu on route change
     if (mobile && setMobileMenuOpen) {
-      setMobileMenuOpen(false);
+      // setMobileMenuOpen(false);
     }
   }, [location.pathname]);
 
