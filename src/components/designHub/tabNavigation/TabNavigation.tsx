@@ -7,16 +7,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import info from "@/assets/image/solar--info-square-linear.svg";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { updateIsSegmentEdit } from "@/redux/slices/segmentsSlice";
 import { updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
+import { setCanvasType } from "@/redux/slices/canvasSlice";
 
     
 type Props={
@@ -72,6 +69,12 @@ const dispatch = useDispatch<AppDispatch>();
     dispatch(updateIsSegmentEdit(true));
     // Implement your edit logic here
   };
+
+  const handleReAnnotation = (segment: SegmentModal) => {
+     dispatch(updateSelectedSegment(segment));
+     dispatch(setCanvasType("reannotation"))
+    // Implement your re-annotation logic here
+  };
   return (
     <>
       <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
@@ -110,6 +113,7 @@ const dispatch = useDispatch<AppDispatch>();
                   />
                   Edit Segment
                 </DropdownMenuItem>
+                
                 <DropdownMenuItem>
                   <img
                     src="/assets/image/line-md--edit-twotone.svg"
@@ -118,7 +122,11 @@ const dispatch = useDispatch<AppDispatch>();
                   />
                   Edit Annotation
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
+
+
+                <DropdownMenuItem className="cursor-pointer"
+                onClick={() => handleReAnnotation(segment)}
+                >
                   <img
                         src="/assets/image/carbon--area.svg"
                     alt="Re-annotate"

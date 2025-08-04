@@ -1,4 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
+// Utility to create a custom crosshair cursor as a data URL
+
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +10,7 @@ import {
   undo,
   redo,
   updateSegmentDrawn,
+  updateReAnnoatationPoints,
 } from "@/redux/slices/segmentsSlice";
 import {
   setZoom,
@@ -35,6 +38,8 @@ import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from "../canvasUtil/canvasImageUtils";
+import { CreateCustomCursor, UpdateCursorOffset } from "../canvasUtil/CreateCustomCursor";
+import ReAnnotationPoint from "./ReAnnotationPoint";
 
 export type DrawingTool = "select" | "polygon";
 
@@ -223,6 +228,13 @@ useEffect(() => {
     });
 
     fabricCanvasRef.current = canvas;
+
+    // Set custom cursor for the canvas element
+    const customCursorUrl = CreateCustomCursor();
+    UpdateCursorOffset(canvas, customCursorUrl);
+    if (canvasRef.current) {
+      canvasRef.current.style.cursor = `url(${customCursorUrl}) 20 20, crosshair`;
+    }
 
     // Store the original viewport transform
     originalViewportTransform.current = canvas.viewportTransform
@@ -495,7 +507,10 @@ useEffect(() => {
       (p) => new fabric.Point(p.x, p.y)
     );
 
-    const polygonNumberArray = polygonPoints.flatMap(point => [point.x, point.y]);
+    const polygonNumberArray = polygonPoints.flatMap(point => [
+      Number(point.x.toFixed(2)),
+      Number(point.y.toFixed(2))
+    ]);
     // Base stroke width value
     const baseStrokeWidth = 2;
     // Adjust stroke width inversely proportional to zoom
@@ -541,6 +556,9 @@ useEffect(() => {
 
       dispatch(updateSegmentDrawn(polygonNumberArray));
       // dispatch(updateSegmentDrawn(updatedSegments));
+    }else if (canvasType === "reannotation") {
+       dispatch(updateReAnnoatationPoints(polygonNumberArray));
+
     }
 
     // Clean up temporary state
@@ -667,7 +685,7 @@ useEffect(() => {
       if (!fabricCanvasRef.current) return;
 
       const canvas = fabricCanvasRef.current;
-      console.log("Mouse move event:", canvas);
+    
       const pointer = canvas.getPointer(e.e);
       const currentZoom = canvas.getZoom();
 
@@ -819,33 +837,8 @@ useEffect(() => {
     }
   }, [deleteMaskId, fabricCanvasRef, dispatch]);
 
-  // const {segments} = useSelector((state: RootState) => state.materialSegments); 
-  // useEffect(() => {
-  //   const canvas = fabricCanvasRef.current;
-  //   if(!canvas || allSegArray.length === 0) return;
 
-  //   allSegArray.map(seg => {
-  //     const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
-  //     const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
-  //     const isFill = true;
-  //     if (
-  //       !annotation_points_float || annotation_points_float.length === 0 ||
-  //       !segment_bb_float || segment_bb_float.length === 0 ||
-  //       !group_label_system || !short_title || !segment_type || !segColor || !fabricCanvasRef.current
-  //     ) return;
-      
-  //     collectPoints(
-  //       annotation_points_float,
-  //       short_title,
-  //       segment_bb_float,
-  //       segment_type,
-  //       group_label_system,
-  //       segColor,
-  //       fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-  //       isFill
-  //     );
-  //   });
-  // }, [allSegArray, segments,fabricCanvasRef])
+
   return (
     <>
     <TooltipProvider>
@@ -857,6 +850,7 @@ useEffect(() => {
           resetCanvas={handleResetCanvas}
           zoomIn={handleZoomIn}
           zoomOut={handleZoomOut}
+           
         />
 
         {/* Canvas Container */}
@@ -876,25 +870,7 @@ useEffect(() => {
                   style={{ maxWidth: "100%", height: "auto" }}
                 />
 
-                {/* Drawing Instructions */}
-                {/* { activeTool.current === 'polygon' && !isPolygonMode.current && (
-                  <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
-                    Click to start drawing a polygon
-                  </div>
-                )} */}
-
-                {/* {isPolygonMode.current && (
-                  <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm">
-                    Click to add points • Click near first point or double-click to finish • Esc to cancel
-                  </div>
-                )} */}
-
-                {/* Auto-panning indicator */}
-                {/* {_isAutoPanning && (
-                  <div className="absolute top-20 left-4 bg-amber-500 text-white px-3 py-2 rounded-lg text-sm animate-pulse">
-                    Auto-panning active
-                  </div>
-                )} */}
+               
 
                 {/* Canvas Status */}
                 {!isCanvasReady && (
@@ -907,7 +883,7 @@ useEffect(() => {
                     </div>
                   </div>
                 )}
-
+ <ReAnnotationPoint/>
                 {/* Hover Material Info */}
                 <AnimatePresence>
                   {/* {hoveredSegment?.material && (

@@ -29,12 +29,13 @@ import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { changeGroupSegment, updateAddSegMessage, updateIsSegmentEdit, updateSegmentById } from "@/redux/slices/segmentsSlice";
 import { changeGroupSelectedSegment, deletedChangeGroupSegment } from "@/redux/slices/MasterArraySlice";
 import { set } from "date-fns";
+import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
 
 
 interface EditSegmentModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: SegmentModal, new_master: MasterModel | null) => void;
+  onSave: (data: SegmentModal, new_master: MaterialSegmentModel | null) => void;
 
 }
 const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
@@ -47,7 +48,7 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
   const [groupArray, setGroupArray] = useState<string[]>([]);
   const [selectedCatogory, setSelectedCategory] = useState<string>('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [new_master, setNewMaster] = useState<MasterModel | null>(null);
+  const [new_master, setNewMaster] = useState<MaterialSegmentModel | null>(null);
   const { segments } = useSelector((state: RootState) => state.materialSegments);
   const { selectedSegment, masterArray } = useSelector((state: RootState) => state.masterArray);
   const [isUpdated, setIsUpdated] = useState(false);
@@ -66,7 +67,7 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
   }, [selectedSegment]);
 
 
-  const handleSegGroupName = (masterArray: MasterModel[], segType: string, short_title: string, newMaster: MasterModel) => {
+  const handleSegGroupName = (masterArray: MasterModel[], segType: string, short_title: string, newMaster: MaterialSegmentModel) => {
     if (masterArray && masterArray.length > 0 && segType && short_title) {
       const grpArry: string[] = [];
       let count: number = 0;
@@ -81,12 +82,14 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
         }
       });
       if (grpArry && grpArry.length > 0) {
-        // const uniqueGroups = Array.from(new Set(allGrp.flat()));
+        // const uniqueGroups = Array.from(new Set(allGrp.flat()))
+        setNewMaster(newMaster);
         setGroupArray(grpArry);
         setShortName(`${short_title}${count + 1}`);
         setGroupName(`${segType}1`);
         // setSegmentCount(count);
       } else {
+        setNewMaster(newMaster);
         setGroupArray([`${segType}1`]);
         setShortName(`${short_title}${1}`);
         setGroupName(`${segType}1`);
@@ -102,13 +105,18 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
   // update the categories
   useEffect(() => {
     if (segments && segments.length > 0 && segType && isUpdated) {
+    
       const seg = segments.find((seg) => seg.name === segType);
       const categories = seg?.categories || [];
       const uniqueCategories = Array.from(new Set(categories));
       setAllCategories(uniqueCategories);
       // setShortTitle(seg?.short_code || "");
       if (masterArray && seg?.short_code && seg && seg.name) {
-        handleSegGroupName(masterArray, segType, seg?.short_code, seg as unknown as MasterModel);
+        console.log("Master Array:", masterArray);
+        console.log("Segment Type:", segType);
+        console.log("Segment Short Code:", seg?.short_code);
+        console.log("Segment:", seg);
+        handleSegGroupName(masterArray, segType, seg?.short_code, seg);
       }
     }
   }, [segments, segType, masterArray, isUpdated]);
@@ -150,14 +158,16 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
       group_desc: selectedSegment.group_desc,
     } as SegmentModal;
 
-    // update in Db
-    setGroupArray([]);
+  
+    dispatch(updateAddSegMessage(" Updating segment details..."));
+    onSave(newSegment, new_master)
+  setGroupArray([]);
     setShortName('');
     setGroupName('');
     setNewMaster(null);
     setIsUpdated(false);
-    dispatch(updateAddSegMessage(" Updating segment details..."));
-    onSave(newSegment, new_master)
+      // update in Db
+    
   }
 
 

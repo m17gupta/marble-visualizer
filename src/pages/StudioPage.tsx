@@ -48,6 +48,7 @@ import { ProjectModel } from "@/models/projectModel/ProjectModel";
 import { resetGenAiState } from "@/redux/slices/visualizerSlice/genAiSlice";
 import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
 import SegmentHome from "@/components/segments/SegmentHome";
+import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -187,7 +188,7 @@ export function StudioPage() {
 
           
           <StudioMainTabs />
-
+ 
 
 
         </div>

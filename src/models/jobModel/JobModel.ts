@@ -9,8 +9,8 @@ export interface MasterGroupModel {
 }
 
 export interface MasterModel{
-  id:number,
-  name:string,
+  id?:number,
+  name?:string,
   icon?: string,
   color: string,
   color_code: string,

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
-import { setCanvasActiveTool, setZoomMode } from '@/redux/slices/canvasSlice';
+import { setCanvasActiveTool, setCanvasType, setZoomMode } from '@/redux/slices/canvasSlice';
 import { toast } from 'sonner';
 interface CanvasToolbarProps {
   fabricCanvasRef: React.MutableRefObject<fabric.Canvas | null>;
@@ -28,10 +28,11 @@ interface CanvasToolbarProps {
   resetCanvas: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanvas,zoomIn,zoomOut }: CanvasToolbarProps) {
+export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanvas,zoomIn,zoomOut, }: CanvasToolbarProps) {
   const dispatch = useDispatch<AppDispatch>();
   // Control whether zoom is centered on mouse position or canvas center
   const {
@@ -61,6 +62,11 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
 
   const handleZoomOut = () => {
     zoomOut()
+  }
+
+  const handleCancelDrawing = () => { 
+    dispatch(setCanvasType('hover'))
+    cancelDrawing();
   }
 
   const changeZoomMode = () => {
@@ -204,6 +210,19 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
             )}
 
       
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  
+                  className='py-0 px-3 '
+                  onClick={handleCancelDrawing}
+                >
+                  <span className="text-xs font-bold ">Cancel Draw</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Cancel draw action</TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

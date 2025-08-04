@@ -80,11 +80,11 @@ const StudioTabs = () => {
   const handleLeaveGroupHover = () => dispatch(updateHoverGroup(null));
 
   const handleAddGroupSegment = () => {
-    if (!currentSelectedGroupSegment) {
-      alert("Please select a group segment");
-    } else {
+    // if (!currentSelectedGroupSegment) {
+    //   alert("Please select a group segment");
+    // } else {
       dispatch(setCanvasType("draw"));
-    }
+    
   };
 
   const handleAddSegment = () => dispatch(setCanvasType("draw"));
@@ -125,6 +125,8 @@ const StudioTabs = () => {
   }
 
   return (
+    <>
+   
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0">
         <TabsList className="flex-1 overflow-x-auto whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent">
@@ -187,12 +189,14 @@ const StudioTabs = () => {
 
             
     
-         <SwatchRecommendations/>
+       
             
           </Tabs>
         </TabsContent>
       ))}
     </Tabs>
+     
+    </>
   );
 };
 
