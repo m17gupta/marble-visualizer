@@ -105,7 +105,7 @@ const path="https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials"
                         target.style.backgroundColor = swatch.color || '#908e8eff';
                         target.style.display = 'block';
                         target.src = '';
-                        target.alt = swatch.id ?? "image not available";
+                        target.alt = swatch.id ? String(swatch.id) : "image not available";
                       }}
                     />
                      
