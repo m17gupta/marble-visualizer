@@ -59,20 +59,33 @@ const masterArraySlice = createSlice({
         );
 
         if (existingGroup) {
-          // Add to existing group
-          existingGroup.segments.push(newSegment);
+          //check if segment already exists in the group
+          const existingSegment = existingGroup.segments.find(
+            (seg) => seg.id === newSegment.id
+          );
+          if (!existingSegment) {
+            existingGroup.segments.push(newSegment);
+            state.selectedSegment = newSegment;
+          }else{
+            // remove and add new segment
+            existingGroup.segments = existingGroup.segments.filter(seg => seg.id !== newSegment.id);
+            existingGroup.segments.push(newSegment);
+            state.selectedSegment = newSegment;
+          }
         } else {
           // Add new group with this segment
           allGroups.push({
             groupName: newSegment.group_label_system,
             segments: [newSegment],
           });
+          state.selectedSegment = newSegment;
         }
       }else{
         existingSegment.allSegments = [{
           groupName: newSegment.group_label_system,
           segments: [newSegment],
         }];
+        state.selectedSegment = newSegment;
       }
 
         // Assign back if allSegments was undefined (for safety)
@@ -168,7 +181,7 @@ const masterArraySlice = createSlice({
     }else{
       // If master not found, add new master with segment
       const newMasterArray: MasterModel = {
-        id: master.id,
+        // id: master.id,
         name: master.name,
         icon: master.icon,
         color_code: master.color_code,

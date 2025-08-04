@@ -42,6 +42,7 @@ interface SegmentsState {
   newSegment: SegmentModal;
   addNewMasterArray: MasterModel | null;
   isDrawing: boolean;
+  reAnnotationPoints: number[]|null;
   segmentDrawn: {
     annotation: number[];
     segType: string;
@@ -89,6 +90,7 @@ const initialState: SegmentsState = {
   newSegment: {},
   isDrawing: false,
   isSegmentEdit: false,
+  reAnnotationPoints: [],
   segmentDrawn: {
     annotation: [],
     segType: '',
@@ -276,6 +278,9 @@ const segmentsSlice = createSlice({
     updateIsSegmentEdit: (state, action) => {
       state.isSegmentEdit = action.payload;
     },
+    updateReAnnoatationPoints: (state, action: PayloadAction<number[]>) => {
+      state.reAnnotationPoints = action.payload;
+    },
     undo: (state) => {
       if (state.historyIndex > 0) {
         state.historyIndex--;
@@ -305,9 +310,12 @@ const segmentsSlice = createSlice({
     clearManualAnnotationResult: (state) => {
       state.manualAnnotationResult = null;
     },
-    resetSegmentSlice: () => {
-      return initialState;
-    }
+    resetReAnnoatationPoints: (state) => {
+      state.reAnnotationPoints = [];  
+      },
+      resetSegmentSlice: () => {
+        return initialState;
+      }
   },
   extraReducers: (builder) => {
     builder
@@ -404,7 +412,9 @@ export const {
   updateAddSegMessage,
   updateNewSegmentDrawn,
   updateIsSegmentEdit,
-  changeGroupSegment
+  changeGroupSegment,
+  resetReAnnoatationPoints,
+  updateReAnnoatationPoints
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

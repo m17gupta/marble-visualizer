@@ -13,6 +13,7 @@ import LayerContent from './tabContent/LayerContent';
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeTab: activeTabFromStore } = useSelector(
@@ -199,6 +200,7 @@ const StudioMainTabs = () => {
           </TabsContent>
 
         </Tabs>
+       
       </TooltipProvider>
     </>
   );

@@ -21,16 +21,16 @@ export interface SegmentModal {
 
 
 export interface MsterDataAnnotationResponse {
-  annotation: number[];
-  bb_annotation_int: number[];
-  bb_area_pixel: number;
-  bb_area_sqft: number;
-  mid2midDistance: number[];
-  long_trim_seg_dist: [number, number, number, number, number][];
-  perimeter_pixel: number;
-  perimeter_feet: number;
-  annotation_area_pixel: number;
-  annotation_area_sqft: number;
-  bb_dimension_pixel: number[];
-  bb_dimension_feet: number[];
+  annotation?: number[];
+  bb_annotation_int?: number[];
+  bb_area_pixel?: number;
+  bb_area_sqft?: number;
+  mid2midDistance?: number[];
+  long_trim_seg_dist?: [number, number, number, number, number][];
+  perimeter_pixel?: number;
+  perimeter_feet?: number;
+  annotation_area_pixel?: number;
+  annotation_area_sqft?: number;
+  bb_dimension_pixel?: number[];
+  bb_dimension_feet?: number[];
 }

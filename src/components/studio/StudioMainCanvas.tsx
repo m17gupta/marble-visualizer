@@ -12,11 +12,11 @@ import {
   Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import GenAiImages from "../workSpace/compareGenAiImages/GenAiImages";
+
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import PolygonOverlay from "../canvas/PolygonOverlay";
-import SegmentHome from "../segments/SegmentHome";
+
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -50,8 +50,7 @@ export function StudioMainCanvas({
     }
   }, [canvasType]);
 
-  console.log("Canvas Mode:", canvasMode);
-
+ 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
       setImageLoading(true);
@@ -144,7 +143,8 @@ export function StudioMainCanvas({
                     />}
 
                     
-                    {canvasMode == "draw" && <CanvasEditor
+                    {(canvasMode == "draw" || canvasMode == "reannotation")
+                     && <CanvasEditor
                       key={`canvas-editor-${canvasImage}`}
                       imageUrl={canvasImage}
                       width={800}
@@ -240,7 +240,7 @@ export function StudioMainCanvas({
             </div>
           </div>
           <div className="px-4">
-            {canvasMode === "draw" && <GenAiImages />}
+            
           </div>
           {canEdit && (
             <input

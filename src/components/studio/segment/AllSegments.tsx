@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { addSelectedMasterArray, updatedSelectedGroupSegment, updateSelectedSegm
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
+import { boolean } from "zod";
 
 const AllSegments = () => {
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
@@ -33,18 +34,20 @@ const AllSegments = () => {
   );
 
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
-
+   const isFirst= useRef<boolean>(true);
   // update master Array
   useEffect(() => {
     if (masterArray && masterArray.length > 0) {
-      dispatch(addSelectedMasterArray(masterArray[0]));
+
       if (masterArray && masterArray[0] &&
         masterArray[0].allSegments && masterArray[0].allSegments.length > 0) {
         const firstGroup = masterArray[0].allSegments[0]
-        dispatch(updatedSelectedGroupSegment(firstGroup));
-        if (firstGroup && firstGroup.groupName && firstGroup.segments.length > 0) {
 
+        if (firstGroup && firstGroup.groupName && firstGroup.segments.length > 0 && isFirst.current) {
+          dispatch(addSelectedMasterArray(masterArray[0]));
           dispatch(updateSelectedSegment(firstGroup.segments[0]));
+          dispatch(updatedSelectedGroupSegment(firstGroup));
+          isFirst.current = false;
         }
 
         setUpdatedMasterArray(masterArray);
@@ -53,11 +56,11 @@ const AllSegments = () => {
     } else {
       setUpdatedMasterArray(null);
     }
-  }, [masterArray]);
+  }, [masterArray,isFirst]);
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
-    if (selectedSeg) {
+    if (selectedSeg && selectedSeg.id && selectedSeg.name) {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
       dispatch(addSelectedMasterArray(selectedSeg));

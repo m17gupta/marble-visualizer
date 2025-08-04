@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Target } from 'lucide-react';
 import { MaterialModel } from '@/models/swatchBook/material/MaterialModel';
 import { FaInfo } from "react-icons/fa6";
-import { CiStar } from "react-icons/ci";
+
 import { FaRegStar } from "react-icons/fa";
 
 export function SwatchRecommendations() {

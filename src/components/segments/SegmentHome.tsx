@@ -7,6 +7,7 @@ import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
 import { toast } from 'sonner';
 import { changeGroupSelectedSegment, deletedChangeGroupSegment } from '@/redux/slices/MasterArraySlice';
 import { MasterModel } from '@/models/jobModel/JobModel';
+import { MaterialSegmentModel } from '@/models/materialSegment/MaterialSegmentModel';
 
 const SegmentHome = () => {
 
@@ -33,7 +34,8 @@ const handleCloseEditModal = () => {
 
     const updateSegmentBasedOnId = async (segmentData: SegmentModal): Promise<boolean> => {
       const response = await dispatch(updateSegmentById(segmentData));
-      if (updateSegmentById.fulfilled.match(response)) {
+      console.log("Update Segment Response:--->", response);
+      if (response.meta.requestStatus === 'fulfilled') {
         toast.success("Segment updated successfully!");
         return true;
       } else {
@@ -42,9 +44,12 @@ const handleCloseEditModal = () => {
       }
     };
 
-  const handleSaveSegment = async(data: SegmentModal, new_master: MasterModel | null) => {
+  const handleSaveSegment = async(data: SegmentModal, new_master: MaterialSegmentModel ) => {
+    console.log("Saving Segment Data:", data);
+    console.log("New Master Data:", new_master);
      handleCloseEditModal()
      const isUpdated = await updateSegmentBasedOnId(data);
+     console.log("Is Updated:", isUpdated);
     if (!isUpdated) {
       return;
     }
