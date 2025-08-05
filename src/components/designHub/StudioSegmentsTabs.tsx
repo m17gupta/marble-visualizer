@@ -11,8 +11,7 @@ import { updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slic
 import { Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { TooltipContent } from "../ui/tooltip";
 import TabNavigation from "./tabNavigation/TabNavigation";
-// import TestSlider from "./TestSlider";
-import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
+
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
  
 
@@ -37,8 +36,12 @@ const StudioTabs = () => {
       setMasterArray(selectedMasterArray);
 
       const firstGroup = selectedMasterArray.allSegments[0];
+      const firstSegment = selectedMasterArray.allSegments.map(grp => {
+        return grp.segments.slice().filter(seg => seg.short_title).sort((a, b) => (a.short_title ?? "").localeCompare(b.short_title ?? ""));
+      });
+      console.log("First Segment:", firstSegment);
       setActiveTab(firstGroup.groupName);
-      setInnerTabValue(firstGroup.segments[0]?.short_title ?? "");
+      setInnerTabValue(firstSegment[0]?.[0]?.short_title ?? "");
       setCurrentSelectedGroupSegment(firstGroup);
     } else {
       setMasterArray(null);
@@ -159,20 +162,24 @@ const StudioTabs = () => {
           <Tabs value={innerTabValue} className="w-full">
             <TabsList className="flex overflow-x-auto whitespace-nowrap border-b no-scrollbar py-1 bg-white w-full">
               <Swiper spaceBetween={8} slidesPerView="auto" className="flex w-full">
-                {wall.segments.map(tab => (
-                  <SwiperSlide key={tab.short_title} className="!w-auto">
-                    <TabsTrigger
-                      value={tab.short_title ?? ""}
-                      ref={el => (tabRefs.current[tab.short_title ?? ""] = el)}
-                      onClick={() => handleInnerTabClick(tab)}
-                      onMouseEnter={() => handleEachSegmentHover(tab.short_title ?? "")}
-                      onMouseLeave={handleLeaveGroupHover}
-                      className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600"
-                    >
-                      {tab.short_title}
-                    </TabsTrigger>
-                  </SwiperSlide>
-                ))}
+                {wall.segments
+                  .slice() // make a copy to avoid mutating original
+                  .filter(tab => tab.short_title)
+                  .sort((a, b) => (a.short_title ?? "").localeCompare(b.short_title ?? ""))
+                  .map(tab => (
+                    <SwiperSlide key={tab.short_title} className="!w-auto">
+                      <TabsTrigger
+                        value={tab.short_title ?? ""}
+                        ref={el => (tabRefs.current[tab.short_title ?? ""] = el)}
+                        onClick={() => handleInnerTabClick(tab)}
+                        onMouseEnter={() => handleEachSegmentHover(tab.short_title ?? "")}
+                        onMouseLeave={handleLeaveGroupHover}
+                        className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600"
+                      >
+                        {tab.short_title}
+                      </TabsTrigger>
+                    </SwiperSlide>
+                  ))}
               </Swiper>
             </TabsList>
 

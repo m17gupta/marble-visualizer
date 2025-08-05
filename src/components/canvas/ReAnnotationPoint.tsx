@@ -76,7 +76,7 @@ const ReAnnotationPoint = () => {
 
     }
     return (
-        <div>ReAnnotationPoint</div>
+        null
     )
 }
 

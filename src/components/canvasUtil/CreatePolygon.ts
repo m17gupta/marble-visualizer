@@ -1,6 +1,6 @@
 import * as fabric from "fabric";
 
-interface PointModel {
+export interface PointModel {
     x: number;
     y: number;
 }

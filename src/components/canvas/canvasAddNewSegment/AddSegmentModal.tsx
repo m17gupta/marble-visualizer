@@ -66,12 +66,15 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
    }
 
    const closeSegmentModal=()=>{
+    setSelectedSegment(null);
+    setUpdatedSegments([])
     onClose()
    }
 
      const handleSave = () => {
     dispatch(selectedNewMasterArray(selectedSegment));
     dispatch(addSelectedMasterArray(selectedSegment));
+    setUpdatedSegments([])
     setSelectedSegment(null);
     onSave()
   }
@@ -85,16 +88,18 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
         </DialogHeader>
 
         <div className="mt-4 mb-2 text-lg font-medium text-primary border-ra">
+        {selectedSegment && (
           <button className="bg-gray-50 text-black rounded px-2 py-1 border border-gray-300 hover:bg-gray-100 transition-colors duration-200 text-sm">
             {selectedSegment?.name}
-            </button>
-          </div>
+          </button>
+        )}
+      </div>
 
         <ScrollArea className="h-[300px] pr-2">
           <div className="grid grid-cols-2 sm:grid-cols-12 md:grid-cols-12 lg:grid-cols-8 gap-4">
             {updatedSegments?.map((item, index) => {
               const isSelected = item.name === selectedSegment?.name
-              const isDisabled = item.isDisabled
+              const isDisabled = item.isDisabled ? true : false;
 
               return (
                 <div

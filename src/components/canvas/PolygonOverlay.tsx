@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from '../ui/card';
 import { setCanvasReady } from '@/redux/slices/canvasSlice';
 import { handlePolygonVisibilityOnMouseMove, HideAllSegments } from '../canvasUtil/HoverSegment';
+import { SelectedAnimation } from '../canvasUtil/SelectedAnimation';
 
 
 type NamedFabricObject = fabric.Object & {   name?: string  };
@@ -50,6 +51,9 @@ const PolygonOverlay = ({
     const { segments } = useSelector((state: RootState) => state.materialSegments);
   const [imageWidth, setImageWidth] = useState<number>(0);
   const [imageHeight, setImageHeight] = useState<number>(0);
+  const [updateSelectedSegment, setUpdateSelectedSegment] = useState<SegmentModal | null>(null  );
+  const {selectedSegment} = useSelector((state: RootState) => state.masterArray);
+
 
     // upate all segmnet Array
     useEffect(() => {
@@ -59,6 +63,15 @@ const PolygonOverlay = ({
             setAllSegArray([]);
         }
     }, [allSegmentArray]);
+
+    // Update selected segment
+    useEffect(() => {   
+        if (selectedSegment) {
+            setUpdateSelectedSegment(selectedSegment);
+        } else {
+            setUpdateSelectedSegment(null);
+        }
+    }, [selectedSegment]);
     // Initialize Fabric.js canvas
     useEffect(() => {
         if (!canvasRef.current || fabricCanvasRef.current) return;
@@ -191,11 +204,14 @@ const PolygonOverlay = ({
                 }
             }
 
+
             // Strategy 2: Try different fetch modes
             const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
             for (const fetchMode of fetchModes) {
                 try {
                     const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+                    setImageWidth(imgElement.width);
+                    setImageHeight(imgElement.height);
                     AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
                     return;
                 } catch (error) {
@@ -224,34 +240,72 @@ const PolygonOverlay = ({
 
 
 
-    useEffect(() => {
-        const canvas = fabricCanvasRef.current;
-        if (!canvas || allSegArray.length === 0 || imageHeight === 0 || imageWidth === 0) return;
+useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) {
+        console.warn("[PolygonOverlay] No canvas instance available.");
+        return;
+    }
+    if (allSegArray.length === 0) {
+        console.warn("[PolygonOverlay] allSegArray is empty.");
+        return;
+    }
+    if (imageHeight === 0 || imageWidth === 0) {
+        console.warn(`[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`);
+        return;
+    }
 
-        allSegArray.map(seg => {
-            const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
-            const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
-            const isFill = true;
-            if (
-                !annotation_points_float || annotation_points_float.length === 0 ||
-                !segment_bb_float || segment_bb_float.length === 0 ||
-                !group_label_system || !short_title || !segment_type || !segColor || !fabricCanvasRef.current
-            ) return;
+    // Remove previous polygons (but not the background image)
+    const objectsToRemove = canvas.getObjects().filter(obj => obj.type === 'polygon');
+    objectsToRemove.forEach(obj => canvas.remove(obj));
 
-            collectPoints(
-                annotation_points_float,
-                short_title,
-                segment_bb_float,
-                segment_type,
-                group_label_system,
-                segColor,
-                fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-                isFill,
-                 imageHeight,
-                  imageWidth
-            );
-        });
-    }, [allSegArray, segments, fabricCanvasRef, imageHeight, imageWidth])
+    allSegArray.forEach((seg, idx) => {
+        const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
+        const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
+        const isFill = true;
+        if (!annotation_points_float || annotation_points_float.length === 0) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing annotation_points_float`, seg);
+            return;
+        }
+        if (!segment_bb_float || segment_bb_float.length === 0) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing segment_bb_float`, seg);
+            return;
+        }
+        if (!group_label_system) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing group_label_system`, seg);
+            return;
+        }
+        if (!short_title) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing short_title`, seg);
+            return;
+        }
+        if (!segment_type) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing segment_type`, seg);
+            return;
+        }
+        if (!segColor) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
+            return;
+        }
+        if (!fabricCanvasRef.current) {
+            console.warn(`[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`);
+            return;
+        }
+
+        collectPoints(
+            annotation_points_float,
+            short_title,
+            segment_bb_float,
+            segment_type,
+            group_label_system,
+            segColor,
+            fabricCanvasRef, // Pass the actual Canvas instance, not the ref
+            isFill,
+            imageHeight,
+            imageWidth
+        );
+    });
+}, [allSegArray, segments, fabricCanvasRef, imageHeight, imageWidth])
 
 
     const handleMouseMove = useCallback(
@@ -291,6 +345,28 @@ const PolygonOverlay = ({
             })
         }
     },[hoverGroup,fabricCanvasRef]);
+
+    // update Animation on selected segment  
+    useEffect(() => {
+        if (!fabricCanvasRef.current || !updateSelectedSegment) return;
+
+        const canvas = fabricCanvasRef.current;
+        const segName = updateSelectedSegment.short_title;
+        const annotatonPoints = updateSelectedSegment.annotation_points_float;
+        const color = segments.find((s: { name: string; color_code: string }) => s.name === updateSelectedSegment.segment_type)?.color_code || "#FE0056";
+        if (!annotatonPoints || annotatonPoints.length === 0 || !segName || !color) return;
+        // Remove existing selected animation
+        const allObjects = canvas.getObjects();
+        allObjects.forEach((item) => {
+            const namedItem = item as NamedFabricObject;
+            if (item instanceof fabric.Polygon && namedItem.name === `SelectedPolygon`) {
+                canvas.remove(item);
+            }
+        });
+
+        // Add new selected animation
+        SelectedAnimation(fabricCanvasRef, annotatonPoints, segName, color);
+    }, [updateSelectedSegment, segments, fabricCanvasRef]);
     return (
         <>
             <TooltipProvider>

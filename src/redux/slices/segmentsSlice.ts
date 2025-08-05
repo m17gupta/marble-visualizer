@@ -191,6 +191,21 @@ export const updateSegmentById = createAsyncThunk(
   }
 );
 
+// delete segment based on id
+export const deleteSegmentById = createAsyncThunk(  
+  'segments/deleteSegmentById',
+  async (segmentId: number, { rejectWithValue }) => {
+    try {
+      return await segmentService.deleteSegmentById(segmentId);
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('Failed to delete segment');
+    }
+  }
+);
+
 const segmentsSlice = createSlice({
   name: "segments",
   initialState,
@@ -364,26 +379,22 @@ const segmentsSlice = createSlice({
       .addCase(getSegmentsByJobId.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
-      });
+      })
 
-    // Handle updateSegmentById thunk
-    // .addCase(updateSegmentById.pending, (state) => {
-    //   state.isLoadingManualAnnotation = true;
-    //   state.manualAnnotationError = null;
-    // })
-    // .addCase(updateSegmentById.fulfilled, (state, action) => {
-    //   state.isLoadingManualAnnotation = false;
-    //   const updatedSegment = action.payload.data;
-    //   const index = state.allSegments.findIndex(seg => seg.id === updatedSegment.id);
-    //   if (index !== -1) {
-    //     state.allSegments[index] = updatedSegment; // Update the segment in the array
-    //   }
-    //   state.manualAnnotationError = null;
-    // })
-    // .addCase(updateSegmentById.rejected, (state, action) => {
-    //   state.isLoadingManualAnnotation = false;
-    //   state.manualAnnotationError = action.payload as string;
-    // });
+    // Handle deleteSegmentById thunk
+    .addCase(deleteSegmentById.pending, (state) => {
+      state.isLoadingManualAnnotation = true;
+      state.manualAnnotationError = null;
+    })
+    .addCase(deleteSegmentById.fulfilled, (state, action) => {
+      state.isLoadingManualAnnotation = false;
+      state.allSegments = state.allSegments.filter(seg => seg.id !== action.payload.data?.id);
+      state.manualAnnotationError = null;
+    })
+    .addCase(deleteSegmentById.rejected, (state, action) => {
+      state.isLoadingManualAnnotation = false;
+      state.manualAnnotationError = action.payload as string;
+    });
   },
 });
 

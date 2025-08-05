@@ -134,7 +134,7 @@ const AllSegments = () => {
                       }}
                       onClick={() => handleSegmentClick(segment)}
                       onMouseEnter={() => {
-                        setHoveredSegment(segment.id);
+                        setHoveredSegment(segment.id ? segment.id : null);
                         handleMouseEnter(segment);
                       }}
                       onMouseLeave={() => {

@@ -35,7 +35,7 @@ import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentMo
 interface EditSegmentModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: SegmentModal, new_master: MaterialSegmentModel | null) => void;
+  onSave: (data: SegmentModal, new_master: MaterialSegmentModel) => void;
 
 }
 const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
@@ -133,7 +133,7 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
   }
 
   const handleSave = async () => {
-    if (!segType || !groupName || !shortName || !selectedSegment) {
+    if (!segType || !groupName || !shortName || !selectedSegment || !new_master) {
       toast.error("Please fill all fields");
       return;
     }
