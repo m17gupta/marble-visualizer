@@ -18,7 +18,8 @@ import LayerContent from "./tabContent/LayerContent";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
-import { SwatchRecommendations } from "@/components/swatch/SwatchRecommendations";
+import { setCanvasType } from "@/redux/slices/canvasSlice";
+
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeTab: activeTabFromStore } = useSelector(
@@ -50,8 +51,13 @@ const StudioMainTabs = () => {
   };
 
   const handleLayersClick = () => {
-    // setActiveTab("layers");
     dispatch(updateActiveTab("layers"));
+  };
+
+  const handleCommentsClick = () => {
+      dispatch(updateActiveTab("comments"));
+  
+    dispatch(setCanvasType("comment")); // Set canvas type to comment when Comments tab is clicked
   };
   return (
     <>
@@ -61,7 +67,7 @@ const StudioMainTabs = () => {
           onValueChange={handleChangeTab}
           className="w-full h-full flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 rounded-0 shadow-sm   gap-2 px-3 py-2">
+          <TabsList className="grid w-full grid-cols-5 bg-white border border-gray-200 rounded-0 shadow-sm   gap-2 px-3 py-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <TabsTrigger
@@ -157,7 +163,7 @@ const StudioMainTabs = () => {
               <TooltipTrigger asChild>
                 <TabsTrigger
                   value="layers"
-                  onClick={handleLayersClick}
+                        onClick={handleLayersClick}
                   className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
                 >
                   <svg
@@ -179,6 +185,32 @@ const StudioMainTabs = () => {
                 </TabsTrigger>
               </TooltipTrigger>
               <TooltipContent>Layers</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <TabsTrigger
+                  value="comments"
+                  onClick={handleCommentsClick}
+                  className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-message-square-plus-icon lucide-message-square-plus"
+                  >
+                    <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+                    <path d="M12 8v6" />
+                    <path d="M9 11h6" />
+                  </svg>
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Comment</TooltipContent>
             </Tooltip>
           </TabsList>
 
