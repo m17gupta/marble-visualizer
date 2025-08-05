@@ -19,6 +19,7 @@ import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
+import StudioStyleTabs from "./StudioStyleTabs";
 
 const StudioMainTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -219,7 +220,8 @@ const StudioMainTabs = () => {
           </TabsContent>
 
           <TabsContent value="inspiration" className="flex-grow overflow-auto">
-            <InspirationContent />
+            <StudioStyleTabs/>
+        
           </TabsContent>
 
           <TabsContent value="measurement" className="flex-grow overflow-auto">
