@@ -22,34 +22,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
 import { setCanvasActiveTool, setCanvasType, setZoomMode } from '@/redux/slices/canvasSlice';
 import { toast } from 'sonner';
+import AddSegLists from './canvasAddNewSegment/AddSegLists';
 interface CanvasToolbarProps {
   fabricCanvasRef: React.MutableRefObject<fabric.Canvas | null>;
   cancelDrawing: () => void;
   resetCanvas: () => void;
   zoomIn: () => void;
   zoomOut: () => void;
-  
+
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanvas,zoomIn,zoomOut, }: CanvasToolbarProps) {
+export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCanvas, zoomIn, zoomOut, }: CanvasToolbarProps) {
   const dispatch = useDispatch<AppDispatch>();
-  // Control whether zoom is centered on mouse position or canvas center
-  const {
+
+  const { canvasType } = useSelector((state: RootState) => state.canvas);
+  const { currentZoom, mousePosition } = useSelector((state: RootState) => state.canvas);
+  const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
  
-    isDrawing,
-    segmentDrawn
-  } = useSelector((state: RootState) => state.segments)
-
-  const { canavasActiveTool, currentZoom, zoomMode, mousePosition } = useSelector((state: RootState) => state.canvas);
-
-  const handleToolChange = (tool: string) => {
-    // Dispatch action to set the active tool in the canvas state
-    dispatch(setCanvasActiveTool(tool));
-    if(tool !== "polygon") {
-      cancelDrawing();
-    }
-  };
+  console.log("CanvasToolbar rendered with canvasType:", canvasType);
 
   const handleResetZoom = () => {
     resetCanvas()
@@ -64,20 +55,12 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
     zoomOut()
   }
 
-  const handleCancelDrawing = () => { 
+  const handleCancelDrawing = () => {
     dispatch(setCanvasType('hover'))
     cancelDrawing();
   }
 
-  const changeZoomMode = () => {
-    
-    // if(zoomMode === 'center') {
-    //   dispatch(setZoomMode('mouse'));
-    // }else{
-    //   dispatch(setZoomMode('center'));
-    // }
-    // toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
-  };
+
   return (
     <Card>
       <CardContent className="py-2 px-4">
@@ -85,36 +68,6 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            {/* Drawing Tools */}
-            {/* <div className="flex items-center space-x-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={canavasActiveTool === 'select' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleToolChange('select')}
-                  >
-                    <MousePointer className="h-4 w-4 mr-1" />
-                    Select
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Select and move segments</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={canavasActiveTool === 'polygon' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleToolChange('polygon')}
-                  >
-                    <Pentagon className="h-4 w-4 mr-1" />
-                    Polygon
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Draw polygon segments</TooltipContent>
-              </Tooltip>
-            </div> */}
 
             {/* <Separator orientation="vertical" className="h-6" /> */}
 
@@ -182,52 +135,53 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
             </div>
 
 
-        
+
 
             <Separator orientation="vertical" className="h-6" />
-
+            {/* 
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                // onClick={handleDeleteSelected}
-                // disabled={!activeSegmentId}
+                onClick={handleDeleteSelected}
+                disabled={!activeSegmentId}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Delete selected segment (Delete)</TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </div>
-
+          <Badge variant="secondary">
+            <span className="text-xs font-bold">
+              {canvasType === "draw" ? "Marking canvas" : "ReAnnotating Marking canvas"}
+            </span>
+          </Badge>
           <div className="flex items-center space-x-2">
-            {/* Status */}
-            {isDrawing && (
-              <Badge variant="secondary">
-                segment drawn: {Object.keys(segmentDrawn).length}
-              </Badge>
-            )}
 
-      
+
+
+
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  
+
                   className='py-0 px-3 '
                   onClick={handleCancelDrawing}
                 >
                   <span className="text-xs font-bold ">Cancel Draw</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Cancel draw action</TooltipContent>
+              <TooltipContent>Cancel Marking</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  
+
                   className='py-0 px-3 '
                   onClick={handleResetZoom}
                 >
@@ -269,39 +223,18 @@ export default function CanvasToolbar({ fabricCanvasRef,cancelDrawing,resetCanva
                   </TooltipTrigger>
                   <TooltipContent>Zoom out</TooltipContent>
                 </Tooltip>
-                {/* <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 p-0"
-                      onClick={changeZoomMode}
-                      onClick={() => {
-                        dispatch(toggleZoomMode());
-                        toast.success(`Zoom mode: ${zoomMode === 'center' ? 'Mouse' : 'Center'}`);
-                      }}
-                    >
-                     <span className="text-xs">{zoomMode === 'center' ? 'C' : 'M'}</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {zoomMode === 'center'
-                      ? 'Zoom centered on canvas (click to change)'
-                      : 'Zoom centered on mouse (click to change)'}
-                  </TooltipContent>
-                </Tooltip> */}
+
               </div>
               <span className="w-px h-4 bg-gray-300"></span>
               <span>X: {mousePosition.x}</span>
               <span>Y: {mousePosition.y}</span>
             </Badge>
 
-            <Button variant="outline" size="sm"
-            // onClick={handleExport}
-             >
-              <Download className="h-4 w-4 mr-1" />
-              Export
-            </Button>
+          { canvasType=="reannotation" && <AddSegLists
+              segType={selectedSegment?.segment_type || "Unknown"}
+              groupName={selectedSegment?.group_label_system || "Unknown"}
+              shortName={selectedSegment?.short_title || "Unknown"}
+            />}
           </div>
         </div>
       </CardContent>

@@ -25,4 +25,8 @@ async getSegmentsByJobId(jobId: number): Promise<SegmentModal[]> {
 async updateSegmentById(segmentData: SegmentModal): Promise<SegmentApiResponse> {
   return this.segmentApi.updateSegmentBasedOnId(segmentData);
 }
+
+async deleteSegmentById(segmentId: number): Promise<SegmentApiResponse> {
+  return this.segmentApi.deleteSegmentById(segmentId);
+}
 }

@@ -34,7 +34,7 @@ const handleCloseEditModal = () => {
 
     const updateSegmentBasedOnId = async (segmentData: SegmentModal): Promise<boolean> => {
       const response = await dispatch(updateSegmentById(segmentData));
-      console.log("Update Segment Response:--->", response);
+      
       if (response.meta.requestStatus === 'fulfilled') {
         toast.success("Segment updated successfully!");
         return true;

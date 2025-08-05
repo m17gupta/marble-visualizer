@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import PolygonOverlay from "../canvas/PolygonOverlay";
+import CanvasEdit from "../canvas/canvasEdit/CanvasEdit";
 
 
 interface StudioMainCanvasProps {
@@ -145,6 +146,15 @@ export function StudioMainCanvas({
                     
                     {(canvasMode == "draw" || canvasMode == "reannotation")
                      && <CanvasEditor
+                      key={`canvas-editor-${canvasImage}`}
+                      imageUrl={canvasImage}
+                      width={800}
+                      height={600}
+                      className="mb-6"
+                      onImageLoad={handleImageLoad}
+                    />}
+                    {(canvasMode == "edit" )
+                     && <CanvasEdit
                       key={`canvas-editor-${canvasImage}`}
                       imageUrl={canvasImage}
                       width={800}

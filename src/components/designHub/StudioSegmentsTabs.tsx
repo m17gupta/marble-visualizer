@@ -11,8 +11,7 @@ import { updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slic
 import { Tooltip, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { TooltipContent } from "../ui/tooltip";
 import TabNavigation from "./tabNavigation/TabNavigation";
-// import TestSlider from "./TestSlider";
-import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
+
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
  
 
