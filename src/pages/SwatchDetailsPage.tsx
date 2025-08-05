@@ -475,7 +475,8 @@ export function SwatchDetailsPage() {
 
             {!isEditing ? (
               <Button
-                onClick={() => setIsEditing(true)}
+                // onClick={() => setIsEditing(true)}
+                onClick={() => navigate(`/app/addswatch/${id}`)}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all transform hover:scale-105"
               >
                 <Edit3 className="h-4 w-4 mr-2" />
