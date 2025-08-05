@@ -23,10 +23,8 @@ import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
-
   const SegTypeRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
   const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
-
   const [activeTab, setActiveTab] = useState("");
   const [innerTabValue, setInnerTabValue] = useState("");
   const [masterArray, setMasterArray] = useState<MasterModel | null>(null);
@@ -125,7 +123,7 @@ const StudioTabs = () => {
 
   if (!masterArray || masterArray.allSegments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full">
+      <div className=" flex flex-col items-center justify-center">
         <p className="text-gray-500 mb-2">
           No segments available. Please add a segment.
         </p>
@@ -161,7 +159,11 @@ const StudioTabs = () => {
 
   return (
     <>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full h-40"
+      >
         <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0">
           <TabsList className="flex-1 overflow-x-auto whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent">
             <Swiper

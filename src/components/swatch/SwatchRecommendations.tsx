@@ -10,6 +10,11 @@ import { FaInfo } from "react-icons/fa6";
 
 import { FaRegStar } from "react-icons/fa";
 
+type Props = {
+  selectedMasterArray?: any;
+  selectedMaterialSegment?: any;
+};
+
 export function SwatchRecommendations() {
   const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
   const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
