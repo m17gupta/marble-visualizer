@@ -1236,7 +1236,7 @@ const MeasurementContent: React.FC = () => {
       : "border-b-2 border-b-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50";
   };
 
-  const getActiveTabData = (): MasterArrayItem | undefined => {
+  const getActiveTabData = (): any | undefined => {
     return masterArray.find((item) => item.name === activeTab);
   };
 
@@ -1340,10 +1340,10 @@ const MeasurementContent: React.FC = () => {
               </thead>
               <tbody>
                 ${activeTabData.allSegments
-                  .map((group) =>
+                  .map((group: any) =>
                     group.segments
                       .map(
-                        (segment) => `
+                        (segment: any) => `
                     <tr>
                       <td>${group.groupName}</td>
                       <td>${segment.short_title}</td>
@@ -1477,7 +1477,7 @@ const MeasurementContent: React.FC = () => {
         {/* Tab Navigation */}
         <div className="px-4 bg-white border-b border-gray-200">
           <div className="flex space-x-0 overflow-x-auto">
-            {masterArray.map((tab: MasterArrayItem) => (
+            {masterArray.map((tab: any) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.name)}
