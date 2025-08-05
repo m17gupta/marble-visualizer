@@ -16,6 +16,7 @@ import { RootState } from "@/redux/store";
 import React from "react";
 import { IoTimerOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import { FaEye } from "react-icons/fa";
 
 const ProjectHistory = () => {
   const { genAiImages, isFetchingGenAiImages } = useSelector(
@@ -67,12 +68,20 @@ const ProjectHistory = () => {
               >
                 <div className="flex items-start gap-2 w-full max-w-[calc(100%-2rem)]">
                   <IoTimerOutline className="text-2xl shrink-0 mt-1 text-gray-600" />
+                  <div>
                   <p className="text-sm text-gray-800 break-words line-clamp-3">
                     {image.user_input_text}
                   </p>
+                  <p className="text-gray-800 text-sm font-semibold flex items-center gap-1 pt-1">
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg> */}
+                    05/08/2025 <span className="ml-1 text-blue-600 font-semibold">17:00</span>
+                  </p>
+                  </div>
                 </div>
                 <span className="ms-2 text-lg text-gray-500 cursor-pointer">
-                  &times;
+                 <FaEye />
                 </span>
               </div>
             ))
