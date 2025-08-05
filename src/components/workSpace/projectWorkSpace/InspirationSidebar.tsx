@@ -4,8 +4,10 @@ import PreferredImageTab from './PreferredImageTab';
 
 const InspirationSidebar: React.FC = () => (
   <>
+  
     <PreferredImageTab/>
   </>
 );
+
 
 export default InspirationSidebar;
