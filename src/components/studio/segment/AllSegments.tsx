@@ -21,7 +21,6 @@ import {
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
-import { boolean } from "zod";
 
 const AllSegments = () => {
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);

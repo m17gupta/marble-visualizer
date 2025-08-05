@@ -10,8 +10,7 @@ import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 import { MasterModel } from '@/models';
 import { selectedNewMasterArray } from '@/redux/slices/segmentsSlice';
-import { setCanvasType } from '@/redux/slices/canvasSlice';
-import { set } from 'date-fns';
+;
 import { addSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
 
 interface AddSegmentModalProps {
@@ -31,7 +30,8 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
   const [updatedSegments, setUpdatedSegments] = useState<MaterialSegmentModel[]>([]);
   const [selectedSegment, setSelectedSegment] = useState<MasterModel | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
+  if (open) {
     if (masterArray && masterArray.length > 0 && segments && segments.length > 0) {
       const masterNames = masterArray.map((master) => master.name);
       const updateSeg = segments.map((seg: MaterialSegmentModel) => ({
@@ -42,7 +42,11 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
     } else {
       setUpdatedSegments(segments);
     }
-  }, [masterArray, segments]);
+  }else{
+    setUpdatedSegments([]);
+    setSelectedSegment(null);
+  }
+}, [masterArray, segments, open]);
 
 
 
@@ -78,6 +82,7 @@ const AddSegmentModal: React.FC<AddSegmentModalProps> = ({ open, onClose, onSave
     setSelectedSegment(null);
     onSave()
   }
+  console.log("updatedSegments", updatedSegments);
   return (
     <>
     <Dialog open={open} onOpenChange={open => { if (!open) onClose(); }}>

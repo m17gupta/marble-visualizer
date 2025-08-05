@@ -158,13 +158,7 @@ export function SwatchRecommendations() {
                     </span>
                   </div>
 
-                  {/* Content */}
-                  {/* <div className="p-2">
-                    <h3 className="font-medium text-xs truncate text-foreground mb-1">{swatch.title}</h3>
-                    <code className="text-xs bg-muted px-1 py-0.5 rounded text-muted-foreground block">
-                      {swatch.color ?? "#000000"}
-                    </code>
-                  </div> */}
+                
                 </Card>
               ))}
             </AnimatePresence>

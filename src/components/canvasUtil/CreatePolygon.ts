@@ -4,12 +4,8 @@ export interface PointModel {
     x: number;
     y: number;
 }
-// interface CustomGroupOptions extends fabric.Group {
-//   groupName?: string;
-//   subGroupName?: string;
-//   name?: string;
-//   isActived?: boolean;
-// }
+
+
 export const collectPoints = (
     annotation: number[],
     segName: string,
@@ -25,16 +21,7 @@ export const collectPoints = (
 ) => {
 
       if(!canvasRef.current) return;
-    //  const canvasWidth = canvasRef.current.getWidth()
-    //   const canvasHeight = canvasRef.current.getHeight()
-    //   let scaleX = 1, scaleY = 1;
-    //     if (imageWidth && imageHeight && canvasWidth && canvasHeight) {
-    //         scaleX = canvasWidth / imageWidth;
-    //         scaleY = canvasHeight / imageHeight;
-    //     }
-        // console.log("ScaleX:", scaleX, "ScaleY:", scaleY);
-        // console.log("Canvas Width:", canvasWidth, "Canvas Height:", canvasHeight);
-        // console.log("Image Width:", imageWidth, "Image Height:", imageHeight);
+
     if (annotation) {
         const point: PointModel[] = [];
         const polyName = segName;
@@ -56,7 +43,7 @@ export const collectPoints = (
                 color,
                 canvasRef,
                 isFillPolygon,
-               
+
 
             );
         }
@@ -72,7 +59,7 @@ export const makePolygon = (
     color: string,
     canvasRef: React.RefObject<fabric.Canvas>,
     isFillPolygon: boolean,
-  
+
 
 ) => {
 
@@ -141,3 +128,58 @@ export const makePolygon = (
         canvasRef.current?.requestRenderAll();
     }
 };
+
+// export const collectPoints = (
+//     annotation: number[],
+//     segName: string,
+//     coordinates: number[],
+//     segType: string,
+//     groupName: string,
+//     color: string,
+//     canvasRef: React.RefObject<fabric.Canvas>,
+//     isFillPolygon: boolean,
+//     imageHeight: number,
+//     imageWidth: number
+
+// ) => {
+
+//     if (!canvasRef.current) return;
+//     const canvasWidth = imageWidth;
+//     const canvasHeight = imageHeight;
+//     const displayWidth = 1280;
+//     const displayHeight = 720;
+//     const imgAspect = imageWidth / imageHeight;
+// const canvasAspect = 1280 / 720;
+//     let scale, offsetX = 0, offsetY = 0;
+//     if (imgAspect > canvasAspect) {
+//         scale = displayWidth / imageWidth;
+//         offsetY = (displayHeight - imageHeight * scale) / 2;
+//     } else {
+//         scale = displayHeight / imageHeight;
+//         offsetX = (displayWidth - imageWidth * scale) / 2;
+//     }
+//     if (annotation) {
+//         const point: PointModel[] = [];
+//         const polyName = segName;
+//         for (let i = 0; i < annotation.length; i += 2) {
+//             const x = annotation[i] * scale + offsetX;
+//             const y = annotation[i + 1] * scale + offsetY;
+//             point.push({ x, y });
+//         }
+
+//         if (point && point.length > 0) {
+//             makePolygon(
+//                 point,
+//                 coordinates,
+//                 polyName,
+//                 segType,
+//                 groupName,
+//                 color,
+//                 canvasRef,
+//                 isFillPolygon,
+
+
+//             );
+//         }
+//     }
+// };
