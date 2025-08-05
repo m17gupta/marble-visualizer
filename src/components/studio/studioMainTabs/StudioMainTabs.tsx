@@ -73,7 +73,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="inspiration"
                   onClick={handleInspirationClick}
-                  className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'inspiration' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +99,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="design-hub"
                   onClick={handleDesignHubClick}
-                  className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'design-hub' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +130,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="measurement"
                   onClick={handleMeasurementClick}
-                  className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'measurement' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -163,8 +163,8 @@ const StudioMainTabs = () => {
               <TooltipTrigger asChild>
                 <TabsTrigger
                   value="layers"
-                        onClick={handleLayersClick}
-                  className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                  onClick={handleLayersClick}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'layers' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +191,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="comments"
                   onClick={handleCommentsClick}
-                  className="flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium text-gray-600 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 data-[state=active]:shadow data-[state=active]:font-semibold hover:bg-gray-100 hover:text-purple-700 focus:outline-none"
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'comments' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg"
                     width="18"

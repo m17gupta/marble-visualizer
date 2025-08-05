@@ -75,7 +75,12 @@ const AllSegments = () => {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
       dispatch(addSelectedMasterArray(selectedSeg));
-
+    const firstGroup = selectedSeg.allSegments[0];
+      if (firstGroup && firstGroup.segments && firstGroup.segments.length > 0) {
+        const firstSegment = firstGroup.segments[0];
+        dispatch(updateSelectedSegment(firstSegment));
+        dispatch(updatedSelectedGroupSegment(firstGroup));
+      }
       //segMent tye in tab slice
       dispatch(setSegmentType(selectedSeg.name));
       dispatch(setActiveTab("recommendations-swatches"));
