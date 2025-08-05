@@ -195,8 +195,12 @@ export function StudioPage() {
 
         {/* Main Canvas */}
 
-        {activeTabFromStore === "design-hub" ? (
-          <StudioMainCanvas
+        {activeTabFromStore === "inspiration" ? (
+          <WorkSpaceHome />
+        ) : (
+          <>
+            {/* other thaninspiration tab content */}
+            <StudioMainCanvas
             // currentCanvasImage={currentCanvasImage}
             isUploading={true}
             canEdit={canEdit}
@@ -204,10 +208,6 @@ export function StudioPage() {
             onFileUpload={handleFileUpload}
             onClearImage={() => dispatch(clearCurrentImage())}
           />
-        ) : (
-          <>
-            {/* inspiration tab content */}
-            <WorkSpaceHome />
           </>
         )}
 

@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import PolygonOverlay from "../canvas/PolygonOverlay";
 import CanvasEdit from "../canvas/canvasEdit/CanvasEdit";
+import CommentCanvas from "../canvas/commentCanavs/CommentCanvas";
 
 
 interface StudioMainCanvasProps {
@@ -155,6 +156,16 @@ export function StudioMainCanvas({
                     />}
                     {(canvasMode == "edit" )
                      && <CanvasEdit
+                      key={`canvas-editor-${canvasImage}`}
+                      imageUrl={canvasImage}
+                      width={800}
+                      height={600}
+                      className="mb-6"
+                      onImageLoad={handleImageLoad}
+                    />}
+
+                    {(canvasMode == "comment" )
+                     && <CommentCanvas
                       key={`canvas-editor-${canvasImage}`}
                       imageUrl={canvasImage}
                       width={800}

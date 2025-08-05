@@ -52,11 +52,11 @@ const CommonToolBar = ({ title, onSaveAnnotation }: CommonToolBarProps) => {
                         </span>
                     </Badge>
 
-                    <AddSegLists
+                 { canvasType==="reannotation" && <AddSegLists
                         segType={selectedSegment?.segment_type || "Unknown"}
                         groupName={selectedSegment?.group_label_system || "Unknown"}
                         shortName={selectedSegment?.short_title || "Unknown"}
-                    />
+                    />}
 
                 </div>
 
