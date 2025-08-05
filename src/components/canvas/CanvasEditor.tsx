@@ -860,10 +860,12 @@ useEffect(() => {
           transition={{ duration: 0.3 }}
           className="relative px-4"
         >
+
+
           <Card className="overflow-hidden">
             <CardContent className="p-0">
 
-              <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
+              <div className="border-2 border-dashed border-gray-600 relative bg-black/90 flex items-center justify-center min-h-[600px] min-w-[800px]">
                 <canvas
                   ref={canvasRef}
                   className="border-0 block"
