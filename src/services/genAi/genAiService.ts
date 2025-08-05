@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import {
   GenAiChat,
+  GenAiDeleteResponse,
   GenAiRequest,
   GenAiResponse,
 } from "@/models/genAiModel/GenAiModel";
@@ -124,6 +125,26 @@ class GenAiService {
       throw error;
     }
   }
+  // delete genAi _chat from table based on id
+  async deleteGenAiChat(id: string): Promise<GenAiDeleteResponse> {
+    try {
+      const { error } = await supabase
+        .from("genai_chat")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message || "Failed to delete GenAI chat");
+      }
+
+      return { success: true, id };
+    } catch (error) {
+      console.error("Error deleting GenAI chat:", error);
+      return { success: false, id };
+
+    }
+  
+}
 }
 export const genAiService = new GenAiService();
 export default genAiService;

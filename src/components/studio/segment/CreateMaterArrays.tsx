@@ -56,47 +56,47 @@ const CreateMasterArrays = () => {
         dispatch(setMasterArray(segData));
       }
     }
-   else if (allSegments && allSegments.length === 0 &&!isCreatedMasterArray && isSegmentLoaded) {
-      console.log("allSegments is empty, creating master array from segments");
-      if (segments &&
-        segments.length > 0 &&
-        currentProject && currentProject.analysed_data &&
-        currentProject.analysed_data.segments_detected
+  //  else if (allSegments && allSegments.length === 0 &&!isCreatedMasterArray && isSegmentLoaded) {
+  //     console.log("allSegments is empty, creating master array from segments");
+  //     if (segments &&
+  //       segments.length > 0 &&
+  //       currentProject && currentProject.analysed_data &&
+  //       currentProject.analysed_data.segments_detected
 
-      ) {
+  //     ) {
 
-        if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
-          const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
+  //       if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
+  //         const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
 
-          allDetectedSegments.forEach((seg) => {
-            const foundSegment = segments.find((item) => {
-              const itemName = (item.name || '').toLowerCase();
-              const segLower = (seg || '').toLowerCase();
-              return itemName.startsWith(segLower) || segLower.startsWith(itemName);
-            });
+  //         allDetectedSegments.forEach((seg) => {
+  //           const foundSegment = segments.find((item) => {
+  //             const itemName = (item.name || '').toLowerCase();
+  //             const segLower = (seg || '').toLowerCase();
+  //             return itemName.startsWith(segLower) || segLower.startsWith(itemName);
+  //           });
 
-            if (foundSegment) {
-              segData.push({
-                id: foundSegment.id,
-                name: foundSegment.name,
-                icon: foundSegment.icon,
-                color: foundSegment.color,
-                color_code: foundSegment.color_code,
-                short_code: foundSegment.short_code,
-                categories: foundSegment.categories,
-                overAllSwatch: [],
-                allSegments: [],
-              })
-            }
-          });
-        }
-        if (segData.length > 0) {
-          dispatch(setMasterArray(segData));
-        }
+  //           if (foundSegment) {
+  //             segData.push({
+  //               id: foundSegment.id,
+  //               name: foundSegment.name,
+  //               icon: foundSegment.icon,
+  //               color: foundSegment.color,
+  //               color_code: foundSegment.color_code,
+  //               short_code: foundSegment.short_code,
+  //               categories: foundSegment.categories,
+  //               overAllSwatch: [],
+  //               allSegments: [],
+  //             })
+  //           }
+  //         });
+  //       }
+  //       if (segData.length > 0) {
+  //         dispatch(setMasterArray(segData));
+  //       }
 
-      }
+  //     }
 
-    }
+  //   }
   }, [isSegmentLoaded, segments, allSegments, currentProject, isCreatedMasterArray]);
 
   return null;

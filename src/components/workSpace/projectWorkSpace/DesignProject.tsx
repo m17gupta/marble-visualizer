@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+
+import './DesignProjectEffect.css';
+import React, { useEffect, useRef, useState } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +12,12 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
-import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, resetRequest, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, deleteGenAiChat, resetRequest, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
+import { toast } from 'sonner';
+import { boolean } from 'zod';
 
 const DesignProject = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,9 +47,8 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
           setComponentError(err instanceof Error ? err.message : "Unknown error");
         }
       }, [genAiImages]);
-  const designs = ["Design 1", "Design 2", "Design 3", "Design 4", "Design 5"];
 
-  console.log("currentGenAiImage",currentGenAiImage)
+
   const handleImageSwitch = (imageSet: GenAiChat) => {
 
      dispatch(setIsGenerated(true));
@@ -64,9 +68,29 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
     dispatch(setIsGenerated(false));
     dispatch(resetRequest());
   };
+  const isProcessing = useRef<boolean>(false);
 
+
+  const handleDeleteGenAiImage = async(genId:string) => {
+      isProcessing.current = true;
+    try{
+      const response= await dispatch(deleteGenAiChat(genId)).unwrap();
+      if (response.success) {
+        toast.success("Image deleted successfully");
+        isProcessing.current = false;
+        // Optionally, you can also remove the image from the local state
+      }
+    }catch (error) {
+      isProcessing.current = false;
+      toast.error("Failed to delete image");
+      console.error("Error deleting GenAiImage:", error);
+      setComponentError(error instanceof Error ? error.message : "Unknown error");
+    }
+  };  
   return (
-    <div className="flex items-center justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4">
+    <div className={`flex items-center justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
+    ${ isProcessing.current ? 'moving-line-wrapper' : ''}
+    `}>
       {/* Design buttons scrollable */}
       <div className="flex gap-2 overflow-x-auto scroll-thin pr-2 max-w-full">
 
@@ -93,14 +117,17 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
           allGenAiImages.length > 0 &&
         allGenAiImages.map((label, index) => {
             const isActive = currentGenAiImage && label.id === currentGenAiImage.id;
-          return (
-          <div
-            key={index}
-            className={`flex items-center border rounded-md shadow-sm text-sm flex-shrink-0 focus-ring-0 focus:ring-blue-500 focus:outline-none ${isActive ? 'bg-violet-100 border-violet-500' : 'bg-white border-gray-300'}`}
-          >
+           // Replace with your actual processing condition
+            return (
+              <div
+                key={index}
+                className={`flex items-center border rounded-md shadow-sm text-sm flex-shrink-0 focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200
+                  ${isActive ? 'bg-blue-100 border-blue-500' : 'bg-white border-gray-300'}
+                  `}
+              >
             <button
               onClick={() => handleImageSwitch(label)}
-              className="px-2 py-1 bg-transparent hover:border-transparent text-gray-800 bg-transparent rounded-l-md focus-ring-0 focus:ring-blue-500 focus:outline-none"
+              className={`px-2 py-1 bg-transparent hover:border-transparent rounded-l-md focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200 ${isActive ? 'text-blue-700 font-semibold' : 'text-gray-800'}`}
             >
               {`Design ${index + 1}`}
             </button>
@@ -123,7 +150,7 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-red-600"
-                    onClick={() => console.log("Delete", label)}
+                    onClick={() => handleDeleteGenAiImage(label.id)}
                   >
                     Delete
                   </DropdownMenuItem>

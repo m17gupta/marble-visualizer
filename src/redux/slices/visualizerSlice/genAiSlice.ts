@@ -91,6 +91,25 @@ export const insertGenAiChatData = createAsyncThunk(
   }
 );
 
+// delete genAi _chat from table based on id
+export const deleteGenAiChat = createAsyncThunk(  
+  "genAi/deleteChat",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await genAiService.deleteGenAiChat(id);
+
+      if (!response) {
+        throw new Error("Failed to delete GenAI chat");
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Error deleting GenAI chat:", error);
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
 // Create the slice
 const genAiSlice = createSlice({
   name: "genAi",
@@ -142,13 +161,6 @@ const genAiSlice = createSlice({
       state.inspirationNames = action.payload;
     },
 
-    // updateGeneratedImage: (state, action: PayloadAction<string>) => {
-
-    //   state.generatedImage = action.payload;
-    // },
-    // updateOriginalHouseImage: (state, action: PayloadAction<string>) => {
-    //   state.originalHouseImage = action.payload;
-    // },
     updateRequestJobId: (state, action: PayloadAction<string>) => {
       state.requests.jobId = action.payload;
     },
@@ -251,6 +263,27 @@ const genAiSlice = createSlice({
         state.loading = false;
         state.error =
           (action.payload as string) || "Failed to insert GenAI chat";
+      });
+
+      // Handle deleteGenAiChat
+    builder
+      .addCase(deleteGenAiChat.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteGenAiChat.fulfilled, (state, action) => {
+        state.loading = false;
+        const deletedChatId = action.payload.id;
+
+        // Remove the deleted chat from the state
+        state.genAiImages = state.genAiImages.filter(
+          (chat) => chat.id !== deletedChatId
+        );
+      })
+      .addCase(deleteGenAiChat.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) || "Failed to delete GenAI chat";
       });
   },
 });

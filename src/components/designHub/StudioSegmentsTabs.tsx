@@ -21,6 +21,7 @@ import TabNavigation from "./tabNavigation/TabNavigation";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { LuHousePlus } from "react-icons/lu";
+import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -112,7 +113,11 @@ const StudioTabs = () => {
     dispatch(setCanvasType("draw"));
   };
 
-  const handleAddSegment = () => dispatch(setCanvasType("draw"));
+  const handleAddSegment = () =>{
+     dispatch(updateIsNewMasterArray(true));
+    //  dispatch(setCanvasType("draw"))
+    };
+
   const handleEachSegmentHover = (segment: string) => {
     dispatch(updateHoverGroup(null));
     dispatch(updateHoverGroup([segment]));

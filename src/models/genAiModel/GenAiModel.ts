@@ -76,7 +76,7 @@ export interface OpenAIMetadata {
 }
 
 export interface GenAiChat {
-  id: number;
+  id: string ;
   project_id: number;
   user_id: number;
   job_id: number;
@@ -103,4 +103,10 @@ export interface GenAiChatHistory {
   chats: GenAiChat[];
   created: string;
   updated: string;
+}
+
+
+export interface GenAiDeleteResponse{
+  success: boolean;
+  id: string;
 }
