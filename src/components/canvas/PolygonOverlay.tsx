@@ -79,9 +79,10 @@ const PolygonOverlay = ({
         const canvas = new fabric.Canvas(canvasRef.current, {
             width,
             height,
-            backgroundColor: "#f8f9fa",
+        
             selection: true,
             preserveObjectStacking: true,
+            backgroundColor: "#282828",
         });
 
         fabricCanvasRef.current = canvas;
@@ -242,7 +243,18 @@ const PolygonOverlay = ({
 
 useEffect(() => {
     const canvas = fabricCanvasRef.current;
-   if(!canvas || !allSegArray || allSegArray.length === 0) return;
+     if (!canvas) {
+        console.warn("[PolygonOverlay] No canvas instance available.");
+        return;
+    }
+    if (allSegArray.length === 0) {
+        console.warn("[PolygonOverlay] allSegArray is empty.");
+        return;
+    }
+    if (imageHeight === 0 || imageWidth === 0) {
+        console.warn(`[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`);
+        return;
+    }
 
     // Remove previous polygons (but not the background image)
     const objectsToRemove = canvas.getObjects().filter(obj => obj.type === 'polygon');
@@ -252,10 +264,35 @@ useEffect(() => {
         const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
         const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
         const isFill = true;
-        if (!annotation_points_float || annotation_points_float.length === 0 || !segment_bb_float || segment_bb_float.length === 0 || !group_label_system || !short_title || !segment_type || !segColor || !fabricCanvasRef.current) {
-            console.warn(`[PolygonOverlay] Missing properties for segment ${idx}`, seg);
+    if (!annotation_points_float || annotation_points_float.length === 0) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing annotation_points_float`, seg);
             return;
         }
+        if (!segment_bb_float || segment_bb_float.length === 0) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing segment_bb_float`, seg);
+            return;
+        }
+        if (!group_label_system) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing group_label_system`, seg);
+            return;
+        }
+        if (!short_title) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing short_title`, seg);
+            return;
+        }
+        if (!segment_type) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing segment_type`, seg);
+            return;
+        }
+        if (!segColor) {
+            console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
+            return;
+        }
+        if (!fabricCanvasRef.current) {
+            console.warn(`[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`);
+            return;
+        }
+        
 
         collectPoints(
             annotation_points_float,
@@ -345,13 +382,18 @@ useEffect(() => {
                         className="relative px-4"
                     >
                         <Card className="overflow-hidden">
-                            <CardContent className="p-0">
+                            <CardContent className="p-0"
+                            
+                            >
                                                                                                                                 {/* min-h-[600px] min-w-[800px]" */}
-                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[800px] min-w-[1000px]">
+                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[800px] min-w-[1000px]"
+                              
+                                >
                                     <canvas
                                         ref={canvasRef}
                                         className="border-0 block"
-                                        style={{ maxWidth: "100%", height: "auto" }}
+    
+                                        style={{ maxWidth: "100%", height: "auto" , }}
                                     />
 
 

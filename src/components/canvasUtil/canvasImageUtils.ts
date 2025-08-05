@@ -39,10 +39,15 @@ export const AddImageToCanvas = (
     scale = height / imgElement.height;
   }
 
+  // const scaleX=1280/ imgElement.width;
+  // const scaleY=720/ imgElement.height;
+  // console.log("scaleX",scaleX);
+  // console.log("scaleY",scaleY);
   fabricImage.scale(scale);
   fabricImage.set({
     left: (width - imgElement.width * scale) / 2,
     top: (height - imgElement.height * scale) / 2,
+    
   });
 
   // Store reference and add to canvas
