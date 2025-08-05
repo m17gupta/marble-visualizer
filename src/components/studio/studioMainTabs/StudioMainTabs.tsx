@@ -3,13 +3,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
-import { updateActiveTab } from '@/redux/slices/visualizerSlice/workspaceSlice';
+import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
-import InspirationContent from './tabContent/InspirationContent';
-import DesignHubContent from './tabContent/DesignHubContent';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import MeasurementContent from './tabContent/MeasurementContent';
-import LayerContent from './tabContent/LayerContent';
+import InspirationContent from "./tabContent/InspirationContent";
+import DesignHubContent from "./tabContent/DesignHubContent";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import MeasurementContent from "./tabContent/MeasurementContent";
+import LayerContent from "./tabContent/LayerContent";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
@@ -19,8 +24,6 @@ const StudioMainTabs = () => {
   const { activeTab: activeTabFromStore } = useSelector(
     (state: RootState) => state.workspace
   );
-  
-
   const handleChangeTab = (value: string) => {
     dispatch(updateActiveTab(value));
     console.log("Tab changed to:", value);
@@ -30,14 +33,14 @@ const StudioMainTabs = () => {
     // setActiveTab("design-hub");
     // console.log("Design Hub tab clicked");
     dispatch(updateActiveTab("design-hub"));
-        dispatch(setCurrentTabContent("home"));
-        dispatch(setCurrentGenAiImage(null)); // Reset current GenAI image when switching tabs
+    dispatch(setCurrentTabContent("home"));
+    dispatch(setCurrentGenAiImage(null)); // Reset current GenAI image when switching tabs
     // dispatch(setCanvasType("draw"));
   };
 
   const handleInspirationClick = () => {
     // setActiveTab("inspiration");
-     dispatch(setCurrentTabContent("home"));
+    dispatch(setCurrentTabContent("home"));
     dispatch(updateActiveTab("inspiration"));
   };
 
@@ -198,13 +201,10 @@ const StudioMainTabs = () => {
           <TabsContent value="comments" className="flex-grow overflow-auto">
             <Comments />
           </TabsContent>
-
         </Tabs>
-       
       </TooltipProvider>
     </>
   );
 };
 
 export default StudioMainTabs;
-

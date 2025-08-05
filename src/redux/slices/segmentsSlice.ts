@@ -1,8 +1,7 @@
-
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { JobModel, MasterModel } from '@/models/jobModel/JobModel';
-import { SegmentService } from '@/services/segment/SegmentService';
-import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { JobModel, MasterModel } from "@/models/jobModel/JobModel";
+import { SegmentService } from "@/services/segment/SegmentService";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 export interface SegmentPoint {
   x: number;
@@ -23,7 +22,6 @@ export interface Segment {
   material?: SegmentMaterial;
   createdAt: string;
   updatedAt: string;
-
 }
 
 export interface SegmentMaterial {
@@ -42,7 +40,7 @@ interface SegmentsState {
   newSegment: SegmentModal;
   addNewMasterArray: MasterModel | null;
   isDrawing: boolean;
-  reAnnotationPoints: number[]|null;
+  reAnnotationPoints: number[] | null;
   segmentDrawn: {
     annotation: number[];
     segType: string;
@@ -58,7 +56,7 @@ interface SegmentsState {
   isSegmentLoaded: boolean;
   isLoadingSegmentsError: string | null;
   allSegments: SegmentModal[];
-  addSegMessage: string|null;
+  addSegMessage: string | null;
   isAddSegmentModalOpen: boolean;
   isMasterDataAnnotationOpen: boolean;
 
@@ -79,7 +77,6 @@ interface SegmentsState {
   manualAnnotationError: string | null;
 
   // loading segmnet
-
 }
 
 const initialState: SegmentsState = {
@@ -93,11 +90,11 @@ const initialState: SegmentsState = {
   reAnnotationPoints: [],
   segmentDrawn: {
     annotation: [],
-    segType: '',
-    groupName: '',
-    childName: '',
-    shortName: '',
-    category: ""
+    segType: "",
+    groupName: "",
+    childName: "",
+    shortName: "",
+    category: "",
   },
   isAddSegmentModalOpen: false,
   isMasterDataAnnotationOpen: false,
@@ -122,48 +119,51 @@ const initialState: SegmentsState = {
 };
 
 // Create segment service instance
-const segmentService = new SegmentService();
+export const segmentService = new SegmentService();
 
 // Async thunk for getting manual annotation
 export const getManualAnnotation = createAsyncThunk(
-  'segments/getManualAnnotation',
+  "segments/getManualAnnotation",
   async (
-    { segmentationInt, segName }: { segmentationInt: number[]; segName: string },
+    {
+      segmentationInt,
+      segName,
+    }: { segmentationInt: number[]; segName: string },
     { rejectWithValue }
   ) => {
     try {
-      const response = await segmentService.GetManualThroughApi(segmentationInt, segName);
+      const response = await segmentService.GetManualThroughApi(
+        segmentationInt,
+        segName
+      );
       return response.data;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to get manual annotation');
+      return rejectWithValue("Failed to get manual annotation");
     }
   }
 );
 
 // Create segments slice
 export const addSegment = createAsyncThunk(
-  'segments/addSegment',
-  async (
-    segmentData: SegmentModal,
-    { rejectWithValue }
-  ) => {
+  "segments/addSegment",
+  async (segmentData: SegmentModal, { rejectWithValue }) => {
     try {
       return await segmentService.createSegment(segmentData);
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to get manual annotation');
+      return rejectWithValue("Failed to get manual annotation");
     }
   }
 );
 
 // create hunk to get all segmnet based on joBid
 export const getSegmentsByJobId = createAsyncThunk(
-  'segments/getSegmentsByJobId',
+  "segments/getSegmentsByJobId",
   async (jobId: number, { rejectWithValue }) => {
     try {
       return await segmentService.getSegmentsByJobId(jobId);
@@ -171,14 +171,14 @@ export const getSegmentsByJobId = createAsyncThunk(
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to fetch segments by job ID');
+      return rejectWithValue("Failed to fetch segments by job ID");
     }
   }
 );
 
 // update segment based on id
-export const updateSegmentById = createAsyncThunk(  
-  'segments/updateSegmentById',
+export const updateSegmentById = createAsyncThunk(
+  "segments/updateSegmentById",
   async (segmentData: SegmentModal, { rejectWithValue }) => {
     try {
       return await segmentService.updateSegmentById(segmentData);
@@ -186,7 +186,7 @@ export const updateSegmentById = createAsyncThunk(
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to update segment');
+      return rejectWithValue("Failed to update segment");
     }
   }
 );
@@ -200,19 +200,13 @@ const segmentsSlice = createSlice({
       state.isDrawing = true;
     },
 
- 
-    updateSegmentDrawn: (
-      state,
-      action
-    ) => {
+    updateSegmentDrawn: (state, action) => {
       state.segmentDrawn.annotation = action.payload;
       state.isAddSegmentModalOpen = true;
     },
-    UpdateOtherSegmentDrawn: (
-      state,
-      action
-    ) => {
-      const { segType, groupName, childName, shortName, category } = action.payload;
+    UpdateOtherSegmentDrawn: (state, action) => {
+      const { segType, groupName, childName, shortName, category } =
+        action.payload;
       state.segmentDrawn.segType = segType;
       state.segmentDrawn.groupName = groupName;
       state.segmentDrawn.childName = childName;
@@ -224,11 +218,11 @@ const segmentsSlice = createSlice({
       state.isDrawing = false;
       state.segmentDrawn = {
         annotation: [],
-        segType: '',
-        groupName: '',
-        childName: '',
-        shortName: '',
-        category: ''
+        segType: "",
+        groupName: "",
+        childName: "",
+        shortName: "",
+        category: "",
       };
     },
 
@@ -236,7 +230,10 @@ const segmentsSlice = createSlice({
       state.isAddSegmentModalOpen = action.payload;
     },
 
-    updateIsMasterDataAnnotationOpen: (state, action: PayloadAction<boolean>) => {
+    updateIsMasterDataAnnotationOpen: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
       state.isMasterDataAnnotationOpen = action.payload;
     },
     updateIsNewMasterArray: (state, action: PayloadAction<boolean>) => {
@@ -245,7 +242,6 @@ const segmentsSlice = createSlice({
 
     selectedNewMasterArray: (state, action) => {
       state.addNewMasterArray = action.payload;
-      
     },
 
     // Segment management
@@ -255,7 +251,7 @@ const segmentsSlice = createSlice({
     selectMultipleSegments: (state, action: PayloadAction<string[]>) => {
       state.selectedSegmentIds = action.payload;
     },
-    updateAddSegMessage: (state, action: PayloadAction<string|null>) => {
+    updateAddSegMessage: (state, action: PayloadAction<string | null>) => {
       state.addSegMessage = action.payload;
     },
     updateNewSegmentDrawn: (state, action) => {
@@ -268,10 +264,14 @@ const segmentsSlice = createSlice({
     },
     changeGroupSegment: (state, action: PayloadAction<SegmentModal>) => {
       const updatedSegment = action.payload;
-      const index = state.allSegments.findIndex(seg => seg.id === updatedSegment.id);
+      const index = state.allSegments.findIndex(
+        (seg) => seg.id === updatedSegment.id
+      );
       if (index !== -1) {
         // remove existed and add new segment
-        const segArray = state.allSegments.filter(seg => seg.id !== updatedSegment.id);
+        const segArray = state.allSegments.filter(
+          (seg) => seg.id !== updatedSegment.id
+        );
         state.allSegments = [...segArray, updatedSegment];
       }
     },
@@ -292,7 +292,6 @@ const segmentsSlice = createSlice({
       }
     },
 
-
     clearHistory: (state) => {
       state.canvasHistory = [];
       state.historyIndex = -1;
@@ -311,11 +310,11 @@ const segmentsSlice = createSlice({
       state.manualAnnotationResult = null;
     },
     resetReAnnoatationPoints: (state) => {
-      state.reAnnotationPoints = [];  
-      },
-      resetSegmentSlice: () => {
-        return initialState;
-      }
+      state.reAnnotationPoints = [];
+    },
+    resetSegmentSlice: () => {
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -335,7 +334,7 @@ const segmentsSlice = createSlice({
       });
 
     builder
-      // Handle addSegment thunk  
+      // Handle addSegment thunk
       .addCase(addSegment.pending, (state) => {
         state.isLoadingManualAnnotation = true;
         state.manualAnnotationError = null;
@@ -351,7 +350,7 @@ const segmentsSlice = createSlice({
       });
 
     builder
-      // Handle getSegmentsByJobId thunk  
+      // Handle getSegmentsByJobId thunk
       .addCase(getSegmentsByJobId.pending, (state) => {
         state.isLoadingManualAnnotation = true;
         state.manualAnnotationError = null;
@@ -365,28 +364,27 @@ const segmentsSlice = createSlice({
       .addCase(getSegmentsByJobId.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
-      })
+      });
 
-      // Handle updateSegmentById thunk
-      // .addCase(updateSegmentById.pending, (state) => {
-      //   state.isLoadingManualAnnotation = true;
-      //   state.manualAnnotationError = null;
-      // })
-      // .addCase(updateSegmentById.fulfilled, (state, action) => {    
-      //   state.isLoadingManualAnnotation = false;
-      //   const updatedSegment = action.payload.data;
-      //   const index = state.allSegments.findIndex(seg => seg.id === updatedSegment.id);
-      //   if (index !== -1) {
-      //     state.allSegments[index] = updatedSegment; // Update the segment in the array
-      //   }
-      //   state.manualAnnotationError = null;
-      // })
-      // .addCase(updateSegmentById.rejected, (state, action) => {
-      //   state.isLoadingManualAnnotation = false;
-      //   state.manualAnnotationError = action.payload as string;
-      // });
+    // Handle updateSegmentById thunk
+    // .addCase(updateSegmentById.pending, (state) => {
+    //   state.isLoadingManualAnnotation = true;
+    //   state.manualAnnotationError = null;
+    // })
+    // .addCase(updateSegmentById.fulfilled, (state, action) => {
+    //   state.isLoadingManualAnnotation = false;
+    //   const updatedSegment = action.payload.data;
+    //   const index = state.allSegments.findIndex(seg => seg.id === updatedSegment.id);
+    //   if (index !== -1) {
+    //     state.allSegments[index] = updatedSegment; // Update the segment in the array
+    //   }
+    //   state.manualAnnotationError = null;
+    // })
+    // .addCase(updateSegmentById.rejected, (state, action) => {
+    //   state.isLoadingManualAnnotation = false;
+    //   state.manualAnnotationError = action.payload as string;
+    // });
   },
-
 });
 
 export const {
@@ -414,29 +412,49 @@ export const {
   updateIsSegmentEdit,
   changeGroupSegment,
   resetReAnnoatationPoints,
-  updateReAnnoatationPoints
+  updateReAnnoatationPoints,
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;
 
 // Selectors
-export const selectSegments = (state: { segments: SegmentsState }) => state.segments;
-export const selectActiveSegment = (state: { segments: SegmentsState }) => state.segments.activeSegment;
-export const selectSelectedSegmentIds = (state: { segments: SegmentsState }) => state.segments.selectedSegmentIds;
-export const selectIsDrawing = (state: { segments: SegmentsState }) => state.segments.isDrawing;
-export const selectSegmentDrawn = (state: { segments: SegmentsState }) => state.segments.segmentDrawn;
-export const selectCanvasHistory = (state: { segments: SegmentsState }) => state.segments.canvasHistory;
-export const selectHistoryIndex = (state: { segments: SegmentsState }) => state.segments.historyIndex;
-export const selectSegmentsError = (state: { segments: SegmentsState }) => state.segments.error;
-export const selectJobs = (state: { segments: SegmentsState }) => state.segments.jobs;
-export const selectSelectedSegments = (state: { segments: SegmentsState }) => state.segments.selectedSegments;
+export const selectSegments = (state: { segments: SegmentsState }) =>
+  state.segments;
+export const selectActiveSegment = (state: { segments: SegmentsState }) =>
+  state.segments.activeSegment;
+export const selectSelectedSegmentIds = (state: { segments: SegmentsState }) =>
+  state.segments.selectedSegmentIds;
+export const selectIsDrawing = (state: { segments: SegmentsState }) =>
+  state.segments.isDrawing;
+export const selectSegmentDrawn = (state: { segments: SegmentsState }) =>
+  state.segments.segmentDrawn;
+export const selectCanvasHistory = (state: { segments: SegmentsState }) =>
+  state.segments.canvasHistory;
+export const selectHistoryIndex = (state: { segments: SegmentsState }) =>
+  state.segments.historyIndex;
+export const selectSegmentsError = (state: { segments: SegmentsState }) =>
+  state.segments.error;
+export const selectJobs = (state: { segments: SegmentsState }) =>
+  state.segments.jobs;
+export const selectSelectedSegments = (state: { segments: SegmentsState }) =>
+  state.segments.selectedSegments;
 
 // Manual annotation selectors
-export const selectIsLoadingManualAnnotation = (state: { segments: SegmentsState }) => state.segments.isLoadingManualAnnotation;
-export const selectManualAnnotationResult = (state: { segments: SegmentsState }) => state.segments.manualAnnotationResult;
-export const selectManualAnnotationError = (state: { segments: SegmentsState }) => state.segments.manualAnnotationError;
+export const selectIsLoadingManualAnnotation = (state: {
+  segments: SegmentsState;
+}) => state.segments.isLoadingManualAnnotation;
+export const selectManualAnnotationResult = (state: {
+  segments: SegmentsState;
+}) => state.segments.manualAnnotationResult;
+export const selectManualAnnotationError = (state: {
+  segments: SegmentsState;
+}) => state.segments.manualAnnotationError;
 
-
-export const selectIsAddSegmentModalOpen = (state: { segments: SegmentsState }) => state.segments.isAddSegmentModalOpen;
-export const selectIsMasterDataAnnotationOpen = (state: { segments: SegmentsState }) => state.segments.isMasterDataAnnotationOpen;
-export const selectAddSegMessage = (state: { segments: SegmentsState }) => state.segments.addSegMessage;
+export const selectIsAddSegmentModalOpen = (state: {
+  segments: SegmentsState;
+}) => state.segments.isAddSegmentModalOpen;
+export const selectIsMasterDataAnnotationOpen = (state: {
+  segments: SegmentsState;
+}) => state.segments.isMasterDataAnnotationOpen;
+export const selectAddSegMessage = (state: { segments: SegmentsState }) =>
+  state.segments.addSegMessage;

@@ -29,7 +29,7 @@ export function SwatchBookHeader({ open, onOpenChange, edit }: any) {
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mt-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          SwatchBook
+          Material Library
         </h1>
         <p className="text-muted-foreground">
           Discover and explore our comprehensive collection of paint swatches
