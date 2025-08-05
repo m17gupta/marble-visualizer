@@ -12,7 +12,6 @@ import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import AllSegments from "./segment/AllSegments";
 
-
 interface StudioTabsNavigationProps {
   activeTab: string;
   onTabChange: (value: string) => void;

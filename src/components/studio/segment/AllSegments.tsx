@@ -12,7 +12,11 @@ import { cn } from "@/lib/utils";
 
 import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSegmentSlice";
 import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
-import { addSelectedMasterArray, updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
+import {
+  addSelectedMasterArray,
+  updatedSelectedGroupSegment,
+  updateSelectedSegment,
+} from "@/redux/slices/MasterArraySlice";
 // import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
@@ -34,16 +38,24 @@ const AllSegments = () => {
   );
 
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
-   const isFirst= useRef<boolean>(true);
+  const isFirst = useRef<boolean>(true);
   // update master Array
   useEffect(() => {
     if (masterArray && masterArray.length > 0) {
+      if (
+        masterArray &&
+        masterArray[0] &&
+        masterArray[0].allSegments &&
+        masterArray[0].allSegments.length > 0
+      ) {
+        const firstGroup = masterArray[0].allSegments[0];
 
-      if (masterArray && masterArray[0] &&
-        masterArray[0].allSegments && masterArray[0].allSegments.length > 0) {
-        const firstGroup = masterArray[0].allSegments[0]
-
-        if (firstGroup && firstGroup.groupName && firstGroup.segments.length > 0 && isFirst.current) {
+        if (
+          firstGroup &&
+          firstGroup.groupName &&
+          firstGroup.segments.length > 0 &&
+          isFirst.current
+        ) {
           dispatch(addSelectedMasterArray(masterArray[0]));
           dispatch(updateSelectedSegment(firstGroup.segments[0]));
           dispatch(updatedSelectedGroupSegment(firstGroup));
@@ -52,11 +64,10 @@ const AllSegments = () => {
 
         setUpdatedMasterArray(masterArray);
       }
-
     } else {
       setUpdatedMasterArray(null);
     }
-  }, [masterArray,isFirst]);
+  }, [masterArray, isFirst]);
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
@@ -129,8 +140,8 @@ const AllSegments = () => {
                         backgroundColor: isActive
                           ? `${segment.color_code}50`
                           : isHovered
-                            ? `${segment.color_code}20`
-                            : "transparent",
+                          ? `${segment.color_code}20`
+                          : "transparent",
                       }}
                       onClick={() => handleSegmentClick(segment)}
                       onMouseEnter={() => {
