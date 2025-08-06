@@ -1,5 +1,6 @@
 // Import User and UserProfile types
 import { User, UserProfile, UserRole } from "./userModel/UserModel";
+import { UserPlan } from "./userModel/UserPLanModel";
 
 export interface LoginCredentials {
   email: string;
@@ -17,6 +18,8 @@ export interface SignUpCredentials {
 export interface AuthResponse {
   user: User;
   profile?: UserProfile | null;
+  userPlan?:UserPlan | null;
+
   session: {
     access_token: string;
     refresh_token: string;

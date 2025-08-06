@@ -41,8 +41,8 @@ const Setting: React.FC<SettingProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { profile } = useSelector((state: RootState) => state.userProfile);
- 
-     const handleLogout = async () => {
+  const { userPlan } = useSelector((state: RootState) => state.auth);
+  const handleLogout = async () => {
     try {
          
       await dispatch(logoutUser()).unwrap();
@@ -77,7 +77,7 @@ const Setting: React.FC<SettingProps> = ({ isOpen, onClose }) => {
         },
         { 
           icon: Zap, 
-          label: "20 Credits Left", 
+          label: `${userPlan?.credits || 0} Credits Left`, 
           action: () => {},
           subtitle: "Credits remaining",
           iconColor: "text-blue-500"

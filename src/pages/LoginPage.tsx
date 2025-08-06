@@ -81,7 +81,7 @@ export function LoginPage() {
     );
 
     if (loginUser.fulfilled.match(result)) {
-      dispatch(addbreadcrumb("Projects"));
+      // dispatch(addbreadcrumb("Projects"));
       navigate("/projects", { replace: true });
     }
   };

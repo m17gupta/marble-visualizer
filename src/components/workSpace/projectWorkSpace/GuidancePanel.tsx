@@ -102,7 +102,7 @@ const GuidancePanel: React.FC = () => {
     referenceImageUrl: [],
   });
 
- 
+
   useEffect(() => {
     if (getIsAddInspirations) {
       setIsModel(getIsAddInspirations);
@@ -150,23 +150,23 @@ const GuidancePanel: React.FC = () => {
   };
 
   const handleGenerateAiImage = async () => {
-    if(!requests.houseUrl || requests.houseUrl.length === 0 || !requests.prompt || requests.prompt.length === 0)  return toast.error("Please provide prompt before generating AI image.");
+    if (!requests.houseUrl || requests.houseUrl.length === 0 || !requests.prompt || requests.prompt.length === 0) return toast.error("Please provide prompt before generating AI image.");
     dispatch(updateIsGenLoading(true));
     // Logic to generate AI image
     try {
-    
-       dispatch(
+
+      dispatch(
         submitGenAiRequest(req as GenAiRequest)
       );
 
     } catch (error) {
       toast.error("Error generating AI image: " + (error as Error).message);
 
-  
+
     }
   };
 
- 
+
 
   const handleRandomPromptSelection = (prompt: string) => {
     if (prompt) {
@@ -195,7 +195,7 @@ const GuidancePanel: React.FC = () => {
     }
   };
 
- 
+
   return (
     <>
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
@@ -247,18 +247,18 @@ const GuidancePanel: React.FC = () => {
           )}
 
           {/* inspiration Image Y  */}
-{requests.referenceImageUrl &&
-  requests.referenceImageUrl.length > 0 &&
-  requests.referenceImageUrl[0] !== "" && (
-    <UserInputPopOver
-      inputKey="inspiration-image"
-      name={inspirationNames}
-      value={requests.referenceImageUrl[0]}
-      open={isImagePopoverOpen}
-      setOpen={setIsImagePopoverOpen}
-      deleteData={handleDelete}
-    />
-  )}
+          {requests.referenceImageUrl &&
+            requests.referenceImageUrl.length > 0 &&
+            requests.referenceImageUrl[0] !== "" && (
+              <UserInputPopOver
+                inputKey="inspiration-image"
+                name={inspirationNames}
+                value={requests.referenceImageUrl[0]}
+                open={isImagePopoverOpen}
+                setOpen={setIsImagePopoverOpen}
+                deleteData={handleDelete}
+              />
+            )}
         </div>
 
         <div className="flex gap-3 md-gap-0 md:flex justify-between items-between">
@@ -309,9 +309,8 @@ const GuidancePanel: React.FC = () => {
             </button>
 
             <button
-              className={`px-4 py-1 ${
-                isTask ? "bg-gray-400" : "bg-blue-600"
-              } text-white rounded`}
+              className={`px-4 py-1 ${isTask ? "bg-gray-400" : "bg-blue-600"
+                } text-white rounded`}
               onClick={handleGenerateAiImage}
               disabled={isTask || isGenLoading}
             >

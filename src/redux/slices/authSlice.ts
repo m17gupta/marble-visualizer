@@ -6,10 +6,13 @@ import {
   SignUpCredentials,
   AuthError,
 } from "@/models";
+import { UserPlan } from "@/models/userModel/UserPLanModel";
 
 interface AuthState {
   user: User | null;
+  userPlan: UserPlan | null;
   isLoading: boolean;
+  isSubscriptionLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
   isInitialized: boolean;
@@ -19,12 +22,14 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
+  userPlan: null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
   isInitialized: false,
   accessToken: null,
   refreshToken: null,
+  isSubscriptionLoading: false,
 };
 
 // Async thunk for login
@@ -33,7 +38,7 @@ export const loginUser = createAsyncThunk(
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await AuthService.signIn(credentials);
-
+        
       return response;
     } catch (error) {
       if (error instanceof AuthError) {
@@ -119,6 +124,39 @@ export const getCurrentUser = createAsyncThunk(
   }
 );
 
+// get UserSunscriptionPlan
+export const getUserSubscriptionPlan = createAsyncThunk(  
+  "auth/getUserSubscriptionPlan",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const userPlan = await AuthService.getUserPlan(userId);
+      return userPlan;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to get user subscription plan");
+    }
+  }
+);
+
+// update UserSubscriptionPlan
+export const updateUserSubscriptionPlan = createAsyncThunk(
+  "auth/updateUserSubscriptionPlan",
+  async ({ userId, credits }: { userId: string; credits: number }, { rejectWithValue }) => {
+    try {
+      const updatedPlan = await AuthService.updateUserPlan(userId, credits);
+      console.log("Updated User Plan:", updatedPlan);
+      return updatedPlan;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to update user subscription plan");
+    }
+  }
+);
+
 // Async thunk to refresh session
 export const refreshSession = createAsyncThunk(
   "auth/refreshSession",
@@ -161,6 +199,7 @@ const authSlice = createSlice({
     },
     clearAuth: (state) => {
       state.user = null;
+      state.userPlan = null;
       state.isAuthenticated = false;
       state.error = null;
       state.accessToken = null;
@@ -178,9 +217,11 @@ const authSlice = createSlice({
         state.isInitialized = true;
         if (action.payload) {
           state.user = action.payload.user;
+          state.userPlan = action.payload.userPlan || null; // Set user plan if available
           state.isAuthenticated = true;
         } else {
           state.user = null;
+          state.userPlan = null;
           state.isAuthenticated = false;
         }
       })
@@ -204,6 +245,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
+        state.userPlan = action.payload.userPlan || null;
         state.isAuthenticated = true;
         state.accessToken = action.payload.session.access_token;
         state.refreshToken = action.payload.session.refresh_token;
@@ -222,6 +264,7 @@ const authSlice = createSlice({
       .addCase(signUpUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload.user;
+        state.userPlan = action.payload.userPlan || null;
         state.isAuthenticated = true;
         state.accessToken = action.payload.session.access_token;
         state.refreshToken = action.payload.session.refresh_token;
@@ -240,6 +283,7 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         // state.isLoading = false;
         state.user = null;
+        state.userPlan = null;
         state.isAuthenticated = false;
         state.error = null;
         state.accessToken = null;
@@ -251,6 +295,7 @@ const authSlice = createSlice({
         // Even if logout fails on the server, we should clear the state in the client
         // This ensures the user can still "log out" from the UI perspective
         state.user = null;
+        state.userPlan = null;
         state.isAuthenticated = false;
         state.accessToken = null;
         state.refreshToken = null;
@@ -263,14 +308,17 @@ const authSlice = createSlice({
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         if (action.payload) {
           state.user = action.payload.user;
+          state.userPlan = action.payload.userPlan || null;
           state.isAuthenticated = true;
         } else {
           state.user = null;
+          state.userPlan = null;
           state.isAuthenticated = false;
         }
       })
       .addCase(getCurrentUser.rejected, (state) => {
         state.user = null;
+        state.userPlan = null;
         state.isAuthenticated = false;
       })
 
@@ -278,16 +326,47 @@ const authSlice = createSlice({
       .addCase(refreshSession.fulfilled, (state, action) => {
         if (action.payload) {
           state.user = action.payload.user;
+          state.userPlan = action.payload?.userPlan || null;
           state.isAuthenticated = true;
         } else {
           state.user = null;
+          state.userPlan = null;
           state.isAuthenticated = false;
         }
       })
       .addCase(refreshSession.rejected, (state) => {
         state.user = null;
+        state.userPlan = null;
         state.isAuthenticated = false;
       });
+
+      // Get user subscription plan
+      builder.addCase(getUserSubscriptionPlan.pending, (state) => { 
+        state.isSubscriptionLoading = true;
+        state.error = null;
+      })
+      .addCase(getUserSubscriptionPlan.fulfilled, (state, action) => {
+        state.isSubscriptionLoading = false;
+        state.userPlan = action.payload;
+      })    
+      .addCase(getUserSubscriptionPlan.rejected, (state, action) => {
+        state.isSubscriptionLoading = false;
+        state.error = action.payload as string;
+      });
+   // update user subscription plan
+    builder.addCase(updateUserSubscriptionPlan.pending, (state) => {
+      state.isSubscriptionLoading = true;
+      state.error = null;
+    })
+    .addCase(updateUserSubscriptionPlan.fulfilled, (state, action) => {
+      state.isSubscriptionLoading = false;
+      // state.userPlan?.credits = action.payload?.credits || 0; // Update credits in userPlan
+    })
+    .addCase(updateUserSubscriptionPlan.rejected, (state, action) => {
+      state.isSubscriptionLoading = false;
+      state.error = action.payload as string;
+    });
+
   },
 });
 

@@ -21,6 +21,7 @@ import WorkspaceProjectPage from "@/pages/WorkspaceProjectPage";
 import Homepage from "@/pages/Homepage";
 import ProjectPdf from "@/pages/ProjectPdf";
 import SwatchAddPage from "@/components/swatchBook/SwatchAddPage";
+import ProjectHome from "@/pages/projectPage/ProjectHome";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -73,7 +74,7 @@ export function AppRouter() {
         }
       >
         <Route index element={<Navigate to="/app/projects" replace />} />
-        <Route path="projects" element={<ProjectsPage />} />
+        <Route path="projects" element={<ProjectHome />} />
         <Route path="profile" element={<ProfilePage />} />
         {/* <Route path="studio" element={<StudioPage />} /> */}
         <Route path="studio/:id" element={<StudioPage />} />
