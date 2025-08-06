@@ -17,7 +17,7 @@ import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
 import { toast } from 'sonner';
-import { boolean } from 'zod';
+
 
 const DesignProject = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -68,7 +68,7 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
     dispatch(setIsGenerated(false));
     dispatch(resetRequest());
   };
-  const isProcessing = useRef<boolean>(false);
+  const isProcessing = useRef<boolean>(true);
 
 
   const handleDeleteGenAiImage = async(genId:string) => {

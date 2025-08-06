@@ -37,7 +37,12 @@ const StyleAndRenovationPanel: React.FC = () => {
   };
 
   useEffect(() => {
-    stylesToShow.current = Inspirational_images;
+    if(Inspirational_images && Inspirational_images.length > 0) {
+      stylesToShow.current = Inspirational_images;
+    } else if (Inspirational_images && Inspirational_images.length === 0) {
+      console.warn('No inspirational images available');
+      stylesToShow.current = [];
+    }
   }, [Inspirational_images]);
 
   const handleInspirationImage = (image: string, name: string) => {
@@ -86,15 +91,15 @@ const StyleAndRenovationPanel: React.FC = () => {
   .map((style, i) => (
     <div
       key={i}
-      onClick={() => handleInspirationImage(style.image, style.name)}
+      onClick={() => handleInspirationImage(style?.dp??"", style.name??"")}
       className={`relative flex flex-col items-center cursor-pointer transition-transform duration-200 hover:scale-105 rounded-xl border-2 ${
-        selectedImage === style.image
+        selectedImage === style.dp
           ? 'border-green-500 scale-105 '
           : 'border-transparent'
       }`}
     >
       <img
-        src={style.image}
+        src={style.dp}
         alt={style.name}
         className="w-26 h-26 object-cover rounded-xl"
       />

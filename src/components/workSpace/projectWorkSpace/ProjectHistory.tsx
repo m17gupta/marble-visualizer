@@ -24,6 +24,43 @@ const ProjectHistory = () => {
   );
  
   const dispatch = useDispatch();
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    if (targetDate.getTime() === today.getTime()) {
+      return "Today";
+    } else if (targetDate.getTime() === yesterday.getTime()) {
+      return "Yesterday";
+    } else if (targetDate.getTime() === tomorrow.getTime()) {
+      return "Tomorrow";
+    } else {
+      // Format as "Mon, 15 Jan 2025"
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    }
+  };
+
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  };
   const handleGenAiImageClick = (image: GenAiChat) => {
     dispatch(setCurrentGenAiImage(image));
     dispatch(setCurrentTabContent("compare"));
@@ -73,10 +110,7 @@ const ProjectHistory = () => {
                     {image.user_input_text}
                   </p>
                   <p className="text-gray-800 text-sm font-semibold flex items-center gap-1 pt-1">
-                    {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg> */}
-                    05/08/2025 <span className="ml-1 text-blue-600 font-semibold">17:00</span>
+                    {formatTimestamp(image.created)} <span className="ml-1 text-blue-600 font-semibold">{formatTime(image.created)}</span>
                   </p>
                   </div>
                 </div>

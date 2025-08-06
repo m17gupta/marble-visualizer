@@ -7,6 +7,7 @@ import {
   User,
   UserProfile,
 } from "@/models";
+import { UserPlan, PlanFeature } from "@/models/userModel/UserPLanModel";
 
 export class AuthAPI {
   /**
@@ -37,6 +38,7 @@ export class AuthAPI {
 
       // Update last login
       await this.updateLastLogin(data.user.id);
+      // const userPlan = await this.getUserPlan(data.user.id);
 
       const userAuth: User = {
         id: data.user.id,
@@ -50,6 +52,7 @@ export class AuthAPI {
 
       return {
         user: userAuth,
+        // userPlan: userPlan || null,
         session: {
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token,
@@ -228,6 +231,7 @@ export class AuthAPI {
   static async getCurrentUser(): Promise<{
     user: User;
     profile: UserProfile | null;
+    userPlan: UserPlan | null;
   } | null> {
     try {
       const { data, error } = await supabase.auth.getUser();
@@ -249,10 +253,8 @@ export class AuthAPI {
         return null;
       }
 
-      // const [user, profile] = await Promise.all([
-      //   this.getUserById(data.user.id),
-      //   this.getUserProfile(data.user.id),
-      // ]);
+      // Get user plan
+      const userPlan = await this.getUserPlan(data.user.id);
 
       const userAuth: User = {
         id: data.user.id,
@@ -264,7 +266,7 @@ export class AuthAPI {
         modified_at: new Date().toISOString(),
       };
 
-      return { user: userAuth, profile: null };
+      return { user: userAuth, profile: null, userPlan: userPlan || null };
     } catch (error) {
       if (error instanceof AuthError) {
         throw error;
@@ -521,7 +523,7 @@ export class AuthAPI {
     try {
       // Try user_profiles first, then fallback to profiles
 
-      let response = await supabase
+      const response = await supabase
         .from("user_profiles")
         .update({
           ...updates,
@@ -730,6 +732,95 @@ export class AuthAPI {
         modified_at: new Date().toISOString(),
       })
       .eq("id", userId);
+  }
+
+  // get user plan
+  static async getUserPlan(userId: string): Promise<UserPlan > {
+    try {
+      const { data, error } = await supabase
+        .from("user_subscriptions")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 404,
+          code: "USER_PLAN_NOT_FOUND",
+        });
+      }
+    console.log("User plan data:", data);
+    let userPlanWithFeature: UserPlan | null = null;
+     userPlanWithFeature = {
+      id: data.id,
+      user_id: data.user_id,
+      status: data.status,
+      started_at: data.start_date,
+      expires_at: data.end_date,
+      payment_id: data.created_at,
+      created_at: data.updated_at,
+      credits: data.credits || 0,
+      // Include plan feature if available
+    };
+    if(data && data.plan_feature_id) {
+    const user_plan_feature = await this.searchPlanFeature(data.plan_feature_id);
+   console.log("User plan feature data:", user_plan_feature);
+    if (user_plan_feature) {
+      userPlanWithFeature.plan_features = user_plan_feature || null;
+    } else {
+      console.warn("No plan feature found for user plan:", data.plan_feature_id);
+    }
+  
+
+    if (!userPlanWithFeature) {
+        console.warn("No plan feature found for user plan:", userPlanWithFeature);
+   }
+  }
+      return userPlanWithFeature as UserPlan;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to retrieve user plan",
+        status: 500,
+        code: "USER_PLAN_FETCH_ERROR",
+      });
+    }
+  }
+
+  // searcg plan under plan_featuer table
+  static async searchPlanFeature(
+    planId: string
+  ): Promise<PlanFeature | null> {
+    try {
+      const { data, error } = await supabase
+        .from("plan_features")
+        .select("*")
+        .eq("id", planId)
+        .single();
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 404,
+          code: "PLAN_FEATURE_NOT_FOUND",
+        });
+      }
+
+      return data as PlanFeature;
+    } catch (error) {
+      console.error("Error searching plan feature:", error);
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: "Failed to retrieve plan feature",
+        status: 500,
+        code: "PLAN_FEATURE_FETCH_ERROR",
+      });
+    }
   }
 
   /**

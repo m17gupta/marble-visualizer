@@ -7,7 +7,9 @@ import {
   UserProfile,
   UpdateAuthUserProfileRequest,
 } from "@/models";
+import { UserPlan } from "@/models/userModel/UserPLanModel";
 import { toast } from "sonner";
+import { UserAPI } from "./api/userApi";
 
 export class AuthService {
   /**
@@ -57,6 +59,20 @@ export class AuthService {
     return await AuthAPI.createUserProfile(profileData);
   }
 
+
+  //  get user Subscription plan
+  static async getUserPlan(userId: string): Promise<UserPlan | null> {
+    return await AuthAPI.getUserPlan(userId);
+  }
+
+  // update the userSubscription plan
+  static async updateUserPlan(
+    userId: string,
+    credits: number,
+  ): Promise<UserPlan | null> {
+    return await UserAPI.updateUserCredits(userId, credits);
+  }
+
   /**
    * Get userProfile based on session Id
    */
@@ -77,6 +93,7 @@ export class AuthService {
   static async getCurrentUser(): Promise<{
     user: User;
     profile: UserProfile | null;
+    userPlan: UserPlan | null;
   } | null> {
     return await AuthAPI.getCurrentUser();
   }

@@ -1,17 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { InspirationColorModel } from '@/models/inspirational/Inspirational';
-import { InspirationalColorService, InspirationColorFilters } from '@/services/inspirational';
+import {  InspirationColorModel } from '@/models/inspirational/Inspirational';
+import { InspirationalColorService } from '@/services/inspirational';
 
 interface InspirationalColorState {
   inspirational_colors: InspirationColorModel[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
-  searchQuery: string;
   selectedColorId: string | null;
   isLoading: boolean;
   error: string | null;
@@ -19,14 +11,6 @@ interface InspirationalColorState {
 
 const initialState: InspirationalColorState = {
   inspirational_colors: [],
-  pagination: {
-    page: 1,
-    pageSize: 20,
-    total: 0,
-    totalPages: 0,
-    hasMore: false,
-  },
-  searchQuery: '',
   selectedColorId: null,
   isLoading: false,
   error: null,
@@ -35,9 +19,9 @@ const initialState: InspirationalColorState = {
 // Async thunk to fetch inspirational colors
 export const fetchInspirationalColors = createAsyncThunk(
   'inspirationalColors/fetchColors',
-  async (filters: InspirationColorFilters = {}, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const result = await InspirationalColorService.getInspirationColors(filters);
+      const result = await InspirationalColorService.getInspirationColors();
 
       if (result.success && result.data) {
         return {
@@ -61,15 +45,13 @@ const inspirationalColorSlice = createSlice({
   name: 'inspirationalColors',
   initialState,
   reducers: {
-    setSearchQuery: (state, action: PayloadAction<string>) => {
-      state.searchQuery = action.payload;
-    },
+   
     setSelectedColorId: (state, action: PayloadAction<string | null>) => {
       state.selectedColorId = action.payload;
     },
     clearColors: (state) => {
-      state.inspirational_colors = [];
-      state.pagination = initialState.pagination;
+     state.inspirational_colors=  []
+     
     },
     clearError: (state) => {
       state.error = null;
@@ -92,14 +74,10 @@ const inspirationalColorSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       });
-
-    
-  
   },
 });
 
 export const {
-  setSearchQuery,
   setSelectedColorId,
   clearColors,
   clearError,

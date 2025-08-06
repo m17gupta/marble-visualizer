@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { User, UserProfile, UpdateUserProfileRequest, AuthError } from '@/models';
+import { UserPlan } from '@/models/userModel/UserPLanModel';
 
 export class UserAPI {
   /**
@@ -103,6 +104,41 @@ export class UserAPI {
     }
   }
 
+
+  // update the credit balance for a user
+  static async updateUserCredits(userId: string, credits: number): Promise<UserPlan>
+  {
+    try {
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .update({
+          credits: credits,
+          modified_at: new Date().toISOString(),
+        })
+        .eq('user_id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 400,
+          code: 'CREDITS_UPDATE_ERROR'
+        });
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: 'Failed to update user credits',
+        status: 500,
+        code: 'CREDITS_UPDATE_FAILED'
+      });
+    }
+  }
   /**
    * Update user status
    */

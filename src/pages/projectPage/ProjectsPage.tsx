@@ -25,26 +25,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { toast } from "sonner";
 import {
   Plus,
   Calendar,
-  Share2,
-  Edit3,
   Globe,
   Lock,
   FolderOpen,
-  MoreHorizontal,
   Users,
-  Settings,
-  Copy,
 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -59,14 +48,13 @@ import {
 import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import {
   addHouseImage,
-  resetGenAiState,
 
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import ProjectHeader from "./ProjectHeader";
 import ProjectStaticCard from "./ProjectStaticCard";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
-import { CiSquareInfo } from "react-icons/ci";
+
 import AnalyzedDataModal from "@/components/Modal";
 // import AnalyseImage from "./analyseProjectImage/AnalyseImage";
 import ProjectAnalyseSegmentApiCall from "./analyseProjectImage/ProjectAnalyseSegmentApiCall";

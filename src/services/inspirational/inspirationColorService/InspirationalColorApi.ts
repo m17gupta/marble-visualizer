@@ -19,51 +19,24 @@ export interface PaginatedInspirationColorResponse {
 
 export interface InspirationColorApiResponse {
   success: boolean;
-  data?: InspirationColorModel[] | InspirationColorModel;
+  data?: InspirationColorModel[] ;
   error?: string;
   message?: string;
   count?: number;
 }
 
 export class InspirationalColorApi {
-  private static readonly TABLE_NAME = 'inspirational_color';
+  private static readonly TABLE_NAME = 'color_families';
 
   /**
    * Fetch all inspirational colors with optional filtering and pagination
    */
-  static async fetchInspirationColors(
-    filters: InspirationColorFilters = {}
-  ): Promise<InspirationColorApiResponse> {
+  static async fetchInspirationColors(): Promise<InspirationColorApiResponse> {
     try {
-      const {
-        search,
-        name,
-        hex,
-        limit = 50,
-        offset = 0
-      } = filters;
-
-      let query = supabase
-        .from(this.TABLE_NAME)
-        .select('*', { count: 'exact' });
-
-      // Apply filters
-      if (search) {
-        query = query.or(`name.ilike.%${search}%,hex.ilike.%${search}%`);
-      }
-
-      if (name) {
-        query = query.ilike('name', `%${name}%`);
-      }
-
-      if (hex) {
-        query = query.eq('hex', hex);
-      }
-
-      // Apply pagination
-      query = query
-        .range(offset, offset + limit - 1)
-        .order('name', { ascending: true });
+      const query = supabase
+        .from(InspirationalColorApi.TABLE_NAME)
+        .select('*')
+        .order('created_at', { ascending: false });
 
       const { data, error, count } = await query;
 
