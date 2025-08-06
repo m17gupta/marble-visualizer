@@ -27,26 +27,24 @@ import {
   addPrompt,
   resetInspirationImage,
   submitGenAiRequest,
-  insertGenAiChatData,
-  resetRequest,
   resetIsGenAiSumitFailed,
-  updateTaskId,
-  setCurrentGenAiImage,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
 import {
-  GenAiChat,
   GenAiRequest,
-  TaskApiModel,
 } from "@/models/genAiModel/GenAiModel";
-import Call_task_id from "./Call_task_id";
-import { toast } from "sonner";
 
+import { toast } from "sonner";
+import logogImage  from "@/assets/image/logo.svg";
 import VoiceRecognition from "./VoiceRecognition";
 import { useParams } from "react-router-dom";
 import { StyleSuggestions } from "@/models/projectModel/ProjectModel";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
+import Loading from "@/components/loading/Loading";
+import ImageComparisonModal from "@/components/workSpace/projectWorkSpace/renameGenAiImage/RenameGenAiNameModal";
+import RenameGenAiHome from "./renameGenAiImage/RenameGenAiHome";
+
 // import GenAiImages from "../compareGenAiImages/GenAiImages";
 
 const GuidancePanel: React.FC = () => {
@@ -69,6 +67,7 @@ const GuidancePanel: React.FC = () => {
   const [showGuide, setShowGuide] = useState(false);
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
   const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
+  const [showComparisonModal, setShowComparisonModal] = React.useState(false);
 
   const currentPageDetails = projects.find((d) => d.id == id);
 
@@ -77,7 +76,7 @@ const GuidancePanel: React.FC = () => {
   // const taskId = React.useRef<string>("")
 
   // const isTask = React.useRef<boolean>(false)
-  const [taskId, setTaskId] = React.useState<string>("");
+
   const [isTask, setIsTask] = React.useState<boolean>(false);
 
   // Use separate state variables for each popover
@@ -195,12 +194,37 @@ const GuidancePanel: React.FC = () => {
     }
   };
 
+  // Handle design save
+  const handleDesignSave = (designName: string) => {
+    console.log("Saving design with name:", designName);
+    // Add your save logic here
+    toast.success(`Design "${designName}" saved successfully!`);
+  };
 
+  // Example function to open comparison modal (you can call this after AI generation)
+  const handleShowComparison = () => {
+    setShowComparisonModal(true);
+  };
+
+  
   return (
     <>
+  { isGenLoading && <Loading
+      backgroundImage='/assets/image/dzinlylogo-icon.svg' // Use the correct path to your logo image
+    />}
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
-      <div className="bg-white rounded-sm p-4">
+      {/* Image Comparison Modal */}
+      <ImageComparisonModal
+        openModal={showComparisonModal}
+        onclose={() => setShowComparisonModal(false)}
+        beforeImage={url || "/assets/image/logo.svg"} // Use actual before image
+        afterImage={url || "/assets/image/logo.svg"} // Use actual generated image
+        onSave={handleDesignSave}
+        prompt={requests.prompt?.[0] || "Change wall color to lemon green"}
+      />
+
+      <div className={`bg-white rounded-sm p-4`}>
         <div className="flex items-center">
           <h2 className="text-lg font-semibold ">AI Guidance</h2>
           <TooltipProvider delayDuration={0}>
@@ -261,10 +285,12 @@ const GuidancePanel: React.FC = () => {
             )}
         </div>
 
-        <div className="flex gap-3 md-gap-0 md:flex justify-between items-between">
+        <div className={`flex gap-3 md-gap-0 md:flex justify-between items-between
+           
+          `}>
           <div className="flex items-center">
             <ProjectHistory />
-
+              
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -316,6 +342,14 @@ const GuidancePanel: React.FC = () => {
             >
               {isGenLoading ? "Processing..." : "Visualize"}
             </button>
+            
+            {/* Test button for comparison modal */}
+            <button
+              className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
+              onClick={handleShowComparison}
+            >
+              Compare
+            </button>
           </div>
         </div>
 
@@ -357,6 +391,7 @@ const GuidancePanel: React.FC = () => {
           resetChatTaskFail={handleResetFaiApiCall}
         />
       )} */}
+      <RenameGenAiHome/>
     </>
   );
 };

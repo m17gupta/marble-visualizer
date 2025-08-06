@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { CanvasModel } from '@/models/canvasModel/CanvasModel';
 import { deleteMask, resetCanvas, setCanvasType, setIsCanvasModalOpen, updateIsGenerateMask } from '@/redux/slices/canvasSlice';
+import { AnnotationValue } from '@/models/genAiModel/GenAiModel';
+import { updateMaskIntoRequest } from '@/redux/slices/visualizerSlice/genAiSlice';
 
 
 
@@ -26,10 +28,18 @@ const GeneratedMask = () => {
     dispatch(deleteMask(maskId));
 
   };
-
+  
 
   const handleMask = () => {
-    dispatch(updateIsGenerateMask(true))
+    const allAnnotations:AnnotationValue={}
+    if(allMasks && allMasks.length>0){
+
+      allMasks.forEach((mask,index) => {
+        allAnnotations[`additionalProp${index+1}`] = mask.annotations;
+      });
+    }
+    dispatch(updateMaskIntoRequest(allAnnotations));
+    // dispatch(updateIsGenerateMask(true))
      dispatch(setIsCanvasModalOpen(false));
   }
 
@@ -44,7 +54,7 @@ const GeneratedMask = () => {
         <div className="space-y-4">
           {allMasks.map((mask, index) => (
             <div key={index} className="flex items-center justify-between">
-              <h4>{mask.name}</h4>
+              <h4>{`mask-${index+1}`}</h4>
               {/* delete icon */}
               <button className="text-red-500 hover:text-red-700 p-1"
                 onClick={() => handleDeleteMask(mask.id)}>

@@ -1,45 +1,100 @@
-.processing-box-effect {
-  position: relative;
-}
-.processing-box-effect::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  background: linear-gradient(90deg, #7c3aed 0%, #a78bfa 50%, #7c3aed 100%);
-  animation: border-move 2s linear infinite;
-  z-index: 5;
-  border-radius: 0 0 0.5rem 0.5rem;
-}
-@keyframes border-move {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
-
-/* Animated moving red border for processing */
-.moving-line-wrapper {
+.processing-box-effect, .moving-line-wrapper {
   position: relative;
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow: visible;
 }
 
+/* The moving short line */
+.processing-box-effect::before,
 .moving-line-wrapper::before {
   content: "";
   position: absolute;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(to right, transparent, #21d4fd, transparent);
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  border-radius: 1px;
+  z-index: 10;
+  animation: short-line-linear-clockwise 8s linear infinite;
+}
+
+/* Starting with top edge (horizontal) */
+.processing-box-effect::before,
+.moving-line-wrapper::before {
+  width: 2cm;   /* fixed length */
+  height: 2px;  /* thickness */
   top: 0;
-  left: -100%;
-  animation: move-line-horizontal 2s linear infinite;
+  left: 0;
 }
 
-@keyframes move-line-horizontal {
-  0% { left: -100%; }
-  100% { left: 100%; }
+/* Keyframes for linear sliding along each edge in clockwise order */
+@keyframes short-line-linear-clockwise {
+  /* Top edge: move from left(0) to right (calc(100% - 2cm)) */
+  0% {
+    top: 0;
+    left: 0;
+    width: 2cm;
+    height: 2px;
+    right: auto;
+    bottom: auto;
+  }
+  25% {
+    top: 0;
+    left: calc(100% - 2cm);
+    width: 2cm;
+    height: 2px;
+    right: auto;
+    bottom: auto;
+  }
+
+  /* Right edge: move from top(0) to bottom (calc(100% - 2cm)) */
+  26% {
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 2cm;
+    left: auto;
+    bottom: auto;
+  }
+  50% {
+    top: calc(100% - 2cm);
+    right: 0;
+    width: 2px;
+    height: 2cm;
+    left: auto;
+    bottom: auto;
+  }
+
+  /* Bottom edge: move from right(0) to left (calc(100% - 2cm)) */
+  51% {
+    bottom: 0;
+    right: 0;
+    width: 2cm;
+    height: 2px;
+    top: auto;
+    left: auto;
+  }
+  75% {
+    bottom: 0;
+    left: 0;
+    width: 2cm;
+    height: 2px;
+    top: auto;
+    right: auto;
+  }
+
+  /* Left edge: move from bottom(0) to top (calc(100% - 2cm)) */
+  76% {
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    height: 2cm;
+    top: auto;
+    right: auto;
+  }
+  100% {
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 2cm;
+    bottom: auto;
+    right: auto;
+  }
 }
-
-
-

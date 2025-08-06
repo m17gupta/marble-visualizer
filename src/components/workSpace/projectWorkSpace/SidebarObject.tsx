@@ -84,7 +84,7 @@ const SidebarObject = () => {
         )}
 
         <div className="flex items-center flex-wrap gap-2 pt-2">
-          {project &&
+          {/* {project &&
           project.analysed_data &&
           project.analysed_data.segments_detected &&
           Object.keys(project.analysed_data.segments_detected).length > 0 &&
@@ -105,15 +105,15 @@ const SidebarObject = () => {
                 </button>
               );
             }
-          )}
+          )} */}
         </div>
 
-        <div className="relative flex border border-gray-300 rounded-xl p-2 align-super justify-between">
-          {/* <img src={objectimg} alt="Object Image" className="object-cover"></img> */}
+        {/* <div className="relative flex border border-gray-300 rounded-xl p-2 align-super justify-between">
+        
           <span className="absolute -top-3 -right-3 cursor-pointer">
             <IoIosCloseCircleOutline className="text-3xl" />
           </span>
-        </div>
+        </div> */}
       </div>
 
       {/* Offcanvas Panel - LEFT aligned */}
@@ -133,12 +133,7 @@ const SidebarObject = () => {
           >
             <IoIosCloseCircleOutline />
           </span>
-          {/* <button
-            onClick={() => setIsOpen(false)}
-            className="text-gray-600 hover:text-black text-xl"
-          >
-            &times;
-          </button> */}
+        
         </div>
 
         {/* Top actions */}
