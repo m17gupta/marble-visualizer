@@ -222,3 +222,22 @@ button:focus-visible {
 .swiper-slide {
   width: auto !important;
 }
+
+/* Add to your global CSS (e.g., index.css or App.css) */
+.thin-scrollbar::-webkit-scrollbar {
+  height: 3px; /* small height for horizontal scroll */
+  padding-bottom: 10px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+}

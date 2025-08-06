@@ -1,6 +1,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InspirationContent from "./tabContent/InspirationContent";
+import QualityLevelImage from "./tabContent/QualityLevelImage";
 
 export function StudioStyleTabs() {
   return (
@@ -45,7 +46,9 @@ export function StudioStyleTabs() {
               </button>
             </div>
 
-            <div className="flex gap-3 p-4">
+  
+         <div className="p-4">
+            <div className="flex gap-3">
               <div className="relative w-16 h-16 rounded overflow-hidden border">
                 <img
                   src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
@@ -56,7 +59,6 @@ export function StudioStyleTabs() {
                   <span className="text-xs text-red-500 font-bold">×</span>
                 </button>
               </div>
-
               <div className="flex-1">
                 <img
                   src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
@@ -69,6 +71,16 @@ export function StudioStyleTabs() {
                 </div>
               </div>
             </div>
+
+              <div className="mt-4">
+                <img
+                src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
+                alt="Main Image"
+                className="rounded w-72 object-cover  border"
+              />
+            </div>
+         </div>
+
             <div className="w-full rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
               {/* Textarea */}
               <div className="px-4 pt-3">
@@ -102,19 +114,7 @@ export function StudioStyleTabs() {
                     />
                    
                   </button>
-                  <button className="relative text-base hover:text-purple-600 transition p-0">
-                    
-                    <img
-                      src="/assets/image/line-md--link.svg"
-                      alt="Chat Icon"
-                      className="h-5 w-5 "
-                    />
-                    <span className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center">
-                      H
-                    </span>
-
-                    
-                  </button>
+                  <QualityLevelImage/>
                 </div>
 
                 {/* Generate Button */}

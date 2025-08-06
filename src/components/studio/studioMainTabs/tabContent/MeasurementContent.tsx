@@ -1381,8 +1381,7 @@ const MeasurementContent: React.FC = () => {
           <button
             onClick={() => setShowPDFModal(false)}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            type="button"
-          >
+            type="button">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
@@ -1391,15 +1390,13 @@ const MeasurementContent: React.FC = () => {
             <button
               onClick={() => setShowPDFModal(false)}
               className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-              type="button"
-            >
+              type="button">
               Cancel
             </button>
             <button
               onClick={generatePDF}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
-              type="button"
-            >
+              type="button">
               <Download className="w-4 h-4" />
               <span>Download PDF</span>
             </button>
@@ -1432,8 +1429,7 @@ const MeasurementContent: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setSelectedUnit(e.target.value)
               }
-              className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
+              className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white">
               {units.map((unit: string) => (
                 <option key={unit} value={unit}>
                   {unit}
@@ -1466,8 +1462,7 @@ const MeasurementContent: React.FC = () => {
               <button
                 onClick={handleMarkDimension}
                 className="text-xs px-3 py-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                type="button"
-              >
+                type="button">
                 Mark Dimension
               </button>
             )}
@@ -1475,20 +1470,19 @@ const MeasurementContent: React.FC = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="px-4 bg-white border-b border-gray-200">
-          <div className="flex space-x-0 overflow-x-auto">
+        <div className="px-2 bg-white border-b border-gray-200">
+          <div className="flex space-x-0 overflow-x-auto my-2 pb-2 thin-scrollbar gap-2">
             {masterArray.map((tab: any) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.name)}
-                className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-all ${getTabStyle(
+                className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all ${getTabStyle(
                   tab.name
                 )}`}
-                type="button"
-              >
+                type="button">
                 <div className="flex items-center space-x-1">
                   <span>{tab.name}</span>
-                  <span className="text-xs bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                  <span className="text-xs bg-blue-200  text-gray-600 rounded-full px-1.5 py-0.5 min-w-[18px] text-center ">
                     {getTotalSegmentsForTab(tab.name)}
                   </span>
                 </div>
@@ -1510,8 +1504,7 @@ const MeasurementContent: React.FC = () => {
                   </div>
                   <button
                     className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors font-medium"
-                    type="button"
-                  >
+                    type="button">
                     Select Style
                   </button>
                 </div>
@@ -1539,14 +1532,12 @@ const MeasurementContent: React.FC = () => {
                   activeTabData.allSegments.map((group: SegmentGroup) => (
                     <div
                       key={group.groupName}
-                      className="bg-gray-50 rounded-lg"
-                    >
+                      className="bg-gray-50 rounded-lg">
                       {/* Group Header */}
                       <button
                         onClick={() => toggleGroupExpansion(group.groupName)}
                         className="w-full flex items-center justify-between p-4 hover:bg-gray-100 transition-colors rounded-lg"
-                        type="button"
-                      >
+                        type="button">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                             <span className="text-sm font-bold text-blue-600">
@@ -1601,8 +1592,7 @@ const MeasurementContent: React.FC = () => {
                               {group.segments.map((segment: Segment) => (
                                 <div
                                   key={segment.id}
-                                  className="flex justify-between items-center py-2.5 px-3 bg-white rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all"
-                                >
+                                  className="flex justify-between items-center py-2.5 px-3 bg-white rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all">
                                   <div className="flex items-center space-x-3">
                                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                                       <span className="text-xs font-bold text-blue-600">
@@ -1650,8 +1640,7 @@ const MeasurementContent: React.FC = () => {
           <button
             onClick={() => setShowPDFModal(true)}
             className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm font-medium"
-            type="button"
-          >
+            type="button">
             <Download className="w-4 h-4" />
             <span>Export PDF Report</span>
           </button>
