@@ -40,7 +40,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
   const { currentZoom, mousePosition } = useSelector((state: RootState) => state.canvas);
   const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
  
-  console.log("CanvasToolbar rendered with canvasType:", canvasType);
+
 
   const handleResetZoom = () => {
     resetCanvas()
@@ -155,7 +155,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
           </div>
           <Badge variant="secondary">
             <span className="text-xs font-bold">
-              {canvasType === "draw" ? "Marking canvas" : "ReAnnotating Marking canvas"}
+             {canvasType === "draw" ? "Marking canvas" : (canvasType === "reannotation" ? "ReAnnotating Marking canvas" : "Creating Mask canvas")}
             </span>
           </Badge>
           <div className="flex items-center space-x-2">

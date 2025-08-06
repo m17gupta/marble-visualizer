@@ -15,7 +15,7 @@ interface GenAiState {
   responses: Record<string, GenAiResponse>;
   loading: boolean;
   genAiRequestSubmit: SubmitGenAiResponseModel | null;
-
+  isRenameGenAiModal: boolean;
   error: string | null;
   currentRequestId: string | null;
 
@@ -39,6 +39,7 @@ const initialState: GenAiState = {
     externalUserId: "dzinly-prod",
     jobId: "", // Assuming jobId is a number, set to 0 as default
   },
+  isRenameGenAiModal: false,
   responses: {},
   genAiRequestSubmit: null,
   loading: false,
@@ -157,12 +158,18 @@ const genAiSlice = createSlice({
     addHouseImage: (state, action) => {
       state.requests.houseUrl = [action.payload];
     },
+    updateMaskIntoRequest:(state,action)=>{
+      state.requests.annotationValue = action.payload;
+    },
     updateInspirationNames: (state, action: PayloadAction<string>) => {
       state.inspirationNames = action.payload;
     },
 
     updateRequestJobId: (state, action: PayloadAction<string>) => {
       state.requests.jobId = action.payload;
+    },
+    updateIsRenameGenAiModal: (state, action: PayloadAction<boolean>) => {
+      state.isRenameGenAiModal = action.payload; // Update the modal state
     },
     // Update response manually
     updateResponse: () => {
@@ -303,7 +310,8 @@ export const {
   updateRequestJobId,
   resetGenAiState,
   resetIsGenAiSumitFailed,
-
+  updateIsRenameGenAiModal,
+updateMaskIntoRequest,
   updateTaskId,
   setCurrentGenAiImage,
 } = genAiSlice.actions;

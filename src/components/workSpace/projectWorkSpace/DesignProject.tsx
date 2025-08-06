@@ -12,7 +12,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
-import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, deleteGenAiChat, resetRequest, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, deleteGenAiChat, resetRequest, setCurrentGenAiImage, updateIsRenameGenAiModal } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
@@ -86,10 +86,16 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
       console.error("Error deleting GenAiImage:", error);
       setComponentError(error instanceof Error ? error.message : "Unknown error");
     }
-  };  
+  }; 
+  
+  
+  const handleRenameGenAiImage = (imageSet: GenAiChat) => {
+    dispatch(updateIsRenameGenAiModal(true));
+    dispatch(setCurrentGenAiImage(imageSet));
+  
+  };
   return (
     <div className={`flex items-center justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
-    ${ isProcessing.current ? 'moving-line-wrapper' : ''}
     `}>
       {/* Design buttons scrollable */}
       <div className="flex gap-2 overflow-x-auto scroll-thin pr-2 max-w-full">
@@ -145,7 +151,7 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
                   <DropdownMenuItem onClick={() => console.log("Share", label)}>
                     Share
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => console.log("Rename", label)}>
+                  <DropdownMenuItem onClick={() => handleRenameGenAiImage(label)}>
                     Rename
                   </DropdownMenuItem>
                   <DropdownMenuItem
