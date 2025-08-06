@@ -119,10 +119,9 @@ export function SwatchRecommendations() {
               {recommendedSwatches.map((swatch) => (
                 <Card
                   key={swatch.id}
-                  className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl border-gray-900"
-                >
+                  className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl border-gray-900">
                   {/* Image/Color Preview */}
-                  <div className="aspect-square relative overflow-hidden">
+                  <div className="aspect-square relative overflow-hidden group">
                     <img
                       src={
                         swatch.bucket_path === "default"
@@ -143,22 +142,20 @@ export function SwatchRecommendations() {
                       }}
                     />
 
+                    {/* Info Icon - top-left */}
                     <span
                       role="button"
-                      className="absolute top-1 left-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-black/80 transition-colors"
-                    >
+                      className="absolute top-1 left-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-black/80 transition-colors opacity-0 group-hover:opacity-100">
                       <FaInfo className="w-3 h-3" />
                     </span>
 
+                    {/* Star Icon - top-right */}
                     <span
                       role="button"
-                      className="absolute top-1 right-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-yellow-400 transition-colors flex items-center"
-                    >
+                      className="absolute top-1 right-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-yellow-400 transition-colors opacity-0 group-hover:opacity-100">
                       <FaRegStar className="w-3 h-3" />
                     </span>
                   </div>
-
-                
                 </Card>
               ))}
             </AnimatePresence>
