@@ -15,7 +15,5 @@ export {
   InspirationalImageService 
 } from './inspirationImageService';
 export type { 
-  InspirationImageFilters, 
-  PaginatedInspirationImageResponse, 
   InspirationImageApiResponse 
 } from './inspirationImageService';
