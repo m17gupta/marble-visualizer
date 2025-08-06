@@ -40,7 +40,7 @@ const GetAllInspirational = () => {
   const fetchInspirationalColorsData = async () => {
     try {
       // Fetch all colors with empty filters
-      await dispatch(fetchInspirationalColors({})).unwrap();
+      await dispatch(fetchInspirationalColors()).unwrap();
     } catch (error) {
       console.error('Error fetching inspirational colors:', error);
     }
@@ -49,7 +49,7 @@ const GetAllInspirational = () => {
   const fetchInspirationalImagesData = async () => {
     try {
       // Fetch active images with default parameters
-      await dispatch(fetchInspirationalImages({})).unwrap();
+      await dispatch(fetchInspirationalImages()).unwrap();
     } catch (error) {
       console.error('Error fetching inspirational images:', error);
     }
