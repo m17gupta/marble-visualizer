@@ -78,6 +78,7 @@ export interface OpenAIMetadata {
 export interface GenAiChat {
   id: string ;
   project_id: number;
+  name?: string;
   user_id: number;
   job_id: number;
   master_image_path: string;

@@ -20,16 +20,14 @@ export const collectPoints = (
 
 ) => {
 
-      if(!canvasRef.current) return;
+    if (!canvasRef.current) return;
 
     if (annotation) {
         const point: PointModel[] = [];
         const polyName = segName;
         for (let i = 0; i < annotation.length; i += 2) {
-            const x = annotation[i] ;
-            const y = annotation[i + 1] ;
-            //   x = x;
-            // y = y;
+            const x = annotation[i];
+            const y = annotation[i + 1];
             point.push({ x, y });
         }
 
@@ -128,58 +126,3 @@ export const makePolygon = (
         canvasRef.current?.requestRenderAll();
     }
 };
-
-// export const collectPoints = (
-//     annotation: number[],
-//     segName: string,
-//     coordinates: number[],
-//     segType: string,
-//     groupName: string,
-//     color: string,
-//     canvasRef: React.RefObject<fabric.Canvas>,
-//     isFillPolygon: boolean,
-//     imageHeight: number,
-//     imageWidth: number
-
-// ) => {
-
-//     if (!canvasRef.current) return;
-//     const canvasWidth = imageWidth;
-//     const canvasHeight = imageHeight;
-//     const displayWidth = 1280;
-//     const displayHeight = 720;
-//     const imgAspect = imageWidth / imageHeight;
-// const canvasAspect = 1280 / 720;
-//     let scale, offsetX = 0, offsetY = 0;
-//     if (imgAspect > canvasAspect) {
-//         scale = displayWidth / imageWidth;
-//         offsetY = (displayHeight - imageHeight * scale) / 2;
-//     } else {
-//         scale = displayHeight / imageHeight;
-//         offsetX = (displayWidth - imageWidth * scale) / 2;
-//     }
-//     if (annotation) {
-//         const point: PointModel[] = [];
-//         const polyName = segName;
-//         for (let i = 0; i < annotation.length; i += 2) {
-//             const x = annotation[i] * scale + offsetX;
-//             const y = annotation[i + 1] * scale + offsetY;
-//             point.push({ x, y });
-//         }
-
-//         if (point && point.length > 0) {
-//             makePolygon(
-//                 point,
-//                 coordinates,
-//                 polyName,
-//                 segType,
-//                 groupName,
-//                 color,
-//                 canvasRef,
-//                 isFillPolygon,
-
-
-//             );
-//         }
-//     }
-// };

@@ -1,6 +1,6 @@
 import StudioPageMobile from "@/pages/StudioPageMobile";
-import React, { useEffect, useState } from "react";
-import GenAiImages from "./compareGenAiImages/GenAiImages";
+import React, { useEffect } from "react";
+
 import GuidancePanel from "./projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "./compareGenAiImages/CompareGenAiHome";
 import ImagePreview from "./projectWorkSpace/ImagePreview";

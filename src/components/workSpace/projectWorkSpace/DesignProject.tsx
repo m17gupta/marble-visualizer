@@ -135,7 +135,7 @@ const [allGenAiImages, setAllGenAiImages] = useState<GenAiChat[]>([]);
               onClick={() => handleImageSwitch(label)}
               className={`px-2 py-1 bg-transparent hover:border-transparent rounded-l-md focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200 ${isActive ? 'text-blue-700 font-semibold' : 'text-gray-800'}`}
             >
-              {`Design ${index + 1}`}
+              {label.name ? label.name : `Design ${index + 1}`}
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

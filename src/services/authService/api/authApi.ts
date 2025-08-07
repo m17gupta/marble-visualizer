@@ -203,7 +203,7 @@ export class AuthAPI {
   static async getCurrentSession() {
     try {
       const { data, error } = await supabase.auth.getSession();
-
+   
       if (error) {
         throw new AuthError({
           message: error.message,
@@ -235,7 +235,8 @@ export class AuthAPI {
   } | null> {
     try {
       const { data, error } = await supabase.auth.getUser();
-
+  
+     
       if (error) {
         // Handle "Auth session missing!" as a normal case when user is not logged in
         if (error.message === "Auth session missing!") {
@@ -750,7 +751,7 @@ export class AuthAPI {
           code: "USER_PLAN_NOT_FOUND",
         });
       }
-    console.log("User plan data:", data);
+   
     let userPlanWithFeature: UserPlan | null = null;
      userPlanWithFeature = {
       id: data.id,
@@ -765,7 +766,7 @@ export class AuthAPI {
     };
     if(data && data.plan_feature_id) {
     const user_plan_feature = await this.searchPlanFeature(data.plan_feature_id);
-   console.log("User plan feature data:", user_plan_feature);
+   
     if (user_plan_feature) {
       userPlanWithFeature.plan_features = user_plan_feature || null;
     } else {
@@ -829,7 +830,7 @@ export class AuthAPI {
   static async refreshSession() {
     try {
       const { data, error } = await supabase.auth.refreshSession();
-
+       console.log("Refresh session data:", data);
       if (error) {
         throw new AuthError({
           message: error.message,

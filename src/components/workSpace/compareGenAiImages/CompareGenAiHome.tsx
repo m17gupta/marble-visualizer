@@ -60,27 +60,7 @@ const CompareGenAiHome: React.FC = () => {
 
   return (
     <div className="flex flex-col  md:h-full w-full p-2 pb-0 md:pb-2 bg-gray-100">
-      {/* <button onClick={handleInspirationSection}>back to Inspiration</button> */}
-      {/* View mode tabs */}
-      {/* {showCompareView && currentGenAiImage &&
-      currentGenAiImage.master_image_path && currentGenAiImage.output_image && (
-        <div className="flex justify-center mb-4 absolute top-8 left-96 right-0 z-40">
-          <div className="inline-flex gap-2 rounded-lg overflow-hidden">
-            <button
-              className={`px-4 py-2 text-sm ${viewMode === 'side-by-side' ? 'bg-blue-50 text-blue-600 font-medium' : 'bg-white text-gray-700'}`}
-              onClick={() => handleToggleViewMode('side-by-side')}
-            >
-              Side by Side
-            </button>
-            <button
-              className={`px-4 py-2 text-sm ${viewMode === 'slider' ? 'bg-blue-50 text-blue-600 font-medium' : 'bg-white text-gray-700'}`}
-              onClick={() => handleToggleViewMode('slider')}
-            >
-              Slider
-            </button>
-          </div>
-        </div>
-      )} */}
+     
 
       {/* Conditional rendering of compare view or image gallery */}
       {showCompareView &&

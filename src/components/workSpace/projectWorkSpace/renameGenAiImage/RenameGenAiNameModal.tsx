@@ -27,17 +27,18 @@ const RenameGenAiNameModal = ({
   onSave,
   prompt = "Change wall color to lemon green",
 }: Props) => {
-  const [designName, setDesignName] = useState("");
+  const [designName, setDesignName] = useState<string|null>(null);
 
   const handleClose = () => {
     onclose();
-    setDesignName(""); // Reset form on close
+    setDesignName(null); // Reset form on close
   };
 
   const handleSave = () => {
-    if (designName.trim() && onSave) {
-      onSave(designName);
-      handleClose();
+    if (designName && designName.trim() && onSave) {
+      const data= designName.trim();
+      onSave(data);
+      setDesignName(null);
     }
   };
 
@@ -78,14 +79,14 @@ const RenameGenAiNameModal = ({
               <Input
                 type="text"
                 id="designName"
-                value={designName}
+                value={designName || ""}
                 onChange={(e) => setDesignName(e.target.value)}
                 placeholder="My design name..."
                 className="flex-1"
               />
               <Button 
                 onClick={handleSave}
-                disabled={!designName.trim()}
+                disabled={!designName?.trim()}
                 className="px-6 bg-blue-600 hover:bg-blue-700"
               >
                 Save

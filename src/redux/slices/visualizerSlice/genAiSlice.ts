@@ -110,6 +110,18 @@ export const deleteGenAiChat = createAsyncThunk(
     }
   }
 );
+// update the task id of genAi _chat
+export const updateGenAiChatTaskId = createAsyncThunk(
+  "genAi/updateTaskId",
+  async (updateChatData: GenAiChat, { rejectWithValue }) => {
+    try {
+      const response = await genAiService.updateGenAiChatId(updateChatData);
+      return response;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
 
 // Create the slice
 const genAiSlice = createSlice({
@@ -291,6 +303,39 @@ const genAiSlice = createSlice({
         state.loading = false;
         state.error =
           (action.payload as string) || "Failed to delete GenAI chat";
+      });
+
+      // update genAi _chat based on Id
+    builder
+      .addCase(updateGenAiChatTaskId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateGenAiChatTaskId.fulfilled, (state, action) =>
+        {
+        state.loading = false;
+        const updatedChat = action.payload as GenAiChat;
+
+        // Find the index of the chat to update
+        const index = state.genAiImages.findIndex(
+          (chat) => chat.id === updatedChat.id
+        );
+
+        // If found, update the chat in the state
+        if (index !== -1) {
+          state.genAiImages[index] = updatedChat;
+          // Optionally, you can also update currentGenAiImage if it matches
+          if (state.currentGenAiImage?.id === updatedChat.id) {
+            state.currentGenAiImage = updatedChat;
+          }
+        } else {
+          console.warn("Chat with id", updatedChat.id, "not found in state");
+        }
+      })
+      .addCase(updateGenAiChatTaskId.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) || "Failed to update GenAI chat";
       });
   },
 });
