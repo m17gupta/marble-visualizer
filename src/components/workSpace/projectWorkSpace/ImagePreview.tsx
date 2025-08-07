@@ -11,8 +11,7 @@ const ImageCard: React.FC = () => {
 
   const param = useParams();
   const id = param.id !== undefined ? parseInt(param.id) : 0;
-  const { list: projects } = useSelector((state: RootState) => state.projects);
-  const findProject = projects.find((d) => d.id == id);
+  const { list: projects, currentProject } = useSelector((state: RootState) => state.projects);
 
  
 
@@ -20,15 +19,15 @@ const ImageCard: React.FC = () => {
     <div className="border rounded-md bg-white shadow-sm p-2 relative w-full mx-auto">
       
       {/* Image section */}
-      {!findProject || findProject.jobData == undefined ? (
+      {!currentProject || currentProject.jobData == undefined ? (
  <Skeleton className="h-[90vh] w-[100%] rounded-2" />
       ) : (
         <img
           src={
-            findProject.jobData[0]?.full_image ||
+            currentProject.jobData[0]?.full_image ||
             "https://via.placeholder.com/800x600"
           }
-          alt={findProject.jobData[0]?.title || "Image Preview"}
+          alt={currentProject.jobData[0]?.title || "Image Preview"}
           className="rounded-md object-contain"
         />
       )}

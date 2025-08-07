@@ -29,8 +29,8 @@ interface CanvasHoverLayerProps {
 }
 const PolygonOverlay = ({
     imageUrl,
-    width=800,
-    height=600,
+    width=1280,
+    height=720,
     className,
     onImageLoad,
 }: CanvasHoverLayerProps) => {
@@ -385,8 +385,8 @@ useEffect(() => {
                             <CardContent className="p-0"
                             
                             >
-                                                                                                                                {/* min-h-[600px] min-w-[800px]" */}
-                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[800px] min-w-[1000px]"
+                                                                                                                                {/* min-h-[720px] min-w-[1280px]" */}
+                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
                               
                                 >
                                     <canvas

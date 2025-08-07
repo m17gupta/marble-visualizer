@@ -36,7 +36,6 @@ import {
 } from "@/models/genAiModel/GenAiModel";
 
 import { toast } from "sonner";
-import logogImage  from "@/assets/image/logo.svg";
 import VoiceRecognition from "./VoiceRecognition";
 import { useParams } from "react-router-dom";
 import { StyleSuggestions } from "@/models/projectModel/ProjectModel";
@@ -52,7 +51,7 @@ const GuidancePanel: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const { list: projects } = useSelector((state: RootState) => state.projects);
-
+  const {loading:renameGenAiLoading} = useSelector((state: RootState) => state.genAi);
   const { id } = useParams();
   const suggestions = projects.find((d) => d.id == id)?.analysed_data
     ?.style_suggestions;
@@ -70,12 +69,6 @@ const GuidancePanel: React.FC = () => {
   const [showComparisonModal, setShowComparisonModal] = React.useState(false);
 
   const currentPageDetails = projects.find((d) => d.id == id);
-
-  // const url = currentPageDetails?.jobData?[0].full_image
-
-  // const taskId = React.useRef<string>("")
-
-  // const isTask = React.useRef<boolean>(false)
 
   const [isTask, setIsTask] = React.useState<boolean>(false);
 
@@ -170,6 +163,7 @@ const GuidancePanel: React.FC = () => {
   const handleRandomPromptSelection = (prompt: string) => {
     if (prompt) {
       dispatch(addPrompt(prompt));
+      setShowActionButtons(false);
     }
   };
 
@@ -209,7 +203,9 @@ const GuidancePanel: React.FC = () => {
   
   return (
     <>
-  { isGenLoading && <Loading
+  {
+   isGenLoading||renameGenAiLoading && 
+  <Loading
       backgroundImage='/assets/image/dzinlylogo-icon.svg' // Use the correct path to your logo image
     />}
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}

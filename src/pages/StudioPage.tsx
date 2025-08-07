@@ -11,6 +11,8 @@ import {
   clearCurrentJob,
 } from "@/redux/slices/jobSlice";
 
+import RefreshHandler from "@/components/referesh/studioPage/RefreshHandler";
+
 import { canEditProject } from "@/middlewares/authMiddleware";
 import { StudioMainCanvas } from "@/components/studio";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
@@ -22,7 +24,7 @@ import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
 
 import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
-import { clearCurrentImage } from "@/redux/slices/studioSlice";
+import { clearCurrentImage, setCurrentTabContent } from "@/redux/slices/studioSlice";
 import JobHome from "@/components/job/JobHome";
 import {
 
@@ -155,10 +157,12 @@ export function StudioPage() {
     dispatch(resetCanvas());
     dispatch(resetWorkspace())
     dispatch(resetGenAiState());
+    dispatch(setCurrentTabContent("home"));
     navigate("/projects");
   };
   return (
     <>
+      <RefreshHandler />
       {loadingMessage && loadingMessage!= null && (
         <LoadingOverlay message={loadingMessage} />
       )}

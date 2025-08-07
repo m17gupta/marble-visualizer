@@ -35,8 +35,10 @@ export const AddImageToCanvas = (
   let scale;
   if (imgAspect > canvasAspect) {
     scale = width / imgElement.width;
+    console.log("scale", scale);
   } else {
     scale = height / imgElement.height;
+    console.log("scale", scale);
   }
 
   // const scaleX=1280/ imgElement.width;

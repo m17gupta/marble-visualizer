@@ -1,6 +1,6 @@
 import { InspirationImageModel } from '@/models/inspirational/Inspirational';
 import { RootState } from '@/redux/store';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarObject from './SidebarObject';
 import { addInspirationImage, updateInspirationNames } from '@/redux/slices/visualizerSlice/genAiSlice';
@@ -15,16 +15,15 @@ const StyleAndRenovationPanel: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [stylesToShow, setStylesToShow] = useState<InspirationImageModel[]>([]);
 
   const { inspirational_colors } = useSelector((state: RootState) => state.inspirationalColors);
   const { Inspirational_images } = useSelector((state: RootState) => state.inspirationalImages);
 
-  const stylesToShow = useRef<InspirationImageModel[]>([]);
-
   const handleTabColor = async (tabId: number) => {
     setIsLoading(true);
     setActiveTab(tabId);
-    stylesToShow.current = Inspirational_images.filter((item) => item.color_family_id === tabId);
+    setStylesToShow(Inspirational_images.filter((item) => item.color_family_id === tabId));
     setIsLoading(false);
   };
 
@@ -32,16 +31,16 @@ const StyleAndRenovationPanel: React.FC = () => {
     setIsLoading(true);
     setActiveTab(0);
     await new Promise((resolve) => setTimeout(resolve, 100));
-    stylesToShow.current = Inspirational_images;
+    setStylesToShow(Inspirational_images);
     setIsLoading(false);
   };
 
   useEffect(() => {
     if(Inspirational_images && Inspirational_images.length > 0) {
-      stylesToShow.current = Inspirational_images;
+      setStylesToShow(Inspirational_images);
     } else if (Inspirational_images && Inspirational_images.length === 0) {
       console.warn('No inspirational images available');
-      stylesToShow.current = [];
+      setStylesToShow([]);
     }
   }, [Inspirational_images]);
 
@@ -86,9 +85,9 @@ const StyleAndRenovationPanel: React.FC = () => {
 
         {/* Image Grid */}
         <div className="grid grid-cols-3 gap-2">
-      {stylesToShow.current
-  .slice(0, showAll ? stylesToShow.current.length : 9)
-  .map((style, i) => (
+      {stylesToShow
+  .slice(0, showAll ? stylesToShow.length : 9)
+  .map((style: InspirationImageModel, i: number) => (
     <div
       key={i}
       onClick={() => handleInspirationImage(style?.dp??"", style.name??"")}
@@ -105,7 +104,7 @@ const StyleAndRenovationPanel: React.FC = () => {
       />
 
       {/* ✅ Green Circular Checkbox Centered */}
-      {selectedImage === style.image && (
+      {selectedImage === style.dp && (
         <div className="absolute inset-0 flex justify-center items-center">
           <div className="bg-green-500 text-white rounded-full p-[6px] w-8 h-8 flex items-center justify-center shadow-md">
             <svg
@@ -129,7 +128,7 @@ const StyleAndRenovationPanel: React.FC = () => {
         </div>
 
         {/* Show More */}
-        {!isLoading && stylesToShow.current.length > 9 && (
+        {!isLoading && stylesToShow.length > 9 && (
           <div className="mt-4 flex justify-center">
             <button
               onClick={() => setShowAll(!showAll)}
