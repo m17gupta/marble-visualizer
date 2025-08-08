@@ -1,31 +1,10 @@
 
 import { supabase } from "@/lib/supabase";
-import { JobModel } from "@/models/jobModel/JobModel";
+import { DistanceRefModal, DistanceRefResponse, JobApiResponse, JobModel, UpdateJobRequest } from "@/models/jobModel/JobModel";
 import { MsterDataAnnotationResponse } from "@/models/jobSegmentsModal/JobSegmentModal";
 import axios from "axios";
 
-export interface CreateJobRequest {
-  title: string;
-  jobType: string;
-  full_image?: string;
-  thumbnail?: string;
-  project_id: number;
-  segements?: string;
-}
 
-export interface UpdateJobRequest {
-  title?: string;
-  jobType?: string;
-  full_image?: string;
-  thumbnail?: string;
-  segements?: string;
-}
-
-export interface JobApiResponse<T> {
-  data: T | null;
-  error: string | null;
-  success: boolean;
-}
 
 export class JobApi {
   private static readonly TABLE_NAME = 'job';
@@ -244,6 +223,46 @@ export class JobApi {
     }
   }
 
+  //update distance ref based on job Id
+
+  static async updateDistanceRef(id: number, distanceRef: DistanceRefModal): Promise<DistanceRefResponse> {
+    try {
+      const { data, error } = await supabase
+        .from(this.TABLE_NAME)
+        .update({
+          distance_ref: distanceRef,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating distance reference:', error);
+        return {
+          data: null,
+          error: error.message,
+          success: false,
+        };
+      }
+
+      return {
+        data: {
+          id: id,
+          distance_ref: data,
+        },
+        error: null,
+        success: true,
+      };
+    } catch (error) {
+      console.error('Error in updateDistanceRef:', error);
+      return {
+        data: null,
+        error: (error as Error).message || 'Failed to update distance reference',
+        success: false,
+      };
+    }
+  }
   /**
    * Update job segments specifically
    */

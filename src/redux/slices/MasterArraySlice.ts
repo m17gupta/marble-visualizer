@@ -14,7 +14,7 @@ interface MasterArrayState {
 const initialState: MasterArrayState = {
   masterArray: [],
   selectedMasterArray: null,
-  selectedGroupSegment: null,
+  selectedGroupSegment: null,   
   selectedSegment: null,
   // Initialize isCreatedMasterArray to false
   isCreatedMasterArray: false,

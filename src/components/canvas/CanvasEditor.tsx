@@ -17,6 +17,7 @@ import {
   setCanvasReady,
   setMousePosition,
   updateMasks,
+  setCanvasType,
 } from "@/redux/slices/canvasSlice";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -34,14 +35,21 @@ import {
   handleCanvasAutoPan,
   cleanupAutoPan,
 } from "@/components/canvasUtil/canvasAutoPan";
-import {  ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
+import { ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from "../canvasUtil/canvasImageUtils";
 import { CreateCustomCursor, UpdateCursorOffset } from "../canvasUtil/CreateCustomCursor";
 import ReAnnotationPoint from "./ReAnnotationPoint";
+import { updateDistanceRefPixel, updateIsDistanceRef } from "@/redux/slices/jobSlice";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 
 export type DrawingTool = "select" | "polygon";
+
+// Extend the Fabric.js TEvent type to include absolutePointer
+interface ExtendedTEvent extends fabric.TEvent {
+  absolutePointer?: { x: number; y: number };
+}
 
 interface CanvasEditorProps {
   imageUrl?: string;
@@ -66,12 +74,13 @@ export function CanvasEditor({
   const dispatch = useDispatch<AppDispatch>();
   const { activeSegment, segmentDrawn, canvasHistory, historyIndex } =
     useSelector((state: RootState) => state.segments);
- 
+
   const {
     deleteMaskId,
     isCanvasReady,
     mousePosition,
     canavasActiveTool,
+    canvasType
   } = useSelector((state: RootState) => state.canvas);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -98,22 +107,21 @@ export function CanvasEditor({
   const allSegments = useRef<{ [key: string]: fabric.Point[] }>({});
   const allSegmentsCount = useRef<number>(0);
 
-  const { canvasType } = useSelector((state: RootState) => state.canvas);
-  const {allSegments:allSegmentArray}= useSelector((state: RootState) => state.segments);
- 
+  const { allSegments: allSegmentArray } = useSelector((state: RootState) => state.segments);
 
-const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
-  const {selectedMasterArray}= useSelector((state: RootState) => state.masterArray);
+
+  const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
+  const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
 
   // const [hoveredSegmentId] = useState<string | null>(null);
-// upate all segmnet Array
-useEffect(() => {
-  if( allSegmentArray && allSegmentArray.length > 0) {
-  setAllSegArray(allSegmentArray);
-  }else{
-    setAllSegArray([]);
-  }
-}, [allSegmentArray]);
+  // upate all segmnet Array
+  useEffect(() => {
+    if (allSegmentArray && allSegmentArray.length > 0) {
+      setAllSegArray(allSegmentArray);
+    } else {
+      setAllSegArray([]);
+    }
+  }, [allSegmentArray]);
 
   // update the canavasActiveTool
   useEffect(() => {
@@ -194,11 +202,11 @@ useEffect(() => {
         .filter(
           (obj) =>
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-              "temp-line" ||
+            "temp-line" ||
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-              "preview-line" ||
+            "preview-line" ||
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-              "temp-point"
+            "temp-point"
         );
       tempObjects.forEach((obj) => canvas.remove(obj));
       canvas.renderAll();
@@ -222,7 +230,7 @@ useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       width,
       height,
-      backgroundColor: "#f8f9fa",
+      backgroundColor: "#10100fff",
       selection: true,
       preserveObjectStacking: true,
     });
@@ -247,7 +255,7 @@ useEffect(() => {
       handleMouseMove(event);
     });
     canvas.on("mouse:dblclick", handleDoubleClick);
- 
+
     canvas.on("selection:cleared", () => {
       // dispatch(selectSegment(null));
     });
@@ -256,13 +264,13 @@ useEffect(() => {
       handleMouseWheel(event);
       dispatch(setZoom(canvas.getZoom()));
     });
-    
+
 
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         switch (
-          e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
+        e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
         ) {
           case "c":
             e.preventDefault();
@@ -324,64 +332,64 @@ useEffect(() => {
   }, [width, height, activeSegment, dispatch]);
 
   // Load background image with comprehensive CORS and fallback handling
-useEffect(() => {
-  if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-    return;
-  }
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+      return;
+    }
 
-  const canvas = fabricCanvasRef.current;
+    const canvas = fabricCanvasRef.current;
 
-  // Remove existing background image (ensure full cleanup)
-  if (backgroundImageRef.current) {
-    canvas.remove(backgroundImageRef.current);
-    backgroundImageRef.current = null;
-    canvas.discardActiveObject();
-    canvas.renderAll();
-  }
+    // Remove existing background image (ensure full cleanup)
+    if (backgroundImageRef.current) {
+      canvas.remove(backgroundImageRef.current);
+      backgroundImageRef.current = null;
+      canvas.discardActiveObject();
+      canvas.renderAll();
+    }
 
-  const tryLoadImage = async () => {
-    // Strategy 1: Try different CORS modes
-    const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
-    for (const corsMode of corsOptions) {
-      try {
-        const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-        AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
-        return;
-      } catch (error) {
-        console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
+    const tryLoadImage = async () => {
+      // Strategy 1: Try different CORS modes
+      const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+      for (const corsMode of corsOptions) {
+        try {
+          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+          AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
+        }
       }
-    }
 
-    // Strategy 2: Try different fetch modes
-    const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
-    for (const fetchMode of fetchModes) {
-      try {
-        const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-        AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
-        return;
-      } catch (error) {
-        console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+      // Strategy 2: Try different fetch modes
+      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+      for (const fetchMode of fetchModes) {
+        try {
+          const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+          AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+        }
       }
-    }
 
-    // All strategies failed
-    console.error("All image loading strategies failed for URL:", imageUrl);
-    const errorMessage = imageUrl.includes("s3.")
-      ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
-      : "Failed to load background image. The image server may not allow cross-origin requests.";
+      // All strategies failed
+      console.error("All image loading strategies failed for URL:", imageUrl);
+      const errorMessage = imageUrl.includes("s3.")
+        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+        : "Failed to load background image. The image server may not allow cross-origin requests.";
 
-    toast.error(errorMessage, {
-      duration: 6000,
-      description: "Check browser console for detailed error information.",
-    });
+      toast.error(errorMessage, {
+        duration: 6000,
+        description: "Check browser console for detailed error information.",
+      });
 
-    if (onImageLoad) {
-      onImageLoad();
-    }
-  };
+      if (onImageLoad) {
+        onImageLoad();
+      }
+    };
 
-  tryLoadImage();
-}, [imageUrl, isCanvasReady, width, height, onImageLoad]);
+    tryLoadImage();
+  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
   // Update tool behavior
   useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady) return;
@@ -494,11 +502,11 @@ useEffect(() => {
       .filter(
         (obj) =>
           (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "temp-line" ||
+          "temp-line" ||
           (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "preview-line" ||
+          "preview-line" ||
           (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "temp-point"
+          "temp-point"
       );
     tempObjects.forEach((obj) => canvas.remove(obj));
 
@@ -556,8 +564,8 @@ useEffect(() => {
 
       dispatch(updateSegmentDrawn(polygonNumberArray));
       // dispatch(updateSegmentDrawn(updatedSegments));
-    }else if (canvasType === "reannotation") {
-       dispatch(updateReAnnoatationPoints(polygonNumberArray));
+    } else if (canvasType === "reannotation") {
+      dispatch(updateReAnnoatationPoints(polygonNumberArray));
 
     }
 
@@ -580,22 +588,19 @@ useEffect(() => {
 
   // Handle mouse down events
   const handleMouseDown = useCallback(
-    (e: fabric.TEvent) => {
+    (e: ExtendedTEvent) => {
 
-      //  if(selectedMasterArray ===null){
-      //   alert("Please select a segment to draw");
-      //   return;
-      //  }
 
       if (!fabricCanvasRef.current || activeTool.current !== "polygon") {
         return;
       }
 
       const canvas = fabricCanvasRef.current;
-      const pointer = canvas.getPointer(e.e);
+      const pointer = e.absolutePointer || canvas.getPointer(e.e);
+
       const currentZoom = canvas.getZoom();
 
-      if (!isPolygonMode.current) {
+      if (!isPolygonMode.current && pointer) {
         isPolygonMode.current = true;
         tempPoints.current = [new fabric.Point(pointer.x, pointer.y)];
         tempLines.current = [];
@@ -624,9 +629,17 @@ useEffect(() => {
 
           allSegments.current = convertedSegments;
         }
-      } else {
+      } else if (pointer) {
         // Check if we have at least 3 points and clicked near the first point
-        if (tempPoints.current.length >= 3) {
+        if (tempPoints.current.length == 1 && canvasType  ==="dimension") {
+          const firstPoint = tempPoints.current[0];
+
+          const distance = calculateDistance(firstPoint, pointer);
+
+          handleDimensionRefPixel(distance);
+
+        }
+        else if (tempPoints.current.length >= 3) {
           const firstPoint = tempPoints.current[0];
           const distance = calculateDistance(firstPoint, pointer);
           const snapDistance = 15 / currentZoom; // Adjust snap distance based on zoom
@@ -679,13 +692,24 @@ useEffect(() => {
     ]
   );
 
+  // handle Dimesion Ref Pixel
+  const handleDimensionRefPixel = (pixelDistance: number) => {
+     console.log("Pixel Distance:", pixelDistance);
+   
+    dispatch(updateDistanceRefPixel(pixelDistance));
+    dispatch(setCanvasType("hover"))
+    dispatch(updateIsDistanceRef(true));
+    // handleCancelDrawing()
+
+  }
+
   // Handle mouse move for preview line
   const handleMouseMove = useCallback(
     (e: fabric.TEvent) => {
       if (!fabricCanvasRef.current) return;
 
       const canvas = fabricCanvasRef.current;
-    
+
       const pointer = canvas.getPointer(e.e);
       const currentZoom = canvas.getZoom();
 
@@ -819,7 +843,7 @@ useEffect(() => {
   useEffect(() => {
     if (!deleteMaskId || !fabricCanvasRef.current) return;
 
-  
+
     const deletePolyId = `poly-${deleteMaskId}`;
     delete allSegments.current[deletePolyId];
     //delete the polygon from fabric canvas
@@ -841,54 +865,57 @@ useEffect(() => {
 
   return (
     <>
-    <TooltipProvider>
-      <div className={cn("flex flex-col space-y-4", className)}>
-        {/* Toolbar */}
-        <CanvasToolbar
-          fabricCanvasRef={fabricCanvasRef}
-          cancelDrawing={handleCancelDrawing}
-          resetCanvas={handleResetCanvas}
-          zoomIn={handleZoomIn}
-          zoomOut={handleZoomOut}
-           
-        />
+      <TooltipProvider>
+        <div className={cn("flex flex-col space-y-4", className)}>
+          {/* Toolbar */}
+          <CanvasToolbar
+            fabricCanvasRef={fabricCanvasRef}
+            cancelDrawing={handleCancelDrawing}
+            resetCanvas={handleResetCanvas}
+            zoomIn={handleZoomIn}
+            zoomOut={handleZoomOut}
 
-        {/* Canvas Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="relative px-4"
-        >
+          />
+
+          {/* Canvas Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative px-4"
+          >
 
 
-          <Card className="overflow-hidden">
-            <CardContent className="p-0">
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
 
-              <div className="border-2 border-dashed border-gray-600 relative bg-black/90 flex items-center justify-center min-h-[600px] min-w-[800px]">
-                <canvas
-                  ref={canvasRef}
-                  className="border-0 block"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
+                <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
+                  <canvas
+                    ref={canvasRef}
+                    className="border-0 block"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
 
-               
 
-                {/* Canvas Status */}
-                {!isCanvasReady && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
-                    <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                      <p className="text-sm text-muted-foreground">
-                        Initializing canvas...
-                      </p>
+
+                  {/* Canvas Status */}
+                  {!isCanvasReady && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                        <p className="text-sm text-muted-foreground">
+                          Initializing canvas...
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
- <ReAnnotationPoint/>
-                {/* Hover Material Info */}
-                <AnimatePresence>
-                  {/* {hoveredSegment?.material && (
+                  )}
+
+                  <ReAnnotationPoint />
+
+
+                  {/* Hover Material Info */}
+                  <AnimatePresence>
+                    {/* {hoveredSegment?.material && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -901,24 +928,24 @@ useEffect(() => {
                       </div>
                     </motion.div>
                   )} */}
-                </AnimatePresence>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                  </AnimatePresence>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* Material Picker Dialog */}
-        {/* <MaterialPickerDialog
+          {/* Material Picker Dialog */}
+          {/* <MaterialPickerDialog
           open={materialPickerOpen}
           onOpenChange={setMaterialPickerOpen}
           onSelect={handleMaterialSelect}
           selectedMaterialId={activeSegment?.material?.materialId}
         /> */}
-      </div>
-    </TooltipProvider>
+        </div>
+      </TooltipProvider>
 
 
-  
+
     </>
   );
 }

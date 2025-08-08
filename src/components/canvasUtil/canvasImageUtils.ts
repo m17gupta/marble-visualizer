@@ -26,6 +26,7 @@ export const AddImageToCanvas = (
     selectable: false,
     evented: false,
     excludeFromExport: false,
+  
   });
 
   // Calculate scaling to fit canvas

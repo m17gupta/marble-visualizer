@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '@/redux/store';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import * as fabric from "fabric";
 import { toast } from 'sonner';
@@ -12,12 +12,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import AddSegLists from '../canvasAddNewSegment/AddSegLists';
+
 import { getMinMaxBBPoint } from '@/components/canvasUtil/GetMInMaxBBPoint';
-import { addSegment, changeGroupSegment, updateAddSegMessage, updateSegmentById } from '@/redux/slices/segmentsSlice';
-import { addNewSegmentToMasterArray, changeGroupSelectedSegment, deletedChangeGroupSegment } from '@/redux/slices/MasterArraySlice';
-import { set } from 'date-fns';
+import { changeGroupSegment, updateAddSegMessage, updateSegmentById } from '@/redux/slices/segmentsSlice';
+import { addNewSegmentToMasterArray } from '@/redux/slices/MasterArraySlice';
+
 import CommonToolBar from '../CommonToolBar';
 
 export interface PointModel {
@@ -88,7 +87,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     );
   };
 
-  const anchorWrapper = function (
+  const anchorWrapper = useCallback((
     anchorIndex: number,
     fn: (
       eventData: fabric.TPointerEvent,
@@ -97,7 +96,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       y: number
     ) => boolean,
     canvas: fabric.Canvas
-  ) {
+  ) => {
     return function (
       eventData: fabric.TPointerEvent,
       transform: fabric.Transform,
@@ -129,13 +128,13 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       }
       return false;
     };
-  };
+  }, []);
 
   const actionHandlers = function (
-    eventData: fabric.TPointerEvent,
-    transform: fabric.Transform,
-    x: number,
-    y: number
+    _eventData: fabric.TPointerEvent,
+    _transform: fabric.Transform,
+    _x: number,
+    _y: number
   ): boolean {
     return true; // You can set more conditions here if needed
   };
@@ -156,7 +155,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
         : [1, 0, 0, 1, 0, 0];
 
     // --- Mouse events for dragging annotation points ---
-    const handleMouseDown = (opt: any) => {
+    const handleMouseDown = (opt: fabric.TPointerEventInfo) => {
       const pointer = opt.pointer;
       const polygons = canvas.getObjects('polygon') as fabric.Polygon[];
       for (const poly of polygons) {
@@ -176,7 +175,143 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       setDragInfo(null);
     };
 
-    const handleMouseMove = (opt: any) => {
+    // --- Double click event for point deletion and insertion ---
+    const handleDoubleClick = (opt: fabric.TPointerEventInfo) => {
+      const pointer = opt.pointer;
+      const polygons = canvas.getObjects('polygon') as fabric.Polygon[];
+      
+      for (const poly of polygons) {
+        if (!poly.visible || !poly.points) continue;
+        
+        // Check if double-clicking on an existing point (delete point)
+        for (let i = 0; i < poly.points.length; i++) {
+          const pt = poly.points[i];
+          const polyX = poly.left! + pt.x * (poly.scaleX || 1);
+          const polyY = poly.top! + pt.y * (poly.scaleY || 1);
+          
+          if (Math.abs(pointer.x - polyX) < 10 && Math.abs(pointer.y - polyY) < 10) {
+            // Delete point if polygon has more than 3 points
+            if (poly.points.length > 3) {
+              poly.points.splice(i, 1);
+              recreatePolygonWithControls(poly, canvas);
+              canvas.requestRenderAll();
+              toast.success("Point deleted successfully");
+            } else {
+              toast.error("Cannot delete point. Polygon must have at least 3 points.");
+            }
+            return;
+          }
+        }
+        
+        // Check if double-clicking on polygon edge (add point between two existing points)
+        for (let i = 0; i < poly.points.length; i++) {
+          const currentPt = poly.points[i];
+          const nextPt = poly.points[(i + 1) % poly.points.length];
+          
+          const currentX = poly.left! + currentPt.x * (poly.scaleX || 1);
+          const currentY = poly.top! + currentPt.y * (poly.scaleY || 1);
+          const nextX = poly.left! + nextPt.x * (poly.scaleX || 1);
+          const nextY = poly.top! + nextPt.y * (poly.scaleY || 1);
+          
+          // Calculate distance from pointer to line segment
+          const distance = getDistanceToLineSegment(
+            pointer.x, pointer.y,
+            currentX, currentY,
+            nextX, nextY
+          );
+          
+          if (distance < 8) { // 8px tolerance for edge detection
+            // Convert pointer coordinates to local polygon coordinates
+            const localX = (pointer.x - poly.left!) / (poly.scaleX || 1);
+            const localY = (pointer.y - poly.top!) / (poly.scaleY || 1);
+            
+            // Insert new point after current point
+            poly.points.splice(i + 1, 0, new fabric.Point(localX, localY));
+            recreatePolygonWithControls(poly, canvas);
+            canvas.requestRenderAll();
+            toast.success("Point added successfully");
+            return;
+          }
+        }
+      }
+    };
+
+    // Helper function to calculate distance from point to line segment
+    const getDistanceToLineSegment = (px: number, py: number, x1: number, y1: number, x2: number, y2: number): number => {
+      const A = px - x1;
+      const B = py - y1;
+      const C = x2 - x1;
+      const D = y2 - y1;
+
+      const dot = A * C + B * D;
+      const lenSq = C * C + D * D;
+      let param = -1;
+      if (lenSq !== 0) {
+        param = dot / lenSq;
+      }
+
+      let xx, yy;
+      if (param < 0) {
+        xx = x1;
+        yy = y1;
+      } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+      } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+      }
+
+      const dx = px - xx;
+      const dy = py - yy;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    // Helper function to recreate polygon with updated controls
+    const recreatePolygonWithControls = (oldPoly: fabric.Polygon, canvas: fabric.Canvas) => {
+      if (!oldPoly.points) return;
+      
+      // Create new polygon with updated points
+      const newPolygon = new fabric.Polygon(oldPoly.points, {
+        left: oldPoly.left,
+        top: oldPoly.top,
+        fill: oldPoly.fill,
+        strokeWidth: oldPoly.strokeWidth,
+        stroke: oldPoly.stroke,
+        scaleX: oldPoly.scaleX,
+        scaleY: oldPoly.scaleY,
+        objectCaching: false,
+        transparentCorners: false,
+        selectable: false,
+        hasControls: true,
+        hasBorders: false,
+        cornerStyle: "circle",
+        cornerColor: "rgb(255 1 154)",
+        cornerSize: 7,
+        cornerStrokeColor: "rgb(7 239 253)"
+      }) as fabric.Polygon;
+
+      // Attach per-point controls for the new polygon
+      newPolygon.controls = {
+        ...newPolygon.points?.reduce((acc, _point, index) => {
+          const controlKey = `p${index}`;
+          acc[controlKey] = new fabric.Control({
+            cursorStyle: "pointer",
+            positionHandler: polygonPositionHandler.bind({ pointIndex: index }),
+            actionHandler: anchorWrapper(index, actionHandlers, canvas).bind({ pointIndex: index }),
+            actionName: "modifyPolygon"
+          });
+          return acc;
+        }, {} as { [key: string]: fabric.Control })
+      };
+
+      // Remove old polygon and add new one
+      canvas.remove(oldPoly);
+      canvas.add(newPolygon);
+      canvas.setActiveObject(newPolygon);
+    };
+
+    const handleMouseMove = (opt: fabric.TPointerEventInfo) => {
       if (!dragInfo?.poly || dragInfo.pointIdx == null) return;
       const pointer = opt.pointer;
       const poly = dragInfo.poly;
@@ -197,17 +332,19 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", handleMouseMove);
     canvas.on("mouse:up", handleMouseUp);
+    canvas.on("mouse:dblclick", handleDoubleClick);
 
     dispatch(setCanvasReady(true));
     return () => {
       canvas.off("mouse:down", handleMouseDown);
       canvas.off("mouse:move", handleMouseMove);
       canvas.off("mouse:up", handleMouseUp);
+      canvas.off("mouse:dblclick", handleDoubleClick);
       canvas.dispose();
       fabricCanvasRef.current = null;
       backgroundImageRef.current = null;
     };
-  }, [width, height, dispatch, dragInfo]);
+  }, [width, height, dispatch, dragInfo, anchorWrapper]);
 
   // Load background image
   useEffect(() => {
@@ -308,7 +445,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       canvas.setActiveObject(polygon);
       canvas.requestRenderAll();
     }
-  }, [selectedSegment]);
+  }, [selectedSegment, anchorWrapper]);
 
   const handleResetCanvas = () => {
     const canvas = fabricCanvasRef.current;

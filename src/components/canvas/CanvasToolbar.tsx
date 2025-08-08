@@ -7,12 +7,9 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
 
-  MousePointer,
-  Pentagon,
-  Trash2,
   Undo2,
   Redo2,
-  Download,
+
   Copy,
   Clipboard,
   ZoomIn,
@@ -20,8 +17,7 @@ import {
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
-import { setCanvasActiveTool, setCanvasType, setZoomMode } from '@/redux/slices/canvasSlice';
-import { toast } from 'sonner';
+import { setCanvasType } from '@/redux/slices/canvasSlice';
 import AddSegLists from './canvasAddNewSegment/AddSegLists';
 interface CanvasToolbarProps {
   fabricCanvasRef: React.MutableRefObject<fabric.Canvas | null>;
@@ -39,7 +35,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
   const { canvasType } = useSelector((state: RootState) => state.canvas);
   const { currentZoom, mousePosition } = useSelector((state: RootState) => state.canvas);
   const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
- 
+
 
 
   const handleResetZoom = () => {
@@ -155,7 +151,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
           </div>
           <Badge variant="secondary">
             <span className="text-xs font-bold">
-             {canvasType === "draw" ? "Marking canvas" : (canvasType === "reannotation" ? "ReAnnotating Marking canvas" : "Creating Mask canvas")}
+              {canvasType === "draw" ? "Marking canvas" : (canvasType === "reannotation" ? "ReAnnotating Marking canvas" : (canvasType === "mask"? "Creating Mask canvas" : "Mark Dimension canvas"))}
             </span>
           </Badge>
           <div className="flex items-center space-x-2">
@@ -230,7 +226,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
               <span>Y: {mousePosition.y}</span>
             </Badge>
 
-          { canvasType=="reannotation" && <AddSegLists
+            {canvasType == "reannotation" && <AddSegLists
               segType={selectedSegment?.segment_type || "Unknown"}
               groupName={selectedSegment?.group_label_system || "Unknown"}
               shortName={selectedSegment?.short_title || "Unknown"}

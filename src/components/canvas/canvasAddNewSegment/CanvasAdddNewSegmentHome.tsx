@@ -8,6 +8,7 @@ import { SegmentModal, MsterDataAnnotationResponse } from '@/models/jobSegmentsM
 import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
 import { setCanvasType } from '@/redux/slices/canvasSlice';
 import AddSegSidebar from './AddSegSidebar';
+import { calculatePolygonAreaInPixels } from '@/components/canvasUtil/CalculatePolygonArea';
 
 const CanvasAdddNewSegmentHome = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,7 +55,7 @@ const CanvasAdddNewSegmentHome = () => {
 
 
   const handleResetModal = async (data: MsterDataAnnotationResponse) => {
-
+     const area_pixel= calculatePolygonAreaInPixels(data.annotation||[])
     const segData: SegmentModal = {
       job_id: list[0]?.id,
       title: segmentDrawn.category,
@@ -69,6 +70,7 @@ const CanvasAdddNewSegmentHome = () => {
       seg_area_sqmt: 0,
       seg_skewx: 0,
       seg_skewy: 0,
+      seg_area_pixel: area_pixel,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       group_label_system: segmentDrawn.groupName,

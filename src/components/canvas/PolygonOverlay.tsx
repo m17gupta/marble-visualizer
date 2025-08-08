@@ -79,7 +79,6 @@ const PolygonOverlay = ({
         const canvas = new fabric.Canvas(canvasRef.current, {
             width,
             height,
-        
             selection: true,
             preserveObjectStacking: true,
             backgroundColor: "#282828",
