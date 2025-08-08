@@ -50,6 +50,8 @@ import { ProjectModel } from "@/models/projectModel/ProjectModel";
 import { resetGenAiState } from "@/redux/slices/visualizerSlice/genAiSlice";
 import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
 import SegmentHome from "@/components/segments/SegmentHome";
+import MarkingDimensionHome from "@/components/measurement/MarkingDimensionHome";
+import CalculateArea from "@/components/measurement/CalculateArea";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -241,6 +243,10 @@ export function StudioPage() {
       <GenAiImageGeneration />
 
        <SegmentHome/>
+
+       <MarkingDimensionHome />
+
+       <CalculateArea/>
     </>
   );
 }

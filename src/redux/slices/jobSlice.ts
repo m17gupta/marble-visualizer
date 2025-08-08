@@ -1,5 +1,5 @@
-import { JobModel } from "@/models/jobModel/JobModel";
-import { UpdateJobRequest } from "@/services/jobService/JobApi";
+import { DistanceRefModal, JobModel, UpdateJobRequest } from "@/models/jobModel/JobModel";
+
 import { JobService } from "@/services/jobService/JobService";
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -13,6 +13,9 @@ interface JobState {
   isDeleting: boolean;
   error: string | null;
   isSidebarHeaderCollapsed?: boolean;
+  isMarkDistanceRef: boolean;
+  distanceRef: DistanceRefModal | null;
+  isDistanceRefValue: boolean;
 }
 
 const initialState: JobState = {
@@ -24,6 +27,9 @@ const initialState: JobState = {
   isDeleting: false,
   error: null,
   isSidebarHeaderCollapsed: true,
+  isMarkDistanceRef: false,
+  distanceRef: null,
+  isDistanceRefValue: false,
 };
 
 // Async thunk to fetch jobs by project ID
@@ -176,6 +182,29 @@ export const updateJobSegments = createAsyncThunk(
   }
 );
 
+// update distanceRef based on job Id
+export const updateJobDistanceRef = createAsyncThunk(
+  "jobs/updateDistanceRef",
+  async (
+    { id, distanceRef }: { id: number; distanceRef: DistanceRefModal },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await JobService.updateDistanceRef(id, distanceRef);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || "Failed to update distance reference");
+      }
+
+      return response;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to update distance reference"
+      );
+    }
+  }
+);
+
 const jobSlice = createSlice({
   name: "jobs",
   initialState,
@@ -201,6 +230,32 @@ const jobSlice = createSlice({
         // state.currentJob.segements = action.payload;
         // state.currentJob.updated_at = new Date().toISOString();
       }
+    },
+
+    updateIsDistanceRef: (state, action: PayloadAction<boolean>) => {
+      state.isMarkDistanceRef = action.payload;
+    },
+    updateDistanceRefPixel: (state, action: PayloadAction<number>) => {
+    
+      if (state.distanceRef == null) {
+        state.distanceRef = { 
+          distance_pixel: action.payload ,
+          distance_meter: 0,
+        };
+      } else {
+        state.distanceRef.distance_pixel = action.payload;
+      }
+    }, 
+    updateDistanceRefMeter: (state, action: PayloadAction<number>) => {
+      if (state.distanceRef) {
+        state.distanceRef.distance_meter = action.payload;
+      }
+    },
+    resetDistanceRef: (state) => {
+      state.distanceRef = null;
+    },
+    updateIsDistanceRefValue: (state, action: PayloadAction<boolean>) => {
+      state.isDistanceRefValue = action.payload;
     },
     resetJobSlice: (state) => {
       state.list = [];
@@ -310,6 +365,24 @@ const jobSlice = createSlice({
         state.isDeleting = false;
         state.error = action.payload as string;
       })
+     
+      // Update distance reference
+      .addCase(updateJobDistanceRef.pending, (state) => {
+        state.isUpdating = true;
+        state.error = null;
+      })
+      .addCase(updateJobDistanceRef.fulfilled, (state, action) => {
+        state.isUpdating = false;
+        const { data } = action.payload;
+        const jobIndex = state.list.findIndex((j) => j.id === data?.id);
+        if (jobIndex !== -1 && data?.distance_ref ) {
+          state.list[jobIndex] = data?.distance_ref;
+        }
+      })
+      .addCase(updateJobDistanceRef.rejected, (state, action) => {  
+        state.isUpdating = false;
+        state.error = action.payload as string;
+      })
 
       // Update job segments
       .addCase(updateJobSegments.pending, (state) => {
@@ -342,6 +415,11 @@ export const {
   updateCurrentJobSegments,
   updateSidebarHeaderCollapse,
   resetJobSlice,
+  updateIsDistanceRef,
+  updateDistanceRefPixel,
+  updateDistanceRefMeter,
+  updateIsDistanceRefValue,
+  resetDistanceRef
 } = jobSlice.actions;
 
 export const getAllJobs = (state: { jobs: JobState }) => state.jobs.list;

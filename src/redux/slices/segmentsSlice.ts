@@ -277,6 +277,9 @@ const segmentsSlice = createSlice({
         state.allSegments = [action.payload];
       }
     },
+    updateAreaInToSegment:(state,action)=>{
+      state.allSegments=action.payload
+    },
     changeGroupSegment: (state, action: PayloadAction<SegmentModal>) => {
       const updatedSegment = action.payload;
       const index = state.allSegments.findIndex(
@@ -424,6 +427,7 @@ export const {
   changeGroupSegment,
   resetReAnnoatationPoints,
   updateReAnnoatationPoints,
+  updateAreaInToSegment
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

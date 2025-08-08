@@ -16,6 +16,7 @@ export interface SegmentModal {
   seg_skewy?: number;
   created_at?: string;
   updated_at?: string;
+  seg_area_pixel?:number
   group_label_system?: string;
 }
 

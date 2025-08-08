@@ -3,26 +3,26 @@ import { SegmentModal } from "../jobSegmentsModal/JobSegmentModal";
 
 
 export interface MasterGroupModel {
-//  items: any;
- groupName: string;
- segments: SegmentModal[];
+  //  items: any;
+  groupName: string;
+  segments: SegmentModal[];
 }
 
-export interface MasterModel{
-  id?:number,
-  name?:string,
+export interface MasterModel {
+  id?: number,
+  name?: string,
   icon?: string,
   color: string,
   color_code: string,
   short_code: string,
-   overAllSwatch: Swatch[];
-   categories?: string[];
+  overAllSwatch: Swatch[];
+  categories?: string[];
   allSegments: MasterGroupModel[]  //all walls
 }
 
-export interface ISkewModel{
-  skew_x?:number;
-  skew_y?:number;
+export interface ISkewModel {
+  skew_x?: number;
+  skew_y?: number;
 }
 
 export interface SegLabelsCount {
@@ -34,7 +34,7 @@ export interface SegLabelsCount {
 
 }
 export interface Cost {
-  area?:number;
+  area?: number;
   rate?: number;
   unit?: string;
   total?: number;
@@ -44,22 +44,22 @@ export interface Cost {
 export interface Swatch {
   swatch_id?: number;
   swatch_seg_image?: string;
-  title?:string,
-  photo?:string,
+  title?: string,
+  photo?: string,
   cost?: Cost;
   isActive?: boolean;
   isApproved?: boolean;
   segGroup?: string[];
-  new_bucket?:number;
+  new_bucket?: number;
 }
 export interface DesignerDetail {
   user_id?: number;
   swatch?: Swatch[];
 }
-export interface  SegmentDetails {
+export interface SegmentDetails {
   group?: string,
   pattern?: string,
-  annotation_type?:string,
+  annotation_type?: string,
   seg_type?: string;
   label?: string;
   confidence?: number;
@@ -81,35 +81,76 @@ export interface  SegmentDetails {
   bb_area_sqft?: number;
   bb_dimension_pixel?: string[];
   bb_dimension_feet?: string[];
-  image?:string
-  angle?:[];
-  skew_value?:ISkewModel
-  svg_path?:string;
-//   svg_details?:SVGDetailsModel,
-  segmentCount?:SegLabelsCount,
-  designer?:DesignerDetail[],
-  isActive?:boolean,
-  swatch?:Swatch
+  image?: string
+  angle?: [];
+  skew_value?: ISkewModel
+  svg_path?: string;
+  //   svg_details?:SVGDetailsModel,
+  segmentCount?: SegLabelsCount,
+  designer?: DesignerDetail[],
+  isActive?: boolean,
+  swatch?: Swatch
 
 }
 export interface JobSegmentModel {
-  [key: string]: SegmentDetails , 
- 
+  [key: string]: SegmentDetails,
+
 }
-export interface JobModel{
-    id?: number;
-    title?: string;
-    jobType?: string;
-    full_image?: string;
-    thumbnail?: string;
-    project_id?: number;
-    created_at?: string;
-    updated_at?: string;
-    segments?: JobSegmentModel;
+export interface JobModel {
+  id?: number;
+  title?: string;
+  jobType?: string;
+  full_image?: string;
+  thumbnail?: string;
+  project_id?: number;
+  created_at?: string;
+  updated_at?: string;
+  distance_ref?: DistanceRefModal;
 }
 
-export  interface GroupSegmentModel {
-[key: string]: JobSegmentModel;
+export interface GroupSegmentModel {
+  [key: string]: JobSegmentModel;
+}
+
+
+export interface DistanceRefModal {
+  distance_pixel?: number;
+  distance_meter?: number;
+
+}
+
+export interface CreateJobRequest {
+  title: string;
+  jobType: string;
+  full_image?: string;
+  thumbnail?: string;
+  project_id: number;
+  segements?: string;
+}
+
+export interface UpdateJobRequest {
+  title?: string;
+  jobType?: string;
+  full_image?: string;
+  thumbnail?: string;
+  segements?: string;
+}
+
+export interface JobApiResponse<T> {
+  data: T | null;
+  error: string | null;
+  success: boolean;
+}
+export interface DistanceRefResponse {
+  data: distanceRefApiResponse|null
+  error: string | null;
+  success: boolean;
+}
+
+export interface distanceRefApiResponse{
+    id: number;
+    distance_ref: JobModel;
+  
 }
 
 // export interface SegmentModal {

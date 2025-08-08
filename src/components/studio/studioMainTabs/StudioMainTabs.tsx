@@ -5,7 +5,6 @@ import { AppDispatch, RootState } from "@/redux/store";
 
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 
-import InspirationContent from "./tabContent/InspirationContent";
 import DesignHubContent from "./tabContent/DesignHubContent";
 import {
   Tooltip,

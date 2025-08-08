@@ -145,7 +145,7 @@ export function StudioMainCanvas({
                     />}
 
                     
-                    {(canvasMode == "draw" || canvasMode == "reannotation")
+                    {(canvasMode == "draw" || canvasMode == "reannotation"|| canvasMode == "dimension")
                      && <CanvasEditor
                       key={`canvas-editor-${canvasImage}`}
                       imageUrl={canvasImage}
@@ -154,6 +154,7 @@ export function StudioMainCanvas({
                       className="mb-6"
                       onImageLoad={handleImageLoad}
                     />}
+                    
                     {(canvasMode == "edit" )
                      && <CanvasEdit
                       key={`canvas-editor-${canvasImage}`}

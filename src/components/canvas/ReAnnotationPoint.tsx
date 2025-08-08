@@ -6,6 +6,7 @@ import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
 import { changeGroupSegment, resetReAnnoatationPoints, updateSegmentById } from '@/redux/slices/segmentsSlice';
 import { addNewSegmentToMasterArray, updateSelectedSegment } from '@/redux/slices/MasterArraySlice';
 import { setCanvasType } from '@/redux/slices/canvasSlice';
+import { calculatePolygonAreaInPixels } from '../canvasUtil/CalculatePolygonArea';
 
 const ReAnnotationPoint = () => {
 
@@ -30,7 +31,7 @@ const ReAnnotationPoint = () => {
 
     const updateReAnnotationPoints = async (points: number[]) => {
         if (!selectedSegment || points.length === 0 || !selectedSegment.segment_type) return;
-
+     const area_pixel= calculatePolygonAreaInPixels(points||[])
         const minMax = getMinMaxBBPoint(points);
         const data: SegmentModal = {
             id: selectedSegment.id,
@@ -41,6 +42,7 @@ const ReAnnotationPoint = () => {
             group_desc: selectedSegment.group_desc,
             segment_type: selectedSegment.segment_type,
             annotation_points_float: points,
+            seg_area_pixel: area_pixel,
              segment_bb_float: minMax,
             annotation_type: "user",
             seg_perimeter: selectedSegment.seg_perimeter,
