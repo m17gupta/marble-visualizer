@@ -139,7 +139,8 @@ const jobCommentsSlice = createSlice({
             .addCase(addJobComment.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isError = false;
-                state.projectComments.push(action.payload);
+                const data = action.payload; // action.payload is already the JobCommentModel
+                state.projectComments.push(data);
                 state.addNewComment = null;
             })
             .addCase(addJobComment.rejected, (state) => {

@@ -7,6 +7,11 @@ export interface JobCommentResponse {
     data: JobCommentModel[];
     error?: string;
 }
+export interface AddJobCommentResponse {
+    success: boolean;
+    data: JobCommentModel;
+    error?: string; 
+}
 export class JobCommentsApi {
 
     // fetch job comments by job ID
@@ -35,7 +40,7 @@ export class JobCommentsApi {
      }
     }
 
-    static async addJobComment(comment: JobCommentModel): Promise<JobCommentResponse> {
+    static async addJobComment(comment: JobCommentModel): Promise<AddJobCommentResponse> {
         const { data, error } = await supabase
         .from("job_comments")
         .insert(comment)
@@ -47,7 +52,7 @@ export class JobCommentsApi {
         console.log("New job comment added:", data);
         return {
             success: true,
-            data: data[0], // Assuming data is an array with one item
+            data: data[0] as JobCommentModel, // Assuming data is an array with one item
         }
     }
 

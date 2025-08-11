@@ -1,5 +1,5 @@
 import { JobCommentModel } from "@/models/commentsModel/CommentModel";
-import { JobCommentResponse, JobCommentsApi } from "./JobCommentApi";
+import { AddJobCommentResponse, JobCommentResponse, JobCommentsApi } from "./JobCommentApi";
 
 
 export class JobCommentService {
@@ -7,7 +7,7 @@ export class JobCommentService {
        return JobCommentsApi.fetchJobComments(jobId);
     }
 
-    static async addJobComment(comment: JobCommentModel): Promise<JobCommentResponse> {
+    static async addJobComment(comment: JobCommentModel): Promise<AddJobCommentResponse> {
       return JobCommentsApi.addJobComment(comment);
     }
 
