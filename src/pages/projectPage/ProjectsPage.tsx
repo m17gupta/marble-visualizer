@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useFetcher, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 import { AppDispatch, RootState } from "@/redux/store";
 import { ProjectModel } from "@/models/projectModel/ProjectModel";
 import {
@@ -9,11 +11,9 @@ import {
   clearError,
   updateIsCreateDialog,
   setCurrentProject,
-  deleteProject,
   updateProjectAnalysis,
 } from "@/redux/slices/projectSlice";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
-import { BsIncognito } from "react-icons/bs";
 import {
   Card,
   CardContent,
@@ -294,13 +294,17 @@ export function ProjectsPage() {
                     >
                       {project.jobData && project.jobData.length > 0 ? (
                         <div className="relative overflow-hidden rounded-lg rounded-b-none ">
-                          <img
+                          <LazyLoadImage
                             src={
                               project.jobData[0]?.thumbnail ||
                               "/placeholder-image.png"
                             }
                             alt={project.name}
                             className="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105"
+                            effect="blur"
+                            placeholderSrc="/placeholder-image.png"
+                            threshold={100}
+                            wrapperClassName="w-full h-52"
                           />
                           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
