@@ -52,6 +52,8 @@ import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiI
 import SegmentHome from "@/components/segments/SegmentHome";
 import MarkingDimensionHome from "@/components/measurement/MarkingDimensionHome";
 import CalculateArea from "@/components/measurement/CalculateArea";
+import GetAllJobComments from "@/components/comments/GetAllJobComments";
+import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -159,7 +161,9 @@ export function StudioPage() {
     dispatch(resetCanvas());
     dispatch(resetWorkspace())
     dispatch(resetGenAiState());
+    dispatch(resetJobCommentsState());
     dispatch(setCurrentTabContent("home"));
+
     navigate("/projects");
   };
   return (
@@ -247,6 +251,8 @@ export function StudioPage() {
        <MarkingDimensionHome />
 
        <CalculateArea/>
+
+       <GetAllJobComments />
     </>
   );
 }

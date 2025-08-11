@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { createSelector } from '@reduxjs/toolkit';
+
 import authSlice from './slices/authSlice';
 import userProfileSlice from './slices/userProfileSlice';
 import projectSlice from './slices/projectSlice';
@@ -24,6 +24,7 @@ import workspaceSlice from './slices/visualizerSlice/workspaceSlice';
 import  tabControlSlice from './slices/TabControlSlice'; // New tab control slice
 import masterArraySlice from './slices/MasterArraySlice'; // New master array slice
 import projectAnalyseSlice from './slices/projectAnalyseSlice';
+import jobCommentsSlice from "./slices/comments/JobComments"; // New job comments slice
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -31,6 +32,7 @@ export const store = configureStore({
     projects: projectSlice,
     masterArray:masterArraySlice,
     segments: segmentsSlice,
+    jobComments: jobCommentsSlice, // New job comments slice
     canvas: canvasSlice, // New canvas slice
     materials: materialsSlice,
     materialSegments: materialSegmentSlice,
