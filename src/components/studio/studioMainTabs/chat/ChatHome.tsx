@@ -140,7 +140,7 @@ const handleGenerateAiImage = () => {
                   </TooltipContent>
                 </Tooltip>
 
-                <Tooltip>
+                {/* <Tooltip>
                   <TooltipTrigger asChild>
                     <button className="text-base hover:text-purple-600 transition p-0" >
                       <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -153,7 +153,7 @@ const handleGenerateAiImage = () => {
                   <TooltipContent>
                     <p>Add Image</p>
                   </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
 
                 <GalleryImage/>
 
