@@ -83,16 +83,16 @@ const GuidancePanel: React.FC = () => {
 
   const url = currentPageDetails?.jobData?.[0].full_image;
 
-  const [req, setReq] = useState({
-    houseUrl: [url],
-    prompt: ["Change wall color to red"],
-    annotationValue: {},
-    externalUserId: "dzinly-prod",
-    imageQuality: "medium",
-    jobId: "",
-    paletteUrl: [],
-    referenceImageUrl: [],
-  });
+  // const [req, setReq] = useState({
+  //   houseUrl: [url],
+  //   prompt: [],
+  //   annotationValue: {},
+  //   externalUserId: "dzinly-prod",
+  //   imageQuality: "medium",
+  //   jobId: "",
+  //   paletteUrl: [],
+  //   referenceImageUrl: [],
+  // });
 
 
   useEffect(() => {
@@ -147,8 +147,9 @@ const GuidancePanel: React.FC = () => {
     // Logic to generate AI image
     try {
 
+      
       dispatch(
-        submitGenAiRequest(req as GenAiRequest)
+        submitGenAiRequest(requests as GenAiRequest)
       );
 
     } catch (error) {
