@@ -16,6 +16,7 @@ import { updateIsGenLoading } from '@/redux/slices/visualizerSlice/workspaceSlic
 import { GenAiRequest } from '@/models/genAiModel/GenAiModel';
 import { toast } from 'sonner';
 import ProcessImage from './ProcessImage';
+import GalleryImage from './GalleryImage';
 const ChatHome = () => {
   const dispatch = useDispatch<AppDispatch>();
       const { requests: genAiRequests } = useSelector((state: RootState) => state.genAi);
@@ -154,7 +155,7 @@ const handleGenerateAiImage = () => {
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button className="text-base hover:text-purple-600 transition p-0">
+                    <button className="text-base hover:text-purple-600 transition p-0" >
                       <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13.7482 8.99633C14.4375 8.99633 14.9963 8.43751 14.9963 7.74817C14.9963 7.05882 14.4375 6.5 13.7482 6.5C13.0588 6.5 12.5 7.05882 12.5 7.74817C12.5 8.43751 13.0588 8.99633 13.7482 8.99633Z" fill="#212121"></path>
                         <path d="M6.25 3C4.45507 3 3 4.45507 3 6.25V15.25C3 17.0449 4.45507 18.5 6.25 18.5H15.25C17.0449 18.5 18.5 17.0449 18.5 15.25V6.25C18.5 4.45507 17.0449 3 15.25 3H6.25ZM4.5 6.25C4.5 5.2835 5.2835 4.5 6.25 4.5H15.25C16.2165 4.5 17 5.2835 17 6.25V15.25C17 15.4812 16.9552 15.7018 16.8738 15.9038L12.2867 11.6128C11.4217 10.8036 10.0775 10.8036 9.21252 11.6128L4.62602 15.9033C4.54474 15.7015 4.5 15.481 4.5 15.25V6.25ZM11.262 12.7082L15.7669 16.9224C15.6035 16.9728 15.4299 17 15.25 17H6.25C6.06985 17 5.89607 16.9728 5.73252 16.9222L10.2372 12.7082C10.5256 12.4385 10.9736 12.4385 11.262 12.7082Z" fill="#212121"></path>
@@ -166,6 +167,8 @@ const handleGenerateAiImage = () => {
                     <p>Add Image</p>
                   </TooltipContent>
                 </Tooltip>
+
+                <GalleryImage/>
 
                 {/* <button className="text-base hover:text-purple-600 transition p-0 text-center" title="Start voice recording">
                   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 352 512" className="text-xl cursor-pointer transition-colors text-gray-500 hover:text-gray-700" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">

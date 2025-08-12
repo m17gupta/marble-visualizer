@@ -54,7 +54,7 @@ const StyleAndRenovationPanel: React.FC = () => {
     <div className="mx-auto p-1 space-y-6 py-1 px-2">
       {/* Tabs */}
       <div className="bg-white border rounded-xl p-3">
-        <h3 className="font-semibold text-lg mb-3">1. Choose Your Preferred Style</h3>
+        <h3 className="font-semibold text-lg mb-3" >1. Choose Your Preferred Style</h3>
         <div className="flex flex-wrap gap-2 justify-start mb-4">
           <button
             key={tabs[0].id}
