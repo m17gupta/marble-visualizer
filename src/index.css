@@ -241,3 +241,11 @@ button:focus-visible {
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #999;
 }
+
+/* Sirf is custom accordion trigger ka default arrow hide karega */
+ .custom-trigger .text-muted-foreground {
+  display: none ;
+}
+/* .custom-trigger .according_icon{
+  display: block !important ;
+}  */
