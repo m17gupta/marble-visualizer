@@ -76,18 +76,16 @@ export default function ChatHistory() {
               />
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="outline"
+                  <button
                     onClick={() => copyImage(sampleBefore)}
-                    className="absolute top-4 right-4 bg-white/90 border-gray-200 shadow hover:bg-white"
+                    className="absolute top-4 right-4 bg-white/90 border-gray-200 shadow hover:bg-white px-1 py-1"
                     title="Copy image URL">
                     {/* <Copy className="w-4 h-4" /> */}
-                    <MdOutlineAddHome className="w-4 h-4" />
-                  </Button>
+                    <MdOutlineAddHome className="w-5 h-5 p-0" />
+                  </button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>Copy image URL</p>
+                <TooltipContent side="left">
+                  <p>Set as Main Image</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -146,18 +144,18 @@ export default function ChatHistory() {
                 <img
                   src={sampleBefore}
                   alt="Before"
-                  className="w-full rounded-xl object-cover"
+                  className="w-60 rounded-xl object-cover"
                 />
 
                 <div
-                  className="rounded-2xl px-4 py-3 text-sm text-gray-800 shadow-sm"
+                  className="inline-block text-gray-600 text-sm px-3 py-1 rounded-full border border-transparent mt-2"
                   style={{
-                    border: "1.5px solid transparent",
-                    background:
-                      "linear-gradient(#fff,#fff) padding-box, linear-gradient(90deg,#7c3aed,#6366f1) border-box",
+                    backgroundClip: "padding-box, border-box",
+                    backgroundImage:
+                      "linear-gradient(#fff, #fff), linear-gradient(90deg, #9333ea, #3b82f6)",
+                    backgroundOrigin: "border-box",
                   }}>
-                  hello change the wall colour to lime green and roof to iron
-                  ore black.
+                  hello change the wall colour
                 </div>
 
                 <div className="relative">
@@ -166,24 +164,22 @@ export default function ChatHistory() {
                     alt="After"
                     className="w-full rounded-xl object-cover"
                   />
+
+
                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      {/* <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => copyImage(sampleAfter)}
-                        className="absolute top-2 right-2 bg-white border-gray-200 shadow hover:bg-white"
-                        title="Copy image URL">
-                        <MdOutlineAddHome className="w-4 h-4 text-gray-700" />
-                      </Button> */}
-                      {/* <button className="absolute top-1 right-1 p-2 bg-white/90 border border-gray-300 rounded-2 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <MdOutlineAddHome className="text-black w-4 h-4" />
-                      </button> */}
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Copy image URL</p>
-                    </TooltipContent>
-                  </Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => copyImage(sampleBefore)}
+                    className="absolute top-2 right-2 bg-white/90 border-gray-200 shadow hover:bg-white px-1 py-1"
+                    title="Copy image URL">
+                    {/* <Copy className="w-4 h-4" /> */}
+                    <MdOutlineAddHome className="w-5 h-5 p-0" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Set as Main Image</p>
+                </TooltipContent>
+              </Tooltip>
                 </div>
               </TabsContent>
 
@@ -261,38 +257,39 @@ export default function ChatHistory() {
                 <img
                   src={sampleBefore}
                   alt="Before"
-                  className="w-full rounded-xl object-cover"
+                  className="w-60 rounded-xl object-cover"
                 />
-                <div
-                  className="rounded-2xl px-4 py-3 text-sm text-gray-800 shadow-sm"
+                 <div
+                  className="inline-block text-gray-600 text-sm px-3 py-1 rounded-full border border-transparent mt-2"
                   style={{
-                    border: "1.5px solid transparent",
-                    background:
-                      "linear-gradient(#fff,#fff) padding-box, linear-gradient(90deg,#7c3aed,#6366f1) border-box",
+                    backgroundClip: "padding-box, border-box",
+                    backgroundImage:
+                      "linear-gradient(#fff, #fff), linear-gradient(90deg, #9333ea, #3b82f6)",
+                    backgroundOrigin: "border-box",
                   }}>
-                  try warm beige siding and charcoal roof.
+                  hello change the wall colour
                 </div>
+
                 <div className="relative">
                   <img
                     src={sampleAfter}
                     alt="After"
                     className="w-full rounded-xl object-cover"
                   />
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => copyImage(sampleAfter)}
-                        className="absolute top-2 right-2 bg-white/90 border-gray-200 shadow hover:bg-white"
-                        title="Copy image URL">
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Copy image URL</p>
-                    </TooltipContent>
-                  </Tooltip>
+                     <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => copyImage(sampleBefore)}
+                    className="absolute top-2 right-2 bg-white/90 border-gray-200 shadow hover:bg-white px-1 py-1"
+                    title="Copy image URL">
+                    {/* <Copy className="w-4 h-4" /> */}
+                    <MdOutlineAddHome className="w-5 h-5 p-0" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="left">
+                  <p>Set as Main Image</p>
+                </TooltipContent>
+              </Tooltip>
                 </div>
               </TabsContent>
 
