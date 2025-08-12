@@ -25,7 +25,9 @@ interface CanvasState {
   canvasType: CanvasMode;
   deleteMaskId: number | null;
   isGenerateMask: boolean;
-  hoverGroup:string[] | null; // Track the group being hovered
+  hoverGroup:string[] | null; 
+  isScreenshotTaken: boolean; 
+  screenShotUrl: string | null; // URL of the screenshot if taken
 }
 
 // Initial state
@@ -42,7 +44,9 @@ const initialState: CanvasState = {
   canvasType:"hover", // Default canvas type
   deleteMaskId: null, // Initialize as null
   isGenerateMask: false,
-  hoverGroup: null, // Initialize hoverGroup as null
+  hoverGroup: null,
+  isScreenshotTaken: false, // Flag to indicate if a screenshot has been taken
+  screenShotUrl: null, // URL of the screenshot if taken
 };
 
 // Create the canvas slice
@@ -121,6 +125,12 @@ const canvasSlice = createSlice({
       updateIsGenerateMask: (state, action: PayloadAction<boolean>) => {
       state.isGenerateMask = action.payload;
     },
+    updateIsScreenShotTaken: (state, action: PayloadAction<boolean>) => {
+      state.isScreenshotTaken = action.payload; // Update the screenshot taken flag   
+    },
+    updateScreenShotUrl: (state, action: PayloadAction<string | null>) => {
+      state.screenShotUrl = action.payload; // Update the screenshot URL
+    },
 
     // Reset canvas state to initial values
     resetCanvas(state) {
@@ -129,7 +139,9 @@ const canvasSlice = createSlice({
       state.isBusy = false;
       state.error = null;
       state.masks=[];
-      state.canvasType = "hover"; // Reset to default canvas type
+      state.canvasType = "hover"; 
+      state.isScreenshotTaken = false; // Reset screenshot taken flag
+      state.screenShotUrl = null; // Reset screenshot URL
       // Zoom mode is not reset as it's a user preference
     },
   },
@@ -153,7 +165,8 @@ export const {
   deleteMask,
   setDeleteMMaskId,
    updateIsGenerateMask,
-   
+  updateIsScreenShotTaken,
+  updateScreenShotUrl
 } = canvasSlice.actions;
 
 // Export reducer

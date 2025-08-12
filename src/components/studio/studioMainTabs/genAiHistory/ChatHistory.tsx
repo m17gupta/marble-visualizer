@@ -14,26 +14,15 @@ import {
 } from "@/components/ui/tooltip";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { Plus, Minus, Copy } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { MdOutlineAddHome } from "react-icons/md";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import TabView from "./TabView";
 import InfoView from "./InfoView";
 
-const thumbUrl =
-  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600&auto=format&fit=crop";
-const sampleBefore =
-  "https://images.unsplash.com/photo-1560184897-ae75f418493e?q=80&w=900&auto=format&fit=crop";
-const sampleAfter =
-  "https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=900&auto=format&fit=crop";
 
-const copyImage = async (url: string) => {
-  try {
-    await navigator.clipboard.writeText(url);
-    // TODO: shadcn toast here if you want
-  } catch { }
-};
+
 
 const formatRelativeDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -65,8 +54,17 @@ const formatRelativeDate = (dateString: string) => {
 };
 
 export default function ChatHistory() {
+
   const {list :jobList} = useSelector((state: RootState) => state.jobs);
   const { genAiImages } = useSelector((state: RootState) => state.genAi);
+  const copyImage = async (url: string) => {
+  try {
+    await navigator.clipboard.writeText(url);
+    // TODO: shadcn toast here if you want
+  } catch { 
+    console.error("Failed to copy image URL");
+  }
+};
   return (
     <div className="max-w-sm mx-auto p-4 space-y-3">
       {/* ===== All sections as Accordion ===== */}

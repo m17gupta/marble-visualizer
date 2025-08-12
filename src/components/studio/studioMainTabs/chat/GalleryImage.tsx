@@ -9,6 +9,7 @@ import {
   SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet"
 import StyleAndRenovationPanel from "@/components/workSpace/projectWorkSpace/PreferredImageTab"
+import InspirationImages from "@/components/workSpace/projectWorkSpace/InspirationImages"
 
 const data = [
   { goal: 400 }, { goal: 300 }, { goal: 200 }, { goal: 300 },
@@ -37,11 +38,12 @@ export default function GalleryImage() {
           <div className="mx-auto w-full">
             <SheetHeader>
               <SheetTitle>Inspirations Image</SheetTitle>
-              <SheetDescription>Select Image</SheetDescription>
+              {/* <SheetDescription>Select Image</SheetDescription> */}
             </SheetHeader>
 
-
-            <StyleAndRenovationPanel/>
+  
+            <InspirationImages/>
+         
             {/* <div className="p-4 pb-0">
               <div className="flex items-center justify-center space-x-2">
                 <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => onClick(-10)} disabled={goal <= 200}>

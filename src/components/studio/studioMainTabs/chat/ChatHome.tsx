@@ -23,6 +23,19 @@ const ChatHome = () => {
    const [inputPrompt, setInputPrompt] = React.useState<string>('');
       const { list: projects } = useSelector((state: RootState) => state.projects);
 
+     const {isGenLoading} = useSelector((state: RootState) => state.workspace);
+     const [isLoading , setIsLoading] = useState<boolean>(false);
+
+
+     // update teh loading state when the genAiRequests change
+     useEffect(() => {
+      if(isGenLoading) {
+        setIsLoading(isGenLoading);
+      }else{
+        setIsLoading(false);
+      }
+    }, [isGenLoading]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
  
@@ -82,38 +95,12 @@ const handleGenerateAiImage = () => {
 
                    <RequestMasterImage/>
 
-              {/* <div className="flex-1 group relative">
-                <img
-                  src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
-                  alt="Main"
-                  className="rounded w-full object-cover max-h-40 border"
-                />
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button className="absolute top-1 right-1 p-2 bg-white/90 border border-gray-300 rounded-2 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <TbVectorBezier2 className="text-black w-4 h-4" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="left" align="center">
-                    <p>Marking label</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <div
-                  className="inline-block text-gray-600 text-sm px-3 py-1 rounded-full border border-transparent mt-2"
-                  style={{
-                    backgroundClip: "padding-box, border-box",
-                    backgroundImage:
-                      "linear-gradient(#fff, #fff), linear-gradient(90deg, #9333ea, #3b82f6)",
-                    backgroundOrigin: "border-box",
-                  }}>
-                  please wall color red
-                </div>
-              </div> */}
+            
               
             </div>
 
-                   <ProcessImage/>
+                  { isLoading &&<ProcessImage/>}
+
              <RequestOutput/>
           </div>
         </div>
