@@ -15,6 +15,7 @@ import { AppDispatch, RootState } from '@/redux/store';
 import { updateIsGenLoading } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { GenAiRequest } from '@/models/genAiModel/GenAiModel';
 import { toast } from 'sonner';
+import ProcessImage from './ProcessImage';
 const ChatHome = () => {
   const dispatch = useDispatch<AppDispatch>();
       const { requests: genAiRequests } = useSelector((state: RootState) => state.genAi);
@@ -73,12 +74,13 @@ const handleGenerateAiImage = () => {
             </button>
           </div>
 
-          <div className="p-4">
+          <div className="p-4 mb-10">
             <div className="flex gap-3">
             
                    <RequestPallet/>
 
                    <RequestMasterImage/>
+
               {/* <div className="flex-1 group relative">
                 <img
                   src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
@@ -110,6 +112,7 @@ const handleGenerateAiImage = () => {
               
             </div>
 
+                   <ProcessImage/>
              <RequestOutput/>
           </div>
         </div>

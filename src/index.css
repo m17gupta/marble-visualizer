@@ -249,3 +249,23 @@ button:focus-visible {
 /* .custom-trigger .according_icon{
   display: block !important ;
 }  */
+
+
+@keyframes textShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #95a0b3 0%,   /* gray-400 */
+    #000000 50%,  /* gray-300 */
+    #2d3033 100%  /* gray-400 */
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: textShimmer 2s infinite linear;
+}
