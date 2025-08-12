@@ -2,13 +2,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InspirationContent from "./tabContent/InspirationContent";
 import ChatHome from "./chat/ChatHome";
 import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
-
-// import {
-//   Tooltip,
-//   TooltipContent,
-//   TooltipTrigger,
-// } from "@/components/ui/tooltip";
-// import { TbVectorBezier2 } from "react-icons/tb";
+import QualityLevelImage from "./tabContent/QualityLevelImage";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { TbVectorBezier2 } from "react-icons/tb";
+import ChatHistory from "./tabContent/ChatHistory";
 
 export function StudioStyleTabs() {
   return (
@@ -53,7 +54,7 @@ export function StudioStyleTabs() {
         </TabsContent>
 
         <TabsContent value="history">
-          <InspirationContent />
+          <ChatHistory />
         </TabsContent>
       </Tabs>
 
