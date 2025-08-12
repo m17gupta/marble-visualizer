@@ -84,36 +84,10 @@ const SidebarObject = () => {
         )}
 
         <div className="flex items-center flex-wrap gap-2 pt-2">
-          {/* {project &&
-          project.analysed_data &&
-          project.analysed_data.segments_detected &&
-          Object.keys(project.analysed_data.segments_detected).length > 0 &&
-          Object.entries(project.analysed_data.segments_detected).map(
-            ([key, value], idx) => {
-              return (
-                <button
-                  key={idx}
-                  className="relative rounded-xl py-1.5 m-0 text-sm border border-gray-300 bg-transparent"
-                >
-                  {key}
-                  <Badge
-                    className="absolute -top-2 -right-2 rounded-full bg-red-600 text-white px-2 py-0.5 pt-0 text-xs "
-                    variant="default"
-                  >
-                    x
-                  </Badge>
-                </button>
-              );
-            }
-          )} */}
+     
         </div>
 
-        {/* <div className="relative flex border border-gray-300 rounded-xl p-2 align-super justify-between">
-        
-          <span className="absolute -top-3 -right-3 cursor-pointer">
-            <IoIosCloseCircleOutline className="text-3xl" />
-          </span>
-        </div> */}
+       
       </div>
 
       {/* Offcanvas Panel - LEFT aligned */}

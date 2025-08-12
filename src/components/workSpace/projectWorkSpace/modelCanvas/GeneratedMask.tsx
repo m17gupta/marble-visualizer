@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { CanvasModel } from '@/models/canvasModel/CanvasModel';
-import { deleteMask, resetCanvas, setCanvasType, setIsCanvasModalOpen, updateIsGenerateMask } from '@/redux/slices/canvasSlice';
+import { deleteMask, resetCanvas, setCanvasType, setIsCanvasModalOpen, updateIsGenerateMask, updateIsScreenShotTaken } from '@/redux/slices/canvasSlice';
 import { AnnotationValue } from '@/models/genAiModel/GenAiModel';
 import { updateMaskIntoRequest } from '@/redux/slices/visualizerSlice/genAiSlice';
 
@@ -40,7 +40,8 @@ const GeneratedMask = () => {
     }
     dispatch(updateMaskIntoRequest(allAnnotations));
     // dispatch(updateIsGenerateMask(true))
-     dispatch(setIsCanvasModalOpen(false));
+    //  dispatch(setIsCanvasModalOpen(false));
+     dispatch(updateIsScreenShotTaken(false)); // Reset screenshot taken flag
   }
 
   const handleCancel = () => {

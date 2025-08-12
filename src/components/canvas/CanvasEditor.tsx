@@ -18,6 +18,7 @@ import {
   setMousePosition,
   updateMasks,
   setCanvasType,
+  updateIsScreenShotTaken,
 } from "@/redux/slices/canvasSlice";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -42,7 +43,7 @@ import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from "../canv
 import { CreateCustomCursor, UpdateCursorOffset } from "../canvasUtil/CreateCustomCursor";
 import ReAnnotationPoint from "./ReAnnotationPoint";
 import { updateDistanceRefPixel, updateIsDistanceRef } from "@/redux/slices/jobSlice";
-import { setCurrentTabContent } from "@/redux/slices/studioSlice";
+import { takeFabricCanvasScreenshot } from "../canvasUtil/ScreenShotCanvas";
 
 export type DrawingTool = "select" | "polygon";
 
@@ -861,7 +862,30 @@ export function CanvasEditor({
     }
   }, [deleteMaskId, fabricCanvasRef, dispatch]);
 
+ // take screen shot of the canvas
+ const{isScreenshotTaken} = useSelector((state: RootState) => state.canvas);
+ useEffect(() => {
+  if(isScreenshotTaken && fabricCanvasRef.current) {
+    dispatch(updateIsScreenShotTaken(false));
+    handleTakeScreenshot();
 
+  }
+ },[ isScreenshotTaken]);
+  const handleTakeScreenshot =async () => {
+    if(!fabricCanvasRef.current) return
+    try{
+const dataURL = await takeFabricCanvasScreenshot(
+        fabricCanvasRef,
+        'image/png',
+        1.0,
+        2 // Higher resolution
+      );
+      console.log("Screenshot taken successfully:", dataURL);
+    }catch(error) {
+      console.error("Error taking screenshot:", error);
+      toast.error("Failed to take screenshot. Please try again.");
+    }
+  }
 
   return (
     <>

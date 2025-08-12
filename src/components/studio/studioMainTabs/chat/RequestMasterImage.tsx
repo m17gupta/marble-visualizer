@@ -1,22 +1,30 @@
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TbVectorBezier2 } from "react-icons/tb";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+import { setCanvasType, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
 const RequestMasterImage = () => {
-  // const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const { requests: genAiRequests } = useSelector(
     (state: RootState) => state.genAi
   );
+
+  const handleCreateMask = () => {
+    dispatch(setIsCanvasModalOpen(true));
+       dispatch(setCanvasType("mask"));
+  };  
   return (
     <>
       {genAiRequests.houseUrl ? (
         <div className="flex-1 group relative max-w-60">
-          <img
+          <LazyLoadImage
             //   src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
             src={
               genAiRequests?.houseUrl[0] || "https://via.placeholder.com/150"
@@ -26,7 +34,9 @@ const RequestMasterImage = () => {
           />
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className="absolute top-1 right-1 p-2 bg-white/90 border border-gray-300 rounded-2 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button className="absolute top-1 right-1 p-2 bg-white/90 border border-gray-300 rounded-2 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              onClick={handleCreateMask}
+              >
                 <TbVectorBezier2 className="text-black w-4 h-4" />
               </button>
             </TooltipTrigger>
