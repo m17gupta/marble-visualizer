@@ -81,7 +81,7 @@ const InspirationImages = () => {
         </div>
 
         {/* Image Grid */}
-        <div className="grid grid-cols-3 gap-2 overflow-y-auto max-h-[100vh] sm:max-h-[100vh]
+        <div className="grid grid-cols-3 gap-2 overflow-y-auto max-h-[65vh] sm:max-h-[68vh]
  ">
       {stylesToShow
   .slice(0, showAll ? stylesToShow.length : 9)
