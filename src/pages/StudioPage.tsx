@@ -250,7 +250,7 @@ export function StudioPage() {
 
        <MarkingDimensionHome />
 
-       <CalculateArea/>
+       {/* <CalculateArea/> */}
 
        <GetAllJobComments />
     </>

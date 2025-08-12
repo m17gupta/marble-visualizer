@@ -4,6 +4,7 @@ import { FaDownload, FaExpand, FaCompress } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
+import { GrDislikeFill } from "react-icons/gr";
 
 interface CompareSliderProps {
   // beforeImage?: string;
@@ -125,6 +126,14 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
         </div>
         {/* <div className="text-white font-medium">Side by Side 1</div> */}
         <div className="flex gap-2">
+            <button
+            onClick={handleDownload}
+            className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
+          >
+        <GrDislikeFill />
+
+          </button>
+
           <button
             onClick={handleDownload}
             className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
