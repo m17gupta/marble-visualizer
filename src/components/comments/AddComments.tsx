@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from '@/redux/store'
 import { CommentModel, JobCommentModel } from '@/models/commentsModel/CommentModel'
 import { addJobComment } from '@/redux/slices/comments/JobComments'
 import { cn } from '@/lib/utils'
+import { updateAddSegMessage } from '@/redux/slices/segmentsSlice'
 
 type Props = {
   x: number;
@@ -16,32 +17,28 @@ type Props = {
   onClose?: () => void;
 }
 const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
-     const dispatch = useDispatch<AppDispatch>();
-  
+  const dispatch = useDispatch<AppDispatch>();
+
   const [isExpanded, setIsExpanded] = useState(true);
-    const [localMessage, setLocalMessage] = useState("")
+  const [localMessage, setLocalMessage] = useState("")
 
-     const { profile } = useSelector((state: RootState) => state.userProfile);
+  const { currentProject } = useSelector((state: RootState) => state.projects);
 
-      const {currentProject} = useSelector((state: RootState) => state.projects);
+  const { list: jobList } = useSelector((state: RootState) => state.jobs);
 
-  const {list:jobList} = useSelector((state: RootState) => state.jobs);
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  const {user} = useSelector((state: RootState) => state.auth);
-
-  const {allSegments} = useSelector((state: RootState) => state.segments);
+  const { allSegments } = useSelector((state: RootState) => state.segments);
   const handleMessageChange = (value: string) => {
     setLocalMessage(value)
   }
 
-  const handleAvatarClick = () => {
-    setIsExpanded(!isExpanded);
-  }
+
 
 
   const handleSaveComment = async () => {
     // Fix the condition logic and null checks
-    const segId= allSegments.find(seg => seg.short_title === segmentName)?.id;
+    const segId = allSegments.find(seg => seg.short_title === segmentName)?.id;
     if (!currentProject || !currentProject.id || !jobList[0]?.id || !segmentName || !localMessage.trim() || !segId) {
       console.error("Missing required data to save comment:", {
         projectId: currentProject?.id,
@@ -52,45 +49,49 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
       return; // Stop saving if data is missing
     }
 
+    dispatch(updateAddSegMessage(" Adding comments.."));
     try {
       // Logic to save the comment
       const message: CommentModel = {
         userId: user?.id || '',
-        name: profile?.full_name || 'Anonymous',
+        name: user?.name || 'Anonymous',
         commentText: localMessage,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
       const newComment: JobCommentModel = {
-       
+
         project_id: currentProject.id,
         job_id: jobList[0].id,
         segment_id: segId,
         segment_name: segmentName,
-        position:[x, y],
-        status:"pending",
+        position: [x, y],
+        status: "pending",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         comments: JSON.stringify([message]), // Store as JSON string
       };
 
       // Dispatch the action to save the comment
-      await dispatch(addJobComment(newComment));
-      
+      const responce = await dispatch(addJobComment(newComment));
+      if (responce?.meta?.requestStatus === "fulfilled") {
+        dispatch(updateAddSegMessage(""));
+      }
+
       // Clear the message and close the form
       setLocalMessage("");
       setIsExpanded(false);
       onClose?.();
-      
+
     } catch (error) {
       console.error("Error saving comment:", error);
     }
   }
 
   return (
-   <>
-    {/* Expanded Comment Form */}
+    <>
+      {/* Expanded Comment Form */}
       {isExpanded && (
         <Card
           className="absolute shadow-lg pointer-events-auto z-50 w-80"
@@ -170,7 +171,7 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
                 </div>
 
                 <Button className="h-8 px-4"
-                onClick={handleSaveComment}
+                  onClick={handleSaveComment}
                 >
                   <Check className="h-4 w-4" />
                 </Button>
@@ -179,7 +180,7 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
           </CardContent>
         </Card>
       )}
-   </>
+    </>
   )
 }
 

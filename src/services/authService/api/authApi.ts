@@ -39,10 +39,11 @@ export class AuthAPI {
       // Update last login
       await this.updateLastLogin(data.user.id);
       // const userPlan = await this.getUserPlan(data.user.id);
-
+  //  console.log("User plan fetched:", data.user);
       const userAuth: User = {
         id: data.user.id,
         email: data.user.email || "",
+        name: data.user.user_metadata?.full_name || "",
         profile: 0, // Default profile ID or fetch from database
         is_active: true,
         status: "active",

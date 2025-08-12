@@ -8,8 +8,9 @@ export interface User {
   last_login?: string;
   created_at: string;
   modified_at: string;
+  name?: string; // Optional field for display name
   // UUID reference to session
-}
+} 
 
 export interface UserProfile {
   id?: number;
