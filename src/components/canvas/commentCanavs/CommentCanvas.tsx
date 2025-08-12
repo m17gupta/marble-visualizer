@@ -18,6 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import CommonToolBar from '../CommonToolBar';
 import CommentHome from '@/components/comments/CommentHome';
+import Loading from '@/components/loading/Loading';
 
 type NamedFabricObject = fabric.Object & { name?: string };
 
@@ -337,6 +338,7 @@ const CommentCanvas = ({ imageUrl, width = 800, height = 600, className, onImage
                                     
                                     }
 
+                                  
                                  
                                     {/* Canvas Status */}
                                     {!isCanvasReady && (
