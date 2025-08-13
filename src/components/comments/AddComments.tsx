@@ -39,7 +39,7 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
   const handleSaveComment = async () => {
     // Fix the condition logic and null checks
     const segId = allSegments.find(seg => seg.short_title === segmentName)?.id;
-    if (!currentProject || !currentProject.id || !jobList[0]?.id || !segmentName || !localMessage.trim() || !segId) {
+    if (!currentProject || !currentProject.id || !jobList[0]?.id || !segmentName || !localMessage.trim()) {
       console.error("Missing required data to save comment:", {
         projectId: currentProject?.id,
         jobId: jobList[0]?.id,
