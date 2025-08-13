@@ -19,6 +19,8 @@ import {
   updateMasks,
   setCanvasType,
   updateIsScreenShotTaken,
+  updateScreenShotUrl,
+  setIsCanvasModalOpen,
 } from "@/redux/slices/canvasSlice";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -529,7 +531,7 @@ export function CanvasEditor({
     allSegments.current[segmentId] = tempPoints.current;
 
     const polygon = new fabric.Polygon(polygonPoints, {
-      fill: "rgba(255, 132, 0, 0.3)", // Semi-transparent orange fill
+      fill: "rgba(6, 134, 13, 0.7)", // Darker semi-transparent green fill
       stroke: "#FF1493",
       strokeWidth: adjustedStrokeWidth,
       selectable: true,
@@ -695,8 +697,7 @@ export function CanvasEditor({
 
   // handle Dimesion Ref Pixel
   const handleDimensionRefPixel = (pixelDistance: number) => {
-     console.log("Pixel Distance:", pixelDistance);
-   
+  
     dispatch(updateDistanceRefPixel(pixelDistance));
     dispatch(setCanvasType("hover"))
     dispatch(updateIsDistanceRef(true));
@@ -867,23 +868,29 @@ export function CanvasEditor({
  useEffect(() => {
   if(isScreenshotTaken && fabricCanvasRef.current) {
     dispatch(updateIsScreenShotTaken(false));
+    
     handleTakeScreenshot();
 
   }
  },[ isScreenshotTaken]);
+
   const handleTakeScreenshot =async () => {
+    
     if(!fabricCanvasRef.current) return
     try{
 const dataURL = await takeFabricCanvasScreenshot(
-        fabricCanvasRef,
+        fabricCanvasRef.current,
         'image/png',
         1.0,
-        2 // Higher resolution
+        2 
       );
       console.log("Screenshot taken successfully:", dataURL);
+      dispatch(updateScreenShotUrl(dataURL));
+       dispatch(setIsCanvasModalOpen(false));
     }catch(error) {
       console.error("Error taking screenshot:", error);
       toast.error("Failed to take screenshot. Please try again.");
+       dispatch(setIsCanvasModalOpen(false));
     }
   }
 

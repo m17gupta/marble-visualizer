@@ -191,7 +191,7 @@ const GuidancePanel: React.FC = () => {
 
   // Handle design save
   const handleDesignSave = (designName: string) => {
-    console.log("Saving design with name:", designName);
+   
     // Add your save logic here
     toast.success(`Design "${designName}" saved successfully!`);
   };
@@ -341,12 +341,12 @@ const GuidancePanel: React.FC = () => {
             </button>
             
             {/* Test button for comparison modal */}
-            <button
+            {/* <button
               className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
               onClick={handleShowComparison}
             >
               Compare
-            </button>
+            </button> */}
           </div>
         </div>
 

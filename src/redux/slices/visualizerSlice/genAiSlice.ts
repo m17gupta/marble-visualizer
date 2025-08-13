@@ -9,7 +9,7 @@ import genAiService from "@/services/genAi/genAiService";
 
 interface GenAiState {
   genAiImages: GenAiChat[];
-  currentGenAiImage?: GenAiChat|null; // Optional field for the currently selected GenAI image
+  currentGenAiImage?: GenAiChat | null; // Optional field for the currently selected GenAI image
   requests: GenAiRequest;
   inspirationNames: string; // Optional field for storing inspiration names
   responses: Record<string, GenAiResponse>;
@@ -20,7 +20,7 @@ interface GenAiState {
   currentRequestId: string | null;
 
   isSubmitGenAiFailed?: boolean;
-  task_id?: string |null;
+  task_id?: string | null;
   isFetchingGenAiImages: boolean;
 }
 
@@ -93,7 +93,7 @@ export const insertGenAiChatData = createAsyncThunk(
 );
 
 // delete genAi _chat from table based on id
-export const deleteGenAiChat = createAsyncThunk(  
+export const deleteGenAiChat = createAsyncThunk(
   "genAi/deleteChat",
   async (id: string, { rejectWithValue }) => {
     try {
@@ -148,7 +148,7 @@ const genAiSlice = createSlice({
     },
     setCurrentGenAiImage: (
       state,
-      action: PayloadAction<GenAiChat|null >
+      action: PayloadAction<GenAiChat | null>
     ) => {
       state.currentGenAiImage = action.payload;
     },
@@ -170,8 +170,12 @@ const genAiSlice = createSlice({
     addHouseImage: (state, action) => {
       state.requests.houseUrl = [action.payload];
     },
-    updateMaskIntoRequest:(state,action)=>{
+    updateMaskIntoRequest: (state, action) => {
       state.requests.annotationValue = action.payload;
+    },
+
+    resetMaskIntoRequest: (state) => {
+      state.requests.annotationValue = {}; // Reset the annotation value to an empty object
     },
     updateInspirationNames: (state, action: PayloadAction<string>) => {
       state.inspirationNames = action.payload;
@@ -220,13 +224,13 @@ const genAiSlice = createSlice({
       .addCase(submitGenAiRequest.pending, (state) => {
         state.loading = true;
         state.error = null;
-       
+
         state.isSubmitGenAiFailed = false; // Reset the flag when starting a new request
       })
-      .addCase(submitGenAiRequest.fulfilled, (state,action) => {
+      .addCase(submitGenAiRequest.fulfilled, (state, action) => {
         state.loading = false;
-        state.isSubmitGenAiFailed = false; 
-         state.genAiRequestSubmit=action.payload
+        state.isSubmitGenAiFailed = false;
+        state.genAiRequestSubmit = action.payload
       })
       .addCase(submitGenAiRequest.rejected, (state, action) => {
         state.loading = false;
@@ -284,7 +288,7 @@ const genAiSlice = createSlice({
           (action.payload as string) || "Failed to insert GenAI chat";
       });
 
-      // Handle deleteGenAiChat
+    // Handle deleteGenAiChat
     builder
       .addCase(deleteGenAiChat.pending, (state) => {
         state.loading = true;
@@ -305,14 +309,13 @@ const genAiSlice = createSlice({
           (action.payload as string) || "Failed to delete GenAI chat";
       });
 
-      // update genAi _chat based on Id
+    // update genAi _chat based on Id
     builder
       .addCase(updateGenAiChatTaskId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateGenAiChatTaskId.fulfilled, (state, action) =>
-        {
+      .addCase(updateGenAiChatTaskId.fulfilled, (state, action) => {
         state.loading = false;
         const updatedChat = action.payload as GenAiChat;
 
@@ -356,9 +359,10 @@ export const {
   resetGenAiState,
   resetIsGenAiSumitFailed,
   updateIsRenameGenAiModal,
-updateMaskIntoRequest,
+  updateMaskIntoRequest,
   updateTaskId,
   setCurrentGenAiImage,
+  resetMaskIntoRequest
 } = genAiSlice.actions;
 
 // Export reducer

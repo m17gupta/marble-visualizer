@@ -6,7 +6,7 @@ const VoiceRecognitionTest: React.FC = () => {
 
   const handleTranscript = (text: string) => {
     setTranscript(text);
-    console.log('Received transcript:', text);
+
   };
 
   return (

@@ -113,7 +113,7 @@ export function SideBar({ sidebarCollapsed, setSidebarCollapsed }: { sidebarColl
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(item.href);
-          console.log(item.name);
+          
           return (
             <motion.button
               key={item.name}

@@ -107,7 +107,7 @@ const VoiceRecognition: React.FC<VoiceRecognitionProps> = ({ onTranscript }) => 
       setIsListening(false);
       SpeechRecognition.stopListening();
       if (onTranscript && transcript) {
-        console.log('Transcript:', transcript);
+    
         onTranscript(transcript);
       }
     } catch (err) {

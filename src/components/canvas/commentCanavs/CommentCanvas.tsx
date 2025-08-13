@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import CommonToolBar from '../CommonToolBar';
 import CommentHome from '@/components/comments/CommentHome';
-import Loading from '@/components/loading/Loading';
+
 
 type NamedFabricObject = fabric.Object & { name?: string };
 
@@ -245,25 +245,14 @@ const CommentCanvas = ({ imageUrl, width = 800, height = 600, className, onImage
             
             const containerRect = containerElement.getBoundingClientRect();
             
-            // Method 1: Calculate using canvas offset
-            // console.log("canvasRect.top:", canvasRect.top);
-            // console.log("canvasRect.left:", canvasRect.left);
-            // console.log("containerRect.top:", containerRect.top);
-            // console.log("containerRect.left:", containerRect.left);
-            // console.log("mouseEvent.clientX", mouseEvent.clientX);
-            // console.log("mouseEvent.clientY:", mouseEvent.clientY);
             const canvasOffsetX = canvasRect.left - containerRect.left;
             const canvasOffsetY = canvasRect.top - containerRect.top;
             const pointer = canvas.getPointer(e.e);
             const canvasRelativeX = canvasOffsetX + pointer.x;
             const canvasRelativeY = canvasOffsetY + pointer.y;
             
-            // Method 2: Use mouse event coordinates directly
-            // const mouseRelativeX = mouseEvent.clientX - containerRect.left;
-            // const mouseRelativeY = mouseEvent.clientY - containerRect.top;
-
             const activeObject = canvas.getActiveObject() as NamedFabricObject;
-       
+             console.log("Active object on mouse down:", activeObject);
             // Only show avatar if we clicked on a segment (active object with a name)
             if (activeObject && activeObject.name) {
                 console.log("Setting avatar position for segment:", activeObject.name);

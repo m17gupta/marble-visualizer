@@ -16,7 +16,7 @@ const CommentLists = () => {
     const dispatch = useDispatch();
     const handleCommentHover = (id: string) => {
       const currentComment = projectComments.find(comment => comment.id === id);
-      console.log('Comment hovered:', id, currentComment);
+      
       if (!currentComment) return;
       dispatch(setCurrentComments(currentComment));
 

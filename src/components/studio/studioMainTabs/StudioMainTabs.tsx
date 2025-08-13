@@ -27,7 +27,7 @@ const StudioMainTabs = () => {
   );
   const handleChangeTab = (value: string) => {
     dispatch(updateActiveTab(value));
-    console.log("Tab changed to:", value);
+    
   };
 
   const handleDesignHubClick = () => {
