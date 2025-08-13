@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import ProcessImage from './ProcessImage';
 import GalleryImage from './GalleryImage';
 import MaskImage from './MaskImage';
+import ChatPallet from './ChatPallet';
 const ChatHome = () => {
   const dispatch = useDispatch<AppDispatch>();
       const { requests: genAiRequests } = useSelector((state: RootState) => state.genAi);
@@ -132,7 +133,7 @@ const handleGenerateAiImage = () => {
             <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-t border-gray-200">
               {/* Left Icons */}
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Tooltip>
+                {/* <Tooltip>
                   <TooltipTrigger asChild>
                     <button className="flex items-center gap-1 hover:text-purple-600 px-1 py-1">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bricks" viewBox="0 0 16 16">
@@ -143,7 +144,7 @@ const handleGenerateAiImage = () => {
                   <TooltipContent>
                     <p>Add Pallet</p>
                   </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
 
                 {/* <Tooltip>
                   <TooltipTrigger asChild>
@@ -159,7 +160,7 @@ const handleGenerateAiImage = () => {
                     <p>Add Image</p>
                   </TooltipContent>
                 </Tooltip> */}
-
+<ChatPallet/>
                 <GalleryImage/>
 
                 {/* <button className="text-base hover:text-purple-600 transition p-0 text-center" title="Start voice recording">
