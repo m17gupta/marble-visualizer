@@ -5,14 +5,20 @@ import { useSelector } from 'react-redux';
 const RequestPallet = () => {
     // const dispatch = useDispatch<AppDispatch>();
     const { requests: genAiRequests } = useSelector((state: RootState) => state.genAi);
+   
+    
+    // Check if paletteUrl exists, has length, and contains non-empty strings
+    const hasValidPaletteUrl = genAiRequests.paletteUrl && 
+                              genAiRequests.paletteUrl.length > 0 && 
+                              genAiRequests.paletteUrl.some(url => url && url.trim() !== '');
+    
     return (
         <>
-           {genAiRequests.paletteUrl &&
-            genAiRequests.paletteUrl.length > 0 &&
+           {hasValidPaletteUrl &&
             <div className="relative w-16 h-16 rounded overflow-hidden border">
                 <img
                    // src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
-                   src={genAiRequests?.paletteUrl[0] || "https://via.placeholder.com/150"}
+                   src={genAiRequests?.paletteUrl?.[0] || "https://via.placeholder.com/150"}
                     alt="Thumb"
                     className="object-cover w-full h-full"
                 />

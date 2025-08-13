@@ -17,6 +17,7 @@ import { GenAiRequest } from '@/models/genAiModel/GenAiModel';
 import { toast } from 'sonner';
 import ProcessImage from './ProcessImage';
 import GalleryImage from './GalleryImage';
+import MaskImage from './MaskImage';
 const ChatHome = () => {
   const dispatch = useDispatch<AppDispatch>();
       const { requests: genAiRequests } = useSelector((state: RootState) => state.genAi);
@@ -92,8 +93,12 @@ const handleGenerateAiImage = () => {
             <div className="flex gap-3">
             
                    <RequestPallet/>
+                   
+                   <MaskImage/>
 
                    <RequestMasterImage/>
+
+                   
 
             
               

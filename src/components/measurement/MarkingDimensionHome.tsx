@@ -33,7 +33,7 @@ const MarkingDimensionHome = () => {
 
     const handleSaveData = async (data: DistanceRefModal) => {
         // Handle save logic here
-        console.log("Saved Data:", data);
+    
         dispatch(updateIsDistanceRef(false));
         dispatch(setCanvasType("hover"));
         setIsOpenModal(false);

@@ -27,7 +27,7 @@ const CreateMasterArrays = () => {
         const sameGrpSeg: MasterGroupModel[] = [];
         const allsameGrp = allSegments.filter((item) => item.segment_type === grpName);
         const getallGrpName = Array.from(new Set(allsameGrp.map((item) => item.group_label_system)));
-        console.log("getallGrpName", getallGrpName);
+      
         getallGrpName.forEach((grp) => {
           const sameGrp = allsameGrp.filter((item) => item.group_label_system === grp);
           sameGrpSeg.push({
@@ -35,7 +35,6 @@ const CreateMasterArrays = () => {
             segments: sameGrp,
           });
         });
-        console.log("sameGrpSeg", sameGrpSeg);
         if (sameGrpSeg.length > 0) {
           segData.push({
             id: segment.id,

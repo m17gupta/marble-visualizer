@@ -112,10 +112,7 @@ const SegmentEditModal = ({ open, onClose, onSave }: EditSegmentModalProps) => {
       setAllCategories(uniqueCategories);
       // setShortTitle(seg?.short_code || "");
       if (masterArray && seg?.short_code && seg && seg.name) {
-        console.log("Master Array:", masterArray);
-        console.log("Segment Type:", segType);
-        console.log("Segment Short Code:", seg?.short_code);
-        console.log("Segment:", seg);
+      
         handleSegGroupName(masterArray, segType, seg?.short_code, seg);
       }
     }

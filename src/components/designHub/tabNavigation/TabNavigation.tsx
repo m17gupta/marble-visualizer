@@ -66,7 +66,7 @@ const TabNavigation = ({ title, segment }: Props) => {
 
 
   const handleEditSegment = (segment: SegmentModal) => {
-    console.log("Editing segment:", segment);
+   
     dispatch(updateSelectedSegment(segment));
     dispatch(updateIsSegmentEdit(true));
     // Implement your edit logic here
@@ -85,12 +85,12 @@ const TabNavigation = ({ title, segment }: Props) => {
   }
 
   const handleDeleteSegment = async (segmentId: number) => {
-    console.log("Deleting segment with ID:", segmentId);
+    
     try {
       const response = await dispatch(deleteSegmentById(segmentId)).unwrap();
-      console.log("Delete response:", response);
+     
       if (response && response.success) {
-        console.log("Segment deleted successfully");
+      
 
         // delete segment from master array
         dispatch(deleteSegment(segmentId));
