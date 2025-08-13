@@ -18,6 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import CommonToolBar from '../CommonToolBar';
 import CommentHome from '@/components/comments/CommentHome';
+import { unknown } from 'zod';
 
 
 type NamedFabricObject = fabric.Object & { name?: string };
@@ -254,12 +255,13 @@ const CommentCanvas = ({ imageUrl, width = 800, height = 600, className, onImage
             const activeObject = canvas.getActiveObject() as NamedFabricObject;
              console.log("Active object on mouse down:", activeObject);
             // Only show avatar if we clicked on a segment (active object with a name)
-            if (activeObject && activeObject.name) {
-                console.log("Setting avatar position for segment:", activeObject.name);
+            const segName = activeObject?.name || "unknown";
+            if (segName) {
+                console.log("Setting avatar position for segment:", segName);
                 // Use Method 2 (mouse event coordinates) as it's more reliable
                 setMousePositionX(canvasRelativeX+200);
                 setMousePositionY(canvasRelativeY+70)
-                setSegName(activeObject.name);
+                setSegName(segName);
             } else {
                 // Clear avatar if clicking on empty area
                 console.log("Clicked on empty area, clearing avatar");

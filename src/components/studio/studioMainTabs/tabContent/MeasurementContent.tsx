@@ -74,8 +74,11 @@ const MeasurementContent: React.FC = () => {
 
   // Set initial active tab
   useEffect(() => {
-    if (masterArray && masterArray.length > 0 && !activeTab) {
-      setActiveTab(masterArray[0]?.name!);
+    if (masterArray && 
+      masterArray.length > 0 &&
+      masterArray[0]?.name &&
+      !activeTab) {
+      setActiveTab(masterArray[0]?.name);
     }
   }, [masterArray, activeTab]);
 

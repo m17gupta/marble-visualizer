@@ -236,8 +236,7 @@ export class AuthAPI {
   } | null> {
     try {
       const { data, error } = await supabase.auth.getUser();
-  
-     
+
       if (error) {
         // Handle "Auth session missing!" as a normal case when user is not logged in
         if (error.message === "Auth session missing!") {
@@ -261,6 +260,7 @@ export class AuthAPI {
       const userAuth: User = {
         id: data.user.id,
         email: data.user.email || "",
+         name: data.user.user_metadata?.full_name || "",
         profile: 0, // Default profile ID or fetch from database
         is_active: true,
         status: "active",
