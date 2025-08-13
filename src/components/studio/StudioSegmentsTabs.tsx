@@ -77,7 +77,7 @@ const StudioTabs = () => {
   }, [selectedGroupSegment]);
 
   const handleAddGroupSegment = () => {
-    console.log("Add Segment Clicked", currentSelectedGroupSegment);
+
     if (currentSelectedGroupSegment == null) {
       alert("please select the group segment");
     } else {

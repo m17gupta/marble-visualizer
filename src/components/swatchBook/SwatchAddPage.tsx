@@ -570,7 +570,7 @@ const SwatchAddPage: React.FC = () => {
           }
         );
 
-        console.log(mappedData);
+       
         let err = null;
 
         for (const d of mappedData) {

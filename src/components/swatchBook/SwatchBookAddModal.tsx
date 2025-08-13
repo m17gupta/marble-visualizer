@@ -171,7 +171,7 @@ export default function SwatchBookAddModal({
     updateEdit();
   }, [edit]);
 
-  console.log(selectionfn);
+ 
 
   useEffect(() => {
     if (!open && !edit) {
@@ -224,7 +224,7 @@ export default function SwatchBookAddModal({
     unit: string | null | undefined,
     keyname: string
   ): void => {
-    console.log(unit, value);
+    
     setCurrentVariant((prev) => ({
       ...prev,
       [attrName]: {

@@ -41,7 +41,7 @@ const GeneratedMask = () => {
     dispatch(updateMaskIntoRequest(allAnnotations));
     // dispatch(updateIsGenerateMask(true))
     //  dispatch(setIsCanvasModalOpen(false));
-     dispatch(updateIsScreenShotTaken(false)); // Reset screenshot taken flag
+     dispatch(updateIsScreenShotTaken(true)); // Reset screenshot taken flag
   }
 
   const handleCancel = () => {

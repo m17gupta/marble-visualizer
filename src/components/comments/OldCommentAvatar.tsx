@@ -32,7 +32,7 @@ const OldCommentAvatar = ({onSave, onDeleteComment}:Props) => {
         }
     },[currentComments])
     const handleOpenReply = (data: string) => {
-        console.log("Open reply clicked for old comment:", data);
+        
         setSegtName(data);
         setLocalMessage(''); // Reset message when opening reply
     };
@@ -44,8 +44,7 @@ const OldCommentAvatar = ({onSave, onDeleteComment}:Props) => {
 
     const handleSaveComment = (previousData: CommentModel[], commentId: string) => {
         if (localMessage.trim()) {
-            console.log("Saving comment:", localMessage);
-            // TODO: Implement save logic here
+           
             const data: CommentModel = {
                 userId: user?.id || '',
                 name: user?.name || 'Anonymous',
@@ -54,7 +53,7 @@ const OldCommentAvatar = ({onSave, onDeleteComment}:Props) => {
                 updated_at: new Date().toISOString(),
             };
             const updatedComments: CommentModel[] = [...previousData, data];
-            console.log("Updated comments:", updatedComments);
+           
             dispatch(setAddReplies(updatedComments)); 
             onSave(updatedComments, commentId);
             setSegtName(null);
@@ -95,8 +94,7 @@ const OldCommentAvatar = ({onSave, onDeleteComment}:Props) => {
                     // Extract position from comment data or use default
                     const position = comment.position || [100, 100]; // Default position if not available
                     const allComments = JSON.parse(comment.comments || '[]') as CommentModel[];
-                    console.log("Rendering comment at position:", allComments);
-
+                   
                     return (
                         <div key={comment.id}>
                             <CommentAvatar

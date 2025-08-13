@@ -16,10 +16,12 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { Plus, Minus } from "lucide-react";
 import { MdOutlineAddHome } from "react-icons/md";
-import { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
 import TabView from "./TabView";
 import InfoView from "./InfoView";
+import { TbHomePlus } from "react-icons/tb";
+import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 
 
 
@@ -54,17 +56,22 @@ const formatRelativeDate = (dateString: string) => {
 };
 
 export default function ChatHistory() {
-
-  const {list :jobList} = useSelector((state: RootState) => state.jobs);
+   const dispatch = useDispatch<AppDispatch>();
+  const { list: jobList } = useSelector((state: RootState) => state.jobs);
   const { genAiImages } = useSelector((state: RootState) => state.genAi);
   const copyImage = async (url: string) => {
-  try {
-    await navigator.clipboard.writeText(url);
-    // TODO: shadcn toast here if you want
-  } catch { 
-    console.error("Failed to copy image URL");
-  }
-};
+    try {
+      await navigator.clipboard.writeText(url);
+      
+    } catch {
+      console.error("Failed to copy image URL");
+    }
+  };
+
+     const handleMasterImage = (imagePath: string) => {
+        
+          dispatch(addHouseImage(imagePath));
+      };
   return (
     <div className="max-w-sm mx-auto p-4 space-y-3">
       {/* ===== All sections as Accordion ===== */}
@@ -107,7 +114,12 @@ export default function ChatHistory() {
                 alt="Original Image"
                 className="w-full rounded-xl object-cover"
               />
-              <Tooltip>
+              <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm"
+                onClick={() => handleMasterImage(jobList[0]?.full_image || '')}
+              >
+                <TbHomePlus />
+              </div>
+              {/* <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     size="icon"
@@ -115,14 +127,14 @@ export default function ChatHistory() {
                     onClick={() => copyImage(jobList[0]?.full_image || '')}
                     className="absolute top-4 right-4 bg-white/90 border-gray-200 shadow hover:bg-white"
                     title="Copy image URL">
-                    {/* <Copy className="w-4 h-4" /> */}
+                    
                     <MdOutlineAddHome className="w-4 h-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Copy image URL</p>
                 </TooltipContent>
-              </Tooltip>
+              </Tooltip> */}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -147,7 +159,7 @@ export default function ChatHistory() {
                       />
                       <div className="text-sm">
                         <div className="font-semibold text-gray-900 leading-tight">
-                          {genAi.name==null ? "Design " + (index + 1) : genAi.name}
+                          {genAi.name == null ? "Design " + (index + 1) : genAi.name}
                         </div>
                         <div className="text-[12px] text-gray-500">
                           {genAi.created ? formatRelativeDate(genAi.created) : 'No date available'}
@@ -180,13 +192,13 @@ export default function ChatHistory() {
                     </div>
 
                     <TabsContent value="view" className="space-y-4 mt-3">
-                        <TabView 
-                          genAi={genAi}
-                        />
+                      <TabView
+                        genAi={genAi}
+                      />
                     </TabsContent>
 
                     <TabsContent value="info" className="text-sm text-gray-600 mt-3">
-                      <InfoView  />
+                      <InfoView />
                     </TabsContent>
                   </Tabs>
                 </AccordionContent>

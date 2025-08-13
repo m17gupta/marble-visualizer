@@ -82,7 +82,7 @@ useEffect(() => {
     setSelectedSegment(null);
     onSave()
   }
-  console.log("updatedSegments", updatedSegments);
+
   return (
     <>
     <Dialog open={open} onOpenChange={open => { if (!open) onClose(); }}>

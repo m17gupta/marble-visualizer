@@ -18,7 +18,7 @@ import { handlePolygonVisibilityOnMouseMove, HideAllSegments } from '../canvasUt
 import { SelectedAnimation } from '../canvasUtil/SelectedAnimation';
 
 
-type NamedFabricObject = fabric.Object & {   name?: string  };
+type NamedFabricObject = fabric.Object & { name?: string };
 
 interface CanvasHoverLayerProps {
     imageUrl?: string;
@@ -29,8 +29,8 @@ interface CanvasHoverLayerProps {
 }
 const PolygonOverlay = ({
     imageUrl,
-    width=1280,
-    height=720,
+    width = 1280,
+    height = 720,
     className,
     onImageLoad,
 }: CanvasHoverLayerProps) => {
@@ -49,10 +49,10 @@ const PolygonOverlay = ({
     const backgroundImageRef = useRef<fabric.Image | null>(null)
     const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
     const { segments } = useSelector((state: RootState) => state.materialSegments);
-  const [imageWidth, setImageWidth] = useState<number>(0);
-  const [imageHeight, setImageHeight] = useState<number>(0);
-  const [updateSelectedSegment, setUpdateSelectedSegment] = useState<SegmentModal | null>(null  );
-  const {selectedSegment} = useSelector((state: RootState) => state.masterArray);
+    const [imageWidth, setImageWidth] = useState<number>(0);
+    const [imageHeight, setImageHeight] = useState<number>(0);
+    const [updateSelectedSegment, setUpdateSelectedSegment] = useState<SegmentModal | null>(null);
+    const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
 
 
     // upate all segmnet Array
@@ -65,7 +65,7 @@ const PolygonOverlay = ({
     }, [allSegmentArray]);
 
     // Update selected segment
-    useEffect(() => {   
+    useEffect(() => {
         if (selectedSegment) {
             setUpdateSelectedSegment(selectedSegment);
         } else {
@@ -240,73 +240,74 @@ const PolygonOverlay = ({
 
 
 
-useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-     if (!canvas) {
-        console.warn("[PolygonOverlay] No canvas instance available.");
-        return;
-    }
-    if (allSegArray.length === 0) {
-        console.warn("[PolygonOverlay] allSegArray is empty.");
-        return;
-    }
-    if (imageHeight === 0 || imageWidth === 0) {
-        console.warn(`[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`);
-        return;
-    }
 
-    // Remove previous polygons (but not the background image)
-    const objectsToRemove = canvas.getObjects().filter(obj => obj.type === 'polygon');
-    objectsToRemove.forEach(obj => canvas.remove(obj));
+    useEffect(() => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas) {
+            console.warn("[PolygonOverlay] No canvas instance available.");
+            return;
+        }
+        if (allSegArray.length === 0) {
+            console.warn("[PolygonOverlay] allSegArray is empty.");
+            return;
+        }
+        if (imageHeight === 0 || imageWidth === 0) {
+            console.warn(`[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`);
+            return;
+        }
 
-    allSegArray.forEach((seg, idx) => {
-        const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
-        const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
-        const isFill = true;
-    if (!annotation_points_float || annotation_points_float.length === 0) {
-            console.warn(`[PolygonOverlay] Segment ${idx} missing annotation_points_float`, seg);
-            return;
-        }
-        if (!segment_bb_float || segment_bb_float.length === 0) {
-            console.warn(`[PolygonOverlay] Segment ${idx} missing segment_bb_float`, seg);
-            return;
-        }
-        if (!group_label_system) {
-            console.warn(`[PolygonOverlay] Segment ${idx} missing group_label_system`, seg);
-            return;
-        }
-        if (!short_title) {
-            console.warn(`[PolygonOverlay] Segment ${idx} missing short_title`, seg);
-            return;
-        }
-        if (!segment_type) {
-            console.warn(`[PolygonOverlay] Segment ${idx} missing segment_type`, seg);
-            return;
-        }
-        if (!segColor) {
-            console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
-            return;
-        }
-        if (!fabricCanvasRef.current) {
-            console.warn(`[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`);
-            return;
-        }
-        
+        // Remove previous polygons (but not the background image)
+        const objectsToRemove = canvas.getObjects().filter(obj => obj.type === 'polygon');
+        objectsToRemove.forEach(obj => canvas.remove(obj));
 
-        collectPoints(
-            annotation_points_float,
-            short_title,
-            segment_bb_float,
-            segment_type,
-            group_label_system,
-            segColor,
-            fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-            isFill,
-            imageHeight,
-            imageWidth
-        );
-    });
-}, [allSegArray, segments, fabricCanvasRef, imageHeight, imageWidth])
+        allSegArray.forEach((seg, idx) => {
+            const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
+            const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
+            const isFill = true;
+            if (!annotation_points_float || annotation_points_float.length === 0) {
+                console.warn(`[PolygonOverlay] Segment ${idx} missing annotation_points_float`, seg);
+                return;
+            }
+            if (!segment_bb_float || segment_bb_float.length === 0) {
+                console.warn(`[PolygonOverlay] Segment ${idx} missing segment_bb_float`, seg);
+                return;
+            }
+            if (!group_label_system) {
+                console.warn(`[PolygonOverlay] Segment ${idx} missing group_label_system`, seg);
+                return;
+            }
+            if (!short_title) {
+                console.warn(`[PolygonOverlay] Segment ${idx} missing short_title`, seg);
+                return;
+            }
+            if (!segment_type) {
+                console.warn(`[PolygonOverlay] Segment ${idx} missing segment_type`, seg);
+                return;
+            }
+            if (!segColor) {
+                console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
+                return;
+            }
+            if (!fabricCanvasRef.current) {
+                console.warn(`[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`);
+                return;
+            }
+         
+
+            collectPoints(
+                annotation_points_float,
+                short_title,
+                segment_bb_float,
+                segment_type,
+                group_label_system,
+                segColor,
+                fabricCanvasRef, // Pass the actual Canvas instance, not the ref
+                isFill,
+                height,
+                width,
+            );
+        });
+    }, [allSegArray, segments, fabricCanvasRef, height, width])
 
 
     const handleMouseMove = useCallback(
@@ -316,8 +317,8 @@ useEffect(() => {
 
             const fabricEvent = event as unknown as { target?: NamedFabricObject };
             const target = fabricEvent.target;
-            
-            if (target!==undefined) {
+
+            if (target !== undefined) {
                 const targetName = target.name;
                 if (targetName) {
                     handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
@@ -334,17 +335,17 @@ useEffect(() => {
 
 
     // hover on group segment
-    const {hoverGroup} = useSelector((state: RootState) => state.canvas);
+    const { hoverGroup } = useSelector((state: RootState) => state.canvas);
     useEffect(() => {
         if (!fabricCanvasRef.current) return;
-        if(hoverGroup==null){
+        if (hoverGroup == null) {
             HideAllSegments(fabricCanvasRef);
-        }else if(hoverGroup.length > 0) {
+        } else if (hoverGroup.length > 0) {
             hoverGroup.forEach((groupName) => {
                 handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
             })
         }
-    },[hoverGroup,fabricCanvasRef]);
+    }, [hoverGroup, fabricCanvasRef]);
 
     // update Animation on selected segment  
     useEffect(() => {
@@ -382,17 +383,17 @@ useEffect(() => {
                     >
                         <Card className="overflow-hidden">
                             <CardContent className="p-0"
-                            
+
                             >
-                                                                                                                                {/* min-h-[720px] min-w-[1280px]" */}
+                                {/* min-h-[720px] min-w-[1280px]" */}
                                 <div className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
-                              
+
                                 >
                                     <canvas
                                         ref={canvasRef}
                                         className="border-0 block"
-    
-                                        style={{ maxWidth: "100%", height: "auto" , }}
+
+                                        style={{ maxWidth: "100%", height: "auto", }}
                                     />
 
 

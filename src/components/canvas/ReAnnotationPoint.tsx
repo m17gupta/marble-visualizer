@@ -23,7 +23,7 @@ const ReAnnotationPoint = () => {
              reAnnotationPoints.length>0 &&
               selectedSegment.segment_type &&isApi.current)  {
             isApi.current = false;
-            console.log("Re-annotation points:", reAnnotationPoints);
+         
             updateReAnnotationPoints(reAnnotationPoints);
         }
     },[reAnnotationPoints, selectedSegment, canvasType]);

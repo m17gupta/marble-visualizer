@@ -36,7 +36,7 @@ const MasterDataAnnotation = ({ annotationPointsFloat, segName, resetAnnotationP
             const ymin = Math.min(...ys);
             const ymax = Math.max(...ys);
 
-            console.log({ xmin, ymin, xmax, ymax });
+         
 
             // const pixelArea = calculatePolygonAreaInPixels(segmentationInt);
             const segData: MsterDataAnnotationResponse = {

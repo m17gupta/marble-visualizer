@@ -7,18 +7,35 @@ import {
 import { GenAiChat } from '@/models/genAiModel/GenAiModel'
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { TbHomePlus } from "react-icons/tb";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 type Props={
     genAi:GenAiChat
 }
 const TabView = ({ genAi }: Props) => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const handleMasterImage = (imagePath: string) => {
+       
+        dispatch(addHouseImage(imagePath));
+    };
     return (
         <>
-            <LazyLoadImage
-                src={genAi.master_image_path}
-                alt="Before"
-                className="w-full rounded-xl object-cover"
-            />
-
+            <div className="relative">
+                <LazyLoadImage
+                    src={genAi.master_image_path}
+                    alt="Before"
+                    className="w-full rounded-xl object-cover"
+                />
+                {/* <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm"
+                onClick={() => handleMasterImage(genAi.master_image_path)}
+                >
+                    <TbHomePlus />
+                </div> */}
+            </div>
+            
             <div
                 className="rounded-2xl px-4 py-3 text-sm text-gray-800 shadow-sm"
                 style={{
@@ -30,11 +47,16 @@ const TabView = ({ genAi }: Props) => {
             </div>
 
             <div className="relative">
-                <img
+                <LazyLoadImage
                     src={genAi.output_image}
                     alt="After"
                     className="w-full rounded-xl object-cover"
                 />
+                <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm"
+                onClick={() => handleMasterImage(genAi.output_image)}
+                >
+                    <TbHomePlus />
+                </div>
                 <Tooltip>
                     <TooltipTrigger asChild>
 

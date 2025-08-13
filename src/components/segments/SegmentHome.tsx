@@ -45,11 +45,10 @@ const handleCloseEditModal = () => {
     };
 
   const handleSaveSegment = async(data: SegmentModal, new_master: MaterialSegmentModel ) => {
-    console.log("Saving Segment Data:", data);
-    console.log("New Master Data:", new_master);
+    
      handleCloseEditModal()
      const isUpdated = await updateSegmentBasedOnId(data);
-     console.log("Is Updated:", isUpdated);
+    
     if (!isUpdated) {
       return;
     }

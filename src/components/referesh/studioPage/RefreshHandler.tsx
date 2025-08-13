@@ -48,7 +48,7 @@ const RefreshHandler = () => {
         // Update sidebar state
         dispatch(updateSidebarHeaderCollapse(false));
         
-        console.log('RefreshHandler: Project state setup complete for project:', project.id);
+
       }
       
       // Set breadcrumb
@@ -82,7 +82,6 @@ const RefreshHandler = () => {
           );
           
           if (targetProject) {
-            console.log('RefreshHandler: Found target project, setting up state...');
             setupProjectState(targetProject);
           } else {
             console.warn('RefreshHandler: Project not found with ID:', projectId);

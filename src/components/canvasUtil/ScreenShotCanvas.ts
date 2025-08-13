@@ -1,3 +1,5 @@
+import * as fabric from "fabric";
+
 /**
  * Takes a screenshot of a canvas element and returns it as a data URL or blob
  * @param canvas - The canvas element to capture
@@ -74,7 +76,7 @@ export async function downloadCanvasScreenshot(
  * @returns Promise<string> - Data URL string
  */
 export async function takeFabricCanvasScreenshot(
-  fabricCanvas: React.RefObject<fabric.Canvas>,
+  fabricCanvas: fabric.Canvas,
   format: string = 'image/png',
   quality: number = 1.0,
   multiplier: number = 1
@@ -86,7 +88,7 @@ export async function takeFabricCanvasScreenshot(
 
     // Use Fabric.js built-in method to export canvas with all objects
     const dataURL = fabricCanvas.toDataURL({
-      format: format.replace('image/', ''), // Remove 'image/' prefix for Fabric.js
+      format: format.replace('image/', '') as fabric.ImageFormat, // Remove 'image/' prefix for Fabric.js
       quality: quality,
       multiplier: multiplier, // For higher resolution screenshots
     });

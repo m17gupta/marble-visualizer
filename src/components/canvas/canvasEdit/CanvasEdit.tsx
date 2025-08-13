@@ -324,7 +324,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       const pol = canvas.getActiveObject() as fabric.Polygon | null;
       if (pol && pol.points) {
         const updatedPoints = pol.points.map(pt => ({ x: pt.x, y: pt.y }));
-        console.log("Updated annotation points:", updatedPoints);
+        
       }
     };
     const handleMouseUp = () => setDragInfo(null);
