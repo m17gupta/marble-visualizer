@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
@@ -15,6 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { updateIsDistanceRef } from "@/redux/slices/jobSlice";
 import MeasurementTab from "@/components/measurement/MeasurementTab";
+import { MeasurementReportPDF } from "./PDF";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 // Type definitions
 interface Segment {
@@ -58,12 +58,12 @@ interface JobData {
   totalCost: string;
 }
 
-
 const MeasurementContent: React.FC = () => {
   const [selectedUnit, setSelectedUnit] = useState<string>("sq. m");
   const [activeTab, setActiveTab] = useState<string>("");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [hasDimensionReference, setHasDimensionReference] =useState<boolean>(false);
+  const [hasDimensionReference, setHasDimensionReference] =
+    useState<boolean>(false);
   const [showPDFModal, setShowPDFModal] = useState<boolean>(false);
 
   // Use mockMasterArray - replace with your actual data source
@@ -71,9 +71,10 @@ const MeasurementContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { list: joblist } = useSelector((state: RootState) => state.jobs);
+
   // Set initial active tab
   useEffect(() => {
-    if (masterArray &&masterArray.length > 0 && !activeTab) {
+    if (masterArray && masterArray.length > 0 && !activeTab) {
       setActiveTab(masterArray[0]?.name!);
     }
   }, [masterArray, activeTab]);
@@ -87,7 +88,7 @@ const MeasurementContent: React.FC = () => {
     totalCost: "$10,845.78",
   };
 
-  const units: string[] = ["sq. m", "sq. ft", "sq. in", "sq. cm"];
+  const units: string[] = ["sq. m", "sq. ft"];
 
   const materials: Material[] = [
     {
@@ -105,7 +106,7 @@ const MeasurementContent: React.FC = () => {
   ];
 
   const handleMarkDimension = (): void => {
-   dispatch(updateIsDistanceRef(true));
+    dispatch(updateIsDistanceRef(true));
     setHasDimensionReference(true);
   };
 
@@ -171,130 +172,6 @@ const MeasurementContent: React.FC = () => {
     return convertedArea.toFixed(2);
   };
 
-  // PDF Generation Function
-  const generatePDF = (): void => {
-    const activeTabData = getActiveTabData();
-    if (!activeTabData) return;
-
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>DZINLY Design Report</title>
-          <style>
-            @page { size: A4; margin: 20mm; }
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; line-height: 1.4; color: #374151; background: white; }
-            .page { width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; background: white; page-break-after: always; }
-            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; }
-            .logo { font-size: 24px; font-weight: bold; margin-bottom: 8px; color: #1f2937; }
-            .date { color: #6b7280; font-size: 14px; }
-            .section-title { font-size: 18px; font-weight: 600; margin: 20px 0 10px 0; color: #1f2937; }
-            .project-info { background: #f9fafb; padding: 15px; border-radius: 8px; margin: 15px 0; }
-            .segments-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            .segments-table th, .segments-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-            .segments-table th { background: #f9fafb; font-weight: 600; }
-            @media print { body { -webkit-print-color-adjust: exact; } .page { margin: 0; } }
-          </style>
-        </head>
-        <body>
-          <div class="page">
-            <div class="header">
-              <h1 class="logo">🏢 DZINLY DESIGN REPORT</h1>
-              <p class="date">${mockJobData.date}</p>
-            </div>
-            
-            <h2 class="section-title">Project Summary</h2>
-            <div class="project-info">
-              <p><strong>Project:</strong> ${mockJobData.projectName}</p>
-              <p><strong>Address:</strong> ${mockJobData.address}</p>
-              <p><strong>Active Section:</strong> ${activeTab}</p>
-              <p><strong>Total Area:</strong> ${convertArea(
-                getTotalAreaForTab(activeTab)
-              )} ${selectedUnit}</p>
-            </div>
-            
-            <h3 class="section-title">${activeTab} Segments</h3>
-            <table class="segments-table">
-              <thead>
-                <tr>
-                  <th>Group</th>
-                  <th>Segment ID</th>
-                  <th>Title</th>
-                  <th>Area (${selectedUnit})</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${activeTabData.allSegments
-                  .map((group: any) =>
-                    group.segments
-                      .map(
-                        (segment: any) => `
-                    <tr>
-                      <td>${group.groupName}</td>
-                      <td>${segment.short_title}</td>
-                      <td>${segment.title || "Untitled"}</td>
-                      <td>${convertArea(segment.seg_area_sqmt || 0)}</td>
-                    </tr>
-                  `
-                      )
-                      .join("")
-                  )
-                  .join("")}
-              </tbody>
-            </table>
-          </div>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
-  };
-
-  const PDFModal: React.FC = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">
-            PDF Report Preview
-          </h3>
-          <button
-            onClick={() => setShowPDFModal(false)}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            type="button">
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
-        </div>
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={() => setShowPDFModal(false)}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-              type="button">
-              Cancel
-            </button>
-            <button
-              onClick={generatePDF}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
-              type="button">
-              <Download className="w-4 h-4" />
-              <span>Download PDF</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   const activeTabData = getActiveTabData();
 
   return (
@@ -318,7 +195,8 @@ const MeasurementContent: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setSelectedUnit(e.target.value)
               }
-              className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white">
+              className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
               {units.map((unit: string) => (
                 <option key={unit} value={unit}>
                   {unit}
@@ -341,8 +219,8 @@ const MeasurementContent: React.FC = () => {
             </div>
 
             {joblist &&
-            joblist.length>0 &&
-            joblist[0].distance_ref!=null ? (
+            joblist.length > 0 &&
+            joblist[0].distance_ref != null ? (
               <div className="flex items-center space-x-2 text-sm">
                 <span className="text-green-600 font-medium">
                   {joblist[0].distance_ref?.distance_meter} reference
@@ -353,7 +231,8 @@ const MeasurementContent: React.FC = () => {
               <button
                 onClick={handleMarkDimension}
                 className="text-xs px-3 py-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                type="button">
+                type="button"
+              >
                 Mark Dimension
               </button>
             )}
@@ -361,16 +240,15 @@ const MeasurementContent: React.FC = () => {
         </div>
 
         {/* Tab Navigation */}
-          <MeasurementTab/>
-
-     
+        <MeasurementTab selectedUnit={selectedUnit} />
 
         {/* Footer Action */}
         <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
           <button
             onClick={() => setShowPDFModal(true)}
             className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm font-medium"
-            type="button">
+            type="button"
+          >
             <Download className="w-4 h-4" />
             <span>Export PDF Report</span>
           </button>
@@ -378,9 +256,80 @@ const MeasurementContent: React.FC = () => {
       </div>
 
       {/* PDF Modal */}
-      {showPDFModal && <PDFModal />}
+      {showPDFModal && (
+        <PDFModal
+          setShowPDFModal={setShowPDFModal}
+          mockJobData={mockJobData}
+          activeTab={activeTab}
+          selectedUnit={selectedUnit}
+          convertArea={convertArea}
+          masterArray={masterArray}
+        />
+      )}
     </div>
   );
 };
 
 export default MeasurementContent;
+
+const PDFModal = ({
+  setShowPDFModal,
+  mockJobData,
+  activeTab,
+  selectedUnit,
+  convertArea,
+  masterArray,
+}: any) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800">
+            PDF Report Preview
+          </h3>
+          <button
+            onClick={() => setShowPDFModal(false)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            type="button"
+          >
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        <div className="p-4 bg-gray-50 h-[80vh] overflow-auto">
+          <PDFViewer width="100%" height="100%">
+            <MeasurementReportPDF
+              jobData={mockJobData}
+              activeTab={activeTab}
+              selectedUnit={selectedUnit}
+              masterArray={masterArray}
+              convertArea={convertArea}
+            />
+          </PDFViewer>
+        </div>
+        <div className="p-4 flex justify-end border-t border-gray-200">
+          <PDFDownloadLink
+            document={
+              <MeasurementReportPDF
+                jobData={mockJobData}
+                activeTab={activeTab}
+                selectedUnit={selectedUnit}
+                masterArray={masterArray}
+                convertArea={convertArea}
+              />
+            }
+            fileName="measurement-report.pdf"
+          >
+            {({ loading }) => (
+              <button
+                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                type="button"
+              >
+                {loading ? "Generating..." : "Download PDF"}
+              </button>
+            )}
+          </PDFDownloadLink>
+        </div>
+      </div>
+    </div>
+  );
+};

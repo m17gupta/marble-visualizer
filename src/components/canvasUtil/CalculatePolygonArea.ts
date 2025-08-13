@@ -6,7 +6,9 @@
  */
 export function calculatePolygonAreaInPixels(points: number[]): number {
   if (points.length < 6 || points.length % 2 !== 0) {
-    throw new Error('Points array must have at least 6 elements (3 points) and even number of elements');
+    throw new Error(
+      "Points array must have at least 6 elements (3 points) and even number of elements"
+    );
   }
 
   let area = 0;
@@ -18,17 +20,20 @@ export function calculatePolygonAreaInPixels(points: number[]): number {
     const currentY = points[i * 2 + 1];
     const nextX = points[((i + 1) % n) * 2];
     const nextY = points[((i + 1) % n) * 2 + 1];
-    
+
     area += currentX * nextY;
     area -= nextX * currentY;
   }
 
   // Calculate area in pixels first
   const pixelArea = Math.abs(area) / 2;
-  
+
   // Convert to square meters
   // // Since area is 2D, we need to square the pixel to meter ratio
   // const meterArea = pixelArea * Math.pow(pixelToMeterRatio, 2);
-  
+
   return pixelArea;
 }
+
+export const meterArea = (pixelArea: number, pixelToMeterRatio: number) =>
+  pixelArea * Math.pow(pixelToMeterRatio, 2);
