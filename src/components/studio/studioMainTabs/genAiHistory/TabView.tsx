@@ -11,6 +11,7 @@ import { TbHomePlus } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { setCurrentInspTab } from "@/redux/slices/InspirationalSlice/InspirationTabSlice";
 type Props={
     genAi:GenAiChat
 }
@@ -20,6 +21,7 @@ const TabView = ({ genAi }: Props) => {
     const handleMasterImage = (imagePath: string) => {
        
         dispatch(addHouseImage(imagePath));
+        dispatch(setCurrentInspTab("chat"));
     };
     return (
         <>

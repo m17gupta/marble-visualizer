@@ -309,7 +309,7 @@ export class MaterialApi {
 
       // Fetch materials for each category
       const materialsCategoryPromises = categoryIds.map((categoryName) =>
-        categoryService.getCategoryByName(categoryName)
+        categoryService.getCategoryByName([categoryName])
       );
 
       const materialsCategoryResults = await Promise.all(
@@ -319,7 +319,7 @@ export class MaterialApi {
       // Extract successful category results and filter out errors
       const allCategories = materialsCategoryResults
         .filter((result) => result.success && result.data)
-        .map((result) => result.data as CategoryModel);
+        .flatMap((result) => result.data as CategoryModel[]);
 
       if (allCategories.length === 0) {
         return {

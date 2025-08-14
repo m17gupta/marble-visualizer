@@ -14,7 +14,7 @@ import * as fabric from "fabric";
  */
 export const AddImageToCanvas = (
   imgElement: HTMLImageElement,
-      canvasRef: React.RefObject<fabric.Canvas>,
+  canvasRef: React.RefObject<fabric.Canvas>,
   width: number,
   height: number,
   backgroundImageRef: React.MutableRefObject<fabric.Image | null>,
@@ -26,32 +26,36 @@ export const AddImageToCanvas = (
     selectable: false,
     evented: false,
     excludeFromExport: false,
-  
   });
 
   // Calculate scaling to fit canvas
   const canvasAspect = width / height;
   const imgAspect = imgElement.width / imgElement.height;
-
+  const canvasWidth = canvas.width;
+  const canvasHeight = canvas.height;
   let scale;
   if (imgAspect > canvasAspect) {
     scale = width / imgElement.width;
-    console.log("scale", scale);
+    console.log("scale--> ", scale);
   } else {
     scale = height / imgElement.height;
-    console.log("scale", scale);
+    console.log("scale--> else", scale);
   }
 
-  // const scaleX=1280/ imgElement.width;
-  // const scaleY=720/ imgElement.height;
-  // console.log("scaleX",scaleX);
-  // console.log("scaleY",scaleY);
+  const scaleX = canvasWidth / imgElement.width;
+  const scaleY = canvasHeight / imgElement.height;
+  console.log("scaleX", scaleX);
+  console.log("scaleY", scaleY);
   fabricImage.scale(scale);
   fabricImage.set({
     left: (width - imgElement.width * scale) / 2,
     top: (height - imgElement.height * scale) / 2,
-    
+    // originX: "left",
+    // originY: "top",
+
   });
+  console.log("width image", (width - imgElement.width * scale) / 2);
+  console.log("height image", (height - imgElement.height * scale) / 2);
 
   // Store reference and add to canvas
   backgroundImageRef.current = fabricImage;
@@ -90,7 +94,7 @@ export const LoadImageWithCORS = (
  * Loads an image using fetch with a specified request mode, then creates an HTMLImageElement from the blob.
  * @param imageUrl The image URL.
  * @param fetchMode The fetch RequestMode ("cors", "no-cors", "same-origin").
- * @returns Promise resolving to an HTMLImageElement.
+ * @returns Promise resolving to an HTMLImageElement with fixed dimensions (1023x592).
  */
 export const LoadImageWithFetch = async (
   imageUrl: string,
@@ -113,6 +117,7 @@ export const LoadImageWithFetch = async (
     return new Promise((resolve, reject) => {
       const imgElement = new window.Image();
       imgElement.onload = () => {
+       
         URL.revokeObjectURL(objectUrl);
         resolve(imgElement);
       };

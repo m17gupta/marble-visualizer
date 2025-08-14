@@ -131,7 +131,7 @@ export function SwatchFilters({ compact = false }: SwatchFiltersProps) {
   useEffect(() => {
     if (filters.category) {
       const filteredBrands = brands.filter(
-        (b) => b.material_category_id.toString() === filters.category
+        (b) => b?.material_category_id?.toString() === filters.category
       );
 
       setAllBrands(filteredBrands);

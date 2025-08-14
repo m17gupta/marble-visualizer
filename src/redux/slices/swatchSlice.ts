@@ -1,3 +1,4 @@
+import { MaterialSegmentModel } from "@/models/materialSegment";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export interface FilterSwatchModel {
@@ -49,6 +50,7 @@ export interface Swatch {
 
 export interface SwatchFilters {
   search: string;
+  selectedSegment: MaterialSegmentModel | null;
   category: string | null;
   brand: string | null;
   style: string | null;
@@ -91,6 +93,7 @@ const initialState: SwatchState = {
   favorites: JSON.parse(localStorage.getItem("swatch_favorites") || "[]"),
   filters: {
     search: "",
+    selectedSegment: null,
     category: null,
     brand: null,
     style: null,

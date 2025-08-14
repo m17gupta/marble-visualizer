@@ -160,6 +160,9 @@ const genAiSlice = createSlice({
     addPaletteImage: (state, action) => {
       state.requests.paletteUrl = [action.payload];
     },
+    resetPaletteImage: (state) => {
+      state.requests.paletteUrl = []; // Reset the palette URL to an empty array
+    },
     addPrompt: (state, action) => {
       if (!action.payload || action.payload.trim() === "") {
         state.requests.prompt = []; // Do not add empty or whitespace-only prompts
@@ -362,7 +365,8 @@ export const {
   updateMaskIntoRequest,
   updateTaskId,
   setCurrentGenAiImage,
-  resetMaskIntoRequest
+  resetMaskIntoRequest,
+  resetPaletteImage
 } = genAiSlice.actions;
 
 // Export reducer
