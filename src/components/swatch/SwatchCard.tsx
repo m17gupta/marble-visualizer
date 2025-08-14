@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
-import { toggleFavorite } from "@/redux/slices/swatchSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { updateUserProfile } from "@/redux/slices/userProfileSlice";

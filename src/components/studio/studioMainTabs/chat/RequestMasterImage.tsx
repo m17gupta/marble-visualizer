@@ -25,7 +25,7 @@ const RequestMasterImage = () => {
       {genAiRequests.houseUrl ? (
         <div className="flex-1 group relative max-w-60">
           <LazyLoadImage
-            //   src="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/CarolynReformatted_1753799607502_hgvazm.jpg"
+          
             src={
               genAiRequests?.houseUrl[0] || "https://via.placeholder.com/150"
             }

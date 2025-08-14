@@ -386,7 +386,8 @@ const PolygonOverlay = ({
 
                             >
                                 {/* min-h-[720px] min-w-[1280px]" */}
-                                <div className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
+                                <div 
+                                 className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
 
                                 >
                                     <canvas

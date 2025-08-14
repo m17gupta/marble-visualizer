@@ -8,3 +8,7 @@ export interface StyleModel {
   status: boolean;
   photo: string;     
 }
+
+export interface SearchStyleModel extends StyleModel {
+ material_brand_title?: string;
+}

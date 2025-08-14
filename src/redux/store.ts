@@ -18,26 +18,29 @@ import brandSlice from './slices/materialSlices/brandSlice'; // New brand slice
 import StyleSlice from './slices/materialSlices/StyleSlice'; // Assuming styles are part of swatches
 import inspirationalColorSlice from './slices/InspirationalSlice/inspirationalColorSlice'; // New inspirational color slice
 import inspirationalImageSlice from './slices/InspirationalSlice/inspirationalImageSlice'; // New inspirational image slice
+import inspirationTabSlice from './slices/InspirationalSlice/InspirationTabSlice'; // New inspiration tab slice
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
 import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; // 
-import workspaceSlice from './slices/visualizerSlice/workspaceSlice'; 
-import  tabControlSlice from './slices/TabControlSlice'; // New tab control slice
+import workspaceSlice from './slices/visualizerSlice/workspaceSlice';
+import tabControlSlice from './slices/TabControlSlice'; // New tab control slice
 import masterArraySlice from './slices/MasterArraySlice'; // New master array slice
 import projectAnalyseSlice from './slices/projectAnalyseSlice';
 import jobCommentsSlice from "./slices/comments/JobComments"; // New job comments slice
+import FilterSwatchSlice from './slices/swatch/FilterSwatchSlice';
+
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     userProfile: userProfileSlice,
     projects: projectSlice,
-    masterArray:masterArraySlice,
+    masterArray: masterArraySlice,
     segments: segmentsSlice,
     jobComments: jobCommentsSlice, // New job comments slice
     canvas: canvasSlice, // New canvas slice
     materials: materialsSlice,
     materialSegments: materialSegmentSlice,
     genAi: genAiSlice, // New GenAI slice
-
+    filterSwatch: FilterSwatchSlice,
     jobs: jobSlice, // New job slice based on JobModel
     activityLogs: activityLogsSlice,
     swatches: swatchSlice,
@@ -46,11 +49,11 @@ export const store = configureStore({
     styles: StyleSlice, // Assuming styles are part of swatches
     inspirationalColors: inspirationalColorSlice, // New inspirational color slice
     inspirationalImages: inspirationalImageSlice, // New inspirational image slice
+    inspirationTab: inspirationTabSlice, // New inspiration tab slice
     subscriptionPlan: subscriptionPlanSlice,
     workspace: workspaceSlice, // New workspace slice
     studio: studioSlice,
-    tabControl: tabControlSlice 
-    ,
+    tabControl: tabControlSlice,
     projectAnalyse: projectAnalyseSlice
   },
   middleware: (getDefaultMiddleware) =>

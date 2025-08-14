@@ -612,7 +612,7 @@ const brandSlice = createSlice({
 
         // Add to category-specific brands if applicable
         const categoryId = action.payload.material_category_id;
-        if (state.brandsByCategory[categoryId]) {
+        if (categoryId && state.brandsByCategory[categoryId]) {
           state.brandsByCategory[categoryId].unshift(action.payload);
         }
         
@@ -652,9 +652,9 @@ const brandSlice = createSlice({
 
         // Update in category-specific brands
         const categoryId = action.payload.material_category_id;
-        if (state.brandsByCategory[categoryId]) {
+        if (categoryId && state.brandsByCategory[categoryId]) {
           const categoryIndex = state.brandsByCategory[categoryId].findIndex(
-            brand => brand.id === action.payload.id
+            (brand: BrandModel) => brand.id === action.payload.id
           );
           if (categoryIndex !== -1) {
             state.brandsByCategory[categoryId][categoryIndex] = action.payload;
@@ -770,9 +770,9 @@ const brandSlice = createSlice({
         }
 
         const categoryId = action.payload.material_category_id;
-        if (state.brandsByCategory[categoryId]) {
+        if (categoryId && state.brandsByCategory[categoryId]) {
           const categoryIndex = state.brandsByCategory[categoryId].findIndex(
-            brand => brand.id === action.payload.id
+            (brand: BrandModel) => brand.id === action.payload.id
           );
           if (categoryIndex !== -1) {
             state.brandsByCategory[categoryId][categoryIndex] = action.payload;
@@ -817,9 +817,9 @@ const brandSlice = createSlice({
         }
 
         const categoryId = action.payload.material_category_id;
-        if (state.brandsByCategory[categoryId]) {
+        if (categoryId && state.brandsByCategory[categoryId]) {
           const categoryIndex = state.brandsByCategory[categoryId].findIndex(
-            brand => brand.id === action.payload.id
+            (brand: BrandModel) => brand.id === action.payload.id
           );
           if (categoryIndex !== -1) {
             state.brandsByCategory[categoryId][categoryIndex] = action.payload;

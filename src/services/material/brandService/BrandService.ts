@@ -145,12 +145,14 @@ export class BrandService {
       }
 
       const categoryId = brandData.material_category_id || currentBrand.data.material_category_id;
-      const existingBrand = await this.checkBrandTitleExists(trimmedTitle, categoryId, brandData.id);
-      if (existingBrand.success && existingBrand.data) {
-        return {
-          success: false,
-          error: 'A brand with this title already exists in this category',
-        };
+      if (categoryId !== undefined) {
+        const existingBrand = await this.checkBrandTitleExists(trimmedTitle, categoryId, brandData.id);
+        if (existingBrand.success && existingBrand.data) {
+          return {
+            success: false,
+            error: 'A brand with this title already exists in this category',
+          };
+        }
       }
 
       brandData.title = trimmedTitle;

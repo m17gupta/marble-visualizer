@@ -6,22 +6,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { Plus, Minus } from "lucide-react";
-import { MdOutlineAddHome } from "react-icons/md";
+
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import TabView from "./TabView";
 import InfoView from "./InfoView";
 import { TbHomePlus } from "react-icons/tb";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { setCurrentInspTab } from "@/redux/slices/InspirationalSlice/InspirationTabSlice";
 
 
 
@@ -71,6 +67,7 @@ export default function ChatHistory() {
      const handleMasterImage = (imagePath: string) => {
         
           dispatch(addHouseImage(imagePath));
+           dispatch(setCurrentInspTab("chat"));
       };
   return (
     <div className="max-w-sm mx-auto p-4 space-y-3">

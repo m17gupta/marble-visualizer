@@ -133,14 +133,14 @@ export class CategoryApi {
      /**
      * Get category by slug or title
      */
-    static async findByName(identifier: string, searchBy: 'slug' | 'title' = 'slug'): Promise<CategoryApiResponse> {
+    static async findByName(identifier: string[]): Promise<CategoryListResponse> {
         try {
             const { data, error } = await supabase
                 .from(this.TABLE_NAME)
                 .select('*')
-                .eq("title", identifier)
-                .single();
+                .in("title", identifier);
 
+                
             if (error) {
                 console.error('Error fetching category:', error);
                 return {
@@ -150,7 +150,7 @@ export class CategoryApi {
             }
 
             return {
-                data: data as CategoryModel,
+                data: data as CategoryModel[],
                 success: true,
             };
         } catch (error: unknown) {

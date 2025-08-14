@@ -122,8 +122,9 @@ export const fetchCategoryById = createAsyncThunk(
 export const fetchCategoryByTitle = createAsyncThunk(
   'categories/fetchCategoryByTitle',
   async (title: string, { rejectWithValue }) => {
+   
     try {
-      const result = await categoryService.getCategoryByName(title, 'title');
+      const result = await categoryService.getCategoryByName([title]);
       
       if (result.success && result.data) {
         return result.data;
@@ -143,13 +144,13 @@ export const fetchCategoryBySlug = createAsyncThunk(
   'categories/fetchCategoryBySlug',
   async (slug: string, { rejectWithValue }) => {
     try {
-      const result = await categoryService.getCategoryByName(slug, 'slug');
+      // const result = await categoryService.getCategoryByName(slug, 'slug');
       
-      if (result.success && result.data) {
-        return result.data;
-      }
+      // if (result.success && result.data) {
+      //   return result.data;
+      // }
       
-      throw new Error(result.error || 'Category not found');
+      //throw new Error(result.error || 'Category not found');
     } catch (error: unknown) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch category by slug');
     }
@@ -431,7 +432,7 @@ const categorySlice = createSlice({
       })
       .addCase(fetchCategoryByTitle.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentCategory = action.payload;
+       // state.currentCategory = action.payload;
       })
       .addCase(fetchCategoryByTitle.rejected, (state, action) => {
         state.isLoading = false;
@@ -445,7 +446,7 @@ const categorySlice = createSlice({
       })
       .addCase(fetchCategoryBySlug.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentCategory = action.payload;
+        state.currentCategory = action.payload || null;
       })
       .addCase(fetchCategoryBySlug.rejected, (state, action) => {
         state.isLoading = false;

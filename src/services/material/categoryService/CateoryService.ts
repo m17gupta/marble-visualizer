@@ -1,4 +1,4 @@
-import { CategoryApi, CreateCategoryRequest, UpdateCategoryRequest, CategoryQueryParams } from './CatergoryApi';
+import { CategoryApi, CreateCategoryRequest, UpdateCategoryRequest, CategoryQueryParams, CategoryListResponse } from './CatergoryApi';
 import { CategoryModel } from '@/models/swatchBook/category/CategoryModel';
 
 // Service Result Type
@@ -130,34 +130,10 @@ export class CategoryService {
     }
   }
 
-  /**
-   * Get category by slug or title
-   * @param identifier - Slug or title to search for
-   * @param searchBy - Field to search by ('slug' or 'title')
-   * @returns Promise with category data
-   */
-  async getCategoryByName(identifier: string, searchBy: 'slug' | 'title' = 'slug'): Promise<ServiceResult<CategoryModel>> {
-    try {
-      const response = await CategoryApi.findByName(identifier, searchBy);
-      
-      if (response.success && response.data) {
-        return {
-          success: true,
-          data: response.data,
-          message: 'Category retrieved successfully'
-        };
-      }
-
-      return {
-        success: false,
-        error: response.error || `Category not found by ${searchBy}`
-      };
-    } catch (error: unknown) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
-    }
+  async getCategoryByName(identifier: string[]): Promise<CategoryListResponse> {
+    
+      return await CategoryApi.findByName(identifier);
+        
   }
 
 
