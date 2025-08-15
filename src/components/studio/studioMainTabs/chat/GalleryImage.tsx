@@ -76,7 +76,7 @@ export default function GalleryImage() {
               {/* <SheetDescription>Select Image</SheetDescription> */}
             </SheetHeader>
 
-            <InspirationImages />
+           <InspirationImages/>
           </div>
         </SheetContent>
       </Sheet>

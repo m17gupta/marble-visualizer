@@ -1,106 +1,134 @@
-import React from 'react'
-import { AppDispatch, RootState } from '@/redux/store';
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Card } from "@/components/ui/card";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { TextShimmer } from "@/components/core";
+import { setFilterSwatchStyle } from "@/redux/slices/swatch/FilterSwatchSlice";
+import { AppDispatch, RootState } from "@/redux/store";
+import { StyleModel } from "@/models/swatchBook/styleModel/StyleModel";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { TextShimmer } from '@/components/core';
-import { setFilterSwatchStyle } from '@/redux/slices/swatch/FilterSwatchSlice';
-import { StyleModel } from '@/models/swatchBook/styleModel/StyleModel';
-const CollapsibleRow: React.FC<{
-    title: string;
-    count?: number;
-    children?: React.ReactNode;
-}> = ({ title, count = 0, children }) => {
-    const [open, setOpen] = React.useState(false);
-    return (
-        <div className="border-b last:border-b-0">
-            <button
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                className="w-full flex items-center justify-between py-3"
-            >
-                <div className="flex items-center gap-2 text-sm font-medium text-gray-800">
-                    <span>{title}</span>
-                    <span className="inline-flex items-center justify-center text-white text-[10px] bg-violet-600 rounded-full w-5 h-5">
-                        {count}
-                    </span>
-                </div>
-                <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={`transition-transform ${open ? "rotate-180" : ""}`}
-                >
-                    <path d="M6 9l6 6 6-6" stroke="#111" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </button>
-            {open && <div className="pb-3">{children}</div>}
-        </div>
-    );
-};
-
-const Chip: React.FC<{ children: React.ReactNode } & React.HTMLAttributes<HTMLSpanElement>> = ({ children, className = "", ...rest }) => (
-    <span
-        className={`inline-flex items-center px-3 py-1 rounded-full border text-sm leading-none ${className}`}
-        {...rest}
-    >
-        {children}
-    </span>
+/* tiny chip */
+const Chip: React.FC<
+  { children: React.ReactNode } & React.HTMLAttributes<HTMLSpanElement>
+> = ({ children, className = "", ...rest }) => (
+  <span
+    className={`inline-flex items-center px-3 py-1 rounded-full border text-sm leading-none ${className}`}
+    {...rest}
+  >
+    {children}
+  </span>
 );
-const SearchStyle = () => {
 
-    const dispatch = useDispatch<AppDispatch>();
-    const [selectedStyles, setSelectedStyles] = React.useState<number[]>([]);
-    const { style, isFetchingStyle } = useSelector((state: RootState) => state.filterSwatch);
- const {filterSwatch} = useSelector((state: RootState) => state.filterSwatch);
+const SearchStyle: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { style, isFetchingStyle, filterSwatch } = useSelector(
+    (state: RootState) => state.filterSwatch
+  );
 
-    const handleStyleSelection = (style: StyleModel) => {
-        dispatch(setFilterSwatchStyle(style));
-        setSelectedStyles(prev =>
-            prev.includes(style.id)
-                ? prev.filter(id => id !== style.id)
-                : [...prev, style.id]
-        );
-    };
+  const [selectedStyles, setSelectedStyles] = useState<number[]>([]);
+  const [openCard, setOpenCard] = useState<null | "style">("style"); // open by default
 
-    //update selected styye
-    React.useEffect(() => {
-        if (filterSwatch && filterSwatch.style && filterSwatch.style.length > 0) {
-            setSelectedStyles(filterSwatch.style.map(s => s.id));
-        } else {
-            setSelectedStyles([]);
-        }
-    }, [filterSwatch]);
+  const toggleCard = (card: "style") =>
+    setOpenCard((prev) => (prev === card ? null : card));
+
+  const handleStyleSelection = (s: StyleModel) => {
+    dispatch(setFilterSwatchStyle(s));
+    // local reflect (redux already keeps truth, this makes UI snappy)
+    setSelectedStyles((prev) =>
+      prev.includes(s.id) ? prev.filter((id) => id !== s.id) : [...prev, s.id]
+    );
+  };
+
+  // keep local selection synced with redux
+  useEffect(() => {
+    if (filterSwatch?.style?.length) {
+      setSelectedStyles(filterSwatch.style.map((s) => s.id));
+    } else {
+      setSelectedStyles([]);
+    }
+  }, [filterSwatch]);
+
+  /* ------- auto-height animation (no fixed max-h) ------- */
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [panelHeight, setPanelHeight] = useState(0);
+
+  const recalcHeight = () => {
+    if (contentRef.current) setPanelHeight(contentRef.current.scrollHeight);
+  };
+
+  useEffect(() => {
+    recalcHeight();
+  }, [style, selectedStyles, openCard]);
+
+  useEffect(() => {
+    const onResize = () => recalcHeight();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   return (
-    <>
-    <CollapsibleRow title="Style" count={selectedStyles.length || 0}>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                        {isFetchingStyle ? (
-                            <TextShimmer className='font-mono text-sm' duration={1}>
-                                Loading styles...
-                            </TextShimmer>
-                        ) : style && style.length > 0 ? (
-                            style.map((s) => (
-                                <Chip
-                                    key={s.id}
-                                    className={`cursor-pointer transition-colors ${selectedStyles.includes(s.id)
-                                        ? "border-blue-600 bg-blue-100 text-blue-800"
-                                        : "border-blue-400 text-blue-700 hover:bg-blue-50"
-                                        }`}
-                                    onClick={() => handleStyleSelection(s)}
-                                >
-                                    {s.title}
-                                </Chip>
-                            ))
-                        ) : (
-                            <div className="text-xs text-gray-500">No styles available</div>
-                        )}
-                    </div>
-                </CollapsibleRow>
-    </>
-  )
-}
+    <div className="flex flex-col gap-3">
+      {/* Header Card (click to open) */}
+      <Card
+        role="button"
+        onClick={() => toggleCard("style")}
+        className={`rounded-xl border shadow-none transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+          openCard === "style" ? "border-purple-500" : "border-gray-200 hover:shadow-sm"
+        }`}
+      >
+        <div className="flex items-start justify-between p-3">
+          <div>
+            <div className="text-sm font-medium leading-none">Style</div>
+            <div className="text-sm text-muted-foreground mt-1">
+              {selectedStyles.length} selected
+            </div>
+          </div>
+          {openCard === "style" ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground mt-0.5" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground mt-0.5" />
+          )}
+        </div>
+      </Card>
 
-export default SearchStyle
+      {/* Collapsible content panel directly UNDER the card */}
+      <div
+        style={{ height: openCard === "style" ? panelHeight : 0 }}
+        className="overflow-hidden transition-[height,opacity] duration-300"
+      >
+        {openCard === "style" && (
+          <div
+            ref={contentRef}
+            className="mt-2 rounded-xl border border-gray-200 bg-gray-50 p-3"
+          >
+            <div className="flex flex-wrap gap-2">
+              {isFetchingStyle ? (
+                <TextShimmer className="font-mono text-sm" duration={1}>
+                  Loading styles...
+                </TextShimmer>
+              ) : style && style.length > 0 ? (
+                style.map((s) => (
+                  <Chip
+                    key={s.id}
+                    className={`cursor-pointer transition-colors ${
+                      selectedStyles.includes(s.id)
+                        ? "border-blue-600 bg-blue-100 text-blue-800"
+                        : "border-blue-400 text-blue-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => handleStyleSelection(s)}
+                  >
+                    {s.title}
+                  </Chip>
+                ))
+              ) : (
+                <div className="text-xs text-gray-500">No styles available</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SearchStyle;

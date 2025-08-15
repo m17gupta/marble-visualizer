@@ -47,7 +47,7 @@ const SearchCategory = () => {
                     category.map((cat) => (
                         <Chip
                             key={cat.id}
-                            className={`cursor-pointer transition-colors ${selectedCategory?.id === cat.id
+                            className={`cursor-pointer transition-colors rounded-md border-black-100 bg-gray-50 ${selectedCategory?.id === cat.id
                                     ? "border-green-600 bg-green-100 text-green-800"
                                     : "border-green-400 text-green-700 hover:bg-green-50"
                                 }`}
