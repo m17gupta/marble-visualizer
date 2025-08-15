@@ -169,6 +169,31 @@ export class MaterialService {
     }
   }
 
+  // get all maetrial based on category Id
+  static async getMaterialsByCategory_Id(
+    categoryId: number,
+  ): Promise<{status: boolean, data?: MaterialModel[], error?: string}> {
+    return await MaterialApi.getMaterialsByCategoryId(categoryId) 
+  }
+
+ // get material based on category id and array of brand Id 
+  static async getMaterialsByCategoryAndBrand(
+    categoryId: number,
+    brandIds: number[]
+  ): Promise<{status: boolean, data?: MaterialModel[], error?: string}> {
+     return await MaterialApi.getMaterialsByCategoryAndBrandIds(categoryId, brandIds)
+  }
+
+
+  // get all materials based on category Id  , array od brand Id and array of style Id
+  static async getMaterialsByCategoryBrandAndStyle(
+    categoryId: number,
+    brandIds: number[],
+    styleIds: number[]
+  ): Promise<{status: boolean, data?: MaterialModel[], error?: string}> {
+    return await MaterialApi.getMaterialsByCategoryBrandAndStyleIds(categoryId, brandIds, styleIds)
+  }
+
   /**
    * Create a new material with validation
    */
@@ -259,6 +284,7 @@ export class MaterialService {
     }
   }
 
+
   /**
    * Get materials with pagination and filtering
    */
@@ -338,49 +364,49 @@ export class MaterialService {
   /**
    * Get materials by category ID with pagination
    */
-  static async getMaterialsByCategoryId(
-    categoryId: number,
-    filters: Omit<MaterialFilters, "material_category_id"> = {}
-  ): Promise<ServiceResult<PaginatedMaterialResponse>> {
-    try {
-      if (!categoryId || categoryId <= 0) {
-        return {
-          success: false,
-          error: "Valid category ID is required",
-        };
-      }
+  // static async getMaterialsByCategoryId(
+  //   categoryId: number,
+  //   filters: Omit<MaterialFilters, "material_category_id"> = {}
+  // ): Promise<ServiceResult<PaginatedMaterialResponse>> {
+  //   try {
+  //     if (!categoryId || categoryId <= 0) {
+  //       return {
+  //         success: false,
+  //         error: "Valid category ID is required",
+  //       };
+  //     }
 
-      const result = await MaterialApi.getMaterialsByCategoryId(
-        categoryId,
-        filters
-      );
+  //     const result = await MaterialApi.getMaterialsByCategoryId(
+  //       categoryId,
+  //       filters
+  //     );
 
-      if (result.success) {
-        return {
-          success: true,
-          data: result.data,
-          message: `Found ${
-            result.data?.materials.length || 0
-          } materials in category`,
-        };
-      }
+  //     if (result.success) {
+  //       return {
+  //         success: true,
+  //         data: result.data,
+  //         message: `Found ${
+  //           result.data?.materials.length || 0
+  //         } materials in category`,
+  //       };
+  //     }
 
-      return {
-        success: false,
-        error: result.error || "Failed to fetch materials by category",
-      };
-    } catch (error) {
-      console.error(
-        "Error in MaterialService.getMaterialsByCategoryId:",
-        error
-      );
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
-      };
-    }
-  }
+  //     return {
+  //       success: false,
+  //       error: result.error || "Failed to fetch materials by category",
+  //     };
+  //   } catch (error) {
+  //     console.error(
+  //       "Error in MaterialService.getMaterialsByCategoryId:",
+  //       error
+  //     );
+  //     return {
+  //       success: false,
+  //       error:
+  //         error instanceof Error ? error.message : "Unknown error occurred",
+  //     };
+  //   }
+  // }
 
   /**
    * Get materials by brand ID with pagination

@@ -1,5 +1,6 @@
 import React from 'react'
-
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 type Props={
     url:string
@@ -17,7 +18,7 @@ const ImagePalletInspirational = ({url, name, onDeleteImage}:Props) => {
      <>
            {hasValidPaletteUrl &&
             <div className="relative w-16 h-16 rounded overflow-hidden border">
-                <img
+                <LazyLoadImage
 
                    src={url || "https://via.placeholder.com/150"}
                     alt={name}

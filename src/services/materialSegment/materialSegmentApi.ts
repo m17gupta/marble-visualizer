@@ -26,6 +26,12 @@ export interface PaginatedMaterialSegmentResponse {
   };
 }
 
+export interface MaterialSegmentResponse{
+   status: boolean;
+   data?: MaterialSegmentModel[];
+   error?: string;
+}
+
 export class MaterialSegmentApi {
   private static tableName = 'material_segments';
 
@@ -103,83 +109,31 @@ export class MaterialSegmentApi {
   /**
    * Get material segments with pagination and filtering
    */
-  static async getMaterialSegments(filters: MaterialSegmentFilters = {}): Promise<MaterialSegmentApiResponse<PaginatedMaterialSegmentResponse>> {
+  static async getMaterialSegments(): Promise<MaterialSegmentResponse> {
     try {
-      const {
-        search,
-        is_active,
-        is_visible,
-        categories,
-        color,
-        page = 1,
-        limit = 20,
-      } = filters;
-
-      let query = supabase
+    
+      const { data, error } = await supabase
         .from(this.tableName)
-        .select('*', { count: 'exact' });
-
-      // Apply filters
-      if (search) {
-        query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,short_code.ilike.%${search}%`);
-      }
-
-      if (is_active !== undefined) {
-        query = query.eq('is_active', is_active);
-      }
-
-      if (is_visible !== undefined) {
-        query = query.eq('is_visible', is_visible);
-      }
-
-      if (color) {
-        query = query.or(`color.ilike.%${color}%,color_code.ilike.%${color}%`);
-      }
-
-      if (categories && categories.length > 0) {
-        query = query.overlaps('categories', categories);
-      }
-
-      // Apply sorting
-      query = query.order('index', { ascending: true });
-
-      // Apply pagination
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
-
-      const { data, error, count } = await query;
+        .select('*')
+        .order('index', { ascending: true })
 
       if (error) {
         console.error('Error fetching material segments:', error);
         return {
-          success: false,
+          status: false,
           error: error.message,
         };
       }
 
-      const total = count || 0;
-      const totalPages = Math.ceil(total / limit);
 
       return {
-        success: true,
-        data: {
-          segments: data as MaterialSegmentModel[],
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-          },
-        },
-        total,
-        page,
-        totalPages,
+        status  : true,
+        data:data as MaterialSegmentModel[]
       };
     } catch (error) {
       console.error('Error fetching material segments:', error);
       return {
-        success: false,
+        status  : false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }

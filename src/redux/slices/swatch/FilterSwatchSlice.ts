@@ -177,11 +177,13 @@ const filterSwatchSlice = createSlice({
             // fetchAllBrands       
             .addCase(fetchAllBrands.pending, (state) => {
                 state.isFetchingBrand = true;
+                state. isFetchingSwatch = true;
                 state.isLoading = true;
             })
             .addCase(fetchAllBrands.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isFetchingBrand = false;
+                state. isFetchingSwatch = false;
                 if(!state.brand){
                     state.brand = action.payload;
                 }
@@ -192,6 +194,7 @@ const filterSwatchSlice = createSlice({
             .addCase(fetchAllBrands.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isFetchingBrand = false;
+                state. isFetchingSwatch = false;
                 console.error('Failed to fetch brands:', action.payload);
             });
 
@@ -200,10 +203,12 @@ const filterSwatchSlice = createSlice({
             .addCase(fetchAllStyles.pending, (state) => {
                 state.isFetchingStyle = true;
                 state.isLoading = true;
+                 state. isFetchingSwatch = true;
             })
             .addCase(fetchAllStyles.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isFetchingStyle = false;
+                 state. isFetchingSwatch = false;
                 if(!state.style){
                     state.style = action.payload;
                 }
@@ -213,6 +218,7 @@ const filterSwatchSlice = createSlice({
             })
             .addCase(fetchAllStyles.rejected, (state, action) => {
                 state.isLoading = false;
+                 state. isFetchingSwatch = false;
                 state.isFetchingStyle = false;
                 console.error('Failed to fetch styles:', action.payload);
             });
