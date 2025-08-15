@@ -168,7 +168,7 @@ const PolygonOverlay = ({
             canvas.dispose();
             fabricCanvasRef.current = null;
             backgroundImageRef.current = null;
-            // dispatch(setCanvasReady(false));
+             dispatch(setCanvasReady(false));
         };
 
     }, [width, height, dispatch]);
@@ -313,11 +313,11 @@ const PolygonOverlay = ({
     const handleMouseMove = useCallback(
         (event: fabric.TEvent) => {
             if (!fabricCanvasRef.current) return;
-            // const canvas = fabricCanvasRef.current;
-
+             const canvas = fabricCanvasRef.current;
+                  console.log("Mouse move event:", canvas.getObjects());
             const fabricEvent = event as unknown as { target?: NamedFabricObject };
             const target = fabricEvent.target;
-
+               console.log("Mouse move target:", target?.name);
             if (target !== undefined) {
                 const targetName = target.name;
                 if (targetName) {
