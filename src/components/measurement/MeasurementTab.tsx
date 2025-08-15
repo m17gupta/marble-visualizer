@@ -22,17 +22,57 @@ interface MeasurementTabProps {
 const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
   //   const [selectedUnit, setSelectedUnit] = useState<string>("sq. m");
   const [activeTab, setActiveTab] = useState<string | null>(null);
-
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
   const [editingGroupValue, setEditingGroupValue] = useState<string>("");
-
   //const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<SegmentModal[]>([]);
+  const [pdfData, setPdfData] = useState<
+    { groupname: string; selected_material: any[] }[]
+  >([]);
+
+  // const finaldata = pdfData
+  //   .find((d: any) => d.groupname == activeTab)
+  //   ?.selected_material.map((d) => d.id);
+
+  const nameExpanded = expandedGroups[0]?.group_label_system;
+
+  const expandedDetails =
+    pdfData
+      .find((d) => d.groupname == nameExpanded)
+      ?.selected_material.map((d) => d.id) ?? [];
+
+  const handleSelectMaterial = (data: any, name: string) => {
+    const copied = pdfData;
+    const id = data.id;
+    const isPresent = copied.find((d: any) => d.groupname == name);
+    if (isPresent) {
+      if (isPresent?.selected_material.find((d) => d.id == id)) {
+        const newdata = isPresent.selected_material.filter((d) => d.id !== id);
+        isPresent.selected_material = newdata;
+        const filtered = copied.filter((d: any) => d.groupname != name);
+        filtered.push(isPresent);
+        setPdfData(filtered);
+      } else {
+        isPresent.selected_material.push(data);
+        const filtered = pdfData.filter((d: any) => d.groupname != name);
+        filtered.push(isPresent);
+        setPdfData(filtered);
+      }
+    } else {
+      const final = {
+        groupname: name,
+        selected_material: [data],
+      };
+      copied.push(final);
+      setPdfData(copied);
+    }
+  };
+
+  console.log(pdfData);
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { list: joblist } = useSelector((state: RootState) => state.jobs);
   // Set initial active tab
-
   const PixelRatio: number =
     (joblist[0]?.distance_ref?.distance_meter ?? 0) /
     (joblist[0]?.distance_ref?.distance_pixel ?? 1);
@@ -112,7 +152,9 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
   const getActiveTabData = (): MasterModel | undefined => {
     return masterArray.find((item) => item.name === activeTab);
   };
+
   const activeTabData = getActiveTabData();
+
   return (
     <>
       {/* Tab Navigation */}
@@ -146,6 +188,9 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               activeTabData={activeTabData}
+              handleSelectMaterial={handleSelectMaterial}
+              finaldata={expandedDetails}
+              expanded={nameExpanded}
             />
 
             {/* Groups */}

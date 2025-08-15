@@ -1,71 +1,90 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
 import {
-  Sheet, SheetContent,
-  SheetHeader, SheetTitle, SheetTrigger,
-} from "@/components/ui/sheet"
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-import InspirationImages from "@/components/workSpace/projectWorkSpace/InspirationImages"
+import InspirationImages from "@/components/workSpace/projectWorkSpace/InspirationImages";
 
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
-
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 export default function GalleryImage() {
-
   return (
     <>
       <Sheet>
-         <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <SheetTrigger asChild>
-          <button
-            type="button"
-            className="text-base hover:text-purple-600 transition p-0 inline-flex items-center"
-            aria-label="Add Image"
-          >
-            {/* Icon */}
-            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.7482 8.99633C14.4375 8.99633 14.9963 8.43751 14.9963 7.74817C14.9963 7.05882 14.4375 6.5 13.7482 6.5C13.0588 6.5 12.5 7.05882 12.5 7.74817C12.5 8.43751 13.0588 8.99633 13.7482 8.99633Z" fill="#212121"/>
-              <path d="M6.25 3C4.45507 3 3 4.45507 3 6.25V15.25C3 17.0449 4.45507 18.5 6.25 18.5H15.25C17.0449 18.5 18.5 17.0449 18.5 15.25V6.25C18.5 4.45507 17.0449 3 15.25 3H6.25ZM4.5 6.25C4.5 5.2835 5.2835 4.5 6.25 4.5H15.25C16.2165 4.5 17 5.2835 17 6.25V15.25C17 15.4812 16.9552 15.7018 16.8738 15.9038L12.2867 11.6128C11.4217 10.8036 10.0775 10.8036 9.21252 11.6128L4.62602 15.9033C4.54474 15.7015 4.5 15.481 4.5 15.25V6.25ZM11.262 12.7082L15.7669 16.9224C15.6035 16.9728 15.4299 17 15.25 17H6.25C6.06985 17 5.89607 16.9728 5.73252 16.9222L10.2372 12.7082C10.5256 12.4385 10.9736 12.4385 11.262 12.7082Z" fill="#212121"/>
-              <path d="M8.74995 21.0002C7.59927 21.0002 6.58826 20.4022 6.01074 19.5H8.72444L8.74995 19.5002H15.7499C17.821 19.5002 19.5 17.8212 19.5 15.7502V6.01108C20.402 6.58861 21 7.59956 21 8.75017V15.7502C21 18.6497 18.6494 21.0002 15.7499 21.0002H8.74995Z" fill="#212121"/>
-            </svg>
-            {/* optional text */}
-            {/* <span className="ml-1">Add</span> */}
-          </button>
-        </SheetTrigger>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Add Image</p>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  className="text-base hover:text-purple-600 transition p-0 inline-flex items-center"
+                  aria-label="Add Image"
+                >
+                  {/* Icon */}
+                  <svg
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M13.7482 8.99633C14.4375 8.99633 14.9963 8.43751 14.9963 7.74817C14.9963 7.05882 14.4375 6.5 13.7482 6.5C13.0588 6.5 12.5 7.05882 12.5 7.74817C12.5 8.43751 13.0588 8.99633 13.7482 8.99633Z"
+                      fill="#212121"
+                    />
+                    <path
+                      d="M6.25 3C4.45507 3 3 4.45507 3 6.25V15.25C3 17.0449 4.45507 18.5 6.25 18.5H15.25C17.0449 18.5 18.5 17.0449 18.5 15.25V6.25C18.5 4.45507 17.0449 3 15.25 3H6.25ZM4.5 6.25C4.5 5.2835 5.2835 4.5 6.25 4.5H15.25C16.2165 4.5 17 5.2835 17 6.25V15.25C17 15.4812 16.9552 15.7018 16.8738 15.9038L12.2867 11.6128C11.4217 10.8036 10.0775 10.8036 9.21252 11.6128L4.62602 15.9033C4.54474 15.7015 4.5 15.481 4.5 15.25V6.25ZM11.262 12.7082L15.7669 16.9224C15.6035 16.9728 15.4299 17 15.25 17H6.25C6.06985 17 5.89607 16.9728 5.73252 16.9222L10.2372 12.7082C10.5256 12.4385 10.9736 12.4385 11.262 12.7082Z"
+                      fill="#212121"
+                    />
+                    <path
+                      d="M8.74995 21.0002C7.59927 21.0002 6.58826 20.4022 6.01074 19.5H8.72444L8.74995 19.5002H15.7499C17.821 19.5002 19.5 17.8212 19.5 15.7502V6.01108C20.402 6.58861 21 7.59956 21 8.75017V15.7502C21 18.6497 18.6494 21.0002 15.7499 21.0002H8.74995Z"
+                      fill="#212121"
+                    />
+                  </svg>
+                  {/* optional text */}
+                  {/* <span className="ml-1">Add</span> */}
+                </button>
+              </SheetTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Add Image</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {/* Left sheet with responsive fixed offset */}
         <SheetContent
           side="left"
-          className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] ms-96"
-
+          className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] ms-[25vw]
+          "
         >
           <div className="mx-auto w-full mb-40">
             <SheetHeader className="mb-4">
-              <SheetTitle>Inspirations Image</SheetTitle>
+              <SheetTitle>Inspirations Image 1</SheetTitle>
               {/* <SheetDescription>Select Image</SheetDescription> */}
             </SheetHeader>
 
-
-            <InspirationImages/>
-            
-        
+            <InspirationImages />
           </div>
         </SheetContent>
       </Sheet>
 
       {/* Global styles for overlay customization */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           .fixed.inset-0.bg-black\\/80 { 
             background-color: transparent !important; 
           }
@@ -75,8 +94,9 @@ export default function GalleryImage() {
             left: 0 !important; 
             max-width: 100vw; 
           }
-        `
-      }} />
+        `,
+        }}
+      />
     </>
-  )
+  );
 }
