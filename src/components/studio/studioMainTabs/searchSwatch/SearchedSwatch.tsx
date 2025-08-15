@@ -223,7 +223,7 @@ const SearchedSwatch = ({onCountSwatch}:Props) => {
             recommendedSwatches.map((src, idx) => (
               <button
                 key={idx}
-                className="aspect-square rounded-lg overflow-hidden border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="aspect-square rounded-lg overflow-hidden border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 p-0"
                 title={`Swatch ${idx + 1}`}
 
                 onClick={() => handleSelectedSwatch(src)}

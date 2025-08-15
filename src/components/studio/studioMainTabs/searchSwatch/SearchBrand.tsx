@@ -1,112 +1,111 @@
-import { TextShimmer } from '@/components/core';
-import { BrandModel } from '@/models/swatchBook/brand/BrandModel';
-import { fetchAllStyles, setFilterSwatchBrand } from '@/redux/slices/swatch/FilterSwatchSlice';
-import { AppDispatch, RootState } from '@/redux/store';
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Card } from "@/components/ui/card";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { TextShimmer } from "@/components/core";
+import { BrandModel } from "@/models/swatchBook/brand/BrandModel";
+import { fetchAllStyles, setFilterSwatchBrand } from "@/redux/slices/swatch/FilterSwatchSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 
-const CollapsibleRow: React.FC<{
-    title: string;
-    count?: number;
-    children?: React.ReactNode;
-}> = ({ title, count = 0, children }) => {
-    const [open, setOpen] = React.useState(false);
-    return (
-        <div className="border-b last:border-b-0">
-            <button
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                className="w-full flex items-center justify-between py-3"
-            >
-                <div className="flex items-center gap-2 text-sm font-medium text-gray-800">
-                    <span>{title}</span>
-                    <span className="inline-flex items-center justify-center text-white text-[10px] bg-violet-600 rounded-full w-5 h-5">
-                        {count}
-                    </span>
-                </div>
-                <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={`transition-transform ${open ? "rotate-180" : ""}`}
-                >
-                    <path d="M6 9l6 6 6-6" stroke="#111" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </button>
-            {open && <div className="pb-3">{children}</div>}
+/* tiny chip */
+const Chip: React.FC<
+  { children: React.ReactNode } & React.HTMLAttributes<HTMLSpanElement>
+> = ({ children, className = "", ...rest }) => (
+  <span
+    className={`inline-flex items-center px-3 py-1 rounded-full border text-sm leading-none ${className}`}
+    {...rest}
+  >
+    {children}
+  </span>
+);
+
+const SearchBrand: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { brand, isFetchingBrand, filterSwatch } = useSelector(
+    (state: RootState) => state.filterSwatch
+  );
+
+  const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
+  const [openCard, setOpenCard] = useState<null | "brand">(null);
+
+  const toggleCard = (card: "brand") =>
+    setOpenCard((prev) => (prev === card ? null : card));
+
+  const handleBrandSelection = async (b: BrandModel) => {
+    dispatch(setFilterSwatchBrand(b));
+    await dispatch(fetchAllStyles(b.id));
+  };
+
+  // keep local selection synced with redux
+  useEffect(() => {
+    if (filterSwatch?.brand?.length) {
+      setSelectedBrands(filterSwatch.brand.map((b) => b.id));
+    } else {
+      setSelectedBrands([]);
+    }
+  }, [filterSwatch]);
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Header Card (click to open) */}
+      <Card
+        role="button"
+        onClick={() => toggleCard("brand")}
+        className={`rounded-xl border shadow-none transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
+          openCard === "brand" ? "border-purple-500" : "border-gray-200 hover:shadow-sm"
+        }`}
+      >
+        <div className="flex items-start justify-between p-3">
+          <div>
+            <div className="text-sm font-medium leading-none">Brand</div>
+            <div className="text-sm text-muted-foreground mt-1">
+              {selectedBrands.length} selected
+            </div>
+          </div>
+          {openCard === "brand" ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground mt-0.5" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground mt-0.5" />
+          )}
         </div>
-    );
+      </Card>
+
+      {/* Collapsible content panel directly UNDER the card */}
+      <div
+        className={`overflow-hidden transition-[max-height,opacity] duration-300 ${
+          openCard === "brand" ? "max-h-[700px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        {openCard === "brand" && (
+          <div className="mt-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <div className="flex flex-wrap gap-2">
+              {isFetchingBrand ? (
+                <TextShimmer className="font-mono text-sm" duration={1}>
+                  Loading brands...
+                </TextShimmer>
+              ) : brand && brand.length > 0 ? (
+                brand.map((b) => (
+                  <Chip
+                    key={b.id}
+                    className={`cursor-pointer transition-colors ${
+                      selectedBrands.includes(b.id)
+                        ? "border-blue-600 bg-blue-100 text-blue-800"
+                        : "border-blue-400 text-blue-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => handleBrandSelection(b)}
+                  >
+                    {b.title}
+                  </Chip>
+                ))
+              ) : (
+                <div className="text-xs text-gray-500">No brands available</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-const Chip: React.FC<{ children: React.ReactNode } & React.HTMLAttributes<HTMLSpanElement>> = ({ children, className = "", ...rest }) => (
-    <span
-        className={`inline-flex items-center px-3 py-1 rounded-full border text-sm leading-none ${className}`}
-        {...rest}
-    >
-        {children}
-    </span>
-);
-const SearchBrand = () => {
-
-    const [selectedBrands, setSelectedBrands] = React.useState<number[]>([]);
-    const dispatch = useDispatch<AppDispatch>();
-
-  const {filterSwatch} = useSelector((state: RootState) => state.filterSwatch);
-
-    const { brand, isFetchingBrand } = useSelector((state: RootState) => state.filterSwatch);
-
-
-    const handleBrandSelection = async (brand: BrandModel) => {
-
-        dispatch(setFilterSwatchBrand(brand));
-
-      await dispatch(fetchAllStyles(brand.id));
-
-        // setSelectedBrands(prev =>
-        //     prev.includes(brand.id)
-        //         ? prev.filter(id => id !== brand.id)
-        //         : [...prev, brand.id]
-        // );
-    }
-
-    useEffect(() => {
-        if(filterSwatch && filterSwatch.brand && filterSwatch.brand.length > 0) {
-            setSelectedBrands(filterSwatch.brand.map(b => b.id));
-        }else{
-            setSelectedBrands([]);  
-        }
-    },[filterSwatch]);
-
-    return (
-        <>
-            <CollapsibleRow title="Brand" count={selectedBrands?.length || 0}>
-                <div className="flex flex-wrap gap-2 mt-2">
-                    {isFetchingBrand ? (
-                        <TextShimmer className='font-mono text-sm' duration={1}>
-                            Loading brands...
-                        </TextShimmer>
-                    ) : brand && brand.length > 0 ? (
-                        brand.map((b) => (
-                            <Chip
-                                key={b.id}
-                                className={`cursor-pointer transition-colors ${selectedBrands.includes(b.id)
-                                    ? "border-blue-600 bg-blue-100 text-blue-800"
-                                    : "border-blue-400 text-blue-700 hover:bg-blue-50"
-                                    }`}
-                                onClick={() => handleBrandSelection(b)}
-                            >
-                                {b.title}
-                            </Chip>
-                        ))
-                    ) : (
-                        <div className="text-xs text-gray-500">No brands available</div>
-                    )}
-                </div>
-            </CollapsibleRow>
-        </>
-    )
-}
-
-export default SearchBrand
+export default SearchBrand;

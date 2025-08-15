@@ -269,3 +269,8 @@ button:focus-visible {
   color: transparent;
   animation: textShimmer 2s infinite linear;
 }
+
+
+.sheet-scrollbar .btn_close{
+  display: none !important;
+}

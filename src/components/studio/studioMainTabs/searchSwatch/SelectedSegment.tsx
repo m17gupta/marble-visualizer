@@ -34,8 +34,10 @@ const SelectedSegment = () => {
        <Select 
          value={filterSwatch.segment_types?.name || ""} 
          onValueChange={handleSegmentChange}
+        //  className="w-100"
        >
-      <SelectTrigger className="w-[180px]">
+
+      <SelectTrigger className="w-[160px] ">
         <SelectValue placeholder="Select Segment" />
       </SelectTrigger>
       <SelectContent>
