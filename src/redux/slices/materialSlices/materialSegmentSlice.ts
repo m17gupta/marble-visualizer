@@ -40,8 +40,8 @@ export const fetchMaterialSegments = createAsyncThunk(
   'materialSegments/fetchAll',
   async (filters: MaterialSegmentFilters | undefined, { rejectWithValue }) => {
     try {
-      const response = await MaterialSegmentService.getMaterialSegments(filters);
-      if (!response.success) {
+      const response = await MaterialSegmentService.getMaterialSegments();
+      if (!response.status) {
         return rejectWithValue(response.error || 'Failed to fetch material segments');
       }
       return response.data;
@@ -110,20 +110,7 @@ const materialSegmentSlice = createSlice({
       })
       .addCase(fetchMaterialSegments.fulfilled, (state, action) => {
         state.segmentLoading = false;
-        if (action.payload) {
-          if ('segments' in action.payload && 'pagination' in action.payload) {
-            // Response has pagination structure
-            state.segments = action.payload.segments.map(seg => ({
-              ...seg,
-              isDisable: false,
-             
-            }));
-            state.pagination = action.payload.pagination;
-          } else if (Array.isArray(action.payload)) {
-            // Response is a direct array
-            state.segments = action.payload;
-          }
-        }
+        state.segments = action.payload || [];
         state.error = null;
       })
       .addCase(fetchMaterialSegments.rejected, (state, action) => {

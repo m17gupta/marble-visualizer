@@ -54,6 +54,7 @@ import MarkingDimensionHome from "@/components/measurement/MarkingDimensionHome"
 import CalculateArea from "@/components/measurement/CalculateArea";
 import GetAllJobComments from "@/components/comments/GetAllJobComments";
 import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
+import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -253,6 +254,8 @@ export function StudioPage() {
        {/* <CalculateArea/> */}
 
        <GetAllJobComments />
+       
+        <MaterialData />
     </>
   );
 }

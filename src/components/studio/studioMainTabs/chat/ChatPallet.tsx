@@ -43,22 +43,28 @@ const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 const ChatPallet: React.FC = () => {
   const [query, setQuery] = React.useState("");
-
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+ const [totalSwatches, setTotalSwatches] = React.useState<number>(0);
   const dispatch = useDispatch<AppDispatch>();
 
-
-  const filtered = React.useMemo(
-    () => SWATCHES.filter((_, i) => `${i + 1}`.includes(query.trim()) || query.trim() === ""),
-    [query]
-  );
 
 
   const handleResetFilters  = () => {
     dispatch(clearFilter());
 
   };
+
+  const handleOpenSheet = () => {
+    setIsSheetOpen(true);
+  };
+
+  const handleCloseSheet = () => {
+    setIsSheetOpen(false);
+  };
+
+ 
   return (
-    <Sheet>
+    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -67,6 +73,7 @@ const ChatPallet: React.FC = () => {
                 type="button"
                 className="text-base hover:text-purple-600 transition p-0 inline-flex items-center px-1 py-1"
                 aria-label="Open Materials"
+                onClick={handleOpenSheet}
               >
                 {/* same trigger icon as your screenshot */}
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bricks" viewBox="0 0 16 16">
@@ -88,8 +95,24 @@ const ChatPallet: React.FC = () => {
             <div className="flex items-center gap-2">
              <RiResetLeftLine 
              onClick={handleResetFilters}
+             className="cursor-pointer hover:text-purple-600"
              />
               <SelectedSegment />
+              <button
+                onClick={handleCloseSheet}
+                className="ml-2 hover:text-purple-600 transition"
+                // aria-label="Close filters"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+              </button>
             </div>
           </div>
         </SheetHeader>
@@ -115,7 +138,7 @@ const ChatPallet: React.FC = () => {
           <SectionTitle>Swatch</SectionTitle>
 
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">0 items</div>
+            <div className="text-sm text-gray-600">{totalSwatches} items</div>
             <div className="relative">
               <input
                 value={query}
@@ -148,7 +171,9 @@ const ChatPallet: React.FC = () => {
               </button>
             ))}
           </div> */}
-          <SearchedSwatch/>
+          <SearchedSwatch
+            onCountSwatch={setTotalSwatches}
+          />
         </div>
       </SheetContent>
 

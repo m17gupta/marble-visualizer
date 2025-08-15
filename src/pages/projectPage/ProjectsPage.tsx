@@ -414,13 +414,7 @@ export function ProjectsPage() {
         <VisualToolHome resetProjectCreated={handleResetProjectCreated} />
       )}
 
-      <SwatchBookDataHome />
-
-      <MaterialData />
-
-      <ProjectAnalyseSegmentApiCall />
-
-      <GetHouseSegments />
+    
     </>
   );
 }

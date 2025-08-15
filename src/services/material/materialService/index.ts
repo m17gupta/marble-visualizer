@@ -16,7 +16,7 @@ export const {
   createMaterial,
   getMaterials,
   getMaterialById,
-  getMaterialsByCategoryId,
+  // getMaterialsByCategoryId,
   getMaterialsByBrandId,
   updateMaterial,
   deleteMaterial,
