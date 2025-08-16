@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader2, Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -94,7 +95,7 @@ export function LoginPage() {
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[60%_40%] bg-muted/20">
       {/* Left: Image */}
      <div className="hidden lg:block h-full w-full">
-        <img
+        <LazyLoadImage
           src="https://www.dzinly.org/img/login-img.jpg"
           alt="Login visual"
           className="object-cover h-full w-full"

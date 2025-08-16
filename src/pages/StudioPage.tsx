@@ -51,7 +51,6 @@ import { resetGenAiState } from "@/redux/slices/visualizerSlice/genAiSlice";
 import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
 import SegmentHome from "@/components/segments/SegmentHome";
 import MarkingDimensionHome from "@/components/measurement/MarkingDimensionHome";
-import CalculateArea from "@/components/measurement/CalculateArea";
 import GetAllJobComments from "@/components/comments/GetAllJobComments";
 import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";

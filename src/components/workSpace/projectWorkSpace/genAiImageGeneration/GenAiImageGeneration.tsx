@@ -1,4 +1,4 @@
-import App from '@/App';
+
 import { AppDispatch, RootState } from '@/redux/store';
 import React from 'react';
 import { useEffect, useRef } from 'react';
@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import Call_task_id from '../Call_task_id';
 import { GenAiChat, TaskApiModel } from '@/models/genAiModel/GenAiModel';
-import { insertGenAiChatData, resetRequest, setCurrentGenAiImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import { addHouseImage, insertGenAiChatData, resetRequest, setCurrentGenAiImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 import { setIsGenerated, updateIsGenLoading } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { toast } from 'sonner';
 import { setCurrentTabContent } from '@/redux/slices/studioSlice';
@@ -23,7 +23,7 @@ const GenAiImageGeneration = () => {
     const { currentProject: ProjectList } = useSelector(
         (state: RootState) => state.projects
     );
-    const { requests} = useSelector(
+    const { requests } = useSelector(
         (state: RootState) => state.genAi
     );
 
@@ -72,8 +72,8 @@ const GenAiImageGeneration = () => {
                 : undefined,
         } as GenAiChat;
 
-        console.log("genChat--->", genChat);
         dispatch(setCurrentGenAiImage(genChat));
+        dispatch(addHouseImage(data.outputImage))
 
         try {
             const result = await dispatch(insertGenAiChatData(genChat));
@@ -81,7 +81,7 @@ const GenAiImageGeneration = () => {
             if (result.meta.requestStatus === "fulfilled") {
                 dispatch(resetRequest());
                 dispatch(updateIsGenLoading(false));
-                 dispatch(setCurrentTabContent("compare"))
+                dispatch(setCurrentTabContent("compare"))
                 dispatch(setIsGenerated(true));
             }
         } catch (error) {
@@ -99,7 +99,7 @@ const GenAiImageGeneration = () => {
         toast.error("Task failed: " + errorMessage);
         setTaskId(""); // Reset task ID on error
         setIsTask(false); // Reset task status
-      };
+    };
     return (
         <>
             {/* Only render Call_task_id when there's an active task */}
