@@ -37,7 +37,7 @@ const SelectedSegment = () => {
         //  className="w-100"
        >
 
-      <SelectTrigger className="w-[160px] ">
+      <SelectTrigger className="w-[160px] bg-white">
         <SelectValue placeholder="Select Segment" />
       </SelectTrigger>
       <SelectContent>
