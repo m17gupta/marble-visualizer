@@ -72,7 +72,7 @@ export default function GalleryImage() {
         >
           <div className="mx-auto w-full mb-40">
             <SheetHeader className="mb-4">
-              <SheetTitle>Inspirations Image 1</SheetTitle>
+              <SheetTitle>Inspirations Image </SheetTitle>
               {/* <SheetDescription>Select Image</SheetDescription> */}
             </SheetHeader>
 

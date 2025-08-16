@@ -69,6 +69,9 @@ const ChatPallet: React.FC = () => {
   };
   const onStyleClick = (s: StyleModel) => dispatch(setFilterSwatchStyle(s));
 
+  const handleCloseSheet = () => {
+    setIsSheetOpen(false);
+  };
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <TooltipProvider>
@@ -96,12 +99,12 @@ const ChatPallet: React.FC = () => {
 
       <SheetContent
         side="left"
-        className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] overflow-y-auto sheet-scrollbar p-0"
+        className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] overflow-y-auto sheet-scrollbar p-0 ms-[25vw]"
       >
         <SheetHeader className="mb-3 border-b pb-3 p-3">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
-              <IoMdArrowRoundBack className="cursor-pointer" />
+              <IoMdArrowRoundBack className="cursor-pointer"  onClick={handleCloseSheet}/>
               Filters
             </SheetTitle>
             <div className="flex items-center gap-2">

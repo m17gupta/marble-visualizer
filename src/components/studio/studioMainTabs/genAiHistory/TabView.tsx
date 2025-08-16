@@ -57,7 +57,7 @@ const TabView = ({ genAi }: Props) => {
                 <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm"
                 onClick={() => handleMasterImage(genAi.output_image)}
                 >
-                    <TbHomePlus />
+                    <TbHomePlus className="text-lg"/>
                 </div>
                 <Tooltip>
                     <TooltipTrigger asChild>

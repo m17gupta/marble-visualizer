@@ -211,7 +211,7 @@ const SearchedSwatch = ({onCountSwatch}:Props) => {
   };
   return (
     <>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 overflow-y-auto max-h-[100vh] sm:max-h-[100vh]">
         {isFetchingSwatch ? (
           <TextShimmer className='font-mono text-sm' duration={1}>
             Loading Swatches...
