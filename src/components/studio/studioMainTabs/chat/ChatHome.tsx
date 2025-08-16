@@ -93,11 +93,9 @@ const ChatHome = () => {
             </div>
 
             <div className="p-4 mb-10">
-              <div className="flex gap-3">
-
-                
-
-                <MaskImage />
+              <div className="flex gap-3 ">
+        
+        <div className="grid grid-cols-2 gap-2">
 
                 {/* pallet image  */}
                 {genAiRequests  &&
@@ -108,9 +106,6 @@ const ChatHome = () => {
                  name="palette" 
                  onDeleteImage={handleDeletePalletImage}
                  />}
-
-
-
                  {/* inspiration Image */}
                 {genAiRequests  &&
                 genAiRequests.referenceImageUrl &&
@@ -120,16 +115,12 @@ const ChatHome = () => {
                  name="inspiration" 
                  onDeleteImage={handleDeleteInspirationImage}
                  />}
+               <MaskImage />
 
-
-
+               </div>
                 <RequestMasterImage />
-
-
-
-
-
               </div>
+    
 
               {isLoading && <ProcessImage />}
 

@@ -101,7 +101,7 @@ const ChatPallet: React.FC = () => {
         side="left"
         className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] overflow-y-auto sheet-scrollbar p-0 ms-[25vw]"
       >
-        <SheetHeader className="mb-3 border-b pb-3 p-3">
+        <SheetHeader className="mb-2 border-b py-2 px-3 bg-gray-100">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               <IoMdArrowRoundBack className="cursor-pointer"  onClick={handleCloseSheet}/>
@@ -124,7 +124,7 @@ const ChatPallet: React.FC = () => {
         </div>
 
         {/* Filter cards + panels */}
-        <div className="flex flex-col gap-3 p-3 pb-0">
+        <div className="flex flex-col gap-2 p-3 pb-0">
           <div className="grid grid-cols-2 gap-3">
             {/* Brand header */}
             <Card
