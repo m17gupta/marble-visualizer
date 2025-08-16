@@ -5,6 +5,14 @@ export interface PointModel {
     y: number;
 }
 
+// Type for fabric objects with custom properties
+type NamedFabricObject = fabric.Object & { 
+    name?: string; 
+    groupName?: string;
+    subGroupName?: string;
+    isActived?: boolean;
+};
+
 
 export const collectPoints = (
     annotation: number[],
@@ -20,31 +28,42 @@ export const collectPoints = (
 
 ) => {
 
-    if (!canvasRef.current) return;
+    if (!canvasRef.current) {
+        console.warn(`[collectPoints] Canvas not available for segment: ${segName}`);
+        return;
+    }
 
-    if (annotation) {
-        const point: PointModel[] = [];
-        const polyName = segName;
-        for (let i = 0; i < annotation.length; i += 2) {
-            const x = annotation[i];
-            const y = annotation[i + 1];
-            point.push({ x, y });
-        }
+    if (!annotation || annotation.length === 0) {
+        console.warn(`[collectPoints] No annotation points for segment: ${segName}`);
+        return;
+    }
 
-        if (point && point.length > 0) {
-            makePolygon(
-                point,
-                coordinates,
-                polyName,
-                 segType,
-                groupName,
-                color,
-                canvasRef,
-                isFillPolygon,
+    const point: PointModel[] = [];
+    const polyName = segName;
+    
+    for (let i = 0; i < annotation.length; i += 2) {
+        const x = annotation[i];
+        const y = annotation[i + 1];
+        point.push({ x, y });
+    }
+
+    console.log(`[collectPoints] Processing segment: ${polyName}, points: ${point.length}, coordinates: [${coordinates.join(', ')}]`);
+
+    if (point && point.length > 0) {
+        makePolygon(
+            point,
+            coordinates,
+            polyName,
+             segType,
+            groupName,
+            color,
+            canvasRef,
+            isFillPolygon,
 
 
-            );
-        }
+        );
+    } else {
+        console.warn(`[collectPoints] No valid points generated for segment: ${segName}`);
     }
 };
 
@@ -70,7 +89,7 @@ export const makePolygon = (
     ) {
         const allObjects = canvasRef.current?.getObjects();
         // Remove existing object with the same name (if any)
-        const currentObject = allObjects.find((item) => (item as any).name === polyName);
+        const currentObject = allObjects.find((item) => (item as NamedFabricObject).name === polyName);
         if (currentObject) {
             canvasRef.current.remove(currentObject);
         }
@@ -87,7 +106,7 @@ export const makePolygon = (
         });
 
         // Attach custom property after creation
-        (text as any).name = polyName;
+        (text as NamedFabricObject).name = polyName;
 
         const polygon = new fabric.Polygon(point, {
             fill: color,
@@ -102,7 +121,7 @@ export const makePolygon = (
             lockMovementX: true,
             lockMovementY: true,
         });
-        (polygon as any).name = polyName;
+        (polygon as NamedFabricObject).name = polyName;
 
         // Only pass valid Fabric.Group options
         const group = new fabric.Group([polygon, text], {
@@ -116,10 +135,12 @@ export const makePolygon = (
         });
 
         // Attach custom properties after creation
-        (group as any).groupName = groupName;
-        (group as any).subGroupName = subGroupName;
-        (group as any).isActived = true;
-        (group as any).name = polyName;
+        (group as NamedFabricObject).groupName = groupName;
+        (group as NamedFabricObject).subGroupName = subGroupName;
+        (group as NamedFabricObject).isActived = true;
+        (group as NamedFabricObject).name = polyName;
+
+        console.log(`[makePolygon] Created polygon group: ${polyName}, visible: ${group.visible}`);
 
         canvasRef.current?.setActiveObject(group);
         canvasRef.current?.add(group);

@@ -255,9 +255,15 @@ const PolygonOverlay = ({
             console.warn(`[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`);
             return;
         }
+        if (!backgroundImageRef.current) {
+            console.warn("[PolygonOverlay] Background image not loaded yet.");
+            return;
+        }
 
-        // Remove previous polygons (but not the background image)
-        const objectsToRemove = canvas.getObjects().filter(obj => obj.type === 'polygon');
+        // Remove previous polygons and groups (but not the background image)
+        const objectsToRemove = canvas.getObjects().filter(obj => 
+            obj.type === 'polygon' || (obj.type === 'group' && (obj as NamedFabricObject).name !== 'backgroundImage')
+        );
         objectsToRemove.forEach(obj => canvas.remove(obj));
 
         allSegArray.forEach((seg, idx) => {
@@ -307,17 +313,46 @@ const PolygonOverlay = ({
                 width,
             );
         });
-    }, [allSegArray, segments, fabricCanvasRef, height, width])
+
+        // Log successful rendering
+        console.log(`[PolygonOverlay] Successfully rendered ${allSegArray.length} segments`);
+        
+        // Ensure proper z-index order: background image at back, polygons on top
+        if (backgroundImageRef.current) {
+            canvas.sendObjectToBack(backgroundImageRef.current);
+        }
+        
+        canvas.renderAll();
+    }, [allSegArray, segments, fabricCanvasRef, height, width, imageHeight, imageWidth])
+
+    // Debug function to check canvas state
+    useEffect(() => {
+        if (!fabricCanvasRef.current) return;
+        
+        const canvas = fabricCanvasRef.current;
+        const objects = canvas.getObjects();
+        
+        console.log(`[PolygonOverlay Debug] Canvas objects count: ${objects.length}`);
+        console.log(`[PolygonOverlay Debug] Image dimensions: ${imageWidth}x${imageHeight}`);
+        console.log(`[PolygonOverlay Debug] Canvas dimensions: ${width}x${height}`);
+        console.log(`[PolygonOverlay Debug] Segments array length: ${allSegArray.length}`);
+        console.log(`[PolygonOverlay Debug] Background image loaded: ${!!backgroundImageRef.current}`);
+        
+        objects.forEach((obj, index) => {
+            const namedObj = obj as NamedFabricObject;
+            console.log(`[PolygonOverlay Debug] Object ${index}: type=${obj.type}, name=${namedObj.name}, visible=${obj.visible}`);
+        });
+    }, [allSegArray, imageWidth, imageHeight, width, height]);
 
 
     const handleMouseMove = useCallback(
         (event: fabric.TEvent) => {
             if (!fabricCanvasRef.current) return;
              const canvas = fabricCanvasRef.current;
-                  console.log("Mouse move event:", canvas.getObjects());
+                    console.log("canvas", canvas.getObjects());
             const fabricEvent = event as unknown as { target?: NamedFabricObject };
             const target = fabricEvent.target;
-               console.log("Mouse move target:", target?.name);
+                console.log("target", target?.name);
             if (target !== undefined) {
                 const targetName = target.name;
                 if (targetName) {
@@ -330,7 +365,7 @@ const PolygonOverlay = ({
 
 
         },
-        [dispatch]
+        []
     );
 
 

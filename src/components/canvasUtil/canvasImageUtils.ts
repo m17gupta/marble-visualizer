@@ -2,6 +2,11 @@
 // Utility functions for loading and adding images to a Fabric.js canvas with CORS and fetch strategies.
 import * as fabric from "fabric";
 
+// Type for fabric objects with custom properties
+type NamedFabricObject = fabric.Object & { 
+  name?: string; 
+  isBackgroundImage?: boolean; 
+};
 
 /**
  * Adds an HTMLImageElement to a Fabric.js canvas, scaling and centering it to fit.
@@ -22,11 +27,16 @@ export const AddImageToCanvas = (
 ) => {
   const canvas = canvasRef.current;
   if (!canvas) return
+  
   const fabricImage = new fabric.Image(imgElement, {
     selectable: false,
     evented: false,
     excludeFromExport: false,
   });
+
+  // Mark this as background image for identification
+  (fabricImage as NamedFabricObject).name = 'backgroundImage';
+  (fabricImage as NamedFabricObject).isBackgroundImage = true;
 
   // Calculate scaling to fit canvas
   const canvasAspect = width / height;
