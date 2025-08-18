@@ -23,9 +23,8 @@ const RequestMasterImage = () => {
   return (
     <>
       {genAiRequests.houseUrl ? (
-        <div className="flex-1 group relative max-w-60">
+        <div className="flex-1 group relative max-w-80">
           <LazyLoadImage
-          
             src={
               genAiRequests?.houseUrl[0] || "https://via.placeholder.com/150"
             }
@@ -44,24 +43,17 @@ const RequestMasterImage = () => {
               <p>Marking label</p>
             </TooltipContent>
           </Tooltip>
-          {genAiRequests && genAiRequests.prompt && genAiRequests.prompt[0] && (
-            <div
-              className="inline-block text-gray-600 text-sm px-3 py-1 rounded-full border border-transparent mt-2"
-              style={{
-                backgroundClip:"padding-box, border-box",
-                backgroundImage:
-                  "linear-gradient(#fff, #fff), linear-gradient(90deg, #9333ea, #3b82f6)",
-                backgroundOrigin: "border-box",
-              }}>
-              {genAiRequests?.prompt[0]}
-            </div>
-          )}
+       
         </div>
       ) : (
         <div className="flex items-center justify-center h-full">
           <p className="text-gray-500">No master image requested yet.</p>
         </div>
       )}
+      
+
+      
+
     </>
   );
 };

@@ -54,7 +54,7 @@ const TabView = ({ genAi }: Props) => {
                     alt="After"
                     className="w-full rounded-xl object-cover"
                 />
-                <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm"
+                <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm cursor-pointer"
                 onClick={() => handleMasterImage(genAi.output_image)}
                 >
                     <TbHomePlus className="text-lg"/>

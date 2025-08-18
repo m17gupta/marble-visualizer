@@ -37,7 +37,7 @@ const MaskImage = () => {
         screenShotUrl !== null &&
         <MorphingDialog>
             <MorphingDialogTrigger asChild>
-                <div className="relative w-16 h-16 rounded overflow-hidden border cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="relative w-14 h-14 rounded overflow-hidden border cursor-pointer hover:opacity-80 transition-opacity">
                     <MorphingDialogImage
                         src={screenShotUrl}
                         alt="Canvas Screenshot"

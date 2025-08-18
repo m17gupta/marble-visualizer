@@ -73,7 +73,7 @@ const GeneratedMask = () => {
         <button className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
           onClick={handleCancel}
         >Cancel</button>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        <button className="btn-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
 
           onClick={handleMask}>Submit</button>
       </div>

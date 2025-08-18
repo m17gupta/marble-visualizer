@@ -39,15 +39,16 @@ const CommentAvatar: React.FC<Props> = ({ x, y , segmentName,openReply,commentTy
       >
         <div className={cn("flex items-center relative")}>
           {/* Outer ring for better visibility */}
-          <div className="absolute inset-0 w-14 h-14 rounded-full bg-white shadow-2xl opacity-80 -z-10"></div>
-          <div className="absolute inset-1 w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 opacity-90 animate-pulse"></div>
+          {/* <div className="absolute inset-0 w-9 h-9 rounded-full bg-white shadow-2xl opacity-80 -z-9"></div> */}
+          <div className="absolute inset-1 w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-500 opacity-90 animate-pulse rounded-[30px_30px_0px_30px]"  style={{left:"-2px", top:"1px"}}></div>
           
-          <Avatar className={cn(
-            "w-12 h-12 rounded-full border-2 border-white shadow-xl hover:scale-110 transition-all duration-300 hover:shadow-2xl relative z-10",
-            "bg-gradient-to-br from-blue-600 to-purple-700"
-          )}>
+          <Avatar   className={cn(
+    "w-8 h-8 border-2 border-white shadow-xl hover:scale-110 transition-all duration-300 hover:shadow-2xl relative z-10",
+    "bg-gradient-to-br from-blue-600 to-purple-700",
+    "rounded-[30px_30px_0px_30px]"
+  )}>
             <AvatarFallback className={cn(
-              "font-bold text-lg text-white bg-gradient-to-br from-blue-600 to-purple-700",
+              "font-medium text-md text-white bg-gradient-to-br from-blue-600 to-purple-700",
               "flex items-center justify-center w-full h-full shadow-inner"
             )}>
               {user?.name ? user.name.charAt(0).toUpperCase() : 'M'}
