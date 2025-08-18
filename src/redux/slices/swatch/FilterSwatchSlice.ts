@@ -105,24 +105,71 @@ const filterSwatchSlice = createSlice({
     reducers: {
         setFilterSwatchSegmentType: (state, action: PayloadAction<MaterialSegmentModel | null>) => {
             state.filterSwatch.segment_types = action.payload;
+            state.filterSwatch.category = null; // Reset category when segment type changes
+            state.filterSwatch.brand = null; // Reset brand when segment type changes
+            state.filterSwatch.style = null; // Reset style when segment type changes
+            state.category = null; // Reset category in the state   
+            state.brand = null; // Reset brand in the state
+            state.style = null; // Reset style in the state
 
         },
         setFilterSwatchCategory: (state, action: PayloadAction<CategoryModel | null>) => {
             state.filterSwatch.category = action.payload;
+            state.filterSwatch.brand = null; // Reset brand when category changes
+            state.filterSwatch.style = null; // Reset style when category changes
+            state.filterSwatch.brand = null; // Reset brand in the state
+            state.filterSwatch.style = null; // Reset style in the state
         },
         setFilterSwatchBrand: (state, action: PayloadAction<BrandModel>) => {
             if (!state.filterSwatch.brand) {
                 state.filterSwatch.brand = [action.payload];
+                // rearrange the state.brand array to show selected brands first
+                if (state.brand) {
+                    const selectedBrandIds = state.filterSwatch.brand.map(brand => brand.id);
+                    state.brand = state.brand.sort((a, b) => {
+                        const aIsSelected = selectedBrandIds.includes(a.id);
+                        const bIsSelected = selectedBrandIds.includes(b.id);
+                        
+                        if (aIsSelected && !bIsSelected) return -1;
+                        if (!aIsSelected && bIsSelected) return 1;
+                        return 0;
+                    });
+                }
             } else {
                 // check existing brand
                 const existingBrand = state.filterSwatch.brand.find(brand => brand.id === action.payload.id);
                 if (!existingBrand) {
                     state.filterSwatch.brand.push(action.payload);
+                    // rearrange the state.brand array to show selected brands first
+                    if (state.brand) {
+                        const selectedBrandIds = state.filterSwatch.brand.map(brand => brand.id);
+                        state.brand = state.brand.sort((a, b) => {
+                            const aIsSelected = selectedBrandIds.includes(a.id);
+                            const bIsSelected = selectedBrandIds.includes(b.id);
+                            
+                            if (aIsSelected && !bIsSelected) return -1;
+                            if (!aIsSelected && bIsSelected) return 1;
+                            return 0;
+                        });
+                    }
                 } else {
                     // If it exists, remove it
                     state.filterSwatch.brand = state.filterSwatch.brand.filter(brand => brand.id !== action.payload.id);
                     if (state.filterSwatch.brand.length === 0) {
                         state.filterSwatch.brand = null; // Clear the brand array if empty
+                    }
+                    
+                    // rearrange the state.brand array to show selected brands first
+                    if (state.brand && state.filterSwatch.brand) {
+                        const selectedBrandIds = state.filterSwatch.brand.map(brand => brand.id);
+                        state.brand = state.brand.sort((a, b) => {
+                            const aIsSelected = selectedBrandIds.includes(a.id);
+                            const bIsSelected = selectedBrandIds.includes(b.id);
+                            
+                            if (aIsSelected && !bIsSelected) return -1;
+                            if (!aIsSelected && bIsSelected) return 1;
+                            return 0;
+                        });
                     }
                 }
             }
@@ -130,14 +177,55 @@ const filterSwatchSlice = createSlice({
         setFilterSwatchStyle: (state, action: PayloadAction<StyleModel>) => {
             if (!state.filterSwatch.style) {
                 state.filterSwatch.style = [action.payload];
+
+                // rearrange the state.style array to show selected styles first
+                if (state.style) {
+                    const selectedStyleIds = state.filterSwatch.style.map(style => style.id);
+                    state.style = state.style.sort((a, b) => {
+                        const aIsSelected = selectedStyleIds.includes(a.id);
+                        const bIsSelected = selectedStyleIds.includes(b.id);
+                        
+                        if (aIsSelected && !bIsSelected) return -1;  // a comes first
+                        if (!aIsSelected && bIsSelected) return 1;   // b comes first  
+                        return 0;                                    // maintain order
+                    });
+                }
             } else {
                 // check existing style
                 const existingStyle = state.filterSwatch.style.find(style => style.id === action.payload.id);
                 if (!existingStyle) {
                     state.filterSwatch.style.push(action.payload);
+                    // rearrange the state.style array to show selected styles first
+                    if (state.style) {
+                        const selectedStyleIds = state.filterSwatch.style.map(style => style.id);
+                        state.style = state.style.sort((a, b) => {
+                            const aIsSelected = selectedStyleIds.includes(a.id);
+                            const bIsSelected = selectedStyleIds.includes(b.id);
+                            
+                            if (aIsSelected && !bIsSelected) return -1;  // a comes first
+                            if (!aIsSelected && bIsSelected) return 1;   // b comes first  
+                            return 0;                                    // maintain order
+                        });
+                    }
                 } else {
                     // If it exists, remove it
                     state.filterSwatch.style = state.filterSwatch.style.filter(style => style.id !== action.payload.id);
+                    if (state.filterSwatch.style.length === 0) {
+                        state.filterSwatch.style = null; // Clear the style array if empty
+                    }else{
+                        // rearrange the state.style array to show selected styles first
+                        if (state.style && state.filterSwatch.style) {
+                            const selectedStyleIds = state.filterSwatch.style.map(style => style.id);
+                            state.style = state.style.sort((a, b) => {
+                                const aIsSelected = selectedStyleIds.includes(a.id);
+                                const bIsSelected = selectedStyleIds.includes(b.id);
+                                
+                                if (aIsSelected && !bIsSelected) return -1;  // a comes first
+                                if (!aIsSelected && bIsSelected) return 1;   // b comes first  
+                                return 0;                                    // maintain order
+                            });
+                        }
+                    }
                 }
             }
         },
@@ -184,12 +272,8 @@ const filterSwatchSlice = createSlice({
                 state.isLoading = false;
                 state.isFetchingBrand = false;
                 state. isFetchingSwatch = false;
-                if(!state.brand){
                     state.brand = action.payload;
-                }
-                else{
-                    state.brand = [...state.brand, ...action.payload];
-                }
+                
             })
             .addCase(fetchAllBrands.rejected, (state, action) => {
                 state.isLoading = false;

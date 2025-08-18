@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { CanvasModel } from '@/models/canvasModel/CanvasModel';
-import { deleteMask, resetCanvas, setCanvasType, setIsCanvasModalOpen, updateIsGenerateMask, updateIsScreenShotTaken } from '@/redux/slices/canvasSlice';
+import { deleteMask, resetCanvas, setCanvasType, setIsCanvasModalOpen, updateIsScreenShotTaken } from '@/redux/slices/canvasSlice';
 import { AnnotationValue } from '@/models/genAiModel/GenAiModel';
 import { updateMaskIntoRequest } from '@/redux/slices/visualizerSlice/genAiSlice';
 

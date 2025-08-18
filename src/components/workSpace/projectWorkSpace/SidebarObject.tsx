@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { Badge } from "@/components/ui/badge";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCanvasType,
@@ -10,15 +10,13 @@ import {
 } from "@/redux/slices/canvasSlice";
 import { renderPolygonMaskToFile } from "@/components/canvasUtil/GenerateMask";
 import { RootState } from "@/redux/store";
-import { useParams } from "react-router-dom";
-import { ProjectModel } from "@/models/projectModel/ProjectModel";
+// import { useParams } from "react-router-dom";
+
 //import objectimg from "../../../../dist/assets/object-img-f9e-Kvp6.jpeg"; // Adjust the path as necessary
 const SidebarObject = () => {
-  const { list: projects } = useSelector((state: RootState) => state.projects);
-  const { id } = useParams();
-  const [project, setProject] = useState<ProjectModel | undefined>(
-    projects.find((d) => d.id == id)
-  );
+  // const { list: projects } = useSelector((state: RootState) => state.projects);
+  // const { id } = useParams();
+
 
   const [isOpen, setIsOpen] = useState(false);
   const [generatedMaskUrl, setGeneratedMaskUrl] = useState<string | null>(null);

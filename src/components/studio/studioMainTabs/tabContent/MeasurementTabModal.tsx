@@ -1,6 +1,6 @@
 import { RootState } from "@/redux/store";
-import { ChevronDown, ArrowLeft, Info } from "lucide-react";
-import { useState } from "react";
+import {  ArrowLeft, Info } from "lucide-react";
+
 import { useSelector } from "react-redux";
 
 interface WallSelectionModalProps {

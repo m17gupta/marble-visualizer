@@ -26,8 +26,8 @@ const SelectedSegment = () => {
       const segment = segments.find((segment) => segment.name === value);
       if (!segment) return;
       dispatch(setFilterSwatchSegmentType(segment));
-      const response= await dispatch(fetchAllCategories(segment.categories));
-      console.log("response", response);
+       await dispatch(fetchAllCategories(segment.categories));
+      
     }
   return (
    <>

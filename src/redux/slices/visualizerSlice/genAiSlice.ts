@@ -205,6 +205,7 @@ const genAiSlice = createSlice({
     updateTaskId: (state, action: PayloadAction<string>) => {
       state.task_id = action.payload; // Update the task_id in the state
     },
+    
 
     resetRequest: (state) => {
       state.requests = {
@@ -242,7 +243,7 @@ const genAiSlice = createSlice({
         state.isSubmitGenAiFailed = true; // Set the flag to true if submission fails
       });
 
-    // Handle checkGenAiStatus
+    // Handle GenAiImages from data base
     builder
       .addCase(fetchGenAiChat.pending, (state) => {
         state.isFetchingGenAiImages = true;
@@ -252,6 +253,13 @@ const genAiSlice = createSlice({
         state.isFetchingGenAiImages = false;
         const chats = action.payload as GenAiChat[];
         state.genAiImages = chats;
+        // set the latest inspiration image from latest chat
+        if (chats.length > 0) {
+          const latestChat = chats[chats.length - 1];
+          state.requests.referenceImageUrl = latestChat.reference_img
+            ? [latestChat.reference_img]
+            : [];
+        }
       })
       .addCase(fetchGenAiChat.rejected, (state, action) => {
         state.isFetchingGenAiImages = false;

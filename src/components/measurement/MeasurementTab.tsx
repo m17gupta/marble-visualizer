@@ -1,7 +1,7 @@
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
-import { AppDispatch, RootState } from "@/redux/store";
+
 import {
   Building,
   ChevronDown,
@@ -11,65 +11,31 @@ import {
   X,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {  useDispatch, useSelector } from "react-redux";
 import { meterArea } from "../canvasUtil/CalculatePolygonArea";
-import { WallSelectionModal } from "../studio/studioMainTabs/tabContent/MeasurementTabModal";
+import { AppDispatch, RootState } from "@/redux/store";
+import FilterSwatch from "../studio/studioMainTabs/searchSwatch/FilterSwatch";
+import { Sheet } from "@/components/ui/sheet";
+import { fetchAllCategories, setFilterSwatchSegmentType } from "@/redux/slices/swatch/FilterSwatchSlice";
+
 
 interface MeasurementTabProps {
   selectedUnit: string;
 }
 
 const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
-  //   const [selectedUnit, setSelectedUnit] = useState<string>("sq. m");
+    const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
   const [editingGroupValue, setEditingGroupValue] = useState<string>("");
   //const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<SegmentModal[]>([]);
-  const [pdfData, setPdfData] = useState<
-    { groupname: string; selected_material: any[] }[]
-  >([]);
-
+  const { segments } = useSelector((state: RootState) => state.materialSegments);
   // const finaldata = pdfData
   //   .find((d: any) => d.groupname == activeTab)
   //   ?.selected_material.map((d) => d.id);
 
-  const nameExpanded = expandedGroups[0]?.group_label_system;
-
-  const expandedDetails =
-    pdfData
-      .find((d) => d.groupname == nameExpanded)
-      ?.selected_material.map((d) => d.id) ?? [];
-
-  const handleSelectMaterial = (data: any, name: string) => {
-    const copied = pdfData;
-    const id = data.id;
-    const isPresent = copied.find((d: any) => d.groupname == name);
-    if (isPresent) {
-      if (isPresent?.selected_material.find((d) => d.id == id)) {
-        const newdata = isPresent.selected_material.filter((d) => d.id !== id);
-        isPresent.selected_material = newdata;
-        const filtered = copied.filter((d: any) => d.groupname != name);
-        filtered.push(isPresent);
-        setPdfData(filtered);
-      } else {
-        isPresent.selected_material.push(data);
-        const filtered = pdfData.filter((d: any) => d.groupname != name);
-        filtered.push(isPresent);
-        setPdfData(filtered);
-      }
-    } else {
-      const final = {
-        groupname: name,
-        selected_material: [data],
-      };
-      copied.push(final);
-      setPdfData(copied);
-    }
-  };
-
-  console.log(pdfData);
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { list: joblist } = useSelector((state: RootState) => state.jobs);
   // Set initial active tab
@@ -155,10 +121,23 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
 
   const activeTabData = getActiveTabData();
 
+
+  const handleSelectStyle = async(data: string) => {
+    console.log("Selected Style for group:", data);
+    const segment = segments.find(
+      (segment) => segment.name.startsWith(data.replace(/\d+/g, ''))
+    );
+
+     if (!segment) return;
+          dispatch(setFilterSwatchSegmentType(segment));
+           await dispatch(fetchAllCategories(segment.categories));
+    // console.log("Segment Type:", segment);
+    setIsOpen(true);
+  };
   return (
     <>
       {/* Tab Navigation */}
-      <div className="px-2 bg-white border-b border-gray-200">
+      <div className="px-2 bg-transparent border-b border-gray-200">
         <div className="flex space-x-0 overflow-x-auto my-2 pb-2 thin-scrollbar gap-2">
           {masterArray.map((tab: MasterModel) => (
             <button
@@ -184,14 +163,19 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
       <div className="flex flex-col overflow-auto">
         {activeTabData ? (
           <>
-            <WallSelectionModal
+            {/* <WallSelectionModal
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               activeTabData={activeTabData}
               handleSelectMaterial={handleSelectMaterial}
               finaldata={expandedDetails}
               expanded={nameExpanded}
-            />
+            /> */}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <FilterSwatch 
+                setIsSheetOpen={setIsOpen}
+              />
+            </Sheet>
 
             {/* Groups */}
             <div className="px-4 py-3 space-y-3">
@@ -203,11 +187,11 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                 </div>
               ) : (
                 activeTabData.allSegments.map((group: MasterGroupModel) => (
-                  <div key={group.groupName} className="bg-gray-50 rounded-lg">
+                  <div key={group.groupName} className="bg-transparent rounded-lg">
                     {/* Group Header */}
                     <button
                       onClick={() => toggleGroupExpansion(group.segments)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-gray-100 transition-colors rounded-lg"
+                      className="w-full flex items-center justify-between p-4 hover:bg-transparent transition-colors rounded-lg"
                       type="button"
                     >
                       <div className="flex items-center space-x-3">
@@ -311,7 +295,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                             <button
                               className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors font-medium border border-gray-300"
                               type="button"
-                              onClick={() => setIsOpen(true)}
+                              onClick={() => handleSelectStyle(group.groupName)}
                             >
                               Select Style
                             </button>
@@ -333,7 +317,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                               {expandedGroups.map((segment: SegmentModal) => (
                                 <div
                                   key={segment.id}
-                                  className="flex justify-between items-center py-2.5 px-3 bg-white rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all"
+                                  className="flex justify-between items-center py-2.5 px-3 bg-transparent rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all"
                                 >
                                   {/* Area on the left */}
                                   <div className="flex items-center space-x-3">

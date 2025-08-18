@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import Call_task_id from '../Call_task_id';
 import { GenAiChat, TaskApiModel } from '@/models/genAiModel/GenAiModel';
-import { addHouseImage, insertGenAiChatData, resetRequest, setCurrentGenAiImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import { addHouseImage, addPaletteImage, insertGenAiChatData, resetRequest, setCurrentGenAiImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 import { setIsGenerated, updateIsGenLoading } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { toast } from 'sonner';
 import { setCurrentTabContent } from '@/redux/slices/studioSlice';
@@ -74,12 +74,13 @@ const GenAiImageGeneration = () => {
 
         dispatch(setCurrentGenAiImage(genChat));
         dispatch(addHouseImage(data.outputImage))
+       
 
         try {
             const result = await dispatch(insertGenAiChatData(genChat));
 
             if (result.meta.requestStatus === "fulfilled") {
-                dispatch(resetRequest());
+                // dispatch(resetRequest());
                 dispatch(updateIsGenLoading(false));
                 dispatch(setCurrentTabContent("compare"))
                 dispatch(setIsGenerated(true));
