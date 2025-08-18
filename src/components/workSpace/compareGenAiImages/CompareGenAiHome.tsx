@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import CompareSlider from "./CompareSlider";
-import SideBySideCompare from "./SideBySideCompare";
+
 // import AllGenAiImages from './AllGenAiImages';
 import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import {
@@ -43,46 +43,42 @@ const CompareGenAiHome: React.FC = () => {
   // Handle close compare view
   const handleCloseCompare = () => {
     setShowCompareView(false);
-  };
-
-  const [viewMode, setViewMode] = useState<"slider" | "side-by-side">("slider");
-
-  // Toggle view mode between side-by-side and slider
-  const handleToggleViewMode = (mode: "slider" | "side-by-side") => {
-    setViewMode(mode);
-  };
-
-  const handleInspirationSection = () => {
     dispatch(setCurrentTabContent("home"));
+    dispatch(setCurrentGenAiImage(null));
     dispatch(setIsGenerated(false));
     dispatch(resetRequest());
   };
 
+  // const [viewMode, setViewMode] = useState<"slider" | "side-by-side">("slider");
+
+  // Toggle view mode between side-by-side and slider
+  // const handleToggleViewMode = (mode: "slider" | "side-by-side") => {
+  //   setViewMode(mode);
+  // };
+
+  // const handleInspirationSection = () => {
+  //   dispatch(setCurrentTabContent("home"));
+  //   dispatch(setIsGenerated(false));
+  //   dispatch(resetRequest());
+  // };
+
   return (
     <div className="flex flex-col  md:h-full w-full p-2 pb-0 md:pb-2 bg-gray-100">
-     
+
 
       {/* Conditional rendering of compare view or image gallery */}
       {showCompareView &&
-      currentGenAiImage &&
-      currentGenAiImage.master_image_path &&
-      currentGenAiImage.output_image ? (
-       <div className="h-[23vh] mb-2 md:mb-6 md:h-[100vh]">
+        currentGenAiImage &&
+        currentGenAiImage.master_image_path &&
+        currentGenAiImage.output_image ? (
+        <div className="h-[23vh] mb-2 md:mb-6 md:h-[100vh]">
           {currentGenAiImage.master_image_path &&
-          currentGenAiImage.output_image &&
-          viewMode === "slider" ? (
+            currentGenAiImage.output_image &&
+
             <CompareSlider
-              // beforeImage={originalHouseImage.current }
-              // afterImage={selectedGeneratedImage.current }
               onClose={handleCloseCompare}
             />
-          ) : (
-            <SideBySideCompare
-              beforeImage={currentGenAiImage.master_image_path ?? ""}
-              afterImage={currentGenAiImage.output_image ?? ""}
-              onClose={handleCloseCompare}
-            />
-          )}
+          }
         </div>
       ) : (
         <div className="flex items-center justify-center h-[300px] bg-gray-100 mb-6 rounded-lg">

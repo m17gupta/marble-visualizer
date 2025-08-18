@@ -15,8 +15,7 @@ import {
 const MaskImage = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { screenShotUrl } = useSelector((state: RootState) => state.canvas);
-    
-    console.log("MaskImage component rendered with screenShotUrl:", screenShotUrl);
+
     // Check if screenShotUrl is a valid base64 string
     const isValidBase64Image = screenShotUrl && (
         screenShotUrl.startsWith('data:image/') || 

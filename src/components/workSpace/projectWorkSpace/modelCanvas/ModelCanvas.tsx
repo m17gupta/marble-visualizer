@@ -45,7 +45,7 @@ const ModelCanvas = ({ isCanvasModalOpen, onClose }: Props) => {
                     <div className="bg-white rounded-lg shadow-xl w-full h-full max-w-7xl max-h-[95vh] mx-4 my-4 transform transition-all flex flex-col">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
-                            <h2 className="text-xl font-semibold text-gray-800">Preserve Object</h2>
+                            <h2 className="text-xl font-semibold text-gray-800">Creat custom Mask</h2>
                             <button
                                 onClick={closeModal}
                                 className="text-gray-400 hover:text-gray-600 transition-colors"

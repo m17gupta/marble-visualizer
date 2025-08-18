@@ -1,19 +1,16 @@
-import { InspirationImageModel } from '@/models/inspirational/Inspirational';
-import { RootState } from '@/redux/store';
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+import React from 'react';
+
 import SidebarObject from './SidebarObject';
-import { addInspirationImage, updateInspirationNames } from '@/redux/slices/visualizerSlice/genAiSlice';
+
 import ImageQuality from './ImageQuality';
 import ExteriorSeg from './ExteriorSeg';
-import { LazyLoadImage } from "react-lazy-load-image-component";
+
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InspirationImages from './InspirationImages';
 // const tabs = [{ id: 0, name: 'All' }];
 
 const StyleAndRenovationPanel: React.FC = () => {
-
-  const { Inspirational_images } = useSelector((state: RootState) => state.inspirationalImages);
 
 
 

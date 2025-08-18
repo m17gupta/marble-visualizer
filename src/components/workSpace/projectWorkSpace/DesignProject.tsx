@@ -12,7 +12,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
-import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, deleteGenAiChat, resetRequest, setCurrentGenAiImage, updateIsRenameGenAiModal } from "@/redux/slices/visualizerSlice/genAiSlice";
+import {  deleteGenAiChat, resetRequest, setCurrentGenAiImage, updateIsRenameGenAiModal } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";

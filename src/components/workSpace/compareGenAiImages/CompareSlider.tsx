@@ -5,16 +5,12 @@ import { MdClose } from "react-icons/md";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { GrDislikeFill } from "react-icons/gr";
-
+import { LazyLoadImage } from "react-lazy-load-image-component";
 interface CompareSliderProps {
-  // beforeImage?: string;
-  // afterImage?: string;
   onClose?: () => void;
 }
 
 const CompareSlider: React.FC<CompareSliderProps> = ({
-  // beforeImage,
-  // afterImage,
   onClose,
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -22,7 +18,6 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [beforeImageLoaded, setBeforeImageLoaded] = useState(false);
   const [afterImageLoaded, setAfterImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [beforeImage, setBeforeImage] = useState<string>("");
   const [afterImage, setAfterImage] = useState<string>("");
@@ -47,9 +42,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     ) {
       setBeforeImage(currentGenAiImage.master_image_path);
       setAfterImage(currentGenAiImage.output_image);
-      // setBeforeImageLoaded(true);
-      // setAfterImageLoaded(true);
-      // setImageError(false);
+   
     }
   }, [currentGenAiImage]);
 
@@ -167,7 +160,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
         onTouchCancel={handleTouchEnd}
       >
         {/* Before image (original house) */}
-        <img
+        <LazyLoadImage
           src={afterImage}
           alt="Original House"
           className="absolute top-0 left-0 w-full h-full object-cover"
@@ -182,7 +175,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
             width: `${sliderPosition}%`,
           }}
         >
-          <img
+          <LazyLoadImage
             src={beforeImage}
             alt="Renovated House"
             className="absolute top-0 left-0 w-full h-full object-cover"

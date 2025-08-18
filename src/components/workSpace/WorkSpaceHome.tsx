@@ -29,7 +29,7 @@ const WorkSpaceHome = () => {
       dispatch(fetchGenAiChat(jobId!));
     }
   }, [jobId, genAiImages.length]);
-  console.log(genAiImages);
+ 
 
   return (
     <>

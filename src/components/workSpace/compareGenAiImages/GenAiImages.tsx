@@ -1,5 +1,4 @@
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
-import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 //import { updateGeneratedImage, updateOriginalHouseImage } from '@/redux/slices/visualizerSlice/genAiSlice';
