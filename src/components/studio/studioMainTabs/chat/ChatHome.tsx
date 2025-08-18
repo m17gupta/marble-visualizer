@@ -93,9 +93,9 @@ const ChatHome = () => {
             </div>
 
             <div className="p-4 mb-10">
-              <div className="flex gap-3 ">
+              <div className="flex gap-3">
         
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid  gap-2">
 
                 {/* pallet image  */}
                 {genAiRequests  &&
@@ -120,6 +120,19 @@ const ChatHome = () => {
                </div>
                 <RequestMasterImage />
               </div>
+
+                {genAiRequests && genAiRequests.prompt && genAiRequests.prompt[0] && (
+            <div
+              className="inline-block text-gray-600 text-sm px-3 py-1 rounded-xl border border-transparent mt-2"
+              style={{
+                backgroundClip:"padding-box, border-box",
+                backgroundImage:
+                  "linear-gradient(#fff, #fff), linear-gradient(90deg, #9333ea, #3b82f6)",
+                backgroundOrigin: "border-box",
+              }}>
+              {genAiRequests?.prompt[0]}
+            </div>
+          )}
     
 
               {isLoading && <ProcessImage />}

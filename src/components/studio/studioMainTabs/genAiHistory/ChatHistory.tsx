@@ -70,7 +70,7 @@ export default function ChatHistory() {
            dispatch(setCurrentInspTab("chat"));
       };
   return (
-    <div className="max-w-sm mx-auto p-4 space-y-3">
+    <div className="max-w-sm mx-auto p-4 space-y-3 mb-16">
       {/* ===== All sections as Accordion ===== */}
       {/* type="multiple" so multiple can be open at the same time */}
       <Accordion

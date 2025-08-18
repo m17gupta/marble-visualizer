@@ -31,7 +31,7 @@ const TabNavigation = ({ title, segment }: Props) => {
       id: "materials",
       icon: (
         <img
-          src="/assets/image/line-md--gauge-loop.svg"
+              src="/assets/image/line-md--arrows-vertical-alt.svg"
           alt="Materials"
           className="h-5 w-5"
         />
@@ -45,7 +45,8 @@ const TabNavigation = ({ title, segment }: Props) => {
       id: "measurement",
       icon: (
         <img
-          src="/assets/image/line-md--arrows-vertical-alt.svg"
+      
+             src="/assets/image/line-md--gauge-loop.svg"
           alt="Information"
           className="h-5 w-5"
         />
@@ -107,7 +108,6 @@ const TabNavigation = ({ title, segment }: Props) => {
           if (btn.id === "edit") {
             return (
               <DropdownMenu key="edit">
-
                 <DropdownMenuTrigger asChild>
                   <button
                     onClick={() => setActive("edit")}
@@ -122,14 +122,12 @@ const TabNavigation = ({ title, segment }: Props) => {
                       className="h-5 w-5"
                     />
                   </button>
-
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-44">
                   <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer"
-                    onClick={() => handleEditSegment(segment)}
-                  >
+                    onClick={() => handleEditSegment(segment)}>
                     <img
                       src="/assets/image/line-md--edit-twotone.svg"
                       alt="Edit"
@@ -138,8 +136,7 @@ const TabNavigation = ({ title, segment }: Props) => {
                     Edit Segment
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem
-                    onClick={() => handleEditSegmentAnnotation(segment)}
+                  <DropdownMenuItem onClick={() => handleEditSegmentAnnotation(segment)}
                   >
                     <img
                       src="/assets/image/line-md--edit-twotone.svg"
@@ -148,7 +145,6 @@ const TabNavigation = ({ title, segment }: Props) => {
                     />
                     Edit Annotation
                   </DropdownMenuItem>
-
 
                   <DropdownMenuItem className="cursor-pointer"
                     onClick={() => handleReAnnotation(segment)}

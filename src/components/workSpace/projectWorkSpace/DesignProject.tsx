@@ -176,7 +176,7 @@ const DesignProject = () => {
           className="px-4 py-1 bg-violet-600 text-white text-sm rounded hover:bg-violet-700 flex-shrink-0"
           onClick={handleInspirationSection}
         >
-          <span className="hidden sm:inline">Back to Inspiration</span>
+          <span className="hidden sm:inline">Exit Compare</span>
           <span className="inline sm:hidden">Back</span>
         </button>}
 
