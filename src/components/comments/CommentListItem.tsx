@@ -1,104 +1,133 @@
+import React, { useMemo } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Plus } from "lucide-react";
+import { CommentModel } from "@/models/commentsModel/CommentModel";
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Plus } from 'lucide-react'
-import { CommentModel } from '@/models/commentsModel/CommentModel'
-
-type CommentListsProps = {
+type CommentListItemProps = {
   replies: CommentModel[];
   commentId: string;
-   onCommentHover: (id: string) => void;
-  // onReplyComment?: (comment: CommentModel) => void;
-}
-const CommentListItem: React.FC<CommentListsProps> = ({ 
+  /** Parent-controlled active id */
+  activeCommentId: string | null;
+  /** Click -> parent sets active id */
+  onSelect: (id: string) => void;
+};
+
+const CommentListItem: React.FC<CommentListItemProps> = ({
   replies,
   commentId,
-  onCommentHover
+  activeCommentId,
+  onSelect,
+}) => {
+  const root = replies?.[0];
+  const isActive = activeCommentId === commentId;
 
-}) => { 
-  const createdAtDate = replies[0].created_at ? new Date(replies[0].created_at) : null;
+  const createdAtDate = useMemo(
+    () => (root?.created_at ? new Date(root.created_at) : null),
+    [root?.created_at]
+  );
 
+  const formattedDate =
+    createdAtDate &&
+    createdAtDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
-;
+  const formattedTime =
+    createdAtDate &&
+    createdAtDate.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
 
-  const handleTargetComment = () => {
-    onCommentHover(commentId);
+  const handleActivate = () => {
+    // single-select: already active ho to kuch mat karo (no toggle-off)
+    if (!isActive) onSelect(commentId);
   };
+
   return (
-    <Card className="w-full relative mb-4"
-    key={commentId}
+    <Card
+      key={commentId}
+      role="button"
+      tabIndex={0}
+      aria-selected={isActive}
+      onClick={handleActivate}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleActivate();
+        }
+      }}
+      onDoubleClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      className={`relative m-0 mb-[0px] w-full cursor-pointer rounded-sm transition-all 
+        ${isActive
+          ? "bg-blue-50/60 border border-blue-300 shadow-md ring-1 ring-blue-200"
+          : "bg-white border border-gray-300 shadow-none hover:bg-gray-50 hover:shadow-md"
+        }`}
+      style={{ padding: 0, marginBottom: "0px" }}
     >
-      <CardContent className="p-4">
-        <div 
-          className="w-full relative"
-          onClick={handleTargetComment}
-        >
-          {/* User Avatar and Info Section */}
-          <div className="flex items-start space-x-3 mb-4">
-            <div className="flex flex-col items-center">
-              <Avatar className="h-10 w-10 mb-3">
-                <AvatarFallback className="bg-primary text-primary-foreground text-lg font-medium">
-                  {replies[0].name?.charAt(0)?.toUpperCase() || 'A'}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <p className="font-semibold text-sm text-foreground truncate">
-                  {replies[0].name}
-                </p>
-              </div>
-              
-              <span className="text-muted-foreground text-xs">
-                {createdAtDate
-                  ? createdAtDate.toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }) + " at " + createdAtDate.toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: true,
-                    })
-                  : "Unknown Date"}
-              </span>
-            </div>
+      <div
+        className={`absolute left-0 top-0 h-full w-1 rounded-l-3xl transition-all hover:bg-gray-50
+        ${isActive ? "bg-blue-500" : "bg-transparent"}`}
+      />
 
-            {/* Check Icon */}
-            <div className="absolute top-2 right-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
+      <CardContent className="p-4 ">
+        <div className="flex items-start gap-3">
+          <Avatar className="h-10 w-10 shrink-0">
+            <AvatarFallback className="bg-primary text-primary-foreground text-lg font-medium">
+              {root?.name?.charAt(0)?.toUpperCase() || "A"}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {root?.name || "Anonymous"}
+              </p>
+              <CheckCircle
+                className={`h-4 w-4 shrink-0 ${isActive ? "text-green-600" : "text-green-500"}`}
+              />
             </div>
+            <span className="text-xs text-muted-foreground">
+              {createdAtDate ? `${formattedDate} at ${formattedTime}` : "Unknown Date"}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 pl-12 flex justify-between">
+        
+
+          <div
+            className={`rounded-lg px-0 py-0 text-sm leading-relaxed
+              ${isActive ? "shadow-none" : ""}`}
+          >
+            {root?.commentText || ""}
           </div>
 
-          {/* Comment Content Section */}
-          <div className="flex flex-col items-start pl-2">
-            <div 
-              className="text-wrap cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
-              
-            >
-              {/* Reply Count Badge */}
-              <div className="flex items-center space-x-2 mb-2">
-                {replies.length !== 1 ? (
-                  <Badge variant="secondary" className="flex items-center space-x-1">
-                    <span>{replies.length - 1}</span>
-                    <Plus className="h-3 w-3" />
-                  </Badge>
-                ) : (
-                  <Badge variant="outline">
-                    {replies.length}
-                  </Badge>
-                )}
-              </div>
-              
-              {/* Comment Message */}
-              <h5 className="text-sm font-medium text-foreground leading-relaxed">
-                {replies[0] .commentText}
-              </h5>
-            </div>
+  <div className="mb-2 flex items-center gap-2">
+            {replies?.length > 1 ? (
+              <Badge
+                variant="secondary"
+                className={`flex items-center gap-1 ${isActive ? "ring-1 ring-blue-200" : ""}`}
+              >
+                <span>{replies.length - 1}</span>
+                <Plus className="h-3 w-3" />
+              </Badge>
+            ) : (
+              <Badge variant="outline" className={isActive ? "ring-1 ring-blue-200" : ""}>
+                {replies?.length ?? 0}
+              </Badge>
+            )}
           </div>
+
         </div>
       </CardContent>
     </Card>

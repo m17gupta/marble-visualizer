@@ -3,7 +3,7 @@ import React from 'react'
 
 const Comments = () => {
   return (
-    <div>
+    <div className='p-3'>
       <CommentLists />
     </div>
   )
