@@ -6,8 +6,9 @@ import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from '../canv
 import { toast } from 'sonner';
 import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
 import {
+   
     TooltipProvider,
-    //    Tooltip, TooltipContent, TooltipTrigger
+    
 } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
 import { collectPoints } from '../canvasUtil/CreatePolygon';
@@ -72,6 +73,27 @@ const PolygonOverlay = ({
             setUpdateSelectedSegment(null);
         }
     }, [selectedSegment]);
+
+    const handleMouseMove = useCallback(
+        (event: fabric.TEvent) => {
+            if (!fabricCanvasRef.current) return;
+            const canvas = fabricCanvasRef.current;
+            console.log("canvas", canvas.getObjects());
+            const fabricEvent = event as unknown as { target?: NamedFabricObject };
+            const target = fabricEvent.target;
+            console.log("target", target?.name);
+            if (target !== undefined) {
+                const targetName = target.name;
+                if (targetName) {
+                    handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+                }
+            } else {
+                HideAllSegments(fabricCanvasRef);
+            }
+        },
+        []
+    );
+
     // Initialize Fabric.js canvas
     useEffect(() => {
         if (!canvasRef.current || fabricCanvasRef.current) return;
@@ -168,10 +190,10 @@ const PolygonOverlay = ({
             canvas.dispose();
             fabricCanvasRef.current = null;
             backgroundImageRef.current = null;
-             dispatch(setCanvasReady(false));
+            dispatch(setCanvasReady(false));
         };
 
-    }, [width, height, dispatch]);
+    }, [width, height, dispatch, handleMouseMove]);
 
     // Load background image with comprehensive CORS and fallback handling
     useEffect(() => {
@@ -261,7 +283,7 @@ const PolygonOverlay = ({
         }
 
         // Remove previous polygons and groups (but not the background image)
-        const objectsToRemove = canvas.getObjects().filter(obj => 
+        const objectsToRemove = canvas.getObjects().filter(obj =>
             obj.type === 'polygon' || (obj.type === 'group' && (obj as NamedFabricObject).name !== 'backgroundImage')
         );
         objectsToRemove.forEach(obj => canvas.remove(obj));
@@ -298,7 +320,7 @@ const PolygonOverlay = ({
                 console.warn(`[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`);
                 return;
             }
-         
+
 
             collectPoints(
                 annotation_points_float,
@@ -316,57 +338,33 @@ const PolygonOverlay = ({
 
         // Log successful rendering
         console.log(`[PolygonOverlay] Successfully rendered ${allSegArray.length} segments`);
-        
+
         // Ensure proper z-index order: background image at back, polygons on top
         if (backgroundImageRef.current) {
             canvas.sendObjectToBack(backgroundImageRef.current);
         }
-        
+
         canvas.renderAll();
     }, [allSegArray, segments, fabricCanvasRef, height, width, imageHeight, imageWidth])
 
     // Debug function to check canvas state
     useEffect(() => {
         if (!fabricCanvasRef.current) return;
-        
+
         const canvas = fabricCanvasRef.current;
         const objects = canvas.getObjects();
-        
+
         console.log(`[PolygonOverlay Debug] Canvas objects count: ${objects.length}`);
         console.log(`[PolygonOverlay Debug] Image dimensions: ${imageWidth}x${imageHeight}`);
         console.log(`[PolygonOverlay Debug] Canvas dimensions: ${width}x${height}`);
         console.log(`[PolygonOverlay Debug] Segments array length: ${allSegArray.length}`);
         console.log(`[PolygonOverlay Debug] Background image loaded: ${!!backgroundImageRef.current}`);
-        
+
         objects.forEach((obj, index) => {
             const namedObj = obj as NamedFabricObject;
             console.log(`[PolygonOverlay Debug] Object ${index}: type=${obj.type}, name=${namedObj.name}, visible=${obj.visible}`);
         });
     }, [allSegArray, imageWidth, imageHeight, width, height]);
-
-
-    const handleMouseMove = useCallback(
-        (event: fabric.TEvent) => {
-            if (!fabricCanvasRef.current) return;
-             const canvas = fabricCanvasRef.current;
-                    console.log("canvas", canvas.getObjects());
-            const fabricEvent = event as unknown as { target?: NamedFabricObject };
-            const target = fabricEvent.target;
-                console.log("target", target?.name);
-            if (target !== undefined) {
-                const targetName = target.name;
-                if (targetName) {
-                    handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
-                }
-            } else {
-                HideAllSegments(fabricCanvasRef);
-            }
-
-
-
-        },
-        []
-    );
 
 
     // hover on group segment
@@ -403,11 +401,13 @@ const PolygonOverlay = ({
         // Add new selected animation
         SelectedAnimation(fabricCanvasRef, annotatonPoints, segName, color);
     }, [updateSelectedSegment, segments, fabricCanvasRef]);
+
+
     return (
         <>
             <TooltipProvider>
                 <div className={cn("flex flex-col space-y-4", className)}>
-
+                  
 
                     {/* Canvas Container */}
                     <motion.div
@@ -421,8 +421,8 @@ const PolygonOverlay = ({
 
                             >
                                 {/* min-h-[720px] min-w-[1280px]" */}
-                                <div 
-                                 className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
+                                <div
+                                    className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
 
                                 >
                                     <canvas

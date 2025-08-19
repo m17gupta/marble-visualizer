@@ -51,7 +51,7 @@ const GuidancePanel: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const { list: projects } = useSelector((state: RootState) => state.projects);
-  const {loading:renameGenAiLoading} = useSelector((state: RootState) => state.genAi);
+  const { loading: renameGenAiLoading } = useSelector((state: RootState) => state.genAi);
   const { id } = useParams();
   const suggestions = projects.find((d) => d.id == id)?.analysed_data
     ?.style_suggestions;
@@ -65,7 +65,8 @@ const GuidancePanel: React.FC = () => {
   const [isModel, setIsModel] = React.useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [isPromptPopoverOpen, setIsPromptPopoverOpen] = React.useState(false);
-  const [isImagePopoverOpen, setIsImagePopoverOpen] = React.useState(false);
+  const [isInspirationImagePopoverOpen, setIsInspirationImagePopoverOpen] = React.useState(false);
+  const [isPaletteImagePopoverOpen, setIsPaletteImagePopoverOpen] = React.useState(false);
   const [showComparisonModal, setShowComparisonModal] = React.useState(false);
 
   const currentPageDetails = projects.find((d) => d.id == id);
@@ -138,6 +139,10 @@ const GuidancePanel: React.FC = () => {
       dispatch(addPrompt(""));
     } else if (data === "inspiration-image") {
       dispatch(resetInspirationImage());
+    } else if (data === "palette-image") {
+      // Add logic to reset palette image
+      // You may need to add a resetPaletteImage action to your Redux slice
+      console.log("Deleting palette image");
     }
   };
 
@@ -147,7 +152,7 @@ const GuidancePanel: React.FC = () => {
     // Logic to generate AI image
     try {
 
-      
+
       dispatch(
         submitGenAiRequest(requests as GenAiRequest)
       );
@@ -191,7 +196,7 @@ const GuidancePanel: React.FC = () => {
 
   // Handle design save
   const handleDesignSave = (designName: string) => {
-   
+
     // Add your save logic here
     toast.success(`Design "${designName}" saved successfully!`);
   };
@@ -201,14 +206,14 @@ const GuidancePanel: React.FC = () => {
     setShowComparisonModal(true);
   };
 
-  
+
   return (
     <>
-  {
-   isGenLoading||renameGenAiLoading && 
-  <Loading
-      backgroundImage='/assets/image/dzinlylogo-icon.svg' // Use the correct path to your logo image
-    />}
+      {
+        isGenLoading || renameGenAiLoading &&
+        <Loading
+          backgroundImage='/assets/image/dzinlylogo-icon.svg' // Use the correct path to your logo image
+        />}
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 
       {/* Image Comparison Modal */}
@@ -267,6 +272,18 @@ const GuidancePanel: React.FC = () => {
             />
           )}
 
+          {/* pallet image */}
+          {
+            requests.paletteUrl && requests.paletteUrl.length > 0 && requests.paletteUrl[0] !== "" && (
+              <UserInputPopOver
+                inputKey="palette-image"
+                name="palette-image"
+                value={requests.paletteUrl[0]}
+                open={isPaletteImagePopoverOpen}
+                setOpen={setIsPaletteImagePopoverOpen}
+                deleteData={handleDelete}
+              />
+            )}
           {/* inspiration Image Y  */}
           {requests.referenceImageUrl &&
             requests.referenceImageUrl.length > 0 &&
@@ -275,121 +292,125 @@ const GuidancePanel: React.FC = () => {
                 inputKey="inspiration-image"
                 name={inspirationNames}
                 value={requests.referenceImageUrl[0]}
-                open={isImagePopoverOpen}
-                setOpen={setIsImagePopoverOpen}
+                open={isInspirationImagePopoverOpen}
+                setOpen={setIsInspirationImagePopoverOpen}
                 deleteData={handleDelete}
               />
             )}
-        </div>
 
-        <div className={`flex gap-3 md-gap-0 md:flex justify-between items-between
+
+
+
+          <div className={`flex gap-3 md-gap-0 md:flex justify-between items-between
            
           `}>
-          <div className="flex items-center">
-            <ProjectHistory />
-              
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 rounded-md md:px-3 md:py-2 px-3 py-1">
-                    <HiOutlineSparkles className="text-xl" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="bg-black text-white text-xs px-2 py-1 rounded-md"
-                >
-                  Enhance Guidance
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <div className="flex items-center">
+              <ProjectHistory />
 
-            <AddInspiration
-              isOpen={isModel}
-              onClose={handleCloseModel}
-              onSubmit={handleSubmit}
-            />
-            <button
-              className="text-sm border border-gray-300 flex align-middle gap-1 md:px-3 md:py-2 px-3 py-1 rounded-md"
-              onClick={handleAddInspirational}
-            >
-              <CiImageOn className="text-lg" />{" "}
-              <span className="hidden md:block">Add Inspiration</span>
-            </button>
-          </div>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="text-sm text-blue-600 border border-gray-300 bg-transparent me-2 flex items-center justify-center gap-1 rounded-md md:px-3 md:py-2 px-3 py-1">
+                      <HiOutlineSparkles className="text-xl" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    className="bg-black text-white text-xs px-2 py-1 rounded-md"
+                  >
+                    Enhance Guidance
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-          <div className="flex items-center gap-2 justify-end">
-            {/* Toggle Button - Always Visible */}
-            <button
-              className="text-sm border border-gray-300 rounded-full bg-transparent flex items-center justify-center gap-1 px-1 py-1 focus:outline-none focus:ring-0"
-              onClick={handleBulbClick}
-            >
-              {showActionButtons ? (
-                <TbBulbFilled size={28} className="text-yellow-300 w-6 h-6" />
-              ) : (
-                <TbBulb size={28} className="w-6 h-6" />
-              )}
-            </button>
+              <AddInspiration
+                isOpen={isModel}
+                onClose={handleCloseModel}
+                onSubmit={handleSubmit}
+              />
+              <button
+                className="text-sm border border-gray-300 flex align-middle gap-1 md:px-3 md:py-2 px-3 py-1 rounded-md"
+                onClick={handleAddInspirational}
+              >
+                <CiImageOn className="text-lg" />{" "}
+                <span className="hidden md:block">Add Inspiration</span>
+              </button>
+            </div>
 
-            <button
-              className={`px-4 py-1 ${isTask ? "bg-gray-400" : "bg-blue-600"
-                } text-white rounded`}
-              onClick={handleGenerateAiImage}
-              disabled={isTask || isGenLoading}
-            >
-              {isGenLoading ? "Processing..." : "Visualize"}
-            </button>
-            
-            {/* Test button for comparison modal */}
-            {/* <button
+            <div className="flex items-center gap-2 justify-end">
+              {/* Toggle Button - Always Visible */}
+              <button
+                className="text-sm border border-gray-300 rounded-full bg-transparent flex items-center justify-center gap-1 px-1 py-1 focus:outline-none focus:ring-0"
+                onClick={handleBulbClick}
+              >
+                {showActionButtons ? (
+                  <TbBulbFilled size={28} className="text-yellow-300 w-6 h-6" />
+                ) : (
+                  <TbBulb size={28} className="w-6 h-6" />
+                )}
+              </button>
+
+              <button
+                className={`px-4 py-1 ${isTask ? "bg-gray-400" : "bg-blue-600"
+                  } text-white rounded`}
+                onClick={handleGenerateAiImage}
+                disabled={isTask || isGenLoading}
+              >
+                {isGenLoading ? "Processing..." : "Visualize"}
+              </button>
+
+              {/* Test button for comparison modal */}
+              {/* <button
               className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
               onClick={handleShowComparison}
             >
               Compare
             </button> */}
+            </div>
           </div>
+
+          {showActionButtons && suggestedPrompt && (
+            <div
+              ref={suggestionsRef}
+              className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3 mt-6"
+            >
+              {suggestedPrompt.map((suggestion, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white/10 rounded-xl p-3 border flex items-center justify-between border-black/10 cursor-pointer" onClick={() => handleRandomPromptSelection(suggestion.prompt)}
+                >
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900 mb-1">
+                      {suggestion.title}
+                    </h3>
+                    <p className="text-sm text-gray-800 leading-snug mb-2">
+                      {suggestion.prompt}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleRandomPromptSelection(suggestion.prompt)}
+                    className="px-3 py-1 bg-black text-white text-xs rounded-md hover:bg-gray-900 transition"
+                  >
+                    Apply
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {showActionButtons && suggestedPrompt && (
-          <div
-            ref={suggestionsRef}
-            className="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 flex flex-col gap-3 mb-3 mt-6"
-          >
-            {suggestedPrompt.map((suggestion, idx) => (
-              <div
-                key={idx}
-                className="bg-white/10 rounded-xl p-3 border flex items-center justify-between border-black/10 cursor-pointer"   onClick={() => handleRandomPromptSelection(suggestion.prompt)} 
-              >
-                <div>
-                  <h3 className="text-base font-semibold text-gray-900 mb-1">
-                    {suggestion.title}
-                  </h3>
-                  <p className="text-sm text-gray-800 leading-snug mb-2">
-                    {suggestion.prompt}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleRandomPromptSelection(suggestion.prompt)}
-                  className="px-3 py-1 bg-black text-white text-xs rounded-md hover:bg-gray-900 transition"
-                >
-                  Apply
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Only render Call_task_id when there's an active task */}
-      {/* {taskId && taskId !== "" && isTask && (
+        {/* Only render Call_task_id when there's an active task */}
+        {/* {taskId && taskId !== "" && isTask && (
         <Call_task_id
           taskId={taskId}
           resetChatTask={handleResetStartApiCall}
           resetChatTaskFail={handleResetFaiApiCall}
         />
       )} */}
-      <RenameGenAiHome/>
+        <RenameGenAiHome />
+      </div>
     </>
   );
 };
+
 export default GuidancePanel;

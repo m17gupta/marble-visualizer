@@ -8,7 +8,6 @@ import { setCanvasType } from "@/redux/slices/canvasSlice";
 // import { setActiveTab } from "@/redux/slices/TabControlSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import AddSegSidebar from "../canvas/canvasAddNewSegment/AddSegSidebar";
 
 const wallToDefaultTab: Record<string, string> = {
   account: "w1",

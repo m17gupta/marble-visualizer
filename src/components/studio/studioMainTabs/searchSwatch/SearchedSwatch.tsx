@@ -236,6 +236,7 @@ const SearchedSwatch = ({onCountSwatch}:Props) => {
                   }
                   alt={`swatch-${idx + 1}`}
                   className="w-full h-full object-cover"
+                 
                 />
               </button>
             ))

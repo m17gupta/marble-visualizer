@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 import { RootState } from "@/redux/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,10 +9,17 @@ import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
 import { FaInfo } from "react-icons/fa6";
 
 import { FaRegStar } from "react-icons/fa";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { addPaletteImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { setCanvasType } from "@/redux/slices/canvasSlice";
 
 
 
 export function SwatchRecommendations() {
+ 
+  const dispatch = useDispatch();
+
+
   const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
   const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
   const {
@@ -89,6 +96,17 @@ export function SwatchRecommendations() {
     materials,
   ]);
 
+    const handleSelectedSwatch = (src: MaterialModel) => {
+      
+      const image_path= src.bucket_path === "default"
+        ? `${path}/${src.photo}`
+        : `${newPath}/${src.bucket_path}`;
+  
+        dispatch(addPaletteImage(image_path))
+        dispatch(setCanvasType("hover-default")); // Set canvas type to hover-default when a swatch is selected
+  
+    };
+
   return (
     <Card className="border-none border-gray-200 rounded-lg shadow-sm p-3">
       <CardHeader className="pb-4 p-0">
@@ -119,7 +137,7 @@ export function SwatchRecommendations() {
                   className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl border-gray-900">
                   {/* Image/Color Preview */}
                   <div className="aspect-square relative overflow-hidden group">
-                    <img
+                    <LazyLoadImage
                       src={
                         swatch.bucket_path === "default"
                           ? `${path}/${swatch.photo}`
@@ -137,6 +155,7 @@ export function SwatchRecommendations() {
                           ? String(swatch.id)
                           : "image not available";
                       }}
+                     onClick={() => handleSelectedSwatch(swatch)}
                     />
 
                     {/* Info Icon - top-left */}
