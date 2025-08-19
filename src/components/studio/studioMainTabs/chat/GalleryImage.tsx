@@ -88,6 +88,7 @@ export default function GalleryImage() {
           .fixed.inset-0.bg-black\\/80 { 
             background-color: transparent !important; 
           }
+            
           
           /* Start from exact left (no gutter) */
           .sheet-offset { 

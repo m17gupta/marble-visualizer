@@ -176,9 +176,27 @@ const FilterSwatch: React.FC<FilterSwatchProps> = ({
              </div>
              <SearchedSwatch onCountSwatch={setTotalSwatches}  />
            </div>
-         </SheetContent>
+      </SheetContent>
+
+         <style
+        dangerouslySetInnerHTML={{
+          __html: `
+          .fixed.inset-0.bg-black\\/80 { 
+            background-color: transparent !important; 
+          }
+            
+          
+          /* Start from exact left (no gutter) */
+          .sheet-offset { 
+            left: 0 !important; 
+            max-width: 100vw; 
+          }
+        `,
+        }}
+      />
    </>
   )
 }
+
 
 export default FilterSwatch

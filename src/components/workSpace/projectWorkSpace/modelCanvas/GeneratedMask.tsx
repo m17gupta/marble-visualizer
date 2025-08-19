@@ -70,10 +70,10 @@ const GeneratedMask = () => {
 
       {/* button and cancel and submit */}
       <div className="flex justify-end space-x-2">
-        <button className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
+        <button className="px-3 py-2 text-xs bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
           onClick={handleCancel}
         >Cancel</button>
-        <button className="btn-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        <button className="px-3 py-2 text-xs bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
 
           onClick={handleMask}>Submit</button>
       </div>
