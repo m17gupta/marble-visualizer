@@ -12,7 +12,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
-import {  deleteGenAiChat, resetRequest, setCurrentGenAiImage, updateIsRenameGenAiModal } from "@/redux/slices/visualizerSlice/genAiSlice";
+import {  addHouseImage, addInspirationImage, addPaletteImage, addPrompt, deleteGenAiChat, resetRequest, setCurrentGenAiImage, updateIsRenameGenAiModal } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
@@ -54,11 +54,10 @@ const DesignProject = () => {
     dispatch(setIsGenerated(true));
     dispatch(setCurrentGenAiImage(imageSet));
     dispatch(setCurrentTabContent("compare"));
-    // dispatch(setCurrentGenAiImage(imageSet));
-    // dispatch(addInspirationImage(imageSet.reference_img));
-    // dispatch(addPaletteImage(imageSet.palette_image_path));
-    // dispatch(addHouseImage(imageSet.master_image_path));
-    // dispatch(addPrompt(imageSet.user_input_text));
+    dispatch(addInspirationImage(imageSet.reference_img));
+    dispatch(addPaletteImage(imageSet.palette_image_path));
+    dispatch(addHouseImage(imageSet.master_image_path));
+    dispatch(addPrompt(imageSet.user_input_text));
 
 
   };

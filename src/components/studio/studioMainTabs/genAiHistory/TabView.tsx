@@ -10,8 +10,10 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import { TbHomePlus } from "react-icons/tb";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCurrentInspTab } from "@/redux/slices/InspirationalSlice/InspirationTabSlice";
+import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 type Props={
     genAi:GenAiChat
 }
@@ -23,6 +25,19 @@ const TabView = ({ genAi }: Props) => {
         dispatch(addHouseImage(imagePath));
         dispatch(setCurrentInspTab("chat"));
     };
+
+      const handleImageSwitch = () => {
+    
+        // dispatch(setIsGenerated(true));
+        dispatch(setCurrentGenAiImage(genAi));
+        dispatch(setCurrentTabContent("compare"));
+        dispatch(addInspirationImage(genAi.reference_img));
+        dispatch(addPaletteImage(genAi.palette_image_path));
+        dispatch(addHouseImage(genAi.master_image_path));
+        dispatch(addPrompt(genAi.user_input_text));
+    
+    
+      };
     return (
         <>
             <div className="relative">
@@ -53,6 +68,7 @@ const TabView = ({ genAi }: Props) => {
                     src={genAi.output_image}
                     alt="After"
                     className="w-full rounded-xl object-cover"
+                    onClick={handleImageSwitch}
                 />
                 <div className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow-sm cursor-pointer"
                 onClick={() => handleMasterImage(genAi.output_image)}
