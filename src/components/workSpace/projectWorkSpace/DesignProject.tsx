@@ -99,7 +99,7 @@ const DesignProject = () => {
     <div className={`flex items-center justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
     `}>
       {/* Design buttons scrollable */}
-      <div className="flex gap-2 overflow-x-auto scroll-thin pr-2 max-w-full">
+      <div className="flex gap-2 overflow-x-auto scroll-thin pr-2 max-w-full pb-2">
 
         {/* Show error state */}
         {(error || componentError) && (

@@ -254,7 +254,7 @@ const StudioTabs = () => {
                             handleEachSegmentHover(tab.short_title ?? "")
                           }
                           onMouseLeave={handleLeaveGroupHover}
-                          className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600"
+                          className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 foucs:ring-0 focus:outline-none focus:ring-transparent"
                         >
                           {tab.short_title}
                         </TabsTrigger>

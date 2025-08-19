@@ -221,10 +221,18 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
                 </Tooltip>
 
               </div>
-              <span className="w-px h-4 bg-gray-300"></span>
-              <span>X: {mousePosition.x}</span>
-              <span>Y: {mousePosition.y}</span>
+            
             </Badge>
+
+              {/* <span className="w-px h-4 bg-gray-300"></span> */}
+              <div className='flex gap-1'>
+                    <Badge variant="secondary" className="grid items-center gap-2 w-20">
+              <span>X: {mousePosition.x}</span>
+               </Badge>
+                 <Badge variant="secondary" className="grid items-center gap-2 w-20">
+              <span>Y: {mousePosition.y}</span>
+</Badge>
+</div>
 
             {canvasType == "reannotation" && <AddSegLists
               segType={selectedSegment?.segment_type || "Unknown"}

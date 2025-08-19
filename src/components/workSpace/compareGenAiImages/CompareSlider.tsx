@@ -4,8 +4,10 @@ import { FaDownload, FaExpand, FaCompress } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
-import { GrDislikeFill } from "react-icons/gr";
+import { BiLike } from "react-icons/bi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { BiSolidLike } from "react-icons/bi";
+
 interface CompareSliderProps {
   onClose?: () => void;
 }
@@ -26,6 +28,11 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
     setSliderPosition(Number(e.target.value));
   };
 
+  const [liked, setLiked] = useState(false);
+  const handlelike = () => {
+    setLiked(!liked);
+    // Here you can also dispatch an action to update the like status in the Redux store if needed
+  }
   const handleMouseDown = () => {
     setIsDragging(true);
   };
@@ -120,12 +127,14 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
         {/* <div className="text-white font-medium">Side by Side 1</div> */}
         <div className="flex gap-2">
             <button
-            onClick={handleDownload}
+            onClick={handlelike}
             className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
           >
-        <GrDislikeFill />
-
+             {liked ?  <BiSolidLike /> : <BiLike />}
+           
           </button>
+
+         
 
           <button
             onClick={handleDownload}
@@ -163,7 +172,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
         <LazyLoadImage
           src={afterImage}
           alt="Original House"
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full "
           onLoad={() => setBeforeImageLoaded(true)}
           // onError={() => setImageError(true)}
         />
@@ -178,7 +187,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
           <LazyLoadImage
             src={beforeImage}
             alt="Renovated House"
-            className="absolute top-0 left-0 w-full h-full object-cover"
+            className="absolute top-0 left-0 w-full h-full"
             style={{
               width: `${(100 / sliderPosition) * 100}%`,
               maxWidth: "none",
