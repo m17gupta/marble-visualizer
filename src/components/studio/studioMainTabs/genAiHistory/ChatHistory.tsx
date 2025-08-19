@@ -16,8 +16,10 @@ import { useDispatch, useSelector } from "react-redux";
 import TabView from "./TabView";
 import InfoView from "./InfoView";
 import { TbHomePlus } from "react-icons/tb";
-import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCurrentInspTab } from "@/redux/slices/InspirationalSlice/InspirationTabSlice";
+import { GenAiChat } from "@/models/genAiModel/GenAiModel";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 
 
 
@@ -69,6 +71,17 @@ export default function ChatHistory() {
           dispatch(addHouseImage(imagePath));
            dispatch(setCurrentInspTab("chat"));
       };
+
+      const handleImageSwitch = (imageSet: GenAiChat) => {
+          
+          dispatch(setCurrentGenAiImage(imageSet));
+          dispatch(setCurrentTabContent("compare"));
+          dispatch(addInspirationImage(imageSet.reference_img));
+          dispatch(addPaletteImage(imageSet.palette_image_path));
+          dispatch(addHouseImage(imageSet.master_image_path));
+          dispatch(addPrompt(imageSet.user_input_text));
+      };
+
   return (
     <div className="max-w-sm mx-auto p-4 space-y-3 mb-16">
       {/* ===== All sections as Accordion ===== */}
@@ -174,16 +187,23 @@ export default function ChatHistory() {
                 <AccordionContent className="pb-3">
                   <Tabs defaultValue="view" className="w-full mt-1 px-3">
                     <div className="flex items-center gap-4">
-                      <TabsList className="bg-transparent p-0 h-auto mt-2">
+                      <TabsList className="bg-transparent p-0 h-auto mt-2 gap-2">
                         <TabsTrigger
                           value="view"
-                          className="data-[state=active]:text-purple-700 data-[state=active]:font-medium bg-transparent h-auto px-3 mr-0">
+                          className="data-[state=active]:bg-purple-700 data-[state=active]:text-white bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 text-sm font-medium transition-colors">
                           View
                         </TabsTrigger>
                         <TabsTrigger
                           value="info"
-                          className="data-[state=active]:text-purple-700 data-[state=active]:font-medium bg-transparent px-3">
+                          className="data-[state=active]:bg-purple-700 data-[state=active]:text-white bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 text-sm font-medium transition-colors">
                           Info
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="show"
+                          className="data-[state=active]:bg-purple-700 data-[state=active]:text-white bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+                          onClick={() => handleImageSwitch(genAi)}
+                        >
+                          Show
                         </TabsTrigger>
                       </TabsList>
                     </div>
@@ -196,6 +216,12 @@ export default function ChatHistory() {
 
                     <TabsContent value="info" className="text-sm text-gray-600 mt-3">
                       <InfoView />
+                    </TabsContent>
+
+                    <TabsContent value="show" className="text-sm text-gray-600 mt-3">
+                      <div className="p-4 text-center">
+                        <p>Show content will be displayed here</p>
+                      </div>
                     </TabsContent>
                   </Tabs>
                 </AccordionContent>
