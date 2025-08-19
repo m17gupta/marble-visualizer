@@ -44,7 +44,7 @@ export const getUserProfile = createAsyncThunk(
       }
 
       let profile = await AuthService.getUserProfileByUserId(userId);
-
+  console.log("Redux getUserProfile - Fetched profile:", profile);
       // If no profile found, try to get user info and create a profile
       if (!profile) {
         try {

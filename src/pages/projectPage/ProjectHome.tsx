@@ -5,6 +5,7 @@ import SwatchBookDataHome from '@/components/swatchBookData/SwatchBookDataHome'
 import MaterialData from '@/components/swatchBookData/materialData/MaterialData'
 import ProjectAnalyseSegmentApiCall from './analyseProjectImage/ProjectAnalyseSegmentApiCall'
 import GetHouseSegments from './analyseProjectImage/GetHouseSegments'
+import FetchuserProfile from './FetchuserProfile'
 
 const ProjectHome = () => {
   return (
@@ -19,6 +20,8 @@ const ProjectHome = () => {
       <ProjectAnalyseSegmentApiCall />
 
       <GetHouseSegments />
+
+      <FetchuserProfile/>
     </>
   )
 }

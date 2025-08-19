@@ -14,8 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import useViewFiles from "@/hooks/useViewFiles";
-import Camera from "../../../../public/assets/image/camera.png";
-import Homeimage from "../../../../public/assets/image/home.png";
+
 import { LuImageUp } from "react-icons/lu";
 
 import { RootState } from "@/redux/store";
@@ -34,7 +33,6 @@ import { CreateJob, CreateJobParams } from "@/utils/CreateJob";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 
-import { MdPhotoSizeSelectLarge, MdBrokenImage } from "react-icons/md";
 import { PiImagesDuotone } from "react-icons/pi";
 import { setIsAnalyseImage, setJobUrl, setProjectId } from "@/redux/slices/projectAnalyseSlice";
 
@@ -137,7 +135,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
     { key: "right", label: "Right View" },
   ];
   const handleUpload = async () => {
-    console.log("Starting upload process...", uploadedFile, profile?.id, createdProjectId.current);
+    
     if (!uploadedFile || !profile?.id) return;
 
     // Check if AWS credentials are configured
@@ -151,7 +149,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
 
     try {
       // Use direct S3 upload service
-      console.log("Uploading file to S3...", uploadedFile.name, profile.id);
+  
       const result = await DirectS3UploadService.uploadFile(
         uploadedFile,
         profile.id,
@@ -160,7 +158,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
           setUploadProgress(progress.percentage || 0);
         }
       );
-    console.log("Upload result:", result);
+   
       if (result.success && result.fileUrl && result.key) {
         dispatch(addHouseImage(result.fileUrl));
         // create job with uploaded file
