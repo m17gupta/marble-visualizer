@@ -31,8 +31,7 @@ const StudioMainTabs = () => {
   };
 
   const handleDesignHubClick = () => {
-    // setActiveTab("design-hub");
-    // console.log("Design Hub tab clicked");
+  dispatch(setCanvasType("hover"))
     dispatch(updateActiveTab("design-hub"));
     dispatch(setCurrentTabContent("home"));
     dispatch(setCurrentGenAiImage(null)); // Reset current GenAI image when switching tabs
@@ -47,6 +46,7 @@ const StudioMainTabs = () => {
 
   const handleMeasurementClick = () => {
     // setActiveTab("measurement");
+    dispatch(setCanvasType("hover-default")); // Set canvas type to hover-default when Measurement tab is clicked
     dispatch(updateActiveTab("measurement"));
   };
 

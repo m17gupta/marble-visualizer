@@ -8,7 +8,7 @@ export interface MouseCoordinates {
   x: number;
   y: number;
 }
-export type CanvasMode = "hover" | "draw" | "edit" | "reannotation"| "mask" | "comment" |"dimension";
+export type CanvasMode = "hover" | "draw" | "edit" | "reannotation"| "mask" | "comment" |"dimension"|"hover-default"|"measurement";
 
 // Define the state interface
 interface CanvasState {

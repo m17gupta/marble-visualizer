@@ -18,6 +18,10 @@ import { RootState } from "@/redux/store";
 import PolygonOverlay from "../canvas/PolygonOverlay";
 import CanvasEdit from "../canvas/canvasEdit/CanvasEdit";
 import CommentCanvas from "../canvas/commentCanavs/CommentCanvas";
+import HoverHeader from "../designHub/HoverHeader";
+import ImagePreview from "../workSpace/projectWorkSpace/ImagePreview";
+import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
+import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
 
 
 interface StudioMainCanvasProps {
@@ -52,7 +56,7 @@ export function StudioMainCanvas({
     }
   }, [canvasType]);
 
- 
+
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
       setImageLoading(true);
@@ -108,6 +112,7 @@ export function StudioMainCanvas({
           {/* Canvas Content */}
           <div className="relative flex gap-4">
             {/* Main Canvas Section */}
+
             <div className="flex-1">
 
 
@@ -134,48 +139,97 @@ export function StudioMainCanvas({
                         </div>
                       </motion.div>
                     )}
+
+
+
+                    {(canvasMode == "draw" || canvasMode == "reannotation" || canvasMode == "dimension")
+                      && <CanvasEditor
+                        key={`canvas-editor-${canvasImage}`}
+                        imageUrl={canvasImage}
+                        width={800}
+                        height={600}
+                        className="mb-6"
+                        onImageLoad={handleImageLoad}
+                      />}
+
+                    {(canvasMode == "edit")
+                      && <CanvasEdit
+                        key={`canvas-editor-${canvasImage}`}
+                        imageUrl={canvasImage}
+                        width={800}
+                        height={600}
+                        className="mb-6"
+                        onImageLoad={handleImageLoad}
+                      />}
+
+                    {(canvasMode == "comment")
+                      && <CommentCanvas
+                        key={`canvas-editor-${canvasImage}`}
+                        imageUrl={canvasImage}
+                        width={800}
+                        height={600}
+                        className="mb-6"
+                        onImageLoad={handleImageLoad}
+                      />}
+
                     {/* canvas  */}
-                    {canvasMode == "hover" && <PolygonOverlay
-                      key={`canvas-editor-${canvasImage}`}
-                      imageUrl={canvasImage}
-                      width={800}
-                      height={600}
-                      className="mb-6"
-                      onImageLoad={handleImageLoad}
-                    />}
+                    {canvasMode == "hover" &&
 
-                    
-                    {(canvasMode == "draw" || canvasMode == "reannotation"|| canvasMode == "dimension")
-                     && <CanvasEditor
-                      key={`canvas-editor-${canvasImage}`}
-                      imageUrl={canvasImage}
-                      width={800}
-                      height={600}
-                      className="mb-6"
-                      onImageLoad={handleImageLoad}
-                    />}
-                    
-                    {(canvasMode == "edit" )
-                     && <CanvasEdit
-                      key={`canvas-editor-${canvasImage}`}
-                      imageUrl={canvasImage}
-                      width={800}
-                      height={600}
-                      className="mb-6"
-                      onImageLoad={handleImageLoad}
-                    />}
+                      (
 
-                    {(canvasMode == "comment" )
-                     && <CommentCanvas
-                      key={`canvas-editor-${canvasImage}`}
-                      imageUrl={canvasImage}
-                      width={800}
-                      height={600}
-                      className="mb-6"
-                      onImageLoad={handleImageLoad}
-                    />}
+                        <>
+                          <HoverHeader />
+                          <PolygonOverlay
+                            key={`canvas-editor-${canvasImage}`}
+                            imageUrl={canvasImage}
+                            width={800}
+                            height={600}
+                            className="mb-6"
+                            onImageLoad={handleImageLoad}
+                          />
+                        </>)}
+                    {
+                      canvasMode == "hover-default" && (
+                        <> 
 
-                     
+                          <HoverHeader />
+                          <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+                            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
+                            <ImagePreview />
+
+
+                            <div className="mt-4 ">
+                              <DesignProject />
+                              <GuidancePanel />
+                              {/* <GenAiImages /> */}
+
+                            </div>
+                          </div>
+
+                        </>
+                        
+                      )
+                    }
+                    {
+                      canvasMode == "measurement" && (
+                        <>
+                          
+                          <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+                            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
+                            <ImagePreview />
+
+
+                            <div className="mt-4 ">
+                              <DesignProject />
+                              <GuidancePanel />
+                              {/* <GenAiImages /> */}
+
+                            </div>
+                          </div>
+                        </>
+                      )
+                    }
+
                   </motion.div>
                 ) : (
                   <motion.div
@@ -262,7 +316,7 @@ export function StudioMainCanvas({
             </div>
           </div>
           <div className="px-4">
-            
+
           </div>
           {canEdit && (
             <input
@@ -276,7 +330,7 @@ export function StudioMainCanvas({
         </motion.div>
       </ScrollArea>
 
-      
+
     </main>
   );
 }
