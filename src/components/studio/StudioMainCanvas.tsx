@@ -22,6 +22,7 @@ import HoverHeader from "../designHub/HoverHeader";
 import ImagePreview from "../workSpace/projectWorkSpace/ImagePreview";
 import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
+import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 
 
 interface StudioMainCanvasProps {
@@ -45,6 +46,7 @@ export function StudioMainCanvas({
   const [imageLoading, setImageLoading] = useState(false);
   const { currentImageUrl } = useSelector((state: RootState) => state.studio);
   const [canvasMode, setCanvasMode] = useState("");
+  const { currentTabContent } = useSelector((state: RootState) => state.studio);
   const { canvasType } = useSelector((state: RootState) => state.canvas);
   // // update the canvas image
   useEffect(() => {
@@ -190,13 +192,13 @@ export function StudioMainCanvas({
                         </>)}
                     {
                       canvasMode == "hover-default" && (
-                        <> 
+                        <>
 
                           <HoverHeader />
                           <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
                             {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-                            <ImagePreview />
 
+                            {currentTabContent === "compare" ? <CompareGenAiHome /> : (<ImagePreview />)}
 
                             <div className="mt-4 ">
                               <DesignProject />
@@ -207,17 +209,17 @@ export function StudioMainCanvas({
                           </div>
 
                         </>
-                        
+
                       )
                     }
                     {
                       canvasMode == "measurement" && (
                         <>
-                          
+
                           <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
                             {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-                            <ImagePreview />
 
+                            <ImagePreview />
 
                             <div className="mt-4 ">
                               <DesignProject />

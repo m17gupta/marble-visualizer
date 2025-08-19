@@ -106,6 +106,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
 
     try {
       const result = await dispatch(createProject(projectData)).unwrap();
+      console.log("Project created successfully:", result);
       if (result.id) {
         createdProjectId.current = result.id;
         //toast.success("Project created successfully!");
@@ -136,6 +137,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
     { key: "right", label: "Right View" },
   ];
   const handleUpload = async () => {
+    console.log("Starting upload process...", uploadedFile, profile?.id, createdProjectId.current);
     if (!uploadedFile || !profile?.id) return;
 
     // Check if AWS credentials are configured
@@ -149,6 +151,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
 
     try {
       // Use direct S3 upload service
+      console.log("Uploading file to S3...", uploadedFile.name, profile.id);
       const result = await DirectS3UploadService.uploadFile(
         uploadedFile,
         profile.id,
@@ -157,7 +160,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
           setUploadProgress(progress.percentage || 0);
         }
       );
-
+    console.log("Upload result:", result);
       if (result.success && result.fileUrl && result.key) {
         dispatch(addHouseImage(result.fileUrl));
         // create job with uploaded file

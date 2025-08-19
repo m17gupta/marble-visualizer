@@ -28,6 +28,7 @@ import {
   resetInspirationImage,
   submitGenAiRequest,
   resetIsGenAiSumitFailed,
+  resetPaletteImage,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import AiGuideance from "./AiGuideance";
 import { IoIosHelpCircleOutline } from "react-icons/io";
@@ -140,8 +141,7 @@ const GuidancePanel: React.FC = () => {
     } else if (data === "inspiration-image") {
       dispatch(resetInspirationImage());
     } else if (data === "palette-image") {
-      // Add logic to reset palette image
-      // You may need to add a resetPaletteImage action to your Redux slice
+        dispatch(resetPaletteImage())
       console.log("Deleting palette image");
     }
   };
