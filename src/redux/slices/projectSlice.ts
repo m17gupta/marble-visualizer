@@ -235,15 +235,21 @@ const projectSlice = createSlice({
     updateIsCreateDialog: (state, action: PayloadAction<boolean>) => {
       state.isCreateDialogOpen = action.payload;
     },
+    
     updateNewProjectCreated: (state, action) => {
-      const newProject = state.currentProject;
+      // const newProject = state.currentProject;
+      // const newJob = action.payload as JobModel;
+      // const data: ProjectModel = {
+      //   ...newProject,
+      //   jobData: [newJob],
+      // };
+      // state.list = [...state.list, data];
+      // state.currentProject = {};
       const newJob = action.payload as JobModel;
-      const data: ProjectModel = {
-        ...newProject,
-        jobData: [newJob],
-      };
-      state.list = [...state.list, data];
-      state.currentProject = {};
+      const projectIndex = state.list.findIndex((p) => p.id === newJob.project_id);
+      if( projectIndex !== -1) {
+        state.list[projectIndex].jobData = [...(state.list[projectIndex].jobData || []), newJob];
+      }
     },
   },
   extraReducers: (builder) => {

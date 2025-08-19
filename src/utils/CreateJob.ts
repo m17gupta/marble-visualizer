@@ -51,7 +51,8 @@ export const CreateJob = async (
    
     // Dispatch the create job action
     const jobResponse = await dispatch(createJob(jobData));
-    
+        console.log("Job creation response:", jobResponse);
+        console.log("Job creation response:", jobResponse.payload);
     // Handle pending state
     if (createJob.pending.match(jobResponse)) {
       toast.loading('Creating job...');
@@ -62,10 +63,10 @@ export const CreateJob = async (
     if (createJob.fulfilled.match(jobResponse)) {
       toast.success('Job created successfully!');
        dispatch(updateNewProjectCreated(jobResponse.payload))
-       if( jobResponse.payload.id) {
-        console.log("Job created with ID:", jobResponse.payload.id);
-         dispatch(updateRequestJobId(jobResponse.payload.id.toString()));
-      } 
+      //  if( jobResponse.payload.id) {
+      //   console.log("Job created with ID:", jobResponse.payload.id);
+      //    dispatch(updateRequestJobId(jobResponse.payload.id.toString()));
+      // } 
       
       // Reset form and state if reset options are provided
       if (resetOptions) {
