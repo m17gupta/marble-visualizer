@@ -7,6 +7,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AppDispatch } from "@/redux/store";
@@ -14,7 +20,6 @@ import { useDispatch } from "react-redux";
 import { deleteSegmentById, updateIsSegmentEdit } from "@/redux/slices/segmentsSlice";
 import { deleteSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
-import { SegmentApiResponse } from "@/services/segment";
 import { toast } from "sonner";
 
 
@@ -29,6 +34,7 @@ const TabNavigation = ({ title, segment }: Props) => {
   const buttons = [
     {
       id: "materials",
+      tooltip: "Materials",
       icon: (
         <img
               src="/assets/image/line-md--arrows-vertical-alt.svg"
@@ -39,10 +45,12 @@ const TabNavigation = ({ title, segment }: Props) => {
     },
     {
       id: "edit",
+      tooltip: "Edit Options",
       isDropdown: true,
     },
     {
       id: "measurement",
+      tooltip: "Measurement",
       icon: (
         <img
       
@@ -54,6 +62,7 @@ const TabNavigation = ({ title, segment }: Props) => {
     },
     {
       id: "information",
+      tooltip: "Information",
       icon: (
         <img
           src="/assets/image/solar--info-square-linear.svg"
@@ -102,27 +111,34 @@ const TabNavigation = ({ title, segment }: Props) => {
     }
   };
   return (
-    <>
+    <TooltipProvider>
       <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
         {buttons.map((btn) => {
           if (btn.id === "edit") {
             return (
               <DropdownMenu key="edit">
-                <DropdownMenuTrigger asChild>
-                  <button
-                    onClick={() => setActive("edit")}
-                    className={`px-3 py-1 rounded-md border transition-colors focus:outline-none ${active === "edit"
-                      ? "bg-blue-50 text-white border-gray-800"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                      }`}
-                  >
-                    <img
-                      src="/assets/image/line-md--edit-twotone.svg"
-                      alt="Edit"
-                      className="h-5 w-5"
-                    />
-                  </button>
-                </DropdownMenuTrigger>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        onClick={() => setActive("edit")}
+                        className={`px-3 py-1 rounded-md border transition-colors focus:outline-none ${active === "edit"
+                          ? "bg-blue-50 text-white border-gray-800"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+                          }`}
+                      >
+                        <img
+                          src="/assets/image/line-md--edit-twotone.svg"
+                          alt="Edit"
+                          className="h-5 w-5"
+                        />
+                      </button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{btn.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
                 <DropdownMenuContent className="w-44">
                   <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -172,22 +188,27 @@ const TabNavigation = ({ title, segment }: Props) => {
           }
 
           return (
-            <button
-              key={btn.id}
-              onClick={() => setActive(btn.id)}
-              className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
+            <Tooltip key={btn.id}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setActive(btn.id)}
+                  className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
  ${active === btn.id
-                  ? "bg-blue-100 text-white border-blue-800"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                }`}
-            >
-              {btn.icon}
-            </button>
+                      ? "bg-blue-100 text-white border-blue-800"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+                    }`}
+                >
+                  {btn.icon}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{btn.tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </div>
-
-    </>
+    </TooltipProvider>
   );
 };
 
