@@ -544,7 +544,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
           <Card className="overflow-hidden">
          
             <CardContent className="p-0">
-              <div className="relative bg-gray-50 flex items-center justify-center min-h-[800px] min-w-[1000px]">
+              <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
 
                 <canvas
                   ref={canvasRef}
