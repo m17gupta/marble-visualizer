@@ -24,6 +24,7 @@ interface ProjectState {
   isLoadingAccess: boolean;
   error: string | null;
   isCreateDialogOpen: boolean;
+  isDeleteModalOpen: boolean;
 }
 
 const initialState: ProjectState = {
@@ -38,6 +39,7 @@ const initialState: ProjectState = {
   isLoadingAccess: false,
   error: null,
   isCreateDialogOpen: false,
+  isDeleteModalOpen: false,
 };
 
 // Async thunk to fetch projects
@@ -251,6 +253,9 @@ const projectSlice = createSlice({
         state.list[projectIndex].jobData = [...(state.list[projectIndex].jobData || []), newJob];
       }
     },
+    setIsDeleteModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isDeleteModalOpen = action.payload;
+    }  
   },
   extraReducers: (builder) => {
     builder
@@ -398,6 +403,7 @@ export const {
   clearError,
   updateIsCreateDialog,
   updateNewProjectCreated,
+  setIsDeleteModalOpen
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

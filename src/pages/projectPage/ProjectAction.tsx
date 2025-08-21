@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ProjectModel } from "@/models";
-import { deleteProject } from "@/redux/slices/projectSlice";
+import { deleteProject, setCurrentProject, setIsDeleteModalOpen } from "@/redux/slices/projectSlice";
 import { AppDispatch } from "@/redux/store";
 
 import { Copy, Edit3, MoreHorizontal, Settings, Share2 } from "lucide-react";
@@ -34,6 +34,10 @@ const ProjectAction = ({
 }: ProjectActionProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
+  const handleOpenDeleteModal = (project: ProjectModel) => {
+    dispatch(setIsDeleteModalOpen(true));
+    dispatch(setCurrentProject(project)); 
+  }
   const handleDeleteProject = async (project: ProjectModel) => {
     if (!project.id) return;
 
@@ -50,6 +54,7 @@ const ProjectAction = ({
       console.error("Error deleting project:", error);
     }
   };
+
   const handleCopyLink = (project: ProjectModel) => {
     const projectUrl = `${window.location.origin}/studio/${project.id}`;
     navigator.clipboard.writeText(projectUrl);
@@ -158,7 +163,7 @@ const ProjectAction = ({
 
 
         </div>
-
+     {/* dots dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -176,7 +181,7 @@ const ProjectAction = ({
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDeleteProject(project)}>
+            <DropdownMenuItem onClick={() => handleOpenDeleteModal(project)}>
               <Settings className="h-4 w-4 mr-2" />
               Delete
             </DropdownMenuItem>
