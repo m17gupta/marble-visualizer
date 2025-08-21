@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CanvasEditor } from '@/components/canvas/CanvasEditor';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Upload,
-  Image as ImageIcon,
-  Loader2,
-
-  Lock,
-} from "lucide-react";
+import { CanvasEditor } from "@/components/canvas/CanvasEditor";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Upload, Image as ImageIcon, Loader2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { useSelector } from "react-redux";
@@ -23,7 +17,6 @@ import ImagePreview from "../workSpace/projectWorkSpace/ImagePreview";
 import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
-
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -54,10 +47,8 @@ export function StudioMainCanvas({
       setCanvasMode(canvasType);
     } else {
       setCanvasMode("");
-
     }
   }, [canvasType]);
-
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
@@ -68,8 +59,6 @@ export function StudioMainCanvas({
       setImageLoading(false);
     }
   }, [currentImageUrl]);
-
-
 
   // Handle image load completion
   const handleImageLoad = useCallback(() => {
@@ -100,8 +89,6 @@ export function StudioMainCanvas({
     if (file) onFileUpload(file);
   };
 
-
-
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
       <ScrollArea className="flex-1">
@@ -116,8 +103,6 @@ export function StudioMainCanvas({
             {/* Main Canvas Section */}
 
             <div className="flex-1">
-
-
               <AnimatePresence mode="wait">
                 {canvasImage ? (
                   <motion.div
@@ -137,101 +122,98 @@ export function StudioMainCanvas({
                       >
                         <div className="flex flex-col items-center space-y-4">
                           <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                          <p className="text-sm text-muted-foreground">Loading image...</p>
+                          <p className="text-sm text-muted-foreground">
+                            Loading image...
+                          </p>
                         </div>
                       </motion.div>
                     )}
 
-
-
-                    {(canvasMode == "draw" || canvasMode == "reannotation" || canvasMode == "dimension")
-                      && <CanvasEditor
+                    {(canvasMode == "draw" ||
+                      canvasMode == "reannotation" ||
+                      canvasMode == "dimension") && (
+                      <CanvasEditor
                         key={`canvas-editor-${canvasImage}`}
                         imageUrl={canvasImage}
                         width={800}
                         height={600}
                         className="mb-6"
                         onImageLoad={handleImageLoad}
-                      />}
+                      />
+                    )}
 
-                    {(canvasMode == "edit")
-                      && <CanvasEdit
+                    {canvasMode == "edit" && (
+                      <CanvasEdit
                         key={`canvas-editor-${canvasImage}`}
                         imageUrl={canvasImage}
                         width={800}
                         height={600}
                         className="mb-6"
                         onImageLoad={handleImageLoad}
-                      />}
+                      />
+                    )}
 
-                    {(canvasMode == "comment")
-                      && <CommentCanvas
+                    {canvasMode == "comment" && (
+                      <CommentCanvas
                         key={`canvas-editor-${canvasImage}`}
                         imageUrl={canvasImage}
                         width={800}
                         height={600}
                         className="mb-6"
                         onImageLoad={handleImageLoad}
-                      />}
+                      />
+                    )}
 
                     {/* canvas  */}
-                    {canvasMode == "hover" &&
+                    {canvasMode == "hover" && (
+                      <>
+                        <HoverHeader />
+                        <PolygonOverlay
+                          key={`canvas-editor-${canvasImage}`}
+                          imageUrl={canvasImage}
+                          width={800}
+                          height={600}
+                          className="mb-6"
+                          onImageLoad={handleImageLoad}
+                        />
+                      </>
+                    )}
 
-                      (
+                    {canvasMode == "hover-default" && (
+                      <>
+                        <HoverHeader />
+                        <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+                          {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
 
-                        <>
-                          <HoverHeader />
-                          <PolygonOverlay
-                            key={`canvas-editor-${canvasImage}`}
-                            imageUrl={canvasImage}
-                            width={800}
-                            height={600}
-                            className="mb-6"
-                            onImageLoad={handleImageLoad}
-                          />
-                        </>)}
-                    {
-                      canvasMode == "hover-default" && (
-                        <>
-
-                          <HoverHeader />
-                          <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-                            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-
-                            {currentTabContent === "compare" ? <CompareGenAiHome /> : (<ImagePreview />)}
-
-                            <div className="mt-4 ">
-                              <DesignProject />
-                              <GuidancePanel />
-                              {/* <GenAiImages /> */}
-
-                            </div>
-                          </div>
-
-                        </>
-
-                      )
-                    }
-                    {
-                      canvasMode == "measurement" && (
-                        <>
-
-                          <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-                            {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
-
+                          {currentTabContent === "compare" ? (
+                            <CompareGenAiHome />
+                          ) : (
                             <ImagePreview />
+                          )}
 
-                            <div className="mt-4 ">
-                              <DesignProject />
-                              <GuidancePanel />
-                              {/* <GenAiImages /> */}
-
-                            </div>
+                          <div className="mt-4 ">
+                            <DesignProject />
+                            <GuidancePanel />
+                            {/* <GenAiImages /> */}
                           </div>
-                        </>
-                      )
-                    }
+                        </div>
+                      </>
+                    )}
+                    {canvasMode == "measurement" && (
+                      <>
+                        <div className="w-full md:w-3/4 p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+                          {/* <h2 className="text-lg font-medium mb-4">Project ID: {projectId}</h2> */}
 
+                          <ImagePreview />
+
+                          <div className="mt-4 ">
+                            <DesignProject />
+                            <GuidancePanel />
+                            {/* <GenAiImages /> */}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </motion.div>
                 ) : (
                   <motion.div
@@ -317,9 +299,7 @@ export function StudioMainCanvas({
               </AnimatePresence>
             </div>
           </div>
-          <div className="px-4">
-
-          </div>
+          <div className="px-4"></div>
           {canEdit && (
             <input
               ref={fileInputRef}
@@ -331,8 +311,6 @@ export function StudioMainCanvas({
           )}
         </motion.div>
       </ScrollArea>
-
-
     </main>
   );
 }
