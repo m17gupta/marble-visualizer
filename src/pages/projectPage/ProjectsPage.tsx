@@ -12,6 +12,9 @@ import {
   updateIsCreateDialog,
   setCurrentProject,
   updateProjectAnalysis,
+  setIsDeleteModalOpen,
+  deleteProject,
+  clearCurrentProject,
 } from "@/redux/slices/projectSlice";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import {
@@ -60,6 +63,7 @@ import AnalyzedDataModal from "@/components/Modal";
 import ProjectAnalyseSegmentApiCall from "./analyseProjectImage/ProjectAnalyseSegmentApiCall";
 import ProjectAction from "./ProjectAction";
 import GetHouseSegments from "./analyseProjectImage/GetHouseSegments";
+import DeleteModal from "./deleteProject/DeleteModel";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -67,7 +71,7 @@ export function ProjectsPage() {
   const navigate = useNavigate();
   const [userProjects, setUserProjects] = useState<ProjectModel[]>([]);
   const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
-
+   const {isDeleteModalOpen, currentProject} = useSelector((state: RootState) => state.projects);
   const {
     list: projects,
     isLoading,
@@ -251,6 +255,28 @@ export function ProjectsPage() {
     setSelectedProjectId(undefined);
   };
 
+
+  const handleCancelProjectDelete = () => {
+    dispatch(setIsDeleteModalOpen(false));
+    dispatch(clearCurrentProject());
+  }
+
+   const handleDeleteProject = async (project: ProjectModel) => {
+      if (!project.id) return;
+  
+      try {
+        // Call the deleteProjectById method from ProjectsService
+        const result = await dispatch(deleteProject(project.id));
+  
+        if (deleteProject.fulfilled.match(result)) {
+          toast.success("Project deleted successfully");
+        } else {
+          toast.error((result.payload as string) || "Failed to delete project");
+        }
+      } catch (error) {
+        console.error("Error deleting project:", error);
+      }
+    };
   return (
     <>
       {!isCreateDialogOpen && (
@@ -414,7 +440,14 @@ export function ProjectsPage() {
         <VisualToolHome resetProjectCreated={handleResetProjectCreated} />
       )}
 
-    
+      {/* delete project */}
+    { isDeleteModalOpen&&
+    <DeleteModal
+      isOpen={isDeleteModalOpen}
+      onCancel={handleCancelProjectDelete}
+      onConfirm={(data) => handleDeleteProject(data)}
+    />}
+
     </>
   );
 }
