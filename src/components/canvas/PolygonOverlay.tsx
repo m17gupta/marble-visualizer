@@ -14,9 +14,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { collectPoints } from '../canvasUtil/CreatePolygon';
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from '../ui/card';
-import { setCanvasReady } from '@/redux/slices/canvasSlice';
+import { setCanvasReady, setZoom } from '@/redux/slices/canvasSlice';
 import { handlePolygonVisibilityOnMouseMove, HideAllSegments } from '../canvasUtil/HoverSegment';
 import { SelectedAnimation } from '../canvasUtil/SelectedAnimation';
+import { ZoomCanvasMouse } from '../canvasUtil/ZoomCanvas';
 
 
 type NamedFabricObject = fabric.Object & { name?: string };
@@ -124,10 +125,10 @@ const PolygonOverlay = ({
 
         // });
 
-        // canvas.on("mouse:wheel", (event) => {
-        //     handleMouseWheel(event);
-        //     dispatch(setZoom(canvas.getZoom()));
-        // });
+        canvas.on("mouse:wheel", (event) => {
+            handleMouseWheel(event);
+            dispatch(setZoom(canvas.getZoom()));
+        });
 
 
         // Keyboard shortcuts
@@ -194,6 +195,37 @@ const PolygonOverlay = ({
         };
 
     }, [width, height, dispatch, handleMouseMove]);
+
+      const handleMouseWheel = (event: fabric.TEvent) => {
+        // Cast the event to WheelEvent to access deltaY
+        const deltaE = event.e as WheelEvent;
+        const pointer = fabricCanvasRef.current?.getPointer(event.e);
+    
+        // Make sure we have all required objects
+        if (deltaE && fabricCanvasRef.current && pointer) {
+          // Prevent default browser behavior
+          event.e.stopPropagation();
+          event.e.preventDefault();
+    
+          const delta = deltaE.deltaY;
+          let zoom = fabricCanvasRef.current.getZoom();
+    
+          zoom *= 0.999 ** delta;
+          if (zoom > 20) zoom = 20; // Set maximum zoom level
+          if (zoom < 1) zoom = 1;   // Set minimum zoom level
+    
+          // Optional: Draw reference lines for better visual feedback
+          //drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
+    
+          // Always zoom towards mouse position, regardless of zoom boundaries or mode
+          ZoomCanvasMouse(fabricCanvasRef, zoom, { x: Math.round(pointer.x), y: Math.round(pointer.y) });
+          event.e.stopPropagation();
+          event.e.preventDefault();
+    
+          // Update the zoom state
+          dispatch(setZoom(zoom));
+        }
+      };
 
     // Load background image with comprehensive CORS and fallback handling
     useEffect(() => {
@@ -336,9 +368,7 @@ const PolygonOverlay = ({
             );
         });
 
-        // Log successful rendering
-        console.log(`[PolygonOverlay] Successfully rendered ${allSegArray.length} segments`);
-
+    
         // Ensure proper z-index order: background image at back, polygons on top
         if (backgroundImageRef.current) {
             canvas.sendObjectToBack(backgroundImageRef.current);
@@ -353,12 +383,6 @@ const PolygonOverlay = ({
 
         const canvas = fabricCanvasRef.current;
         const objects = canvas.getObjects();
-
-        console.log(`[PolygonOverlay Debug] Canvas objects count: ${objects.length}`);
-        console.log(`[PolygonOverlay Debug] Image dimensions: ${imageWidth}x${imageHeight}`);
-        console.log(`[PolygonOverlay Debug] Canvas dimensions: ${width}x${height}`);
-        console.log(`[PolygonOverlay Debug] Segments array length: ${allSegArray.length}`);
-        console.log(`[PolygonOverlay Debug] Background image loaded: ${!!backgroundImageRef.current}`);
 
         objects.forEach((obj, index) => {
             const namedObj = obj as NamedFabricObject;
@@ -422,12 +446,12 @@ const PolygonOverlay = ({
                             >
                                 {/* min-h-[720px] min-w-[1280px]" */}
                                 <div
-                                    className="relative bg-gray-50 flex items-center justify-center min-h-[720px] min-w-[1280px]"
+                                    className="relative bg-gray-50 flex items-center justify-center min-h-[600px]  min-w-[800px]"
 
                                 >
                                     <canvas
                                         ref={canvasRef}
-                                        className="border-0 block"
+                                        className="border-0 block mx-auto"
 
                                         style={{ maxWidth: "100%", height: "auto", }}
                                     />
