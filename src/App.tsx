@@ -15,23 +15,6 @@ function App() {
     store.dispatch(initializeAuth());
   }, []);
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "http://localhost:3001/embed/anythingllm-chat-widget.min.js";
-    script.async = true;
-    script.setAttribute(
-      "data-embed-id",
-      "95f4f753-0fc8-407e-a0dc-b7e1fa86c812"
-    );
-    script.setAttribute("data-base-api-url", "http://localhost:3001/api/embed");
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script); // cleanup when component unmounts
-    };
-  }, []);
-
   return (
     <Provider store={store}>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
