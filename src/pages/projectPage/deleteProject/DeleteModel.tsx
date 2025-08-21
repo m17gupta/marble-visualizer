@@ -34,10 +34,10 @@ const DeleteModal = ({ onCancel, onConfirm, isOpen }: DeleteModalProps) => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure you want to delete this project?</AlertDialogTitle>
-          <AlertDialogDescription>
+          {/* <AlertDialogDescription>
             This action cannot be undone. This will permanently delete this
             project and remove its data from our servers.
-          </AlertDialogDescription>
+          </AlertDialogDescription> */}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
