@@ -52,6 +52,7 @@ const StudioMainTabs = () => {
 
   const handleLayersClick = () => {
     dispatch(updateActiveTab("layers"));
+    dispatch(setCanvasType("test-canvas")); // Set canvas type to test-canvas when Layers tab is clicked
   };
 
   const handleCommentsClick = () => {

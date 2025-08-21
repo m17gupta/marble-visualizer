@@ -2,15 +2,16 @@ import React, { useState } from 'react'
 
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/redux/store';
-import { setCanvasType } from '@/redux/slices/canvasSlice';
+import { setCanvasType, setIsResetZoom } from '@/redux/slices/canvasSlice';
 
 const HoverHeader = () => {
 
   const dispatch= useDispatch<AppDispatch>();
   const [activeButton, setActiveButton] = useState<'view' | 'chat'>('view');
-  
+   const {canvasType}=useSelector((state: any) => state.canvas);
+
   const handleHover = () => {
     dispatch(setCanvasType("hover"));
     setActiveButton('view');
@@ -20,7 +21,13 @@ const HoverHeader = () => {
     // Handle chat action here
     dispatch(setCanvasType("hover-default"));
     setActiveButton('chat');
-    console.log("Chat action triggered");
+    
+  };
+
+  const handleResetZoom = () => {
+
+   dispatch(setIsResetZoom(true))
+   
   };
   return (
     <>
@@ -43,6 +50,14 @@ const HoverHeader = () => {
                         >
                           Chat
                         </Button>
+                        {canvasType==="hover" &&
+                        <Button 
+                         variant={activeButton === 'chat' ? "default" : "outline"} 
+                         size="sm"
+                         onClick={handleResetZoom}
+                        >
+                          Reset Zoom
+                        </Button>}
                       </div>
                     </div>
                   </div>

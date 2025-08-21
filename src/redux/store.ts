@@ -27,7 +27,7 @@ import masterArraySlice from './slices/MasterArraySlice'; // New master array sl
 import projectAnalyseSlice from './slices/projectAnalyseSlice';
 import jobCommentsSlice from "./slices/comments/JobComments"; // New job comments slice
 import FilterSwatchSlice from './slices/swatch/FilterSwatchSlice';
-
+import TestCanvasSlices from './slices/TestCanvasSlices'; // New TestCanvas slice
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -54,7 +54,9 @@ export const store = configureStore({
     workspace: workspaceSlice, // New workspace slice
     studio: studioSlice,
     tabControl: tabControlSlice,
-    projectAnalyse: projectAnalyseSlice
+    projectAnalyse: projectAnalyseSlice,
+    testCanvas: TestCanvasSlices, // New TestCanvas slice
+
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

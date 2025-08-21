@@ -1,19 +1,30 @@
-import { CanvasModel } from '@/models/canvasModel/CanvasModel';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CanvasModel } from "@/models/canvasModel/CanvasModel";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { set } from "date-fns";
 // Define the types for canvas state
-export type ZoomMode =  'mouse';
+export type ZoomMode = "mouse";
 
 // Define the types for mouse coordinates
 export interface MouseCoordinates {
   x: number;
   y: number;
 }
-export type CanvasMode = "hover" | "draw" | "edit" | "reannotation"| "mask" | "comment" |"dimension"|"hover-default"|"measurement";
+export type CanvasMode =
+  | "hover"
+  | "draw"
+  | "edit"
+  | "reannotation"
+  | "mask"
+  | "comment"
+  | "dimension"
+  | "hover-default"
+  | "measurement"
+  | "test-canvas";
 
 // Define the state interface
 interface CanvasState {
   currentZoom: number;
-  
+
   zoomMode: ZoomMode;
   mousePosition: MouseCoordinates;
   isCanvasReady: boolean;
@@ -25,15 +36,16 @@ interface CanvasState {
   canvasType: CanvasMode;
   deleteMaskId: number | null;
   isGenerateMask: boolean;
-  hoverGroup:string[] | null; 
-  isScreenshotTaken: boolean; 
-  screenShotUrl: string | null; // URL of the screenshot if taken
+  hoverGroup: string[] | null;
+  isScreenshotTaken: boolean;
+  screenShotUrl: string | null;
+  isResetZoom: boolean; // Flag to indicate if the canvas has been reset
 }
 
 // Initial state
 const initialState: CanvasState = {
   currentZoom: 1,
-  zoomMode: 'mouse',
+  zoomMode: "mouse",
   mousePosition: { x: 0, y: 0 },
   isCanvasReady: false,
   isBusy: false,
@@ -41,17 +53,18 @@ const initialState: CanvasState = {
   canavasActiveTool: "",
   isCanvasModalOpen: false,
   masks: [],
-  canvasType:"hover", // Default canvas type
+  canvasType: "hover", // Default canvas type
   deleteMaskId: null, // Initialize as null
   isGenerateMask: false,
   hoverGroup: null,
   isScreenshotTaken: false, // Flag to indicate if a screenshot has been taken
   screenShotUrl: null, // URL of the screenshot if taken
+  isResetZoom: false, // Flag to indicate if the canvas has been reset
 };
 
 // Create the canvas slice
 const canvasSlice = createSlice({
-  name: 'canvas',
+  name: "canvas",
   initialState,
   reducers: {
     // Set the type of canvas (e.g., hover, draw, edit)
@@ -59,7 +72,7 @@ const canvasSlice = createSlice({
       state.canvasType = action.payload;
     },
 
-    updateHoverGroup(state, action: PayloadAction<string []| null>) {
+    updateHoverGroup(state, action: PayloadAction<string[] | null>) {
       state.hoverGroup = action.payload; // Update the hoverGroup state
     },
     // Set the current zoom level
@@ -76,7 +89,7 @@ const canvasSlice = createSlice({
 
     // Toggle the zoom mode between 'center' and 'mouse'
     toggleZoomMode() {
-     // state.zoomMode = state.zoomMode === 'center' ? 'mouse' : 'center';
+      // state.zoomMode = state.zoomMode === 'center' ? 'mouse' : 'center';
     },
 
     // Set canvas readiness state
@@ -103,11 +116,10 @@ const canvasSlice = createSlice({
     setCanvasError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
-    
 
     updateMasks(state, action: PayloadAction<CanvasModel>) {
       const updatedMask = action.payload;
-      const index = state.masks.findIndex(mask => mask.id === updatedMask.id);
+      const index = state.masks.findIndex((mask) => mask.id === updatedMask.id);
       if (index !== -1) {
         state.masks[index] = updatedMask;
       } else {
@@ -116,17 +128,17 @@ const canvasSlice = createSlice({
     },
     deleteMask(state, action: PayloadAction<number>) {
       const maskId = action.payload;
-      state.masks = state.masks.filter(mask => mask.id !== maskId);
+      state.masks = state.masks.filter((mask) => mask.id !== maskId);
       state.deleteMaskId = action.payload; // Reset deleteMaskId after deletion
     },
     setDeleteMMaskId(state, action: PayloadAction<number | null>) {
       state.deleteMaskId = action.payload; // Set the ID of the mask to be deleted
     },
-      updateIsGenerateMask: (state, action: PayloadAction<boolean>) => {
+    updateIsGenerateMask: (state, action: PayloadAction<boolean>) => {
       state.isGenerateMask = action.payload;
     },
     updateIsScreenShotTaken: (state, action: PayloadAction<boolean>) => {
-      state.isScreenshotTaken = action.payload; // Update the screenshot taken flag   
+      state.isScreenshotTaken = action.payload; // Update the screenshot taken flag
     },
     updateScreenShotUrl: (state, action: PayloadAction<string | null>) => {
       state.screenShotUrl = action.payload; // Update the screenshot URL
@@ -138,13 +150,16 @@ const canvasSlice = createSlice({
       state.isCanvasReady = false;
       state.isBusy = false;
       state.error = null;
-      state.masks=[];
-      state.canvasType = "hover"; 
+      state.masks = [];
+      state.canvasType = "hover";
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       // Zoom mode is not reset as it's a user preference
     },
-  },
+   setIsResetZoom: (state, action: PayloadAction<boolean>) => {
+      state.isResetZoom = action.payload; // Update the reset zoom flag 
+  }
+}
 });
 
 // Export actions
@@ -164,9 +179,10 @@ export const {
   updateMasks,
   deleteMask,
   setDeleteMMaskId,
-   updateIsGenerateMask,
+  updateIsGenerateMask,
   updateIsScreenShotTaken,
-  updateScreenShotUrl
+  updateScreenShotUrl,
+  setIsResetZoom
 } = canvasSlice.actions;
 
 // Export reducer
