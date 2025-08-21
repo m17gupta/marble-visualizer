@@ -31,8 +31,8 @@ interface CanvasHoverLayerProps {
 }
 const PolygonOverlay = ({
     imageUrl,
-    width = 1280,
-    height = 720,
+    width = 800,
+    height = 600,
     className,
     onImageLoad,
 }: CanvasHoverLayerProps) => {
@@ -426,6 +426,18 @@ const PolygonOverlay = ({
         SelectedAnimation(fabricCanvasRef, annotatonPoints, segName, color);
     }, [updateSelectedSegment, segments, fabricCanvasRef]);
 
+      const handleResetCanvas = () => {
+        if (fabricCanvasRef.current && originalViewportTransform.current) {
+          // Reset to original viewport transform
+          fabricCanvasRef.current.setViewportTransform(
+            originalViewportTransform.current
+          );
+          fabricCanvasRef.current.setZoom(1);
+          fabricCanvasRef.current.requestRenderAll();
+          dispatch(setZoom(1));
+          toast.success("Canvas reset to original state");
+        }
+      };
 
     return (
         <>

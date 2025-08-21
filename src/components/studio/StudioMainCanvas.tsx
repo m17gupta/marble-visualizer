@@ -17,6 +17,7 @@ import ImagePreview from "../workSpace/projectWorkSpace/ImagePreview";
 import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
+import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -169,7 +170,20 @@ export function StudioMainCanvas({
                       <>
                         <HoverHeader />
                         <PolygonOverlay
-                          key={`canvas-editor-${canvasImage}`}
+                          key={`canvas-hover-${canvasImage}`}
+                          imageUrl={canvasImage}
+                          width={800}
+                          height={600}
+                          className="mb-6"
+                          onImageLoad={handleImageLoad}
+                        />
+                      </>
+                    )}
+                    {canvasMode == "test-canvas" && (
+                      <>
+                      
+                        <LayerCanvas
+                          key={`canvas-test-${canvasImage}`}
                           imageUrl={canvasImage}
                           width={800}
                           height={600}
