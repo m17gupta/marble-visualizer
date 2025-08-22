@@ -18,6 +18,7 @@ import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
+// import TestCanvas from "../canvas/TestCanvas";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -177,8 +178,10 @@ export function StudioMainCanvas({
                           className="mb-6"
                           onImageLoad={handleImageLoad}
                         />
+                     
                       </>
                     )}
+                      
                     {canvasMode == "test-canvas" && (
                       <>
                       

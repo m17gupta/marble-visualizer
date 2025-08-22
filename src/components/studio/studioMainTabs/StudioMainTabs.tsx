@@ -219,7 +219,7 @@ const StudioMainTabs = () => {
             <DesignHubContent />
           </TabsContent>
 
-          <TabsContent value="inspiration" className="flex-grow overflow-auto">
+          <TabsContent value="inspiration" className="flex-grow">
             <StudioStyleTabs/>
         
           </TabsContent>

@@ -69,7 +69,7 @@ const SideBySideCompare: React.FC<SideBySideCompareProps> = ({
         <div className="flex gap-2">
           <button 
             onClick={handleDownload}
-            className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80 1"
+            className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
           >
             <FaDownload size={16} />
           </button>

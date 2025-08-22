@@ -8,6 +8,7 @@ import { useInspirationTab } from "@/hooks/useInspirationTab";
 export function StudioStyleTabs() {
   const { currentTab, handleTabChange, isTabActive } = useInspirationTab("chat");
 
+
   // Tab configuration for easier management
   const tabs = [
     {
@@ -31,7 +32,7 @@ export function StudioStyleTabs() {
   ];
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-6">
+    <div className="flex w-full flex-col gap-6">
       <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-3 gap-2">
           {tabs.map((tab) => (
@@ -53,7 +54,7 @@ export function StudioStyleTabs() {
         </TabsList>
 
         {tabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
+          <TabsContent key={tab.value} value={tab.value} >
             {tab.content}
           </TabsContent>
         ))}

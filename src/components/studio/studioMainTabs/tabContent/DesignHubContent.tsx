@@ -10,7 +10,7 @@ const DesignHubContent = () => {
   return (
     <>
       {/* All Segments - Left Side */}
-      <div className="flex flex-row">
+      <div className="flex flex-row h-lvh">
         <div className="flex border-r">
           <AllSegments />
         </div>

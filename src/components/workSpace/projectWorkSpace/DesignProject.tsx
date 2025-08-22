@@ -98,7 +98,7 @@ const DesignProject = () => {
   };
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
+      className={`flex items-baseline justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
     `}
     >
       {/* Design buttons scrollable */}
