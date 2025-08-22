@@ -128,7 +128,7 @@ const CompareSlider: React.FC<CompareSliderProps> = ({
         <div className="flex gap-2">
             <button
             onClick={handlelike}
-            className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80"
+            className="text-white rounded-full bg-black/50  p-2 hover:bg-black/80 1"
           >
              {liked ?  <BiSolidLike /> : <BiLike />}
            

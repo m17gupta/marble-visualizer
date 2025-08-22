@@ -127,7 +127,7 @@ const LeftPage = () => {
         </TabsList>
 
         <TabsContent value="design-hub" className=" overflow-auto flex">
-          <div className="flex border-r">
+          <div className="flex border-r ">
             <AllSegments />
           </div>
           <div className="">

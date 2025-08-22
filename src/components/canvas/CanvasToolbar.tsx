@@ -173,6 +173,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
               </TooltipTrigger>
               <TooltipContent>Cancel Marking</TooltipContent>
             </Tooltip>
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -232,7 +233,7 @@ export default function CanvasToolbar({ fabricCanvasRef, cancelDrawing, resetCan
                  <Badge variant="secondary" className="grid items-center gap-2 w-20">
               <span>Y: {mousePosition.y}</span>
 </Badge>
-</div>
+              </div>
 
             {canvasType == "reannotation" && <AddSegLists
               segType={selectedSegment?.segment_type || "Unknown"}

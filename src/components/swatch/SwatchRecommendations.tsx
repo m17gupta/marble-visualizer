@@ -108,6 +108,9 @@ export function SwatchRecommendations() {
     };
 
   return (
+    <>
+    {selectedMasterArray &&
+    selectedMasterArray.name &&
     <Card className="border-none border-gray-200 rounded-lg shadow-sm p-3">
       <CardHeader className="pb-4 p-0">
         <div className="flex items-center justify-between">
@@ -182,6 +185,8 @@ export function SwatchRecommendations() {
           </p>
         )}
       </CardContent>
-    </Card>
+    </Card>}
+    </>
+    
   );
 }

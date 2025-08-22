@@ -81,7 +81,7 @@ const ChatHome = () => {
   }
   return (
     <>
-      <div className="min-h-screen flex flex-col bg-white">
+      <div className="min-h-screen flex flex-col bg-white overflow-y-auto max-h-[65vh] sm:max-h-[68vh]">
         {/* ===== Top Content ===== */}
         <div className="flex-1">
           <div className="flex flex-col gap-4 max-w-md mx-auto bg-white">
@@ -143,7 +143,7 @@ const ChatHome = () => {
         </div>
 
         {/* ===== Bottom-Sticky Composer ===== */}
-        <div className="sticky bottom-12 inset-x-0 bg-white/95 backdrop-blur border-t pb-safe">
+        <div className="sticky bottom-36 inset-x-0 bg-white/95 backdrop-blur border-t pb-safe">
           <div className="max-w-md mx-auto p-3">
             <div className="w-full rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
               {/* Textarea */}
