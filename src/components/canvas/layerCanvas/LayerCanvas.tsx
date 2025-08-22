@@ -49,7 +49,7 @@ const LayerCanvas = ({
     (state: RootState) => state.materialSegments
   );
 
-  const { annotation, bbInt } = useSelector(
+  const { allPolygon } = useSelector(
     (state: RootState) => state.testCanvas
   );
   const handleMouseMove = useCallback((event: fabric.TEvent) => {
@@ -194,34 +194,20 @@ const LayerCanvas = ({
   }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
   useEffect(() => {
-    console.log("annotation", annotation);
+    console.log("annotation", allPolygon);
 
-    if (fabricCanvasRef.current && annotation.length > 0) {
-      const canvas = fabricCanvasRef.current;
-      const point: PointModel[] = [];
-      for (let i = 0; i < annotation.length; i += 2) {
-        const x = annotation[i];
-        const y = annotation[i + 1];
-        point.push({ x, y });
-      }
-
-      const polygon = new fabric.Polygon(point, {
-        fill: "rgba(0, 0, 0, 0.2)",
-        originX: "left",
-        originY: "top",
-        hasBorders: false,
-        hasControls: false,
-        stroke: "red",
-        strokeWidth: 2,
-        opacity: 0.4,
-        visible: true,
-        lockMovementX: true,
-        lockMovementY: true,
+    if (fabricCanvasRef.current && allPolygon.length > 0) {
+      allPolygon.forEach((polygon, index) => {
+        createPolygon(polygon.annotation, polygon.box, index);
       });
-      // (polygon as NamedFabricObject).name = `segment-Test`;
-      canvas.add(polygon);
-      canvas.renderAll();
-    } else if (fabricCanvasRef.current&&annotation.length === 0) {
+      // If there are polygons, ensure they are visible
+      fabricCanvasRef.current.getObjects().forEach((obj) => {
+        if (obj.type === "polygon") {
+          obj.set({ visible: true });
+        }
+      });
+      fabricCanvasRef.current.renderAll();
+    } else if (fabricCanvasRef.current&&allPolygon.length === 0) {
       // remove existing polygon if annotation is empty
       const existingPolygon = fabricCanvasRef.current.getObjects().find(
         (obj) => obj.type === "polygon"
@@ -231,8 +217,36 @@ const LayerCanvas = ({
         fabricCanvasRef.current.renderAll();
       }
     }
-  }, [fabricCanvasRef, annotation, bbInt, dispatch]);
+  }, [fabricCanvasRef, allPolygon, dispatch]);
 
+
+  const createPolygon =(annotation:number[],box:number[],index:number)=>{
+ const canvas = fabricCanvasRef.current;
+ if (!canvas) return;
+      const point: PointModel[] = [];
+      for (let i = 0; i < annotation.length; i += 2) {
+        const x = annotation[i];
+        const y = annotation[i + 1];
+        point.push({ x, y });
+      }
+
+      const polygon = new fabric.Polygon(point, {
+        fill: "green",
+        originX: box[0],
+        originY: box[1],
+        hasBorders: false,
+        hasControls: false,
+        stroke: "red",
+        strokeWidth: 2,
+        opacity: 0.4,
+        visible: true,
+        lockMovementX: true,
+        lockMovementY: true,
+      });
+      (polygon as NamedFabricObject).name = `segment-Test-${index}`;
+      canvas.add(polygon);
+      canvas.renderAll();
+  }
   return (
     <>
       <TooltipProvider>

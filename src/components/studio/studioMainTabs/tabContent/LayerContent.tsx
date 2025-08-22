@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAppDispatch } from '@/redux/hooks'
-import { clearTestCanvas, setAnnotation, setBbInt } from '@/redux/slices/TestCanvasSlices'
+import { clearTestCanvas, PolyModel, setAnnotation } from '@/redux/slices/TestCanvasSlices'
 
 const LayerContent = () => {
   const [inputValue, setInputValue] = useState('')
@@ -20,7 +20,10 @@ const LayerContent = () => {
     }
   }, [inputValue])
 
+  // console.log("Parsed Data:", parsedData)
+  // console.log("Input Value:", inputValue)
   const formatJSON = () => {
+    console.log("Formatting JSON input", parsedData)
     if (parsedData) {
       const formatted = JSON.stringify(parsedData, null, 2)
       setInputValue(formatted)
@@ -36,25 +39,29 @@ const LayerContent = () => {
 
   const getDataStats = () => {
     if (!parsedData) return null
-    
+    const allpoly: PolyModel[] = []
     if (parsedData.results && Array.isArray(parsedData.results)) {
-      const result = parsedData.results[0]
-     // convert polygon inito number Array
-      if (result?.polygon && Array.isArray(result.polygon)) {
-       const flattened: number[] = result?.polygon.flat();
-         dispatch(setAnnotation(flattened))
-         dispatch(setBbInt(result.box||[]))
+      const result = parsedData.results
+     console.log("Result:", result) 
+     // convert polygon into number Array
+      if ( result && result.length>0) {
+        result.forEach((item: any) => {
+          const flattened: number[] = item.polygon.flat();
+          const  data={
+            box: item.box || [],
+            annotation: flattened
+          }
+          allpoly.push(data)
+        })  
       }
-      return {
-        status: parsedData.status,
-        resultsCount: parsedData.results.length,
-        label: result?.label,
-        score: result?.score,
-        polygonPoints: result?.polygon?.length || 0
-      }
+
+       if(allpoly.length>0){
+          console.log("All Polygon Data:", allpoly)
+         dispatch(setAnnotation(allpoly))
+       }
     }
     
-    return null
+    return null 
   }
 
   const stats = getDataStats()
