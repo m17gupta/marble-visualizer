@@ -1,33 +1,34 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface TestCanvasState {
+ export interface PolyModel{
+  box: number[];
   annotation: number[];
-  bbInt: number[];
+}
+interface TestCanvasState {
+  allPolygon: PolyModel[];
+  
 }
 
 const initialState: TestCanvasState = {
-  annotation: [],
-  bbInt: [],
+  allPolygon: [],
 };
 
 const testCanvasSlice = createSlice({
   name: "testCanvas",
   initialState,
   reducers: {
-    setAnnotation: (state, action: PayloadAction<number[]>) => {
-      state.annotation = action.payload;
+    setAnnotation: (state, action) => {
+      state.allPolygon = action.payload;
     },
-    setBbInt: (state, action: PayloadAction<number[]>) => {
-      state.bbInt = action.payload;
-    },
+    
     clearTestCanvas: (state) => {
-      state.annotation = [];
-      state.bbInt = [];
+      state.allPolygon = [];
     },
   },
 });
 
-export const { setAnnotation, setBbInt, clearTestCanvas } =
+export const { setAnnotation, clearTestCanvas } = testCanvasSlice.actions;
+
   testCanvasSlice.actions;
 
 export default testCanvasSlice.reducer;
