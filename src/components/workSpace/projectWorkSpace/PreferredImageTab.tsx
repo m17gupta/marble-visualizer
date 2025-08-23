@@ -27,7 +27,7 @@ const StyleAndRenovationPanel: React.FC = () => {
 
 
   return (
-    <div className="mx-auto p-1 space-y-6 py-1 px-2">
+    <div className="mx-auto p-1 space-y-6 py-1 px-2 overflow-auto max-h-[100vh] sm:max-h-[80vh]">
       {/* Tabs */}
       <div className="bg-white border rounded-xl p-3">
         <h3 className="font-semibold text-lg mb-3" >1. Choose Your Preferred Style</h3>

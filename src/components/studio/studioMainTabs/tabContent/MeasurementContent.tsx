@@ -9,6 +9,15 @@ import {
   X,
   Building,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { updateIsDistanceRef } from "@/redux/slices/jobSlice";
@@ -195,26 +204,31 @@ const MeasurementContent: React.FC = () => {
 
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">Unit:</span>
-            <select
-              value={selectedUnit}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setSelectedUnit(e.target.value)
-              }
-              className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              {units.map((unit: string) => (
-                <option key={unit} value={unit}>
-                  {unit}
-                </option>
-              ))}
-            </select>
+
+       <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+      <SelectTrigger className="w-[120px] bg-white">
+        <SelectValue placeholder="Select unit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Units</SelectLabel>
+          {units.map((unit) => (
+            <SelectItem key={unit} value={unit}>
+              {unit}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+
+        
           </div>
         </div>
       </div>
 
       <div className="flex flex-col h-full">
         {/* Dimension Reference */}
-        <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+        <div className="px-4 py-3 bg-gray-50 border-b bg-muted/80 border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Target className="w-4 h-4 text-gray-400" />
@@ -251,11 +265,11 @@ const MeasurementContent: React.FC = () => {
         <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
           <button
             onClick={() => setShowPDFModal(true)}
-            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm font-medium"
+            className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm font-medium"
             type="button"
           >
             <Download className="w-4 h-4" />
-            <span>Export PDF Report</span>
+            <span className="text-sm">Export PDF Report</span>
           </button>
         </div>
       </div>
