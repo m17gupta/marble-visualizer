@@ -1,14 +1,5 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogPortal,
@@ -19,30 +10,42 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button"
-import { ProjectModel } from "@/models/projectModel/ProjectModel";
-import { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, Loader2, X } from "lucide-react";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-type DeleteModalProps = {
-  onCancel: () => void;
-  onConfirm: (currentProject: ProjectModel) => void;
-  isOpen: boolean;
-}
-const DeleteModal = ({ onCancel, onConfirm, isOpen }: DeleteModalProps) => {
- const {currentProject} = useSelector((state: RootState) => state.projects);
-   const [deleting, setDeleting] = useState(false);
-  const handleConfirm = () => {
-    if(!currentProject) return;
-    onConfirm(currentProject);
-    
+type Props = {
+  itemName?: string;
+  onConfirm: () => Promise<void> | void;
+};
 
-  }
+export function DeleteDesignProject({ itemName = "this project", onConfirm }: Props) {
+  const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleConfirm = async () => {
+    try {
+      setDeleting(true);
+      await Promise.resolve(onConfirm());
+      setOpen(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <>
-   <Dialog open={isOpen} onOpenChange={onCancel}>
+      {/* Use menu item to open (no DialogTrigger to avoid flicker) */}
+      <DropdownMenuItem 
+        className="text-red-600 focus:text-red-700 focus:bg-red-50 cursor-pointer"
+        onSelect={(e) => {
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
+        Delete
+      </DropdownMenuItem>
+
+      <Dialog open={open} onOpenChange={(v) => !deleting && setOpen(v)}>
         <DialogPortal>
           {/* Softer overlay + slight blur */}
           <DialogOverlay className="
@@ -71,8 +74,7 @@ const DeleteModal = ({ onCancel, onConfirm, isOpen }: DeleteModalProps) => {
                </div>
                   <DialogDescription className="mt-1 text-slate-600 text-md text-center">
                     Are you sure you want to permanently delete 
-                     <span className="font-medium text-slate-900 px-1">Project</span>
-                     ?
+                     <span className="font-medium text-slate-900 ps-1">{itemName}</span>?
                     This action cannot be undone.
                   </DialogDescription>
                 </DialogHeader>
@@ -83,14 +85,15 @@ const DeleteModal = ({ onCancel, onConfirm, isOpen }: DeleteModalProps) => {
             <DialogFooter className="px-5 pb-5 gap-2 mx-auto">
               <Button
                 variant="outline"
-                onClick={onCancel}
-                // disabled={deleting}
+                onClick={() => setOpen(false)}
+                disabled={deleting}
               >
                 Cancel
               </Button>
               <Button
                 variant="destructive"
                 onClick={handleConfirm}
+                disabled={deleting}
                 className="min-w-[96px]"
               >
                 {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -100,10 +103,6 @@ const DeleteModal = ({ onCancel, onConfirm, isOpen }: DeleteModalProps) => {
           </DialogContent>
         </DialogPortal>
       </Dialog>
-
-   
     </>
-  )
+  );
 }
-
-export default DeleteModal;

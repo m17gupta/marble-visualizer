@@ -25,6 +25,7 @@ import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
 import { toast } from "sonner";
+import { DeleteDesignProject } from "./DeleteDesignProject";
 
 const DesignProject = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -152,21 +153,22 @@ const DesignProject = () => {
                       <BsThreeDotsVertical className="w-4 h-4 text-gray-600" />
                     </button>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent className="w-36" align="end">
                     <DropdownMenuGroup>
-                      <DropdownMenuItem
+                      <DropdownMenuItem className="cursor-pointer"
                         onClick={() => console.log("Share", label)}>
                         Share
                       </DropdownMenuItem>
-                      <DropdownMenuItem
+                      <DropdownMenuItem className="cursor-pointer"
                         onClick={() => handleRenameGenAiImage(label)}>
                         Rename
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => handleDeleteGenAiImage(label.id)}>
-                        Delete
-                      </DropdownMenuItem>
+                      <DeleteDesignProject
+                        itemName="Design Project A"
+                        onConfirm={() => handleDeleteGenAiImage(label.id)} // capture id via closure
+                      />
+                      
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>

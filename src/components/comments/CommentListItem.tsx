@@ -67,7 +67,7 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         e.preventDefault();
         e.stopPropagation();
       }}
-      className={`relative m-0 mb-[0px] w-full cursor-pointer rounded-sm transition-all 
+      className={`relative m-0 mb-[0px] w-full cursor-pointer rounded-sm transition-all rounded-lg 
         ${isActive
           ? "bg-blue-50/60 border border-blue-300 shadow-md ring-1 ring-blue-200"
           : "bg-white border border-gray-300 shadow-none hover:bg-gray-50 hover:shadow-md"
@@ -75,11 +75,11 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
       style={{ padding: 0, marginBottom: "0px" }}
     >
       <div
-        className={`absolute left-0 top-0 h-full w-1 rounded-l-3xl transition-all hover:bg-gray-50
+        className={`absolute left-0 top-0 h-full w-1 rounded-l-4xl transition-all hover:bg-gray-50
         ${isActive ? "bg-blue-500" : "bg-transparent"}`}
       />
 
-      <CardContent className="p-4 ">
+      <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <Avatar className="h-10 w-10 shrink-0">
             <AvatarFallback className="bg-primary text-primary-foreground text-lg font-medium">
