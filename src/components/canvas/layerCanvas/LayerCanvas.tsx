@@ -19,6 +19,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { PointModel } from "../canvasEdit/CanvasEdit";
+import { setBackgroundImage } from "./SetBackGroundImage";
 
 type NamedFabricObject = fabric.Object & { name?: string };
 
@@ -55,6 +56,7 @@ const LayerCanvas = ({
   const handleMouseMove = useCallback((event: fabric.TEvent) => {
     if (!fabricCanvasRef.current) return;
     const canvas = fabricCanvasRef.current;
+    console.log("canavvsss",canvas)
     console.log("canvas", canvas.getObjects());
     const fabricEvent = event as unknown as { target?: NamedFabricObject };
     const target = fabricEvent.target;
@@ -69,134 +71,184 @@ const LayerCanvas = ({
     }
   }, []);
 
+    const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+  if (!canvasRef.current || fabricCanvasRef.current||!imageUrl) return;
+
+  const canvas = new fabric.Canvas(canvasRef.current, {
+    selection: true,
+    preserveObjectStacking: true,
+    width: width,
+    height: height,
+  });
+
+  fabricCanvasRef.current = canvas;
+
+  originalViewportTransform.current = canvas.viewportTransform
+    ? ([...canvas.viewportTransform] as fabric.TMat2D)
+    : null;
+
+  // Load background image (800x600)
+  setBackgroundImage(
+    canvas,
+    imageUrl,
+    setLoading
+  );
+
+  canvas.on("mouse:move", handleMouseMove);
+  canvas.on("mouse:wheel", () => {
+    dispatch(setZoom(canvas.getZoom()));
+  });
+
+  dispatch(setCanvasReady(true));
+
+  return () => {
+    canvas.dispose();
+    fabricCanvasRef.current = null;
+    backgroundImageRef.current = null;
+    dispatch(setCanvasReady(false));
+  };
+}, [width, height, imageUrl, dispatch, handleMouseMove]);
+
+
   // Initialize Fabric.js canvas
-  useEffect(() => {
-    if (!canvasRef.current || fabricCanvasRef.current) return;
+  // useEffect(() => {
+  //   if (!canvasRef.current || fabricCanvasRef.current) return;
 
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width,
-      height,
-      selection: true,
-      preserveObjectStacking: true,
-      backgroundColor: "#282828",
-    });
+  //   const canvas = new fabric.Canvas(canvasRef.current, {
+  //     width: 800,
+  //     height: 600,
+  //     selection: true,
+  //     preserveObjectStacking: true,
+  //     backgroundColor: "#282828",
+  //   });
 
-    fabricCanvasRef.current = canvas;
+  //   fabricCanvasRef.current = canvas;
 
-    // Store the original viewport transform
-    originalViewportTransform.current = canvas.viewportTransform
-      ? ([...canvas.viewportTransform] as fabric.TMat2D)
-      : null;
+  //   // Store the original viewport transform
+  //   originalViewportTransform.current = canvas.viewportTransform
+  //     ? ([...canvas.viewportTransform] as fabric.TMat2D)
+  //     : null;
 
-    // Canvas event handlers
-    // canvas.on("mouse:down", handleMouseDown);
-    canvas.on("mouse:move", (event) => {
-      handleMouseMove(event);
-    });
-    // canvas.on("mouse:dblclick", handleDoubleClick);
+  //   // Canvas event handlers
+  //   // canvas.on("mouse:down", handleMouseDown);
+  //   canvas.on("mouse:move", (event) => {
+  //     handleMouseMove(event);
+  //   });
+  //    canvas.on("mouse:move", (event) => {
+  //     handleMouseMove(event);
+  //   });
+  //   // canvas.on("mouse:dblclick", handleDoubleClick);
 
-    // canvas.on("selection:cleared", () => {
+  //   // canvas.on("selection:cleared", () => {
 
-    // });
+  //   // });
 
-    canvas.on("mouse:wheel", (event) => {
-      //  handleMouseWheel(event);
-      dispatch(setZoom(canvas.getZoom()));
-    });
+  //   canvas.on("mouse:wheel", (event) => {
+  //     //  handleMouseWheel(event);
+  //     dispatch(setZoom(canvas.getZoom()));
+  //   });
 
-    // Keyboard shortcuts
-    // document.addEventListener("keydown", handleKeyDown);
+  //   // Keyboard shortcuts
+  //   // document.addEventListener("keydown", handleKeyDown);
 
-    dispatch(setCanvasReady(true));
+  //   dispatch(setCanvasReady(true));
 
-    return () => {
-      canvas.dispose();
-      fabricCanvasRef.current = null;
-      backgroundImageRef.current = null;
-      dispatch(setCanvasReady(false));
-    };
-  }, [width, height, dispatch, handleMouseMove]);
+  //   return () => {
+  //     canvas.dispose();
+  //     fabricCanvasRef.current = null;
+  //     backgroundImageRef.current = null;
+  //     dispatch(setCanvasReady(false));
+  //   };
+  // }, [width, height, dispatch, handleMouseMove]);
 
+
+  
+  
   // Load background image with comprehensive CORS and fallback handling
-  useEffect(() => {
-    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+  //     return;
+  //   }
 
-    const canvas = fabricCanvasRef.current;
+  //   const canvas = fabricCanvasRef.current;
 
-    // Remove existing background image (ensure full cleanup)
-    if (backgroundImageRef.current) {
-      canvas.remove(backgroundImageRef.current);
-      backgroundImageRef.current = null;
-      canvas.discardActiveObject();
-      canvas.renderAll();
-    }
+  //   // Remove existing background image (ensure full cleanup)
+  //   if (backgroundImageRef.current) {
+  //     canvas.remove(backgroundImageRef.current);
+  //     backgroundImageRef.current = null;
+  //     canvas.discardActiveObject();
+  //     canvas.renderAll();
+  //   }
 
-    const tryLoadImage = async () => {
-      // Strategy 1: Try different CORS modes
-      const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
-      for (const corsMode of corsOptions) {
-        try {
-          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+  //   const tryLoadImage = async () => {
+  //     // Strategy 1: Try different CORS modes
+  //     const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+  //     for (const corsMode of corsOptions) {
+  //       try {
+  //         const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
 
-          AddImageToCanvas(
-            imgElement,
-            fabricCanvasRef,
-            width,
-            height,
-            backgroundImageRef,
-            onImageLoad
-          );
-          return;
-        } catch (error) {
-          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
-        }
-      }
+  //         AddImageToCanvas(
+  //           imgElement,
+  //           fabricCanvasRef,
+  //           width,
+  //           height,
+  //           backgroundImageRef,
+  //           onImageLoad
+  //         );
+  //         return;
+  //       } catch (error) {
+  //         console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
+  //       }
+  //     }
 
-      // Strategy 2: Try different fetch modes
-      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
-      for (const fetchMode of fetchModes) {
-        try {
-          const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+  //     // Strategy 2: Try different fetch modes
+  //     const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+  //     for (const fetchMode of fetchModes) {
+  //       try {
+  //         const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
 
-          AddImageToCanvas(
-            imgElement,
-            fabricCanvasRef,
-            width,
-            height,
-            backgroundImageRef,
-            onImageLoad
-          );
-          return;
-        } catch (error) {
-          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
-        }
-      }
+  //         AddImageToCanvas(
+  //           imgElement,
+  //           fabricCanvasRef,
+  //           width,
+  //           height,
+  //           backgroundImageRef,
+  //           onImageLoad
+  //         );
+  //         return;
+  //       } catch (error) {
+  //         console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+  //       }
+  //     }
 
-      // All strategies failed
-      console.error("All image loading strategies failed for URL:", imageUrl);
-      const errorMessage = imageUrl.includes("s3.")
-        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
-        : "Failed to load background image. The image server may not allow cross-origin requests.";
+  //     // All strategies failed
+  //     console.error("All image loading strategies failed for URL:", imageUrl);
+  //     const errorMessage = imageUrl.includes("s3.")
+  //       ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+  //       : "Failed to load background image. The image server may not allow cross-origin requests.";
 
-      toast.error(errorMessage, {
-        duration: 6000,
-        description: "Check browser console for detailed error information.",
-      });
+  //     toast.error(errorMessage, {
+  //       duration: 6000,
+  //       description: "Check browser console for detailed error information.",
+  //     });
 
-      if (onImageLoad) {
-        onImageLoad();
-      }
-    };
+  //     if (onImageLoad) {
+  //       onImageLoad();
+  //     }
+  //   };
 
-    tryLoadImage();
-  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
+  //   tryLoadImage();
+  // }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
+
+
 
   useEffect(() => {
     console.log("annotation", allPolygon);
 
-    if (fabricCanvasRef.current && allPolygon.length > 0) {
+    if (fabricCanvasRef.current && allPolygon.length > 0 ) {
       allPolygon.forEach((polygon, index) => {
         createPolygon(polygon.annotation, polygon.box, index);
       });
@@ -217,23 +269,30 @@ const LayerCanvas = ({
         fabricCanvasRef.current.renderAll();
       }
     }
-  }, [fabricCanvasRef, allPolygon, dispatch]);
+  }, [fabricCanvasRef, allPolygon, dispatch, backgroundImageRef]);
 
 
   const createPolygon =(annotation:number[],box:number[],index:number)=>{
  const canvas = fabricCanvasRef.current;
- if (!canvas) return;
+ const bgImg = backgroundImageRef.current;
+const scaleX = bgImg?.scaleX ?? 1;
+const scaleY = bgImg?.scaleY ?? 1;
+const left = bgImg?.left ?? 0;
+const top = bgImg?.top ?? 0;
+const ratioWidth = width / 800;
+const ratioHeight = height / 600;
+if (!canvas) return;
       const point: PointModel[] = [];
       for (let i = 0; i < annotation.length; i += 2) {
-        const x = annotation[i];
-        const y = annotation[i + 1];
+        const x = annotation[i]*ratioWidth + left;
+        const y = annotation[i + 1]*ratioHeight + top;
         point.push({ x, y });
       }
 
       const polygon = new fabric.Polygon(point, {
         fill: "green",
-        originX: box[0],
-        originY: box[1],
+        originX: box[0]+left,
+        originY: box[1]+top,
         hasBorders: false,
         hasControls: false,
         stroke: "red",
@@ -260,10 +319,10 @@ const LayerCanvas = ({
           >
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px]  min-w-[800px]">
+                <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
                   <canvas
                     ref={canvasRef}
-                    className="border-0 block mx-auto"
+                    className="border-2 border-red-500 block mx-auto"
                     style={{ maxWidth: "100%", height: "auto" }}
                   />
 
