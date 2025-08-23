@@ -51,41 +51,51 @@ const HoverHeader = () => {
       <Card>
         <CardContent className="py-2 px-4 flex items-center justify-between ">
           <div className="flex items-center space-x-2">
-        
-                  <Button variant={"outline"} size="sm" className="flex items-center gap-2">
-                    <AiOutlineBorderInner className="h-5 w-5" />
-                    Outline
-                  </Button>
-               
+            <Button
+              variant="outline"
+              size="sm"
+              className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2">
+              {/* Icon stays visible */}
+              <AiOutlineBorderInner className="h-5 w-5 shrink-0" />
 
-            <Separator orientation="vertical" className="h-6" />
-            
-                  <Button variant={"outline"} size="sm" className="flex items-center gap-2">
-                    {/* <FaCodeCompare className="h-4 w-4" /> */}
-                    <BiGitCompare className="h-4 w-4"/>
-
-                    Compare
-                  </Button>
+              {/* Text appears on hover */}
+              <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                Outline
+              </span>
+            </Button>
 
             <Separator orientation="vertical" className="h-6" />
 
-           
-                  <Button
-                    variant={"outline"}
-                    size="sm"
-                    onClick={handleShowHideImage} className="flex items-center gap-2">
-                    {hideImage ? (
-                      // <LuImage className="text-xl" />
-                      <MdOutlineImage className="h-5 w-5"/>
+            <Button
+              variant="outline"
+              size="sm"
+              className="group relative flex items-center justify-start w-10 hover:w-28 transition-all duration-300 overflow-hidden ">
+              {/* <FaCodeCompare className="h-4 w-4" /> */}
+              <BiGitCompare className="h-4 w-4 flex-shrink-0" />
+           <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">  Compare</span>
+            </Button>
 
-                    ) : (
-                      // <LuImageOff className="h-5 w-5" />
-                      <MdOutlineHideImage className="h-5 w-5"/>
+            <Separator orientation="vertical" className="h-6" />
 
-                    )}
-                    Show Segments
-                  </Button>
-               
+           <Button
+  variant="outline"
+  size="sm"
+  onClick={handleShowHideImage}
+  className="group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2"
+>
+  {/* Icon changes dynamically */}
+  {hideImage ? (
+    <MdOutlineImage className="h-5 w-5 shrink-0" />
+  ) : (
+    <MdOutlineHideImage className="h-5 w-5 shrink-0" />
+  )}
+
+  {/* Text fades in on hover */}
+  <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+    {hideImage ? "Show Segments" : "Hide Segments"}
+  </span>
+</Button>
+
           </div>
 
           <div className="flex items-center justify-between">
@@ -126,15 +136,18 @@ const HoverHeader = () => {
                 </div>
               </Badge>
 
-              <div className='flex gap-1'>
-                                  <Badge variant="secondary" className="grid items-center gap-2 w-20">
-                            <span>X: 524</span>
-                             </Badge>
-                               <Badge variant="secondary" className="grid items-center gap-2 w-20">
-                            <span>Y: 32</span>
-              </Badge>
-                            </div>
-
+              <div className="flex gap-1">
+                <Badge
+                  variant="secondary"
+                  className="grid items-center gap-2 w-20">
+                  <span>X: 524</span>
+                </Badge>
+                <Badge
+                  variant="secondary"
+                  className="grid items-center gap-2 w-20">
+                  <span>Y: 32</span>
+                </Badge>
+              </div>
             </div>
           </div>
         </CardContent>

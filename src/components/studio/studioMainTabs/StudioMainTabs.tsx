@@ -224,7 +224,7 @@ const StudioMainTabs = () => {
         
           </TabsContent>
 
-          <TabsContent value="measurement" className="flex-grow overflow-auto">
+          <TabsContent value="measurement" className="flex-grow ">
             {/* Measurement Content */}
             <MeasurementContent />
           </TabsContent>

@@ -99,8 +99,7 @@ const DesignProject = () => {
   return (
     <div
       className={`flex items-baseline justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
-    `}
-    >
+    `}>
       {/* Design buttons scrollable */}
       <div className="flex gap-2 overflow-x-auto scroll-thin pr-2 max-w-full pb-2">
         {/* Show error state */}
@@ -137,41 +136,35 @@ const DesignProject = () => {
                       ? "bg-blue-100 border-blue-500"
                       : "bg-white border-gray-300"
                   }
-                  `}
-              >
+                  `}>
                 <button
                   onClick={() => handleImageSwitch(label)}
                   className={`px-2 py-1 bg-transparent hover:border-transparent rounded-l-md focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200 ${
                     isActive ? "text-blue-700 font-semibold" : "text-gray-800"
-                  }`}
-                >
+                  }`}>
                   {label.name ? label.name : `Design ${index + 1}`}
                 </button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
                       onClick={(e) => e.stopPropagation()}
-                      className="p-1 pr-2 bg-transparent bg-transparent hover:border-transparent rounded-r-md focus-ring-0 focus:ring-blue-500 focus:outline-none"
-                    >
+                      className="p-1 pr-2 bg-transparent bg-transparent hover:border-transparent rounded-r-md focus-ring-0 focus:ring-blue-500 focus:outline-none">
                       <BsThreeDotsVertical className="w-4 h-4 text-gray-600" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-36" align="end">
                     <DropdownMenuGroup>
                       <DropdownMenuItem
-                        onClick={() => console.log("Share", label)}
-                      >
+                        onClick={() => console.log("Share", label)}>
                         Share
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleRenameGenAiImage(label)}
-                      >
+                        onClick={() => handleRenameGenAiImage(label)}>
                         Rename
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => handleDeleteGenAiImage(label.id)}
-                      >
+                        onClick={() => handleDeleteGenAiImage(label.id)}>
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
@@ -186,8 +179,7 @@ const DesignProject = () => {
       {currentGenAiImage && currentGenAiImage !== null && (
         <button
           className="px-4 py-1 bg-violet-600 text-white text-sm rounded hover:bg-violet-700 flex-shrink-0"
-          onClick={handleInspirationSection}
-        >
+          onClick={handleInspirationSection}>
           <span className="hidden sm:inline">Exit Compare</span>
           <span className="inline sm:hidden">Back</span>
         </button>

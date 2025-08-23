@@ -1,7 +1,6 @@
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
-
 import {
   Building,
   ChevronDown,
@@ -11,27 +10,33 @@ import {
   X,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import {  useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { meterArea } from "../canvasUtil/CalculatePolygonArea";
 import { AppDispatch, RootState } from "@/redux/store";
 import FilterSwatch from "../studio/studioMainTabs/searchSwatch/FilterSwatch";
 import { Sheet } from "@/components/ui/sheet";
-import { fetchAllCategories, setFilterSwatchSegmentType } from "@/redux/slices/swatch/FilterSwatchSlice";
-
+import {
+  fetchAllCategories,
+  setFilterSwatchSegmentType,
+} from "@/redux/slices/swatch/FilterSwatchSlice";
+// import styleIcon from "../../../public/assets/line-md--list-3-twotone.svg";
+import styleIcon from "../../../public/assets/image/line-md--list-3-twotone (1).svg";
 
 interface MeasurementTabProps {
   selectedUnit: string;
 }
 
 const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
-    const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
   const [editingGroupValue, setEditingGroupValue] = useState<string>("");
   //const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<SegmentModal[]>([]);
-  const { segments } = useSelector((state: RootState) => state.materialSegments);
+  const { segments } = useSelector(
+    (state: RootState) => state.materialSegments
+  );
   // const finaldata = pdfData
   //   .find((d: any) => d.groupname == activeTab)
   //   ?.selected_material.map((d) => d.id);
@@ -104,6 +109,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
     setEditingGroupValue("");
   };
 
+
   const handleCancelGroupEdit = (): void => {
     setEditingGroup(null);
     setEditingGroupValue("");
@@ -111,7 +117,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
 
   const getTabStyle = (tabName: string): string => {
     return activeTab === tabName
-      ? "border-b-2 border-b-blue-500 text-blue-600 bg-blue-50"
+      ? "border-b-2 border-b-purple-500 border-purple-500 hover:border-purple-600 text-purple-600 bg-white hover:bg-purple-50 focus:ring-0 focus:outline-none"
       : "border-b-2 border-b-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50";
   };
 
@@ -121,33 +127,31 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
 
   const activeTabData = getActiveTabData();
 
-
-  const handleSelectStyle = async(data: string) => {
+  const handleSelectStyle = async (data: string) => {
     console.log("Selected Style for group:", data);
-    const segment = segments.find(
-      (segment) => segment.name.startsWith(data.replace(/\d+/g, ''))
+    const segment = segments.find((segment) =>
+      segment.name.startsWith(data.replace(/\d+/g, ""))
     );
 
-     if (!segment) return;
-          dispatch(setFilterSwatchSegmentType(segment));
-           await dispatch(fetchAllCategories(segment.categories));
+    if (!segment) return;
+    dispatch(setFilterSwatchSegmentType(segment));
+    await dispatch(fetchAllCategories(segment.categories));
     // console.log("Segment Type:", segment);
     setIsOpen(true);
   };
   return (
     <>
       {/* Tab Navigation */}
-      <div className="px-2 bg-transparent border-b border-gray-200">
-        <div className="flex space-x-0 overflow-x-auto my-2 pb-2 thin-scrollbar gap-2">
+      <div className=" bg-transparent  border-gray-200 ">
+        <div className="flex space-x-0 overflow-x-auto my-2 pb-2 thin-scrollbar gap-2 border-b px-3">
           {masterArray.map((tab: MasterModel) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab?.name ?? "")}
-              className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all ${getTabStyle(
+              className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all border border-gray-300 ${getTabStyle(
                 tab.name ?? ""
               )}`}
-              type="button"
-            >
+              type="button">
               <div className="flex items-center space-x-1">
                 <span>{tab.name}</span>
                 <span className="text-xs bg-blue-200  text-gray-600 rounded-full px-1.5 py-0.5 min-w-[18px] text-center ">
@@ -172,13 +176,11 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
               expanded={nameExpanded}
             /> */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <FilterSwatch 
-                setIsSheetOpen={setIsOpen}
-              />
+              <FilterSwatch setIsSheetOpen={setIsOpen} />
             </Sheet>
 
             {/* Groups */}
-            <div className="px-4 py-3 space-y-3">
+            <div className="px-4 py-3 space-y-3 overflow-y-auto h-[90vh] max-h-[60vh] sm:max-h-[56vh]">
               {activeTabData.allSegments.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Building className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -187,13 +189,14 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                 </div>
               ) : (
                 activeTabData.allSegments.map((group: MasterGroupModel) => (
-                  <div key={group.groupName} className="bg-transparent rounded-lg">
+                  <div
+                    key={group.groupName}
+                    className="bg-transparent rounded-lg">
                     {/* Group Header */}
                     <button
                       onClick={() => toggleGroupExpansion(group.segments)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-transparent transition-colors rounded-lg"
-                      type="button"
-                    >
+                      className="w-full flex items-center justify-between py-2 px-4 border-color border border-blue-300 hover:bg-transparent transition-colors rounded-lg"
+                      type="button">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                           <span className="text-sm font-bold text-blue-600">
@@ -224,8 +227,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                                   e.stopPropagation();
                                   handleSaveGroupEdit();
                                 }}
-                                className="p-1 text-green-600 hover:bg-green-100 rounded"
-                              >
+                                className="p-1 text-green-600 hover:bg-green-100 rounded">
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
@@ -233,8 +235,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                                   e.stopPropagation();
                                   handleCancelGroupEdit();
                                 }}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                              >
+                                className="p-1 text-red-600 hover:bg-red-100 rounded">
                                 <X className="w-4 h-4" />
                               </button>
                             </div>
@@ -248,8 +249,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                                   e.stopPropagation();
                                   handleEditGroup(group.groupName);
                                 }}
-                                className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-100 rounded transition-colors"
-                              >
+                                className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-100 rounded transition-colors">
                                 <Edit2 className="w-3 h-3" />
                               </button>
                             </div>
@@ -289,15 +289,17 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                     {/* Group Segments */}
                     {expandedGroups.length > 0 &&
                       expandedGroups === group.segments && (
-                        <div className="px-4 pb-4">
+                        <div className="px-4 pb-4 border border-t-0 border-blue-300 rounded-b-lg -mt-2">
                           {/* Select Style Button */}
-                          <div className="mb-4 flex justify-end">
+                          <div className="mb-4 flex justify-end pt-6">
                             <button
-                              className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors font-medium border border-gray-300"
-                              type="button"
-                              onClick={() => handleSelectStyle(group.groupName)}
-                            >
-                              Select Style
+                              className="px-3 py-1 border border-purple-600 text-purple-500 -mt-1 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors font-medium "
+                              type="button" 
+                              onClick={() =>
+                                handleSelectStyle(group.groupName)
+                              }>
+                              <img src={styleIcon} alt="Style" className="w-4 h-4 inline-block mr-1 text-purple-500" />
+                              Select Style 
                             </button>
                           </div>
 
@@ -317,8 +319,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                               {expandedGroups.map((segment: SegmentModal) => (
                                 <div
                                   key={segment.id}
-                                  className="flex justify-between items-center py-2.5 px-3 bg-transparent rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all"
-                                >
+                                  className="flex justify-between items-center py-2.5 px-3 bg-transparent rounded-md border border-gray-200 hover:border-blue-200 hover:bg-blue-50 transition-all">
                                   {/* Area on the left */}
                                   <div className="flex items-center space-x-3">
                                     <span className="text-blue-600 font-medium min-w-[80px]">
@@ -364,11 +365,26 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500">
-            <div className="text-center">
-              <Building className="w-16 h-16 mx-auto mb-4 opacity-30" />
-              <p>No data available</p>
+          <div className="flex flex-col items-center justify-center py-10 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+            {/* Icon */}
+            <div className="bg-blue-100 text-blue-500 p-4 rounded-full mb-3">
+              <Building className="w-10 h-10" />
             </div>
+
+            {/* Text */}
+            <p className="text-gray-700 font-semibold text-base mb-1">
+              No data available
+            </p>
+            <p className="text-gray-500 text-sm max-w-[200px] text-center">
+              Add segments or styles to view the summary here.
+            </p>
+
+            {/* Optional Action */}
+            <button
+              // onClick={handleAddNew}
+              className="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow transition">
+              Add Segment
+            </button>
           </div>
         )}
       </div>
