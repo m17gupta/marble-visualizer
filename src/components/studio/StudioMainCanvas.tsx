@@ -43,6 +43,9 @@ export function StudioMainCanvas({
   const [canvasMode, setCanvasMode] = useState("");
   const { currentTabContent } = useSelector((state: RootState) => state.studio);
   const { canvasType } = useSelector((state: RootState) => state.canvas);
+
+  const [canvasWidth, setCanvasWidth] = useState(1100);
+  const [canvasHeight, setCanvasHeight] = useState(645);
   // // update the canvas image
   useEffect(() => {
     if (canvasType) {
@@ -91,6 +94,7 @@ export function StudioMainCanvas({
     if (file) onFileUpload(file);
   };
 
+
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
       <ScrollArea className="flex-1">
@@ -115,7 +119,7 @@ export function StudioMainCanvas({
                     className="relative"
                   >
                     {/* Image Loading Overlay */}
-                    {imageLoading && (
+                    {/* {imageLoading && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -129,7 +133,7 @@ export function StudioMainCanvas({
                           </p>
                         </div>
                       </motion.div>
-                    )}
+                    )} */}
 
                     {(canvasMode == "draw" ||
                       canvasMode == "reannotation" ||
@@ -137,8 +141,8 @@ export function StudioMainCanvas({
                       <CanvasEditor
                         key={`canvas-editor-${canvasImage}`}
                         imageUrl={canvasImage}
-                        width={800}
-                        height={600}
+                        width={canvasWidth}
+                        height={canvasHeight}
                         className="mb-6"
                         onImageLoad={handleImageLoad}
                       />
@@ -148,8 +152,8 @@ export function StudioMainCanvas({
                       <CanvasEdit
                         key={`canvas-editor-${canvasImage}`}
                         imageUrl={canvasImage}
-                        width={800}
-                        height={600}
+                        width={canvasWidth}
+                        height={canvasHeight}
                         className="mb-6"
                         onImageLoad={handleImageLoad}
                       />
@@ -159,8 +163,8 @@ export function StudioMainCanvas({
                       <CommentCanvas
                         key={`canvas-editor-${canvasImage}`}
                         imageUrl={canvasImage}
-                        width={800}
-                        height={600}
+                        width={canvasWidth}
+                        height={canvasHeight}
                         className="mb-6"
                         onImageLoad={handleImageLoad}
                       />
@@ -173,8 +177,8 @@ export function StudioMainCanvas({
                         <PolygonOverlay
                           key={`canvas-hover-${canvasImage}`}
                           imageUrl={canvasImage}
-                          width={800}
-                          height={600}
+                          width={canvasWidth}
+                          height={canvasHeight}
                           className="mb-6"
                           onImageLoad={handleImageLoad}
                         />
@@ -188,8 +192,8 @@ export function StudioMainCanvas({
                         <LayerCanvas
                           key={`canvas-test-${canvasImage}`}
                           imageUrl={canvasImage}
-                          width={800}
-                          height={600}
+                          width={canvasWidth}
+                          height={canvasHeight}
                           className="mb-6"
                           onImageLoad={handleImageLoad}
                         />

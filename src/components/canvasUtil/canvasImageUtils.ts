@@ -3,9 +3,9 @@
 import * as fabric from "fabric";
 
 // Type for fabric objects with custom properties
-type NamedFabricObject = fabric.Object & { 
-  name?: string; 
-  isBackgroundImage?: boolean; 
+type NamedFabricObject = fabric.Object & {
+  name?: string;
+  isBackgroundImage?: boolean;
 };
 
 /**
@@ -26,51 +26,73 @@ export const AddImageToCanvas = (
   onImageLoad?: () => void
 ) => {
   const canvas = canvasRef.current;
-  if (!canvas) return
-  
+  if (!canvas) return;
+
   const fabricImage = new fabric.Image(imgElement, {
     selectable: false,
     evented: false,
     excludeFromExport: false,
+    // width: 800,
+    // height: 600,
   });
 
   // Mark this as background image for identification
-  (fabricImage as NamedFabricObject).name = 'backgroundImage';
+  (fabricImage as NamedFabricObject).name = "backgroundImage";
   (fabricImage as NamedFabricObject).isBackgroundImage = true;
 
-  // Calculate scaling to fit canvas
-  const canvasAspect = width / height;
+  // Calculate scaling to fit the canvas (800x600) while maintaining aspect ratio
+  const canvasWidth = canvas.width || width;   // 800
+  const canvasHeight = canvas.height || height; // 600
+  
   const imgAspect = imgElement.width / imgElement.height;
-  const canvasWidth = canvas.width;
-  const canvasHeight = canvas.height;
+  const canvasAspect = canvasWidth / canvasHeight;
+  
   let scale;
   if (imgAspect > canvasAspect) {
-    scale = width / imgElement.width;
-    console.log("scale--> ", scale);
+    // Image is wider than canvas ratio - scale by width
+    scale = canvasWidth / imgElement.width;
   } else {
-    scale = height / imgElement.height;
-    console.log("scale--> else", scale);
+    // Image is taller than canvas ratio - scale by height  
+    scale = canvasHeight / imgElement.height;
   }
-
-  const scaleX = canvasWidth / imgElement.width;
-  const scaleY = canvasHeight / imgElement.height;
-  console.log("scaleX", scaleX);
-  console.log("scaleY", scaleY);
+  
+  
   fabricImage.scale(scale);
+  
+  // Calculate scaled dimensions
+  const scaledWidth = imgElement.width * scale;
+  const scaledHeight = imgElement.height * scale;
+  
+  console.log("Scaled image size:", scaledWidth, "x", scaledHeight);
+  
   fabricImage.set({
-    left: (width - imgElement.width * scale) / 2,
-    top: (height - imgElement.height * scale) / 2,
+    left: (canvasWidth - scaledWidth) / 2,  // Center horizontally
+    top: (canvasHeight - scaledHeight) / 2, // Center vertically
+    originX: "left",
+    originY: "top",
+  });
+  console.log("image ", fabricImage.width, fabricImage.height);
+  console.log("left", fabricImage.left);
+  console.log("top", fabricImage.top);
+  
+  // Set as background image instead of adding as fabric object
+  canvas.backgroundImage = fabricImage;
+  
+  // Apply the positioning and scaling to the background image
+  fabricImage.set({
+    // scaleX: scale,
+    // scaleY: scale,
+    left: (canvasWidth - scaledWidth) / 2,
+    top: (canvasHeight - scaledHeight) / 2,
     // originX: "left",
     // originY: "top",
 
+    // width: 800,
+    // height: 600,
   });
-  console.log("width image", (width - imgElement.width * scale) / 2);
-  console.log("height image", (height - imgElement.height * scale) / 2);
-
-  // Store reference and add to canvas
+  
+  // Store reference
   backgroundImageRef.current = fabricImage;
-  canvas.add(fabricImage);
-  canvas.sendObjectToBack(fabricImage);
   canvas.renderAll();
 
   // Call the onImageLoad callback if provided
@@ -125,9 +147,10 @@ export const LoadImageWithFetch = async (
     const blob = await response.blob();
     const objectUrl = URL.createObjectURL(blob);
     return new Promise((resolve, reject) => {
-      const imgElement = new window.Image();
+      const imgElement = new Image();
       imgElement.onload = () => {
-       
+        imgElement.width = 800  ;
+        imgElement.height = 600;
         URL.revokeObjectURL(objectUrl);
         resolve(imgElement);
       };
