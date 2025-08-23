@@ -9,6 +9,7 @@ import { CommentModel, JobCommentModel } from '@/models/commentsModel/CommentMod
 import { addJobComment } from '@/redux/slices/comments/JobComments'
 import { cn } from '@/lib/utils'
 import { updateAddSegMessage } from '@/redux/slices/segmentsSlice'
+import { DeleteComment } from './DeleteComment'
 
 type Props = {
   x: number;
@@ -32,6 +33,15 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
   const handleMessageChange = (value: string) => {
     setLocalMessage(value)
   }
+
+
+const handleDeleteComment = async () => {
+  // For new unsaved comment, just close it
+  setLocalMessage("");
+  setIsExpanded(false);
+  onClose?.();
+  // If you want to handle deleting an existing comment, you need to pass its id as a prop and implement logic here.
+};
 
 
 
@@ -94,7 +104,7 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
       {/* Expanded Comment Form */}
       {isExpanded && (
         <Card
-          className="absolute shadow-lg pointer-events-auto z-50 w-80"
+          className="absolute shadow-lg pointer-events-auto z-50 w-80 "
           style={{
             left: x + 30,
             top: y - 10,
@@ -109,9 +119,15 @@ const AddComments: React.FC<Props> = ({ x, y, segmentName, onClose }) => {
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <CheckCircle className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <Trash className="h-4 w-4" />
-                </Button>
+                {/* <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Trash className="h-4 w-4"/>
+                </Button> */}
+              <DeleteComment
+      onConfirm={handleDeleteComment}
+      itemName={`Comment${segmentName ? ` (${segmentName})` : ""}`}
+      size="sm"
+    />
+
                 <Button
                   variant="ghost"
                   size="sm"

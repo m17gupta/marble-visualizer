@@ -83,10 +83,6 @@ const ProjectAction = ({
           <Button
             variant="ghost"
             size="sm"
-            // onClick={(e) => {
-            //   e.stopPropagation();
-            //   handleShare(project);
-            // }}
           >
             <Share2 className="h-4 w-4" />
           </Button>
@@ -94,10 +90,6 @@ const ProjectAction = ({
           <Button
             variant="ghost"
             size="sm"
-            // onClick={(e) => {
-            //   e.stopPropagation();
-            //   handleProjectClick(project.id);
-            // }}
             onClick={() => {}}
           >
             <Edit3 className="h-4 w-4" />
@@ -106,10 +98,6 @@ const ProjectAction = ({
             <Button
               variant="ghost"
               size="sm"
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   handleProjectClick(project.id);
-              // }}
               onClick={() => openAnalysedData(project)}
               className="group/info relative"
             >
@@ -185,6 +173,7 @@ const ProjectAction = ({
               <Settings className="h-4 w-4 mr-2" />
               Delete
             </DropdownMenuItem>
+            
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

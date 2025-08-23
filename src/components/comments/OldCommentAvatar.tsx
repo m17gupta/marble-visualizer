@@ -10,11 +10,19 @@ import { Check, CheckCircle, Trash, X, User, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils';
 import { setAddReplies } from '@/redux/slices/comments/JobComments';
 import { set } from 'date-fns';
+import AddComments from './AddComments';
+import { DeleteComment } from './DeleteComment';
 
 type Props = {
     onSave: (data: CommentModel[], commentId: string) => void
     onDeleteComment: (commentId: string) => void;
+      x: number;
+  y: number;
+  segmentName?: string;
+  onClose?: () => void;
 }
+
+
 const OldCommentAvatar = ({onSave, onDeleteComment}:Props) => {
     const { projectComments } = useSelector((state: RootState) => state.jobComments);
     const [segName, setSegtName] = React.useState<string | null>(null);
@@ -135,15 +143,23 @@ const OldCommentAvatar = ({onSave, onDeleteComment}:Props) => {
                                                             >
                                                                 <CheckCircle className="h-4 w-4" />
                                                             </Button>
-                                                            <Button
+
+                                                            {/* <Button
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 className="h-8 w-8 p-0"
                                                                 onClick={() => handleDeleteComment(comment.id ?? "")}
-                                                                title="Delete comment"
-                                                            >
-                                                                <Trash className="h-4 w-4" />
-                                                            </Button>
+                                                                title="Delete comment">
+                                                             <Trash className="h-4 w-4"/>   
+                                                            </Button> */}
+
+                                          <DeleteComment
+                                            onConfirm={() => handleDeleteComment(comment.id ?? "")}
+      itemName={`Comment${comment.segment_name ? ` (${comment.segment_name})` : ""}`}
+      size="sm"
+                                          />
+
+                                                         
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
