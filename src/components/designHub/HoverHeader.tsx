@@ -1,20 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { setCanvasType, setIsResetZoom } from "@/redux/slices/canvasSlice";
+import { AppDispatch, RootState } from "@/redux/store";
+import { setActiveTab, setCanvasType, setIsResetZoom } from "@/redux/slices/canvasSlice";
 import { AiOutlineBorderInner } from "react-icons/ai";
-import { FaCodeCompare } from "react-icons/fa6";
-import { CiImageOff, CiImageOn } from "react-icons/ci";
-import { LuImage, LuImageOff } from "react-icons/lu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+
 import { Separator } from "../ui/separator";
 import { ZoomIn, ZoomOut } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -23,9 +15,10 @@ import { BiGitCompare } from "react-icons/bi";
 
 const HoverHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [activeButton, setActiveButton] = useState<"view" | "chat">("view");
+  // const [activeButton, setActiveButton] = useState<"view" | "chat">("view");
+  const [activeButton, setActiveButton] = React.useState<"view" | "chat">("view");
   const { canvasType } = useSelector((state: any) => state.canvas);
-
+  const activeCanvas = useSelector((state: RootState) => state.canvas.activeCanvas);
   const handleHover = () => {
     dispatch(setCanvasType("hover"));
     setActiveButton("view");
@@ -41,9 +34,15 @@ const HoverHeader = () => {
     dispatch(setIsResetZoom(true));
   };
 
-  const [hideImage, setHideImage] = useState(false);
+
+  // Use Redux for hide/show image state
   const handleShowHideImage = () => {
-    setHideImage(!hideImage);
+    // Toggle between 'hideImage' and 'showImage' as activeCanvas
+    dispatch({ type: "canvas/setActiveTab", payload: activeCanvas === "hideImage" ? "showImage" : "hideImage" });
+  } 
+
+  const handleActiveCanvas = (type:string) => {
+    dispatch(setActiveTab(type));
   };
 
   return (
@@ -54,9 +53,11 @@ const HoverHeader = () => {
             <Button
               variant="outline"
               size="sm"
-              className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2">
+              className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2"
+              onClick={() => handleActiveCanvas("outline")}
+            >
               {/* Icon stays visible */}
-              <AiOutlineBorderInner className="h-5 w-5 shrink-0" />
+              <AiOutlineBorderInner className={`h-5 w-5 shrink-0 ${activeCanvas === "outline" ? "fill-blue-600" : ""}`} />
 
               {/* Text appears on hover */}
               <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
@@ -69,33 +70,38 @@ const HoverHeader = () => {
             <Button
               variant="outline"
               size="sm"
-              className="group relative flex items-center justify-start w-10 hover:w-28 transition-all duration-300 overflow-hidden ">
+              className="group relative flex items-center justify-start w-10 hover:w-28 transition-all duration-300 overflow-hidden "
+                onClick={() => handleActiveCanvas("compare")}
+            >
               {/* <FaCodeCompare className="h-4 w-4" /> */}
-              <BiGitCompare className="h-4 w-4 flex-shrink-0" />
-           <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">  Compare</span>
+              <BiGitCompare className={`h-4 w-4 flex-shrink-0 ${activeCanvas === "compare" ? "fill-blue-600" : ""}`} />
+              <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                {" "}
+                Compare
+              </span>
             </Button>
 
             <Separator orientation="vertical" className="h-6" />
 
-           <Button
-  variant="outline"
-  size="sm"
-  onClick={handleShowHideImage}
-  className="group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2"
->
-  {/* Icon changes dynamically */}
-  {hideImage ? (
-    <MdOutlineImage className="h-5 w-5 shrink-0" />
-  ) : (
-    <MdOutlineHideImage className="h-5 w-5 shrink-0" />
-  )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShowHideImage}
+              className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                ${activeCanvas === "hideImage" ? "bg-blue-100 text-blue-600 border-blue-400" : ""}`}
+            >
+              {/* Icon changes dynamically based on Redux */}
+              {activeCanvas === "hideImage" ? (
+                <MdOutlineHideImage className="h-5 w-5 shrink-0 fill-blue-600" />
+              ) : (
+                <MdOutlineImage className="h-5 w-5 shrink-0" />
+              )}
 
-  {/* Text fades in on hover */}
-  <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-    {hideImage ? "Show Segments" : "Hide Segments"}
-  </span>
-</Button>
-
+              {/* Text fades in on hover */}
+              <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                {activeCanvas === "hideImage" ? "Hide Segments" : "Show Segments"}
+              </span>
+            </Button>
           </div>
 
           <div className="flex items-center justify-between">
@@ -117,7 +123,8 @@ const HoverHeader = () => {
                   <Button
                     variant={activeButton === "chat" ? "default" : "outline"}
                     size="sm"
-                    onClick={handleResetZoom}>
+                    onClick={handleResetZoom}
+                  >
                     Reset Zoom
                   </Button>
                 )}
@@ -139,12 +146,14 @@ const HoverHeader = () => {
               <div className="flex gap-1">
                 <Badge
                   variant="secondary"
-                  className="grid items-center gap-2 w-20">
+                  className="grid items-center gap-2 w-20"
+                >
                   <span>X: 524</span>
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className="grid items-center gap-2 w-20">
+                  className="grid items-center gap-2 w-20"
+                >
                   <span>Y: 32</span>
                 </Badge>
               </div>

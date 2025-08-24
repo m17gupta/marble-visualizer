@@ -41,7 +41,7 @@ import {
 import { ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from "../canvasUtil/canvasImageUtils";
+import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch, setBackgroundImage } from "../canvasUtil/canvasImageUtils";
 import { CreateCustomCursor, UpdateCursorOffset } from "../canvasUtil/CreateCustomCursor";
 import ReAnnotationPoint from "./ReAnnotationPoint";
 import { updateDistanceRefPixel, updateIsDistanceRef } from "@/redux/slices/jobSlice";
@@ -115,7 +115,7 @@ export function CanvasEditor({
 
   const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
   const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
-
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
   // const [hoveredSegmentId] = useState<string | null>(null);
   // upate all segmnet Array
   useEffect(() => {
@@ -342,7 +342,7 @@ export function CanvasEditor({
 
     const canvas = fabricCanvasRef.current;
 
-    // Remove existing background image (ensure full cleanup)
+    //Remove existing background image (ensure full cleanup)
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
       backgroundImageRef.current = null;
@@ -351,12 +351,26 @@ export function CanvasEditor({
     }
 
     const tryLoadImage = async () => {
+      setIsImageLoading(true); // Start loading indicator
+
       // Strategy 1: Try different CORS modes
       const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
       for (const corsMode of corsOptions) {
         try {
           const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-          AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
           return;
         } catch (error) {
           console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
@@ -368,7 +382,18 @@ export function CanvasEditor({
       for (const fetchMode of fetchModes) {
         try {
           const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-          AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
+         
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
           return;
         } catch (error) {
           console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
@@ -376,6 +401,7 @@ export function CanvasEditor({
       }
 
       // All strategies failed
+      setIsImageLoading(false); // Stop loading indicator on failure
       console.error("All image loading strategies failed for URL:", imageUrl);
       const errorMessage = imageUrl.includes("s3.")
         ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
@@ -393,6 +419,7 @@ export function CanvasEditor({
 
     tryLoadImage();
   }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
+
   // Update tool behavior
   useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady) return;

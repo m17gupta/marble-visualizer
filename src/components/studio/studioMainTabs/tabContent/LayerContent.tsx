@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useAppDispatch } from '@/redux/hooks'
 import { clearTestCanvas, PolyModel, setAnnotation } from '@/redux/slices/TestCanvasSlices'
+import { CanvasSizeSlider } from '@/components/canvas/layerCanvas/CanvasSizeSlider'
 
 const LayerContent = () => {
   const [inputValue, setInputValue] = useState('')
@@ -69,7 +70,10 @@ const LayerContent = () => {
 
   return (
     <div className="p-6 space-y-6">
+
+            <CanvasSizeSlider/>
       <div className="space-y-2">
+
         <div className="flex items-center justify-between">
           <Label htmlFor="response-input" className="text-sm font-medium">
             Paste JSON Response

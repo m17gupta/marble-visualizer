@@ -164,3 +164,57 @@ export const LoadImageWithFetch = async (
     throw new Error(`Fetch failed with mode ${fetchMode}: ${error}`);
   }
 };
+
+
+export const setBackgroundImage = (
+  canvasRef: React.RefObject<fabric.Canvas>,
+  url: string,
+  backgroundImageRef: React.MutableRefObject<fabric.Image | null>,
+  onLoading?: (loading: boolean) => void
+) => {
+  const canvas = canvasRef.current;
+  if (!canvas) {
+    if (onLoading) onLoading(false);
+    return;
+  }
+  
+  if (onLoading) onLoading(true);
+
+  fabric.Image.fromURL(url, { crossOrigin: "anonymous" })
+    .then((img: fabric.Image) => {
+      if (!img) {
+        if (onLoading) onLoading(false);
+        return;
+      }
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+
+      // Scale image to exactly 800x600
+      img.scaleToWidth(canvasWidth); 
+        img.scaleToHeight(canvasHeight);
+      
+
+      // Set the image as canvas background (Fabric.js v6 way)
+      canvas.backgroundImage = img;
+
+      // Store reference
+      backgroundImageRef.current = img;
+
+      // Set background image properties
+      img.set({
+        scaleX: canvasWidth / img.width,
+        scaleY: canvasHeight / img.height,
+        originX: "left",
+        originY: "top",
+      });
+
+      console.log("Background image set:", img.width, img.height);
+      canvas.renderAll();
+
+      if (onLoading) onLoading(false);
+    })
+    .catch((error) => {
+      console.error("Error loading background image:", error);
+      if (onLoading) onLoading(false);
+    });
+}

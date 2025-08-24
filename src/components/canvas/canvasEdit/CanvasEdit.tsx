@@ -1,23 +1,30 @@
-import { AppDispatch, RootState } from '@/redux/store';
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from "@/redux/store";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
-import { toast } from 'sonner';
-import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from '@/components/canvasUtil/canvasImageUtils';
-import { setCanvasReady, setCanvasType } from '@/redux/slices/canvasSlice';
-import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
+import { toast } from "sonner";
 import {
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+  AddImageToCanvas,
+  LoadImageWithCORS,
+  LoadImageWithFetch,
+  setBackgroundImage,
+} from "@/components/canvasUtil/canvasImageUtils";
+import { setCanvasReady, setCanvasType } from "@/redux/slices/canvasSlice";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
-import { getMinMaxBBPoint } from '@/components/canvasUtil/GetMInMaxBBPoint';
-import { changeGroupSegment, updateAddSegMessage, updateSegmentById } from '@/redux/slices/segmentsSlice';
-import { addNewSegmentToMasterArray } from '@/redux/slices/MasterArraySlice';
+import { getMinMaxBBPoint } from "@/components/canvasUtil/GetMInMaxBBPoint";
+import {
+  changeGroupSegment,
+  updateAddSegMessage,
+  updateSegmentById,
+} from "@/redux/slices/segmentsSlice";
+import { addNewSegmentToMasterArray } from "@/redux/slices/MasterArraySlice";
 
-import CommonToolBar from '../CommonToolBar';
+import CommonToolBar from "../CommonToolBar";
 
 export interface PointModel {
   x: number;
@@ -41,15 +48,19 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isCanvasReady } = useSelector((state: RootState) => state.canvas);
-  const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
+  const { selectedSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
-  const backgroundImageRef = useRef<fabric.Image | null>(null)
+  const backgroundImageRef = useRef<fabric.Image | null>(null);
   const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
-
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
   // For dragging a polygon point
-  const [dragInfo, setDragInfo] = useState<{ poly?: fabric.Polygon, pointIdx?: number } | null>(null);
-
+  const [dragInfo, setDragInfo] = useState<{
+    poly?: fabric.Polygon;
+    pointIdx?: number;
+  } | null>(null);
 
   // -- Place these BEFORE your component declaration --
 
@@ -87,48 +98,55 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     );
   };
 
-  const anchorWrapper = useCallback((
-    anchorIndex: number,
-    fn: (
-      eventData: fabric.TPointerEvent,
-      transform: fabric.Transform,
-      x: number,
-      y: number
-    ) => boolean,
-    canvas: fabric.Canvas
-  ) => {
-    return function (
-      eventData: fabric.TPointerEvent,
-      transform: fabric.Transform,
-      x: number,
-      y: number
-    ) {
-      const fabricObject = transform.target as fabric.Polygon;
-      if (fabricObject && fabricObject.points && fabricObject.points[anchorIndex]) {
-        // Convert global (x, y) to local polygon coordinates
-        const mouseLocalPosition = fabric.util.transformPoint(
-          new fabric.Point(x, y),
-          fabric.util.invertTransform(fabricObject.calcTransformMatrix())
-        );
-        const polygonBaseSize = getObjectSizeWithStroke(fabricObject);
-        const size = fabricObject._getTransformedDimensions();
-        const finalPointPosition = new fabric.Point(
-          (mouseLocalPosition.x * polygonBaseSize.x) / size.x +
-          (fabricObject.pathOffset?.x ?? 0),
-          (mouseLocalPosition.y * polygonBaseSize.y) / size.y +
-          (fabricObject.pathOffset?.y ?? 0)
-        );
-        fabricObject.points[anchorIndex] = finalPointPosition;
-        fabricObject.setCoords();
-        canvas.requestRenderAll();
-        // Optional: fix jumpy behavior
-        fabricObject.left = fabricObject.left ?? 0;
-        fabricObject.top = fabricObject.top ?? 0;
-        return fn(eventData, transform, x, y);
-      }
-      return false;
-    };
-  }, []);
+  const anchorWrapper = useCallback(
+    (
+      anchorIndex: number,
+      fn: (
+        eventData: fabric.TPointerEvent,
+        transform: fabric.Transform,
+        x: number,
+        y: number
+      ) => boolean,
+      canvas: fabric.Canvas
+    ) => {
+      return function (
+        eventData: fabric.TPointerEvent,
+        transform: fabric.Transform,
+        x: number,
+        y: number
+      ) {
+        const fabricObject = transform.target as fabric.Polygon;
+        if (
+          fabricObject &&
+          fabricObject.points &&
+          fabricObject.points[anchorIndex]
+        ) {
+          // Convert global (x, y) to local polygon coordinates
+          const mouseLocalPosition = fabric.util.transformPoint(
+            new fabric.Point(x, y),
+            fabric.util.invertTransform(fabricObject.calcTransformMatrix())
+          );
+          const polygonBaseSize = getObjectSizeWithStroke(fabricObject);
+          const size = fabricObject._getTransformedDimensions();
+          const finalPointPosition = new fabric.Point(
+            (mouseLocalPosition.x * polygonBaseSize.x) / size.x +
+              (fabricObject.pathOffset?.x ?? 0),
+            (mouseLocalPosition.y * polygonBaseSize.y) / size.y +
+              (fabricObject.pathOffset?.y ?? 0)
+          );
+          fabricObject.points[anchorIndex] = finalPointPosition;
+          fabricObject.setCoords();
+          canvas.requestRenderAll();
+          // Optional: fix jumpy behavior
+          fabricObject.left = fabricObject.left ?? 0;
+          fabricObject.top = fabricObject.top ?? 0;
+          return fn(eventData, transform, x, y);
+        }
+        return false;
+      };
+    },
+    []
+  );
 
   const actionHandlers = function (
     _eventData: fabric.TPointerEvent,
@@ -150,14 +168,14 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     });
     fabricCanvasRef.current = canvas;
     originalViewportTransform.current =
-      (canvas.viewportTransform && [...canvas.viewportTransform].length === 6)
+      canvas.viewportTransform && [...canvas.viewportTransform].length === 6
         ? ([...canvas.viewportTransform] as fabric.TMat2D)
         : [1, 0, 0, 1, 0, 0];
 
     // --- Mouse events for dragging annotation points ---
     const handleMouseDown = (opt: fabric.TPointerEventInfo) => {
       const pointer = opt.pointer;
-      const polygons = canvas.getObjects('polygon') as fabric.Polygon[];
+      const polygons = canvas.getObjects("polygon") as fabric.Polygon[];
       for (const poly of polygons) {
         if (!poly.visible) continue;
         if (!poly.points) continue;
@@ -166,7 +184,10 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
           const pt = poly.points[i];
           const polyX = poly.left! + pt.x * (poly.scaleX || 1);
           const polyY = poly.top! + pt.y * (poly.scaleY || 1);
-          if (Math.abs(pointer.x - polyX) < 10 && Math.abs(pointer.y - polyY) < 10) {
+          if (
+            Math.abs(pointer.x - polyX) < 10 &&
+            Math.abs(pointer.y - polyY) < 10
+          ) {
             setDragInfo({ poly, pointIdx: i });
             return;
           }
@@ -178,18 +199,21 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     // --- Double click event for point deletion and insertion ---
     const handleDoubleClick = (opt: fabric.TPointerEventInfo) => {
       const pointer = opt.pointer;
-      const polygons = canvas.getObjects('polygon') as fabric.Polygon[];
-      
+      const polygons = canvas.getObjects("polygon") as fabric.Polygon[];
+
       for (const poly of polygons) {
         if (!poly.visible || !poly.points) continue;
-        
+
         // Check if double-clicking on an existing point (delete point)
         for (let i = 0; i < poly.points.length; i++) {
           const pt = poly.points[i];
           const polyX = poly.left! + pt.x * (poly.scaleX || 1);
           const polyY = poly.top! + pt.y * (poly.scaleY || 1);
-          
-          if (Math.abs(pointer.x - polyX) < 10 && Math.abs(pointer.y - polyY) < 10) {
+
+          if (
+            Math.abs(pointer.x - polyX) < 10 &&
+            Math.abs(pointer.y - polyY) < 10
+          ) {
             // Delete point if polygon has more than 3 points
             if (poly.points.length > 3) {
               poly.points.splice(i, 1);
@@ -197,34 +221,40 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
               canvas.requestRenderAll();
               toast.success("Point deleted successfully");
             } else {
-              toast.error("Cannot delete point. Polygon must have at least 3 points.");
+              toast.error(
+                "Cannot delete point. Polygon must have at least 3 points."
+              );
             }
             return;
           }
         }
-        
+
         // Check if double-clicking on polygon edge (add point between two existing points)
         for (let i = 0; i < poly.points.length; i++) {
           const currentPt = poly.points[i];
           const nextPt = poly.points[(i + 1) % poly.points.length];
-          
+
           const currentX = poly.left! + currentPt.x * (poly.scaleX || 1);
           const currentY = poly.top! + currentPt.y * (poly.scaleY || 1);
           const nextX = poly.left! + nextPt.x * (poly.scaleX || 1);
           const nextY = poly.top! + nextPt.y * (poly.scaleY || 1);
-          
+
           // Calculate distance from pointer to line segment
           const distance = getDistanceToLineSegment(
-            pointer.x, pointer.y,
-            currentX, currentY,
-            nextX, nextY
+            pointer.x,
+            pointer.y,
+            currentX,
+            currentY,
+            nextX,
+            nextY
           );
-          
-          if (distance < 8) { // 8px tolerance for edge detection
+
+          if (distance < 8) {
+            // 8px tolerance for edge detection
             // Convert pointer coordinates to local polygon coordinates
             const localX = (pointer.x - poly.left!) / (poly.scaleX || 1);
             const localY = (pointer.y - poly.top!) / (poly.scaleY || 1);
-            
+
             // Insert new point after current point
             poly.points.splice(i + 1, 0, new fabric.Point(localX, localY));
             recreatePolygonWithControls(poly, canvas);
@@ -237,7 +267,14 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     };
 
     // Helper function to calculate distance from point to line segment
-    const getDistanceToLineSegment = (px: number, py: number, x1: number, y1: number, x2: number, y2: number): number => {
+    const getDistanceToLineSegment = (
+      px: number,
+      py: number,
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number
+    ): number => {
       const A = px - x1;
       const B = py - y1;
       const C = x2 - x1;
@@ -268,9 +305,12 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     };
 
     // Helper function to recreate polygon with updated controls
-    const recreatePolygonWithControls = (oldPoly: fabric.Polygon, canvas: fabric.Canvas) => {
+    const recreatePolygonWithControls = (
+      oldPoly: fabric.Polygon,
+      canvas: fabric.Canvas
+    ) => {
       if (!oldPoly.points) return;
-      
+
       // Create new polygon with updated points
       const newPolygon = new fabric.Polygon(oldPoly.points, {
         left: oldPoly.left,
@@ -288,7 +328,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
         cornerStyle: "circle",
         cornerColor: "rgb(255 1 154)",
         cornerSize: 7,
-        cornerStrokeColor: "rgb(7 239 253)"
+        cornerStrokeColor: "rgb(7 239 253)",
       }) as fabric.Polygon;
 
       // Attach per-point controls for the new polygon
@@ -298,11 +338,13 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
           acc[controlKey] = new fabric.Control({
             cursorStyle: "pointer",
             positionHandler: polygonPositionHandler.bind({ pointIndex: index }),
-            actionHandler: anchorWrapper(index, actionHandlers, canvas).bind({ pointIndex: index }),
-            actionName: "modifyPolygon"
+            actionHandler: anchorWrapper(index, actionHandlers, canvas).bind({
+              pointIndex: index,
+            }),
+            actionName: "modifyPolygon",
           });
           return acc;
-        }, {} as { [key: string]: fabric.Control })
+        }, {} as { [key: string]: fabric.Control }),
       };
 
       // Remove old polygon and add new one
@@ -323,8 +365,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
 
       const pol = canvas.getActiveObject() as fabric.Polygon | null;
       if (pol && pol.points) {
-        const updatedPoints = pol.points.map(pt => ({ x: pt.x, y: pt.y }));
-        
+        const updatedPoints = pol.points.map((pt) => ({ x: pt.x, y: pt.y }));
       }
     };
     const handleMouseUp = () => setDragInfo(null);
@@ -359,11 +400,24 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       canvas.renderAll();
     }
     const tryLoadImage = async () => {
+      setIsImageLoading(true); // Start loading indicator
+
       const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
       for (const corsMode of corsOptions) {
         try {
-          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-          AddImageToCanvas(imgElement, fabricCanvasRef, width ?? 0, height ?? 0, backgroundImageRef, onImageLoad);
+          // const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+          // AddImageToCanvas(imgElement, fabricCanvasRef, width ?? 0, height ?? 0, backgroundImageRef, onImageLoad);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
           return;
         } catch {
           console.warn(`Failed to load image with CORS mode: ${corsMode}`);
@@ -373,12 +427,26 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       for (const fetchMode of fetchModes) {
         try {
           const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-          AddImageToCanvas(imgElement, fabricCanvasRef, width ?? 0, height ?? 0, backgroundImageRef, onImageLoad);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
           return;
         } catch {
+          
           console.warn(`Failed to load image with fetch mode: ${fetchMode}`);
         }
       }
+      setIsImageLoading(false);
       toast.error("Failed to load background image.");
       if (onImageLoad) onImageLoad();
     };
@@ -389,7 +457,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-    canvas.getObjects('polygon').forEach(obj => canvas.remove(obj));
+    canvas.getObjects("polygon").forEach((obj) => canvas.remove(obj));
 
     if (
       selectedSegment &&
@@ -400,10 +468,14 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       selectedSegment.short_title
     ) {
       const points: PointModel[] = [];
-      for (let i = 0; i < selectedSegment.annotation_points_float.length; i += 2) {
+      for (
+        let i = 0;
+        i < selectedSegment.annotation_points_float.length;
+        i += 2
+      ) {
         points.push({
           x: selectedSegment.annotation_points_float[i],
-          y: selectedSegment.annotation_points_float[i + 1]
+          y: selectedSegment.annotation_points_float[i + 1],
         });
       }
 
@@ -424,7 +496,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
         cornerStyle: "circle",
         cornerColor: "rgb(255 1 154)",
         cornerSize: 7,
-        cornerStrokeColor: "rgb(7 239 253)"
+        cornerStrokeColor: "rgb(7 239 253)",
       }) as fabric.Polygon;
 
       // Attach per-point controls
@@ -434,11 +506,13 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
           acc[controlKey] = new fabric.Control({
             cursorStyle: "pointer",
             positionHandler: polygonPositionHandler.bind({ pointIndex: index }),
-            actionHandler: anchorWrapper(index, actionHandlers, canvas).bind({ pointIndex: index }),
-            actionName: "modifyPolygon"
+            actionHandler: anchorWrapper(index, actionHandlers, canvas).bind({
+              pointIndex: index,
+            }),
+            actionName: "modifyPolygon",
           });
           return acc;
-        }, {} as { [key: string]: fabric.Control })
+        }, {} as { [key: string]: fabric.Control }),
       };
 
       canvas.add(polygon);
@@ -456,11 +530,11 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
         .filter(
           (obj) =>
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "temp-line" ||
+              "temp-line" ||
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "preview-line" ||
+              "preview-line" ||
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "temp-point"
+              "temp-point"
         );
       tempObjects.forEach((obj) => canvas.remove(obj));
       canvas.renderAll();
@@ -472,10 +546,10 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     if (canvas) {
       const poly = canvas.getActiveObject() as fabric.Polygon | null;
       if (poly && poly.points) {
-        const updatedPoints = poly.points.map(pt => ({ x: pt.x, y: pt.y }));
-        const polygonNumberArray = updatedPoints.flatMap(point => [
+        const updatedPoints = poly.points.map((pt) => ({ x: pt.x, y: pt.y }));
+        const polygonNumberArray = updatedPoints.flatMap((point) => [
           Number(point.x.toFixed(2)),
-          Number(point.y.toFixed(2))
+          Number(point.y.toFixed(2)),
         ]);
         const getMinMax = getMinMaxBBPoint(polygonNumberArray);
 
@@ -497,24 +571,20 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
           created_at: selectedSegment?.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString(),
           group_label_system: selectedSegment?.group_label_system || "",
-
-
         };
         updateSegment(data);
       }
     }
-  }
-
+  };
 
   const updateSegment = async (segData: SegmentModal) => {
     try {
       const response = await dispatch(updateSegmentById(segData)).unwrap();
       dispatch(updateAddSegMessage(" Updating segment details..."));
       if (response && response.success) {
-
         // update into master Array
         dispatch(updateAddSegMessage(null));
-        (handleResetCanvas())
+        handleResetCanvas();
         // update all Segments Array
         dispatch(changeGroupSegment(segData));
         // update master array
@@ -526,14 +596,13 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       console.error("Error updating segment:", error);
       toast.error("Failed to update segment.");
     }
-  }
+  };
   return (
     <TooltipProvider>
       <div className={cn("flex flex-col space-y-4", className)}>
-
         <CommonToolBar
-        title={"Edit Annotation"}
-        onSaveAnnotation={handleSaveAnnotation}
+          title={"Edit Annotation"}
+          onSaveAnnotation={handleSaveAnnotation}
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -542,10 +611,8 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
           className="relative px-4"
         >
           <Card className="overflow-hidden">
-         
             <CardContent className="p-0">
               <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
-
                 <canvas
                   ref={canvasRef}
                   className="border-0 block"

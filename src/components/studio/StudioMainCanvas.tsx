@@ -44,8 +44,8 @@ export function StudioMainCanvas({
   const { currentTabContent } = useSelector((state: RootState) => state.studio);
   const { canvasType } = useSelector((state: RootState) => state.canvas);
 
-  const [canvasWidth, setCanvasWidth] = useState(1100);
-  const [canvasHeight, setCanvasHeight] = useState(645);
+  const [canvasWidth, setCanvasWidth] = useState(1023);
+  const [canvasHeight, setCanvasHeight] = useState(592);
   // // update the canvas image
   useEffect(() => {
     if (canvasType) {
@@ -138,14 +138,15 @@ export function StudioMainCanvas({
                     {(canvasMode == "draw" ||
                       canvasMode == "reannotation" ||
                       canvasMode == "dimension") && (
-                      <CanvasEditor
-                        key={`canvas-editor-${canvasImage}`}
-                        imageUrl={canvasImage}
-                        width={canvasWidth}
-                        height={canvasHeight}
-                        className="mb-6"
-                        onImageLoad={handleImageLoad}
-                      />
+                        <>
+                        
+                        <CanvasEditor
+                          key={`canvas-editor-${canvasImage}`}
+                          imageUrl={canvasImage}
+                          width={canvasWidth}
+                          height={canvasHeight}
+                        />
+                      </>
                     )}
 
                     {canvasMode == "edit" && (
@@ -159,9 +160,11 @@ export function StudioMainCanvas({
                       />
                     )}
 
+                
+
                     {canvasMode == "comment" && (
                       <CommentCanvas
-                        key={`canvas-editor-${canvasImage}`}
+                        key={`canvas-comment-${canvasImage}`}
                         imageUrl={canvasImage}
                         width={canvasWidth}
                         height={canvasHeight}

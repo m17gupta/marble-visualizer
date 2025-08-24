@@ -1,501 +1,581 @@
-import { AppDispatch, RootState } from '@/redux/store';
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from "@/redux/store";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
-import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from '../canvasUtil/canvasImageUtils';
-import { toast } from 'sonner';
-import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
 import {
-   
-    TooltipProvider,
-    
-} from "@/components/ui/tooltip";
+  LoadImageWithCORS,
+  LoadImageWithFetch,
+  setBackgroundImage,
+} from "../canvasUtil/canvasImageUtils";
+import { toast } from "sonner";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
-import { collectPoints } from '../canvasUtil/CreatePolygon';
+import { collectPoints } from "../canvasUtil/CreatePolygon";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from '../ui/card';
-import { setCanvasReady, setZoom } from '@/redux/slices/canvasSlice';
-import { handlePolygonVisibilityOnMouseMove, HideAllSegments } from '../canvasUtil/HoverSegment';
-import { SelectedAnimation } from '../canvasUtil/SelectedAnimation';
-import { ZoomCanvasMouse } from '../canvasUtil/ZoomCanvas';
-
+import { Card, CardContent } from "../ui/card";
+import {
+  setCanvasReady,
+  setIsResetZoom,
+  setZoom,
+} from "@/redux/slices/canvasSlice";
+import {
+  handlePolygonVisibilityOnMouseMove,
+  HideAllSegments,
+} from "../canvasUtil/HoverSegment";
+import { SelectedAnimation } from "../canvasUtil/SelectedAnimation";
+import { ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 
 type NamedFabricObject = fabric.Object & { name?: string };
 
 interface CanvasHoverLayerProps {
-    imageUrl?: string;
-    width?: number;
-    height?: number;
-    className?: string;
-    onImageLoad?: () => void;
+  imageUrl?: string;
+  width: number;
+  height: number;
+  className?: string;
+  onImageLoad?: () => void;
 }
 const PolygonOverlay = ({
-    imageUrl,
-    width = 800,
-    height = 600,
-    className,
-    onImageLoad,
+  imageUrl,
+  width,
+  height,
+  className,
+  onImageLoad,
 }: CanvasHoverLayerProps) => {
-    const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
 
+  const { isCanvasReady } = useSelector((state: RootState) => state.canvas);
+  const { allSegments: allSegmentArray } = useSelector(
+    (state: RootState) => state.segments
+  );
 
-    const {
-        isCanvasReady
-    } = useSelector((state: RootState) => state.canvas);
-    const { allSegments: allSegmentArray } = useSelector((state: RootState) => state.segments);
+  const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const backgroundImageRef = useRef<fabric.Image | null>(null);
+  const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
+  const { segments } = useSelector(
+    (state: RootState) => state.materialSegments
+  );
+  const [imageWidth, setImageWidth] = useState<number>(0);
+  const [imageHeight, setImageHeight] = useState<number>(0);
+  const [updateSelectedSegment, setUpdateSelectedSegment] =
+    useState<SegmentModal | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
+  const { selectedSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
+  const { isResetZoom } = useSelector((state: RootState) => state.canvas);
 
+  // upate all segmnet Array
+  useEffect(() => {
+    if (allSegmentArray && allSegmentArray.length > 0) {
+      setAllSegArray(allSegmentArray);
+    } else {
+      setAllSegArray([]);
+    }
+  }, [allSegmentArray]);
 
-    const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
-    const backgroundImageRef = useRef<fabric.Image | null>(null)
-    const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
-    const { segments } = useSelector((state: RootState) => state.materialSegments);
-    const [imageWidth, setImageWidth] = useState<number>(0);
-    const [imageHeight, setImageHeight] = useState<number>(0);
-    const [updateSelectedSegment, setUpdateSelectedSegment] = useState<SegmentModal | null>(null);
-    const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
+  // Update selected segment
+  useEffect(() => {
+    if (selectedSegment) {
+      setUpdateSelectedSegment(selectedSegment);
+    } else {
+      setUpdateSelectedSegment(null);
+    }
+  }, [selectedSegment]);
 
+  const handleMouseMove = useCallback((event: fabric.TEvent) => {
+    if (!fabricCanvasRef.current) return;
+    const canvas = fabricCanvasRef.current;
+    console.log("canvas", canvas.getObjects());
+    const fabricEvent = event as unknown as { target?: NamedFabricObject };
+    const target = fabricEvent.target;
+    console.log("target", target?.name);
+    if (target !== undefined) {
+      const targetName = target.name;
+      if (targetName) {
+        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+      }
+    } else {
+      HideAllSegments(fabricCanvasRef);
+    }
+  }, []);
 
-    // upate all segmnet Array
-    useEffect(() => {
-        if (allSegmentArray && allSegmentArray.length > 0) {
-            setAllSegArray(allSegmentArray);
-        } else {
-            setAllSegArray([]);
-        }
-    }, [allSegmentArray]);
+  // Initialize Fabric.js canvas
+  useEffect(() => {
+    if (!canvasRef.current || fabricCanvasRef.current) return;
 
-    // Update selected segment
-    useEffect(() => {
-        if (selectedSegment) {
-            setUpdateSelectedSegment(selectedSegment);
-        } else {
-            setUpdateSelectedSegment(null);
-        }
-    }, [selectedSegment]);
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width,
+      height,
+      selection: true,
+      preserveObjectStacking: true,
+      backgroundColor: "#282828",
+    });
 
-    const handleMouseMove = useCallback(
-        (event: fabric.TEvent) => {
-            if (!fabricCanvasRef.current) return;
-            const canvas = fabricCanvasRef.current;
-            console.log("canvas", canvas.getObjects());
-            const fabricEvent = event as unknown as { target?: NamedFabricObject };
-            const target = fabricEvent.target;
-            console.log("target", target?.name);
-            if (target !== undefined) {
-                const targetName = target.name;
-                if (targetName) {
-                    handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
-                }
-            } else {
-                HideAllSegments(fabricCanvasRef);
-            }
-        },
-        []
-    );
+    fabricCanvasRef.current = canvas;
 
-    // Initialize Fabric.js canvas
-    useEffect(() => {
-        if (!canvasRef.current || fabricCanvasRef.current) return;
+    // Store the original viewport transform
+    originalViewportTransform.current = canvas.viewportTransform
+      ? ([...canvas.viewportTransform] as fabric.TMat2D)
+      : null;
 
-        const canvas = new fabric.Canvas(canvasRef.current, {
-            width,
-            height,
-            selection: true,
-            preserveObjectStacking: true,
-            backgroundColor: "#282828",
-        });
+    // Canvas event handlers
+    // canvas.on("mouse:down", handleMouseDown);
+    canvas.on("mouse:move", (event) => {
+      handleMouseMove(event);
+    });
+    // canvas.on("mouse:dblclick", handleDoubleClick);
 
-        fabricCanvasRef.current = canvas;
+    // canvas.on("selection:cleared", () => {
 
-        // Store the original viewport transform
-        originalViewportTransform.current = canvas.viewportTransform
-            ? ([...canvas.viewportTransform] as fabric.TMat2D)
-            : null;
+    // });
 
-        // Canvas event handlers
-        // canvas.on("mouse:down", handleMouseDown);
-        canvas.on("mouse:move", (event) => {
-            handleMouseMove(event);
-        });
-        // canvas.on("mouse:dblclick", handleDoubleClick);
+    canvas.on("mouse:wheel", (event) => {
+      handleMouseWheel(event);
+      dispatch(setZoom(canvas.getZoom()));
+    });
 
-        // canvas.on("selection:cleared", () => {
+    // Keyboard shortcuts
+    // const handleKeyDown = (e: KeyboardEvent) => {
+    //     if (e.ctrlKey || e.metaKey) {
+    //         switch (
+    //         e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
+    //         ) {
+    //             case "c":
+    //                 e.preventDefault();
+    //                 if (activeSegment) {
+    //                    // dispatch(copySegment(activeSegmentId));
+    //                    // toast.success('Segment copied');
+    //                 }
+    //                 break;
+    //             case "v":
+    //                 e.preventDefault();
+    //                 // if (copiedSegment) {
+    //                 //   // dispatch(pasteSegment());
+    //                 //   // toast.success('Segment pasted');
+    //                 // }
+    //                 break;
+    //             case "z":
+    //                 e.preventDefault();
+    //                 if (e.shiftKey) {
+    //                     handleRedo();
+    //                 } else {
+    //                     handleUndo();
+    //                 }
+    //                 break;
+    //         }
+    //     } else {
+    //         switch (e.key) {
+    //             case "Delete":
+    //             case "Backspace":
+    //                 if (activeSegment) {
+    //                     handleDeleteSelected();
+    //                 }
+    //                 break;
+    //             case "Escape":
+    //                 if (isPolygonMode.current) {
+    //                     // Fixed: Use isPolygonMode.current instead of isPolygonMode
+    //                     handleCancelDrawing();
+    //                 }
+    //                 break;
+    //         }
+    //     }
+    // };
 
-        // });
+    //document.addEventListener("keydown", handleKeyDown);
 
-        canvas.on("mouse:wheel", (event) => {
-            handleMouseWheel(event);
-            dispatch(setZoom(canvas.getZoom()));
-        });
+    dispatch(setCanvasReady(true));
 
+    return () => {
+      // document.removeEventListener("keydown", handleKeyDown);
 
-        // Keyboard shortcuts
-        // const handleKeyDown = (e: KeyboardEvent) => {
-        //     if (e.ctrlKey || e.metaKey) {
-        //         switch (
-        //         e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
-        //         ) {
-        //             case "c":
-        //                 e.preventDefault();
-        //                 if (activeSegment) {
-        //                    // dispatch(copySegment(activeSegmentId));
-        //                    // toast.success('Segment copied');
-        //                 }
-        //                 break;
-        //             case "v":
-        //                 e.preventDefault();
-        //                 // if (copiedSegment) {
-        //                 //   // dispatch(pasteSegment());
-        //                 //   // toast.success('Segment pasted');
-        //                 // }
-        //                 break;
-        //             case "z":
-        //                 e.preventDefault();
-        //                 if (e.shiftKey) {
-        //                     handleRedo();
-        //                 } else {
-        //                     handleUndo();
-        //                 }
-        //                 break;
-        //         }
-        //     } else {
-        //         switch (e.key) {
-        //             case "Delete":
-        //             case "Backspace":
-        //                 if (activeSegment) {
-        //                     handleDeleteSelected();
-        //                 }
-        //                 break;
-        //             case "Escape":
-        //                 if (isPolygonMode.current) {
-        //                     // Fixed: Use isPolygonMode.current instead of isPolygonMode
-        //                     handleCancelDrawing();
-        //                 }
-        //                 break;
-        //         }
-        //     }
-        // };
+      // Clean up auto-panning
+      // cleanupAutoPan(autoPanIntervalRef, setIsAutoPanning);
 
-        //document.addEventListener("keydown", handleKeyDown);
+      canvas.dispose();
+      fabricCanvasRef.current = null;
+      backgroundImageRef.current = null;
+      dispatch(setCanvasReady(false));
+    };
+  }, [width, height, dispatch, handleMouseMove]);
 
-        dispatch(setCanvasReady(true));
+  const handleMouseWheel = (event: fabric.TEvent) => {
+    // Cast the event to WheelEvent to access deltaY
+    const deltaE = event.e as WheelEvent;
+    const pointer = fabricCanvasRef.current?.getPointer(event.e);
 
-        return () => {
-            // document.removeEventListener("keydown", handleKeyDown);
+    // Make sure we have all required objects
+    if (deltaE && fabricCanvasRef.current && pointer) {
+      // Prevent default browser behavior
+      event.e.stopPropagation();
+      event.e.preventDefault();
 
-            // Clean up auto-panning
-            // cleanupAutoPan(autoPanIntervalRef, setIsAutoPanning);
+      const delta = deltaE.deltaY;
+      let zoom = fabricCanvasRef.current.getZoom();
 
-            canvas.dispose();
-            fabricCanvasRef.current = null;
-            backgroundImageRef.current = null;
-            dispatch(setCanvasReady(false));
-        };
+      zoom *= 0.999 ** delta;
+      if (zoom > 20) zoom = 20; // Set maximum zoom level
+      if (zoom < 1) zoom = 1; // Set minimum zoom level
 
-    }, [width, height, dispatch, handleMouseMove]);
+      // Optional: Draw reference lines for better visual feedback
+      //drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
 
-      const handleMouseWheel = (event: fabric.TEvent) => {
-        // Cast the event to WheelEvent to access deltaY
-        const deltaE = event.e as WheelEvent;
-        const pointer = fabricCanvasRef.current?.getPointer(event.e);
-    
-        // Make sure we have all required objects
-        if (deltaE && fabricCanvasRef.current && pointer) {
-          // Prevent default browser behavior
-          event.e.stopPropagation();
-          event.e.preventDefault();
-    
-          const delta = deltaE.deltaY;
-          let zoom = fabricCanvasRef.current.getZoom();
-    
-          zoom *= 0.999 ** delta;
-          if (zoom > 20) zoom = 20; // Set maximum zoom level
-          if (zoom < 1) zoom = 1;   // Set minimum zoom level
-    
-          // Optional: Draw reference lines for better visual feedback
-          //drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
-    
-          // Always zoom towards mouse position, regardless of zoom boundaries or mode
-          ZoomCanvasMouse(fabricCanvasRef, zoom, { x: Math.round(pointer.x), y: Math.round(pointer.y) });
-          event.e.stopPropagation();
-          event.e.preventDefault();
-    
-          // Update the zoom state
-          dispatch(setZoom(zoom));
-        }
-      };
+      // Always zoom towards mouse position, regardless of zoom boundaries or mode
+      ZoomCanvasMouse(fabricCanvasRef, zoom, {
+        x: Math.round(pointer.x),
+        y: Math.round(pointer.y),
+      });
+      event.e.stopPropagation();
+      event.e.preventDefault();
 
-    // Load background image with comprehensive CORS and fallback handling
-    useEffect(() => {
-        if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-            return;
-        }
+      // Update the zoom state
+      dispatch(setZoom(zoom));
+    }
+  };
 
-        const canvas = fabricCanvasRef.current;
+  // Load background image with comprehensive CORS and fallback handling
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+      return;
+    }
 
-        // Remove existing background image (ensure full cleanup)
-        if (backgroundImageRef.current) {
-            canvas.remove(backgroundImageRef.current);
-            backgroundImageRef.current = null;
-            canvas.discardActiveObject();
-            canvas.renderAll();
-        }
+    const canvas = fabricCanvasRef.current;
 
-        const tryLoadImage = async () => {
-            // Strategy 1: Try different CORS modes
-            const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
-            for (const corsMode of corsOptions) {
-                try {
-                    const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-                    setImageWidth(imgElement.width);
-                    setImageHeight(imgElement.height);
-                    AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
-                    return;
-                } catch (error) {
-                    console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
-                }
-            }
+    //Remove existing background image (ensure full cleanup)
+    if (backgroundImageRef.current) {
+      canvas.remove(backgroundImageRef.current);
+      backgroundImageRef.current = null;
+      canvas.discardActiveObject();
+      canvas.renderAll();
+    }
 
+    const tryLoadImage = async () => {
+      setIsImageLoading(true); // Start loading indicator
 
-            // Strategy 2: Try different fetch modes
-            const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
-            for (const fetchMode of fetchModes) {
-                try {
-                    const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-                    setImageWidth(imgElement.width);
-                    setImageHeight(imgElement.height);
-                    AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
-                    return;
-                } catch (error) {
-                    console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
-                }
-            }
-
-            // All strategies failed
-            console.error("All image loading strategies failed for URL:", imageUrl);
-            const errorMessage = imageUrl.includes("s3.")
-                ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
-                : "Failed to load background image. The image server may not allow cross-origin requests.";
-
-            toast.error(errorMessage, {
-                duration: 6000,
-                description: "Check browser console for detailed error information.",
-            });
-
-            if (onImageLoad) {
+      // Strategy 1: Try different CORS modes
+      const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+      for (const corsMode of corsOptions) {
+        try {
+          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
                 onImageLoad();
+              }
             }
-        };
-
-        tryLoadImage();
-    }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
-
-
-
-
-    useEffect(() => {
-        const canvas = fabricCanvasRef.current;
-        if (!canvas) {
-            console.warn("[PolygonOverlay] No canvas instance available.");
-            return;
-        }
-        if (allSegArray.length === 0) {
-            console.warn("[PolygonOverlay] allSegArray is empty.");
-            return;
-        }
-        if (imageHeight === 0 || imageWidth === 0) {
-            console.warn(`[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`);
-            return;
-        }
-        if (!backgroundImageRef.current) {
-            console.warn("[PolygonOverlay] Background image not loaded yet.");
-            return;
-        }
-
-        // Remove previous polygons and groups (but not the background image)
-        const objectsToRemove = canvas.getObjects().filter(obj =>
-            obj.type === 'polygon' || (obj.type === 'group' && (obj as NamedFabricObject).name !== 'backgroundImage')
-        );
-        objectsToRemove.forEach(obj => canvas.remove(obj));
-
-        allSegArray.forEach((seg, idx) => {
-            const { segment_type, group_label_system, short_title, annotation_points_float, segment_bb_float } = seg;
-            const segColor = (segments.find((s: { name: string; color_code: string }) => s.name === segment_type)?.color_code) || "#FF1493";
-            const isFill = true;
-            if (!annotation_points_float || annotation_points_float.length === 0) {
-                console.warn(`[PolygonOverlay] Segment ${idx} missing annotation_points_float`, seg);
-                return;
-            }
-            if (!segment_bb_float || segment_bb_float.length === 0) {
-                console.warn(`[PolygonOverlay] Segment ${idx} missing segment_bb_float`, seg);
-                return;
-            }
-            if (!group_label_system) {
-                console.warn(`[PolygonOverlay] Segment ${idx} missing group_label_system`, seg);
-                return;
-            }
-            if (!short_title) {
-                console.warn(`[PolygonOverlay] Segment ${idx} missing short_title`, seg);
-                return;
-            }
-            if (!segment_type) {
-                console.warn(`[PolygonOverlay] Segment ${idx} missing segment_type`, seg);
-                return;
-            }
-            if (!segColor) {
-                console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
-                return;
-            }
-            if (!fabricCanvasRef.current) {
-                console.warn(`[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`);
-                return;
-            }
-
-
-            collectPoints(
-                annotation_points_float,
-                short_title,
-                segment_bb_float,
-                segment_type,
-                group_label_system,
-                segColor,
-                fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-                isFill,
-                height,
-                width,
-            );
-        });
-
-    
-        // Ensure proper z-index order: background image at back, polygons on top
-        if (backgroundImageRef.current) {
-            canvas.sendObjectToBack(backgroundImageRef.current);
-        }
-
-        canvas.renderAll();
-    }, [allSegArray, segments, fabricCanvasRef, height, width, imageHeight, imageWidth])
-
-    // Debug function to check canvas state
-    useEffect(() => {
-        if (!fabricCanvasRef.current) return;
-
-        const canvas = fabricCanvasRef.current;
-        const objects = canvas.getObjects();
-
-        objects.forEach((obj, index) => {
-            const namedObj = obj as NamedFabricObject;
-            console.log(`[PolygonOverlay Debug] Object ${index}: type=${obj.type}, name=${namedObj.name}, visible=${obj.visible}`);
-        });
-    }, [allSegArray, imageWidth, imageHeight, width, height]);
-
-
-    // hover on group segment
-    const { hoverGroup } = useSelector((state: RootState) => state.canvas);
-    useEffect(() => {
-        if (!fabricCanvasRef.current) return;
-        if (hoverGroup == null) {
-            HideAllSegments(fabricCanvasRef);
-        } else if (hoverGroup.length > 0) {
-            hoverGroup.forEach((groupName) => {
-                handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
-            })
-        }
-    }, [hoverGroup, fabricCanvasRef]);
-
-    // update Animation on selected segment  
-    useEffect(() => {
-        if (!fabricCanvasRef.current || !updateSelectedSegment) return;
-
-        const canvas = fabricCanvasRef.current;
-        const segName = updateSelectedSegment.short_title;
-        const annotatonPoints = updateSelectedSegment.annotation_points_float;
-        const color = segments.find((s: { name: string; color_code: string }) => s.name === updateSelectedSegment.segment_type)?.color_code || "#FE0056";
-        if (!annotatonPoints || annotatonPoints.length === 0 || !segName || !color) return;
-        // Remove existing selected animation
-        const allObjects = canvas.getObjects();
-        allObjects.forEach((item) => {
-            const namedItem = item as NamedFabricObject;
-            if (item instanceof fabric.Polygon && namedItem.name === `SelectedPolygon`) {
-                canvas.remove(item);
-            }
-        });
-
-        // Add new selected animation
-        SelectedAnimation(fabricCanvasRef, annotatonPoints, segName, color);
-    }, [updateSelectedSegment, segments, fabricCanvasRef]);
-
-      const handleResetCanvas = () => {
-        if (fabricCanvasRef.current && originalViewportTransform.current) {
-          // Reset to original viewport transform
-          fabricCanvasRef.current.setViewportTransform(
-            originalViewportTransform.current
           );
-          fabricCanvasRef.current.setZoom(1);
-          fabricCanvasRef.current.requestRenderAll();
-          dispatch(setZoom(1));
-          toast.success("Canvas reset to original state");
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
         }
-      };
+      }
 
-    return (
-        <>
-            <TooltipProvider>
-                <div className={cn("flex flex-col space-y-4 mt-4", className)}>
-                  
+      // Strategy 2: Try different fetch modes
+      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+      for (const fetchMode of fetchModes) {
+        try {
+          const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+          setImageWidth(imgElement.width);
+          setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+        }
+      }
 
-                    {/* Canvas Container */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="relative px-4"
-                    >
-                        <Card className="overflow-hidden">
-                            <CardContent className="p-0"
+      // All strategies failed
+      setIsImageLoading(false); // Stop loading indicator on failure
+      console.error("All image loading strategies failed for URL:", imageUrl);
+      const errorMessage = imageUrl.includes("s3.")
+        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+        : "Failed to load background image. The image server may not allow cross-origin requests.";
 
-                            >
-                                {/* min-h-[720px] min-w-[1280px]" */}
-                                <div
-                                    className="relative bg-gray-50 flex items-center justify-center min-h-[600px]  min-w-[800px]"
+      toast.error(errorMessage, {
+        duration: 6000,
+        description: "Check browser console for detailed error information.",
+      });
 
-                                >
-                                    <canvas
-                                        ref={canvasRef}
-                                        className="border-0 block mx-auto"
+      if (onImageLoad) {
+        onImageLoad();
+      }
+    };
 
-                                        style={{ maxWidth: "100%", height: "auto", }}
-                                    />
+    tryLoadImage();
+  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) {
+      console.warn("[PolygonOverlay] No canvas instance available.");
+      return;
+    }
+    if (allSegArray.length === 0) {
+      console.warn("[PolygonOverlay] allSegArray is empty.");
+      return;
+    }
+    if (imageHeight === 0 || imageWidth === 0) {
+      console.warn(
+        `[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`
+      );
+      return;
+    }
+    if (!backgroundImageRef.current) {
+      console.warn("[PolygonOverlay] Background image not loaded yet.");
+      return;
+    }
 
+    // Remove previous polygons and groups (but not the background image)
+    const objectsToRemove = canvas
+      .getObjects()
+      .filter(
+        (obj) =>
+          obj.type === "polygon" ||
+          (obj.type === "group" &&
+            (obj as NamedFabricObject).name !== "backgroundImage")
+      );
+    objectsToRemove.forEach((obj) => canvas.remove(obj));
 
-                                    {/* Canvas Status */}
-                                    {!isCanvasReady && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
-                                            <div className="text-center">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Initializing canvas...
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
+    allSegArray.forEach((seg, idx) => {
+      const {
+        segment_type,
+        group_label_system,
+        short_title,
+        annotation_points_float,
+        segment_bb_float,
+      } = seg;
+      const segColor =
+        segments.find(
+          (s: { name: string; color_code: string }) => s.name === segment_type
+        )?.color_code || "#FF1493";
+      const isFill = true;
+      if (!annotation_points_float || annotation_points_float.length === 0) {
+        console.warn(
+          `[PolygonOverlay] Segment ${idx} missing annotation_points_float`,
+          seg
+        );
+        return;
+      }
+      if (!segment_bb_float || segment_bb_float.length === 0) {
+        console.warn(
+          `[PolygonOverlay] Segment ${idx} missing segment_bb_float`,
+          seg
+        );
+        return;
+      }
+      if (!group_label_system) {
+        console.warn(
+          `[PolygonOverlay] Segment ${idx} missing group_label_system`,
+          seg
+        );
+        return;
+      }
+      if (!short_title) {
+        console.warn(
+          `[PolygonOverlay] Segment ${idx} missing short_title`,
+          seg
+        );
+        return;
+      }
+      if (!segment_type) {
+        console.warn(
+          `[PolygonOverlay] Segment ${idx} missing segment_type`,
+          seg
+        );
+        return;
+      }
+      if (!segColor) {
+        console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
+        return;
+      }
+      if (!fabricCanvasRef.current) {
+        console.warn(
+          `[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`
+        );
+        return;
+      }
 
-                                    {/* Hover Material Info */}
-                                    <AnimatePresence>
+      collectPoints(
+        annotation_points_float,
+        short_title,
+        segment_bb_float,
+        segment_type,
+        group_label_system,
+        segColor,
+        fabricCanvasRef, // Pass the actual Canvas instance, not the ref
+        isFill,
+        height,
+        width
+      );
+    });
 
-                                    </AnimatePresence>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
+    // Ensure proper z-index order: background image at back, polygons on top
+    if (backgroundImageRef.current) {
+      canvas.sendObjectToBack(backgroundImageRef.current);
+    }
 
+    canvas.renderAll();
+  }, [
+    allSegArray,
+    segments,
+    fabricCanvasRef,
+    height,
+    width,
+    imageHeight,
+    imageWidth,
+  ]);
 
+  // Debug function to check canvas state
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+
+    const canvas = fabricCanvasRef.current;
+    const objects = canvas.getObjects();
+
+    objects.forEach((obj, index) => {
+      const namedObj = obj as NamedFabricObject;
+      console.log(
+        `[PolygonOverlay Debug] Object ${index}: type=${obj.type}, name=${namedObj.name}, visible=${obj.visible}`
+      );
+    });
+  }, [allSegArray, imageWidth, imageHeight, width, height]);
+
+  // hover on group segment
+  const { hoverGroup } = useSelector((state: RootState) => state.canvas);
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+    if (hoverGroup == null) {
+      HideAllSegments(fabricCanvasRef);
+    } else if (hoverGroup.length > 0) {
+      hoverGroup.forEach((groupName) => {
+        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
+      });
+    }
+  }, [hoverGroup, fabricCanvasRef]);
+
+  // update Animation on selected segment
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !updateSelectedSegment) return;
+
+    const canvas = fabricCanvasRef.current;
+    const segName = updateSelectedSegment.short_title;
+    const annotatonPoints = updateSelectedSegment.annotation_points_float;
+    const color =
+      segments.find(
+        (s: { name: string; color_code: string }) =>
+          s.name === updateSelectedSegment.segment_type
+      )?.color_code || "#FE0056";
+    if (!annotatonPoints || annotatonPoints.length === 0 || !segName || !color)
+      return;
+    // Remove existing selected animation
+    const allObjects = canvas.getObjects();
+    allObjects.forEach((item) => {
+      const namedItem = item as NamedFabricObject;
+      if (
+        item instanceof fabric.Polygon &&
+        namedItem.name === `SelectedPolygon`
+      ) {
+        canvas.remove(item);
+      }
+    });
+
+    // Add new selected animation
+    SelectedAnimation(fabricCanvasRef, annotatonPoints, segName, color);
+  }, [updateSelectedSegment, segments, fabricCanvasRef]);
+
+  useEffect(() => {
+    if (isResetZoom) {
+      dispatch(setIsResetZoom(false));
+      handleResetCanvas();
+    }
+  }, [isResetZoom]);
+
+  const handleResetCanvas = () => {
+    if (fabricCanvasRef.current && originalViewportTransform.current) {
+      // Reset to original viewport transform
+      fabricCanvasRef.current.setViewportTransform(
+        originalViewportTransform.current
+      );
+      fabricCanvasRef.current.setZoom(1);
+      fabricCanvasRef.current.requestRenderAll();
+      dispatch(setZoom(1));
+      toast.success("Canvas reset to original state");
+    }
+  };
+
+  return (
+    <>
+      <TooltipProvider>
+        <div className={cn("flex flex-col space-y-4 mt-4", className)}>
+          {/* Canvas Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative px-4"
+          >
+            <Card className="overflow-hidden">
+              <CardContent className="p-0">
+                {/* min-h-[720px] min-w-[1280px]" */}
+                <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px]  min-w-[800px]">
+                  <canvas
+                    ref={canvasRef}
+                    className="border-0 block mx-auto"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+
+                  {/* Image Loading Overlay */}
+                  {isImageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80 z-10">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                        <p className="text-sm text-muted-foreground">
+                          Loading background image...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Canvas Status */}
+                  {!isCanvasReady && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                        <p className="text-sm text-muted-foreground">
+                          Initializing canvas...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hover Material Info */}
+                  <AnimatePresence></AnimatePresence>
                 </div>
-            </TooltipProvider>
-        </>
-    )
-}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </TooltipProvider>
+    </>
+  );
+};
 
-export default PolygonOverlay
+export default PolygonOverlay;

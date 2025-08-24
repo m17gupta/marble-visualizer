@@ -1,6 +1,7 @@
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { set } from "date-fns";
+
 // Define the types for canvas state
 export type ZoomMode = "mouse";
 
@@ -21,7 +22,16 @@ export type CanvasMode =
   | "measurement"
   | "test-canvas";
 
-// Define the state interface
+
+  export type activeCanvasType = 
+    |"hideSegments"
+    |"showSegments"
+    |"outline"
+    |"compare"
+    |"zoom"
+
+  
+  // Define the state interface
 interface CanvasState {
   currentZoom: number;
 
@@ -39,7 +49,8 @@ interface CanvasState {
   hoverGroup: string[] | null;
   isScreenshotTaken: boolean;
   screenShotUrl: string | null;
-  isResetZoom: boolean; // Flag to indicate if the canvas has been reset
+  isResetZoom: boolean;
+  activeCanvas: string;
 }
 
 // Initial state
@@ -60,6 +71,7 @@ const initialState: CanvasState = {
   isScreenshotTaken: false, // Flag to indicate if a screenshot has been taken
   screenShotUrl: null, // URL of the screenshot if taken
   isResetZoom: false, // Flag to indicate if the canvas has been reset
+  activeCanvas: "hideSegments"
 };
 
 // Create the canvas slice
@@ -143,6 +155,9 @@ const canvasSlice = createSlice({
     updateScreenShotUrl: (state, action: PayloadAction<string | null>) => {
       state.screenShotUrl = action.payload; // Update the screenshot URL
     },
+    setActiveTab(state, action: PayloadAction<string>) {
+      state.activeCanvas = action.payload;
+    },
 
     // Reset canvas state to initial values
     resetCanvas(state) {
@@ -154,7 +169,7 @@ const canvasSlice = createSlice({
       state.canvasType = "hover";
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
-      // Zoom mode is not reset as it's a user preference
+      state.activeCanvas = "hideSegments";
     },
    setIsResetZoom: (state, action: PayloadAction<boolean>) => {
       state.isResetZoom = action.payload; // Update the reset zoom flag 
@@ -182,7 +197,7 @@ export const {
   updateIsGenerateMask,
   updateIsScreenShotTaken,
   updateScreenShotUrl,
-  setIsResetZoom
+  setIsResetZoom,setActiveTab
 } = canvasSlice.actions;
 
 // Export reducer
