@@ -17,7 +17,7 @@ import LayerContent from "./tabContent/LayerContent";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
-import { setCanvasType } from "@/redux/slices/canvasSlice";
+import { setCanvasReady, setCanvasType } from "@/redux/slices/canvasSlice";
 import StudioStyleTabs from "./StudioStyleTabs";
 
 const StudioMainTabs = () => {
@@ -31,6 +31,7 @@ const StudioMainTabs = () => {
   };
 
   const handleDesignHubClick = () => {
+    dispatch(setCanvasReady(false))
   dispatch(setCanvasType("hover"))
     dispatch(updateActiveTab("design-hub"));
     dispatch(setCurrentTabContent("home"));
@@ -40,22 +41,26 @@ const StudioMainTabs = () => {
 
   const handleInspirationClick = () => {
     // setActiveTab("inspiration");
+     dispatch(setCanvasReady(false))
     dispatch(setCurrentTabContent("home"));
     dispatch(updateActiveTab("inspiration"));
   };
 
   const handleMeasurementClick = () => {
     // setActiveTab("measurement");
+     dispatch(setCanvasReady(false))
     dispatch(setCanvasType("hover-default")); // Set canvas type to hover-default when Measurement tab is clicked
     dispatch(updateActiveTab("measurement"));
   };
 
   const handleLayersClick = () => {
+     dispatch(setCanvasReady(false))
     dispatch(updateActiveTab("layers"));
     dispatch(setCanvasType("test-canvas")); // Set canvas type to test-canvas when Layers tab is clicked
   };
 
   const handleCommentsClick = () => {
+     dispatch(setCanvasReady(false))
       dispatch(updateActiveTab("comments"));
   
     dispatch(setCanvasType("comment")); // Set canvas type to comment when Comments tab is clicked
