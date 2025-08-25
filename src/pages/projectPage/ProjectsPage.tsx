@@ -78,7 +78,7 @@ export function ProjectsPage() {
     error,
     isUpdating,
   } = useSelector((state: RootState) => state.projects);
-  const { user } = useSelector((state: RootState) => state.auth);
+   const { user } = useSelector((state: RootState) => state.auth);
   const { isCreateDialogOpen } = useSelector(
     (state: RootState) => state.projects
   );
@@ -262,6 +262,7 @@ export function ProjectsPage() {
   }
 
    const handleDeleteProject = async (project: ProjectModel) => {
+    dispatch(setIsDeleteModalOpen(true));
       if (!project.id) return;
   
       try {

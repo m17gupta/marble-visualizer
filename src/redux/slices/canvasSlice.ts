@@ -20,8 +20,11 @@ export type CanvasMode =
   | "dimension"
   | "hover-default"
   | "measurement"
-  | "test-canvas";
-
+  | "test-canvas"
+  | "outline"
+  | "compare"
+  | "zoom"
+  |"showSegments"
 
   export type activeCanvasType = 
     |"hideSegments"
@@ -66,7 +69,7 @@ const initialState: CanvasState = {
   canavasActiveTool: "",
   isCanvasModalOpen: false,
   masks: [],
-  canvasType: "hover", // Default canvas type
+  canvasType: "hover-default", // Default canvas type
   deleteMaskId: null, // Initialize as null
   isGenerateMask: false,
   hoverGroup: null,
@@ -170,7 +173,7 @@ const canvasSlice = createSlice({
       state.isBusy = false;
       state.error = null;
       state.masks = [];
-      state.canvasType = "hover";
+      state.canvasType = "hover-default";
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       state.activeCanvas = "hideSegments";

@@ -162,6 +162,7 @@ export function StudioPage() {
     dispatch(resetWorkspace())
     dispatch(resetGenAiState());
     dispatch(resetJobCommentsState());
+
     dispatch(setCurrentTabContent("home"));
 
     navigate("/projects");
@@ -204,9 +205,9 @@ export function StudioPage() {
 
         {/* Main Canvas */}
 
-        {activeTabFromStore === "inspiration" ? (
+        {/* {activeTabFromStore === "inspiration" ? (
           <WorkSpaceHome />
-        ) : (
+        ) : ( */}
           <>
             {/* other thaninspiration tab content */}
             <StudioMainCanvas
@@ -218,7 +219,7 @@ export function StudioPage() {
             onClearImage={() => dispatch(clearCurrentImage())}
           />
           </>
-        )}
+        {/* )} */}
 
         <SwatchBookDataHome />
 
