@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as fabric from "fabric";
 import { setCanvasReady } from '@/redux/slices/canvasSlice';
 import { toast } from 'sonner';
-import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch } from '@/components/canvasUtil/canvasImageUtils';
+import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch, setBackgroundImage } from '@/components/canvasUtil/canvasImageUtils';
 import { collectPoints } from '@/components/canvasUtil/CreatePolygon';
 import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
 import { handlePolygonVisibilityOnMouseMove, HideAllSegments } from '@/components/canvasUtil/HoverSegment';
@@ -47,7 +47,7 @@ const CommentCanvas = ({ imageUrl, width = 800, height = 600, className, onImage
     } = useSelector((state: RootState) => state.canvas);
     const { allSegments: allSegmentArray } = useSelector((state: RootState) => state.segments);
 
-
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
 
     // upate all segmnet Array
     useEffect(() => {
@@ -94,69 +94,91 @@ const CommentCanvas = ({ imageUrl, width = 800, height = 600, className, onImage
     }, [width, height, dispatch]);
 
     // Load background image with comprehensive CORS and fallback handling
-    useEffect(() => {
-        if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-            return;
-        }
+ useEffect(() => {
+    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+      return;
+    }
 
-        const canvas = fabricCanvasRef.current;
+    const canvas = fabricCanvasRef.current;
 
-        // Remove existing background image (ensure full cleanup)
-        if (backgroundImageRef.current) {
-            canvas.remove(backgroundImageRef.current);
-            backgroundImageRef.current = null;
-            canvas.discardActiveObject();
-            canvas.renderAll();
-        }
+    //Remove existing background image (ensure full cleanup)
+    if (backgroundImageRef.current) {
+      canvas.remove(backgroundImageRef.current);
+      backgroundImageRef.current = null;
+      canvas.discardActiveObject();
+      canvas.renderAll();
+    }
 
-        const tryLoadImage = async () => {
-            // Strategy 1: Try different CORS modes
-            const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
-            for (const corsMode of corsOptions) {
-                try {
-                    const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-                    setImageWidth(imgElement.width);
-                    setImageHeight(imgElement.height);
-                    AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
-                    return;
-                } catch (error) {
-                    console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
-                }
-            }
+    const tryLoadImage = async () => {
+      setIsImageLoading(true); // Start loading indicator
 
-
-            // Strategy 2: Try different fetch modes
-            const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
-            for (const fetchMode of fetchModes) {
-                try {
-                    const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-                    setImageWidth(imgElement.width);
-                    setImageHeight(imgElement.height);
-                    AddImageToCanvas(imgElement, fabricCanvasRef, width, height, backgroundImageRef, onImageLoad);
-                    return;
-                } catch (error) {
-                    console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
-                }
-            }
-
-            // All strategies failed
-            console.error("All image loading strategies failed for URL:", imageUrl);
-            const errorMessage = imageUrl.includes("s3.")
-                ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
-                : "Failed to load background image. The image server may not allow cross-origin requests.";
-
-            toast.error(errorMessage, {
-                duration: 6000,
-                description: "Check browser console for detailed error information.",
-            });
-
-            if (onImageLoad) {
+      // Strategy 1: Try different CORS modes
+      const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+      for (const corsMode of corsOptions) {
+        try {
+          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
                 onImageLoad();
+              }
             }
-        };
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
+        }
+      }
 
-        tryLoadImage();
-    }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
+      // Strategy 2: Try different fetch modes
+      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+      for (const fetchMode of fetchModes) {
+        try {
+          const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+          setImageWidth(imgElement.width);
+          setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+        }
+      }
+
+      // All strategies failed
+      setIsImageLoading(false); // Stop loading indicator on failure
+      console.error("All image loading strategies failed for URL:", imageUrl);
+      const errorMessage = imageUrl.includes("s3.")
+        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+        : "Failed to load background image. The image server may not allow cross-origin requests.";
+
+      toast.error(errorMessage, {
+        duration: 6000,
+        description: "Check browser console for detailed error information.",
+      });
+
+      if (onImageLoad) {
+        onImageLoad();
+      }
+    };
+
+    tryLoadImage();
+  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
     useEffect(() => {
         const canvas = fabricCanvasRef.current;

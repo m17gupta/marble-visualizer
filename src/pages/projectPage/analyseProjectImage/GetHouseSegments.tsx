@@ -26,7 +26,9 @@ const GetHouseSegments = () => {
         segment_prompt: ["Wall", "Roof", "Trim", "Window", "Door", "Garage Door"],
     }
     try {
-     await dispatch(fetchHouseSegments(data)).unwrap();
+    const response= await dispatch(fetchHouseSegments(data)).unwrap();
+
+    console.log("House segments fetched successfully:", response);
      
     } catch (error) {
       console.error("Error fetching house segments:", error);

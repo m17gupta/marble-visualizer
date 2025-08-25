@@ -151,7 +151,7 @@ export function ProjectsPage() {
     if (project.id && project.jobData && project.jobData.length > 0) {
       const projectImage = project.jobData[0]?.full_image;
       const jobId = project.jobData[0]?.id;
-      console.log("Project clicked:", project.id, projectImage, jobId);
+      // console.log("Project clicked:", project.id, projectImage, jobId);
       if (jobId && projectImage && project.jobData) {
         dispatch(updateJobList(project.jobData));
         dispatch(addbreadcrumb("Studio"));
