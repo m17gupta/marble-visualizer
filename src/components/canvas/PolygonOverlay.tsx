@@ -596,13 +596,12 @@ useEffect(() => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="relative px-4"
+            className="relative"
             ref={containerRef}
           >
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                {/* min-h-[720px] min-w-[1280px]" */}
-                <div className="relative bg-gray-50 flex items-center justify-center">
+            <Card className="overflow-hidden mx-4 border rounded-md shadow-sm bg-white">
+              <CardContent className="p-0 mx-auto flex items-center justify-center">
+                {/* <div className="relative flex items-center justify-center">                */}
                   <canvas
                     ref={canvasRef}
                     className="border-0 block mx-auto w-full h-full"
@@ -635,7 +634,7 @@ useEffect(() => {
 
                   {/* Hover Material Info */}
                   <AnimatePresence></AnimatePresence>
-                </div>
+            
               </CardContent>
             </Card>
           </motion.div>

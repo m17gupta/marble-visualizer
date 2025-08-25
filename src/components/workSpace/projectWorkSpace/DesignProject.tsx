@@ -99,10 +99,10 @@ const DesignProject = () => {
   };
   return (
     <div
-      className={`flex items-baseline justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4
+      className={`flex items-baseline justify-between gap-4 px-4 py-2 bg-white rounded-md mb-4 border border-gray-200
     `}>
       {/* Design buttons scrollable */}
-      <div className="flex gap-2 overflow-x-auto scroll-thin pr-2 max-w-full pb-2">
+      <div className="flex flex-grow gap-2 overflow-x-auto scroll-thin pr-2  pb-2 ">
         {/* Show error state */}
         {(error || componentError) && (
           <div className="flex items-center justify-center p-4 text-red-500 bg-red-50 rounded-lg mb-4">
@@ -180,7 +180,7 @@ const DesignProject = () => {
       {/* Back to Inspiration Button */}
       {currentGenAiImage && currentGenAiImage !== null && (
         <button
-          className="px-4 py-1 bg-violet-600 text-white text-sm rounded hover:bg-violet-700 flex-shrink-0"
+          className="w-auto flex-shrink-0 px-4 py-1 bg-violet-600 text-white text-sm rounded hover:bg-violet-700 flex-shrink-0"
           onClick={handleInspirationSection}>
           <span className="hidden sm:inline">Exit Compare</span>
           <span className="inline sm:hidden">Back</span>

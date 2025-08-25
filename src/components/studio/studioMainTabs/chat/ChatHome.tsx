@@ -79,6 +79,47 @@ const ChatHome = () => {
        dispatch(resetInspirationImage())
      }
   }
+
+
+  const animationStyles = `
+    @keyframes swing-gradient {
+        from {
+            background-position: 0% 50%;
+        }
+        to {
+            background-position: 100% 50%;
+        }
+    }
+
+    .gemini-input-wrapper {
+        position: relative;
+        z-index: 1;
+        border-radius: 0.8rem; /* Should be slightly larger than the inner element's radius */
+    }
+
+    .gemini-input-wrapper::before {
+        content: '';
+        position: absolute;
+        inset: -2px; 
+        z-index: -1;
+        border-radius: inherit;
+        
+         /* --- NEW GRADIENT: Blue -> Pink -> Violet -> Pink -> Blue --- */
+        background: linear-gradient(
+            90deg,
+            #2563eb, 
+            #d946ef, 
+            #ab56ff, 
+            #d946ef, 
+            #2563eb
+        );
+        background-size: 400% 400%;
+        
+        opacity: 1; 
+        animation: swing-gradient 3s alternate ease-in-out infinite;
+    }
+  `;
+  
   return (
     <>
       <div className="min-h-screen flex flex-col bg-white overflow-y-auto max-h-[65vh] sm:max-h-[68vh]">
@@ -143,43 +184,47 @@ const ChatHome = () => {
         </div>
 
         {/* ===== Bottom-Sticky Composer ===== */}
-        <div className="sticky bottom-36 inset-x-0 bg-white/95 backdrop-blur border-t pb-safe">
+        <div className="sticky bottom-40 inset-x-0 bg-white/95 backdrop-blur border-t pb-safe">
           <div className="max-w-md mx-auto p-3">
-            <div className="w-full rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
-              {/* Textarea */}
-              <div className="px-4 pt-3">
-                <textarea
-                  rows={2}
-                  defaultValue="aaaaa"
-                  value={inputPrompt}
-                  className="w-full rounded-xl border-none p-2 text-sm text-gray-800 placeholder:text-gray-400 outline-none focus:ring-0 resize-none"
-                  placeholder="Type your prompt..."
-                  spellCheck="false"
-                  onChange={handleInputChange}
-                />
-              </div>
+            <style>{animationStyles}</style>
+      
+      {/* This is the main wrapper that gets the animation */}
+      <div className="gemini-input-wrapper">
 
-              {/* Bottom Bar */}
-              <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-t border-gray-200">
-                {/* Left Icons */}
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+        {/* This is your original component code */}
+        <div className="w-full rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
+          {/* Textarea */}
+          <div className="px-4 pt-3">
+            <textarea
+              rows={2}
+              defaultValue="aaaaa"
+              value={inputPrompt}
+              className="w-full rounded-xl border-none p-2 text-sm text-gray-800 placeholder:text-gray-400 outline-none focus:ring-0 resize-none"
+              placeholder="Type your prompt..."
+              spellCheck="false"
+              onChange={handleInputChange}
+            />
+          </div>
 
-                  <ChatPallet />
-                  <GalleryImage />
-
-
-
-                  <VoiceRecognition />
-                </div>
-
-                {/* Generate Button */}
-                <button className="px-4 py-1.5 border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 text-sm font-medium transition"
-                  onClick={handleGenerateAiImage}
-                >
-                  Generate
-                </button>
-              </div>
+          {/* Bottom Bar */}
+          <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-t border-gray-200">
+            {/* Left Icons */}
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <ChatPallet />
+              <GalleryImage />
+              <VoiceRecognition />
             </div>
+
+            {/* Generate Button */}
+            <button 
+              className="px-4 py-1.5 border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 text-sm font-medium transition"
+              onClick={handleGenerateAiImage}
+            >
+              Generate
+            </button>
+          </div>
+        </div>
+      </div>
           </div>
         </div>
       </div>
