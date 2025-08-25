@@ -69,8 +69,8 @@ interface CanvasEditorProps {
 
 export function CanvasEditor({
   imageUrl,
-  width = 800,
-  height = 600,
+  width,
+  height,
   className,
   onImageLoad,
 }: CanvasEditorProps) {
@@ -86,6 +86,10 @@ export function CanvasEditor({
     canvasType
   } = useSelector((state: RootState) => state.canvas);
 
+   const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
+      (state: RootState) => state.canvas
+    );
+  // 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const backgroundImageRef = useRef<fabric.Image | null>(null);
@@ -540,12 +544,17 @@ export function CanvasEditor({
       );
     tempObjects.forEach((obj) => canvas.remove(obj));
 
+    const ratioWidth = aiTrainImageWidth / (canvas.width);
+    const ratioHeight = aiTrainImageHeight / (canvas.height);
     // Create the actual polygon
     const polygonPoints = tempPoints.current.map(
       (p) => new fabric.Point(p.x, p.y)
     );
+    const polygonPointsafterScale = tempPoints.current.map(
+      (p) => new fabric.Point(p.x * ratioWidth, p.y * ratioHeight)
+    );
 
-    const polygonNumberArray = polygonPoints.flatMap(point => [
+    const polygonNumberArray = polygonPointsafterScale.flatMap(point => [
       Number(point.x.toFixed(2)),
       Number(point.y.toFixed(2))
     ]);

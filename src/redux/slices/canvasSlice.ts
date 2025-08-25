@@ -51,6 +51,8 @@ interface CanvasState {
   screenShotUrl: string | null;
   isResetZoom: boolean;
   activeCanvas: string;
+  aiTrainImageWidth: number;
+  aiTrainImageHeight: number;
 }
 
 // Initial state
@@ -71,7 +73,9 @@ const initialState: CanvasState = {
   isScreenshotTaken: false, // Flag to indicate if a screenshot has been taken
   screenShotUrl: null, // URL of the screenshot if taken
   isResetZoom: false, // Flag to indicate if the canvas has been reset
-  activeCanvas: "hideSegments"
+  activeCanvas: "hideSegments",
+  aiTrainImageWidth: 800,
+  aiTrainImageHeight: 600
 };
 
 // Create the canvas slice

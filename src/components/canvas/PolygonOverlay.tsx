@@ -57,6 +57,12 @@ const PolygonOverlay = ({
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
   );
+
+  const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
+    (state: RootState) => state.canvas
+  );
+
+
   const [imageWidth, setImageWidth] = useState<number>(0);
   const [imageHeight, setImageHeight] = useState<number>(0);
   const [updateSelectedSegment, setUpdateSelectedSegment] =
@@ -67,10 +73,14 @@ const PolygonOverlay = ({
   );
   const { isResetZoom } = useSelector((state: RootState) => state.canvas);
 
-  const [canvasWidth, setCanvasWidth] = useState(width);
-  const [canvasHeight, setCanvasHeight] = useState(height);
-
-   
+   // upate all segmnet Array
+  useEffect(() => {
+    if (allSegmentArray && allSegmentArray.length > 0) {
+      setAllSegArray(allSegmentArray);
+    } else {
+      setAllSegArray([]);
+    }
+  }, [allSegmentArray]);
     
 const resizeCanvas = useMemo(
   () => (fabricCanvas: fabric.Canvas) => {
@@ -123,14 +133,7 @@ useEffect(() => {
   return () => window.removeEventListener("resize", handleResize);
 }, [resizeCanvas]);
 
-  // upate all segmnet Array
-  useEffect(() => {
-    if (allSegmentArray && allSegmentArray.length > 0) {
-      setAllSegArray(allSegmentArray);
-    } else {
-      setAllSegArray([]);
-    }
-  }, [allSegmentArray]);
+  
 
   // Update selected segment
   useEffect(() => {
@@ -307,7 +310,7 @@ useEffect(() => {
     //Remove existing background image (ensure full cleanup)
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
-      backgroundImageRef.current = null;
+       backgroundImageRef.current = null;
       canvas.discardActiveObject();
       canvas.renderAll();
     }
@@ -381,40 +384,42 @@ useEffect(() => {
     };
 
     tryLoadImage();
-  }, [imageUrl, isCanvasReady, canvasWidth, canvasHeight, onImageLoad]);
+  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
-    if (!canvas) {
-      console.warn("[PolygonOverlay] No canvas instance available.");
-      return;
-    }
-    if (allSegArray.length === 0) {
-      console.warn("[PolygonOverlay] allSegArray is empty.");
-      return;
-    }
-    if (imageHeight === 0 || imageWidth === 0) {
-      console.warn(
-        `[PolygonOverlay] Image dimensions not set. imageHeight: ${imageHeight}, imageWidth: ${imageWidth}`
-      );
-      return;
-    }
-    if (!backgroundImageRef.current) {
-      console.warn("[PolygonOverlay] Background image not loaded yet.");
-      return;
-    }
+    // if (!canvas) {
+    //   console.warn("[PolygonOverlay] No canvas instance available.");
+    //   return;
+    // }
+    // if (allSegArray.length === 0) {
+    //   console.warn("[PolygonOverlay] allSegArray is empty.");
+    //   return;
+    // }
+    
+    // if (!backgroundImageRef.current) {
+    //   console.warn("[PolygonOverlay] Background image not loaded yet.");
+    //   return;
+    // }
 
     // Remove previous polygons and groups (but not the background image)
-    const objectsToRemove = canvas
-      .getObjects()
-      .filter(
-        (obj) =>
-          obj.type === "polygon" ||
-          (obj.type === "group" &&
-            (obj as NamedFabricObject).name !== "backgroundImage")
-      );
-    objectsToRemove.forEach((obj) => canvas.remove(obj));
+    // const objectsToRemove = canvas
+    //   .getObjects()
+    //   .filter(
+    //     (obj) =>
+    //       obj.type === "polygon" ||
+    //       (obj.type === "group" &&
+    //         (obj as NamedFabricObject).name !== "backgroundImage")
+    //   );
+    // objectsToRemove.forEach((obj) => canvas.remove(obj));
 
+     if(allSegArray && 
+      allSegArray.length>0 &&
+      segments && segments.length > 0 &&  
+      height && width &&
+      canvas
+    ) {
+      console.log("Redrawing polygons on canvas");
     allSegArray.forEach((seg, idx) => {
       const {
         segment_type,
@@ -484,24 +489,24 @@ useEffect(() => {
         fabricCanvasRef, // Pass the actual Canvas instance, not the ref
         isFill,
         height,
-        width
+        width,
+        aiTrainImageWidth,
+        aiTrainImageHeight
       );
     });
 
-    // Ensure proper z-index order: background image at back, polygons on top
-    if (backgroundImageRef.current) {
-      canvas.sendObjectToBack(backgroundImageRef.current);
-    }
+   
 
     canvas.renderAll();
+  }
   }, [
     allSegArray,
     segments,
     fabricCanvasRef,
     height,
     width,
-    imageHeight,
-    imageWidth,
+    aiTrainImageWidth,
+    aiTrainImageHeight
   ]);
 
   // Debug function to check canvas state

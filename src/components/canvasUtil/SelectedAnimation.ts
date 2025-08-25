@@ -9,12 +9,13 @@ export const SelectedAnimation = (
 ) => {
     const canvas = canvasRef?.current;
     if (!canvas || !annotatonPoints || annotatonPoints.length === 0 || !color) return; // Return early if canvas is null
-
+      const ratioWidth = canvas.width /800
+      const ratioHeight = canvas.height /600;
     const polyName = `SelectedPolygon`;
     const point: PointModel[] = [];
     for (let i = 0; i < annotatonPoints.length; i += 2) {
-        const x = annotatonPoints[i];
-        const y = annotatonPoints[i + 1];
+        const x = annotatonPoints[i] * ratioWidth;
+        const y = annotatonPoints[i + 1] * ratioHeight;
         point.push({ x, y });
     }
 
