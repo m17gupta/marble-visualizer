@@ -317,6 +317,7 @@ const PDFModal = ({
         <div className="p-4 bg-gray-50 h-[80vh] overflow-auto">
           <PDFViewer width="100%" height="100%">
             <MeasurementReportPDF
+              imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/Tom_Reformatted_(1)_1756101811285_ifc4o9.png"
               jobData={mockJobData}
               activeTab={activeTab}
               selectedUnit={selectedUnit}
@@ -329,6 +330,7 @@ const PDFModal = ({
           <PDFDownloadLink
             document={
               <MeasurementReportPDF
+                imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/Tom_Reformatted_(1)_1756101811285_ifc4o9.png"
                 jobData={mockJobData}
                 activeTab={activeTab}
                 selectedUnit={selectedUnit}

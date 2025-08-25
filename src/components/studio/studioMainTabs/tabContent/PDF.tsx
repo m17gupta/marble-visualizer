@@ -340,10 +340,10 @@ export const MeasurementReportPDF: React.FC<Props> = ({
         {/* Hero Image */}
         <Image
           style={styles.mainImage}
-          src={
-            imageUrl ||
+          src=
+          
             "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/styled_output_52f90df66fb8433e91a6c746f98c9d67_(1)_1755614109956_db4zhk.png"
-          }
+          
         />
 
         {/* Project Summary */}
