@@ -211,7 +211,7 @@ const ProjectPdf = () => {
           className="w-20 mb-0"
         />
         <h1 className="text-4xl font-extrabold text-gray-800 tracking-wider">
-          DZINLY DESIGN REPORT
+          DZINLY DESIGN REPORT 1
         </h1>
         <h2 className="text-xl font-medium text-gray-600">MY NEW PROJECT</h2>
         <p className="text-sm text-gray-400">15 July 2025</p>

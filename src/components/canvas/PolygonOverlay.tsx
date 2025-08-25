@@ -170,7 +170,8 @@ useEffect(() => {
       height,
       selection: true,
       preserveObjectStacking: true,
-      backgroundColor: "#282828",
+      backgroundColor: "#282828", 
+      
     });
 
     fabricCanvasRef.current = canvas;

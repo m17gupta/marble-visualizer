@@ -129,7 +129,7 @@ const StudioTabs = () => {
 
   if (!masterArray || masterArray.allSegments.length === 0) {
     return (
-      <div className=" flex flex-col items-center justify-center grid items-start content-center h-full">
+      <div className=" flex flex-col items-center justify-center grid items-start content-center h-[90%]">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
