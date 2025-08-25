@@ -388,25 +388,31 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   }, [width, height, dispatch, dragInfo, anchorWrapper]);
 
   // Load background image
-  useEffect(() => {
+ useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
       return;
     }
+
     const canvas = fabricCanvasRef.current;
+
+    //Remove existing background image (ensure full cleanup)
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
       backgroundImageRef.current = null;
       canvas.discardActiveObject();
       canvas.renderAll();
     }
+
     const tryLoadImage = async () => {
       setIsImageLoading(true); // Start loading indicator
 
+      // Strategy 1: Try different CORS modes
       const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
       for (const corsMode of corsOptions) {
         try {
-          // const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-          // AddImageToCanvas(imgElement, fabricCanvasRef, width ?? 0, height ?? 0, backgroundImageRef, onImageLoad);
+          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
           setBackgroundImage(
             fabricCanvasRef,
             imageUrl,
@@ -419,10 +425,12 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
             }
           );
           return;
-        } catch {
-          console.warn(`Failed to load image with CORS mode: ${corsMode}`);
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
         }
       }
+
+      // Strategy 2: Try different fetch modes
       const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
       for (const fetchMode of fetchModes) {
         try {
@@ -441,15 +449,28 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
             }
           );
           return;
-        } catch {
-          
-          console.warn(`Failed to load image with fetch mode: ${fetchMode}`);
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
         }
       }
-      setIsImageLoading(false);
-      toast.error("Failed to load background image.");
-      if (onImageLoad) onImageLoad();
+
+      // All strategies failed
+      setIsImageLoading(false); // Stop loading indicator on failure
+      console.error("All image loading strategies failed for URL:", imageUrl);
+      const errorMessage = imageUrl.includes("s3.")
+        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+        : "Failed to load background image. The image server may not allow cross-origin requests.";
+
+      toast.error(errorMessage, {
+        duration: 6000,
+        description: "Check browser console for detailed error information.",
+      });
+
+      if (onImageLoad) {
+        onImageLoad();
+      }
     };
+
     tryLoadImage();
   }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
