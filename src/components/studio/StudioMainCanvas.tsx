@@ -18,6 +18,8 @@ import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
+import Hovertemplate from "./canvasTemplate/Hovertemplate";
+import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
 // import TestCanvas from "../canvas/TestCanvas";
 
 interface StudioMainCanvasProps {
@@ -101,7 +103,6 @@ export function StudioMainCanvas({
       <AnimatePresence mode="wait">
         {canvasImage ? (
           <>
-
             {(canvasMode == "draw" ||
               canvasMode == "reannotation" ||
               canvasMode == "dimension") && (
@@ -138,14 +139,19 @@ export function StudioMainCanvas({
             )}
             {canvasMode == "hover" && (
               <>
-                <HoverHeader />
-                <PolygonOverlay
-                  key={`canvas-hover-${canvasImage}`}
-                  imageUrl={canvasImage}
-                  width={canvasWidth}
-                  height={canvasHeight}
-                  className="mb-6"
-                  onImageLoad={handleImageLoad}
+                <Hovertemplate
+                  canvasImage={canvasImage}
+                  canvasWidth={canvasWidth}
+                  canvasHeight={canvasHeight}
+                />
+              </>
+            )}
+            {canvasMode == "outline" && (
+              <>
+                <OutlineTemplate
+                  canvasImage={canvasImage}
+                  canvasWidth={canvasWidth}
+                  canvasHeight={canvasHeight}
                 />
               </>
             )}
@@ -163,19 +169,18 @@ export function StudioMainCanvas({
             )}
             {canvasMode == "hover-default" && (
               <>
-                <HoverHeader />
-                <div className="w-full p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-
-                  {currentTabContent === "compare" ? (
-                    <CompareGenAiHome />
-                  ) : (
-                    <ImagePreview />
-                  )}
-                  <>
-                    <DesignProject />
-                    <GuidancePanel />
-                  </>
-                </div>
+               <PolygonOverlay
+                  key={`canvas-hover-${canvasImage}`}
+                  imageUrl={canvasImage}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  className="mb-6"
+                  onImageLoad={handleImageLoad}
+                />
+                <>
+                  <DesignProject />
+                  <GuidancePanel />
+                </>
               </>
             )}
             {canvasMode == "measurement" && (
@@ -195,13 +200,13 @@ export function StudioMainCanvas({
               </>
             )}
           </>
-
         ) : (
           <motion.div
             key="upload"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}>
+            exit={{ opacity: 0, y: -20 }}
+          >
             <Card
               className={cn(
                 "h-96 border-2 border-dashed transition-colors",
@@ -215,12 +220,14 @@ export function StudioMainCanvas({
               onDragLeave={canEdit ? handleDragLeave : undefined}
               onClick={
                 canEdit ? () => fileInputRef.current?.click() : undefined
-              }>
+              }
+            >
               <CardContent className="h-full flex flex-col items-center justify-center p-8 text-center">
                 <motion.div
                   animate={{ scale: dragActive && canEdit ? 1.1 : 1 }}
                   transition={{ duration: 0.2 }}
-                  className="space-y-4">
+                  className="space-y-4"
+                >
                   {isUploading ? (
                     <>
                       <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto" />

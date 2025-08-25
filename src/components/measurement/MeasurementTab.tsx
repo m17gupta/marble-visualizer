@@ -21,6 +21,7 @@ import {
 } from "@/redux/slices/swatch/FilterSwatchSlice";
 // import styleIcon from "../../../public/assets/line-md--list-3-twotone.svg";
 import styleIcon from "../../../public/assets/image/line-md--list-3-twotone (1).svg";
+import { updateHoverGroup } from "@/redux/slices/canvasSlice";
 
 interface MeasurementTabProps {
   selectedUnit: string;
@@ -151,6 +152,22 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
     setIsOpen(true);
   };
 
+  const handleGroupHover = (group: MasterGroupModel) => {
+    const segmentTitles =
+      group?.segments?.map((seg) => seg.short_title ?? "") || [];
+    dispatch(updateHoverGroup(segmentTitles));
+  };
+
+  const handleLeaveGroupHover = () => dispatch(updateHoverGroup(null));
+
+
+   const handleEachSegmentHover = (segment: string) => {
+
+   
+      dispatch(updateHoverGroup(null));
+      dispatch(updateHoverGroup([segment]));
+    };
+  
   return (
     <>
       {/* Tab Navigation */}
@@ -265,7 +282,11 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
                             </div>
                           ) : (
                             <div className="flex items-center space-x-2">
-                              <h4 className="font-semibold text-gray-800">
+                              <h4
+                                className="font-semibold text-gray-800"
+                                onMouseEnter={() => handleGroupHover(group)}
+                                onMouseLeave={handleLeaveGroupHover}
+                              >
                                 {group.groupName}
                               </h4>
                               <button
@@ -365,9 +386,19 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
                                   </div>
 
                                   {/* Segment info on the right - NOT editable */}
-                                  <div className="flex items-center space-x-3">
+                                  <div className="flex items-center space-x-3"
+                                     onMouseEnter={() =>
+                                          handleEachSegmentHover(
+                                            segment.short_title ?? ""
+                                          )
+                                        }
+                                        onMouseLeave={handleLeaveGroupHover}
+                                  >
                                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                      <span className="text-xs font-bold text-blue-600">
+                                      <span
+                                        className="text-xs font-bold text-blue-600"
+                                     
+                                      >
                                         {segment.short_title}
                                       </span>
                                     </div>

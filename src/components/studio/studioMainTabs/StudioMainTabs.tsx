@@ -49,7 +49,7 @@ const StudioMainTabs = () => {
   const handleMeasurementClick = () => {
     // setActiveTab("measurement");
      dispatch(setCanvasReady(false))
-    dispatch(setCanvasType("measurement")); // Set canvas type to hover-default when Measurement tab is clicked
+    dispatch(setCanvasType("measurement")); // Set canvas type to measurement when Measurement tab is clicked
     dispatch(updateActiveTab("measurement"));
   };
 

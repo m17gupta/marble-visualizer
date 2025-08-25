@@ -432,7 +432,7 @@ useEffect(() => {
         segments.find(
           (s: { name: string; color_code: string }) => s.name === segment_type
         )?.color_code || "#FF1493";
-      const isFill = true;
+      const isFill = false;
       if (!annotation_points_float || annotation_points_float.length === 0) {
         console.warn(
           `[PolygonOverlay] Segment ${idx} missing annotation_points_float`,
@@ -632,8 +632,7 @@ useEffect(() => {
                     </div>
                   )}
 
-                  {/* Hover Material Info */}
-                  <AnimatePresence></AnimatePresence>
+                 
             
               </CardContent>
             </Card>

@@ -1,3 +1,4 @@
+import type { CanvasMode } from "@/redux/slices/canvasSlice";
 import React from "react";
 
 import { Card, CardContent } from "../ui/card";
@@ -18,7 +19,7 @@ const HoverHeader = () => {
   // const [activeButton, setActiveButton] = useState<"view" | "chat">("view");
   const [activeButton, setActiveButton] = React.useState<"view" | "chat">("view");
   const { canvasType } = useSelector((state: any) => state.canvas);
-  const activeCanvas = useSelector((state: RootState) => state.canvas.activeCanvas);
+   const activeCanvas = useSelector((state: RootState) => state.canvas.activeCanvas);
   const handleHover = () => {
     dispatch(setCanvasType("hover"));
     setActiveButton("view");
@@ -36,13 +37,28 @@ const HoverHeader = () => {
 
 
   // Use Redux for hide/show image state
-  const handleShowHideImage = () => {
+  const handleShowHideImage = (data: string) => {
     // Toggle between 'hideImage' and 'showImage' as activeCanvas
-    dispatch({ type: "canvas/setActiveTab", payload: activeCanvas === "hideImage" ? "showImage" : "hideImage" });
+   // dispatch({ type: "canvas/setActiveTab", payload: activeCanvas === "hideImage" ? "showImage" : "hideImage" });
+     if (activeCanvas === "hideSegments") {
+        // dispatch(setCanvasType("showSegments"));
+         dispatch(setActiveTab("showSegments"));
+       }else{
+         dispatch(setActiveTab("hideSegments"));
+         dispatch(setCanvasType("hover"));
+       }
   } 
 
-  const handleActiveCanvas = (type:string) => {
-    dispatch(setActiveTab(type));
+
+  const handleOutline = (type: CanvasMode) => {
+
+       if (canvasType === "outline") {
+         dispatch(setCanvasType("hover"));
+         dispatch(setActiveTab("showSegments"));
+       }else{
+         dispatch(setActiveTab("outline"));
+         dispatch(setCanvasType(type));
+       }
   };
 
   return (
@@ -54,7 +70,7 @@ const HoverHeader = () => {
               variant="outline"
               size="sm"
               className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2"
-              onClick={() => handleActiveCanvas("outline")}
+              onClick={() => handleOutline("outline")}
             >
               {/* Icon stays visible */}
               <AiOutlineBorderInner className={`h-5 w-5 shrink-0 ${activeCanvas === "outline" ? "fill-blue-600" : ""}`} />
@@ -70,36 +86,20 @@ const HoverHeader = () => {
             <Button
               variant="outline"
               size="sm"
-              className="group relative flex items-center justify-start w-10 hover:w-28 transition-all duration-300 overflow-hidden "
-                onClick={() => handleActiveCanvas("compare")}
-            >
-              {/* <FaCodeCompare className="h-4 w-4" /> */}
-              <BiGitCompare className={`h-4 w-4 flex-shrink-0 ${activeCanvas === "compare" ? "fill-blue-600" : ""}`} />
-              <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                {" "}
-                Compare
-              </span>
-            </Button>
-
-            <Separator orientation="vertical" className="h-6" />
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShowHideImage}
+              onClick={() => handleShowHideImage(activeCanvas)}
               className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
-                ${activeCanvas === "hideImage" ? "bg-blue-100 text-blue-600 border-blue-400" : ""}`}
+                ${activeCanvas === "hideSegments" ? "bg-blue-100 text-blue-600 border-blue-400" : ""}`}
             >
               {/* Icon changes dynamically based on Redux */}
-              {activeCanvas === "hideImage" ? (
-                <MdOutlineHideImage className="h-5 w-5 shrink-0 fill-blue-600" />
+              {activeCanvas === "hideSegments" ? (
+                <MdOutlineHideImage className="h-5 w-5 shrink-0 " />
               ) : (
-                <MdOutlineImage className="h-5 w-5 shrink-0" />
+                <MdOutlineImage className="h-5 w-5 shrink-0 fill-blue-600" />
               )}
 
               {/* Text fades in on hover */}
               <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                {activeCanvas === "hideImage" ? "Hide Segments" : "Show Segments"}
+                {activeCanvas === "showSegments" ? "Hide Segments" : "Show Segments"}
               </span>
             </Button>
           </div>

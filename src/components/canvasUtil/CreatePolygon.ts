@@ -113,22 +113,22 @@ export const makePolygon = (
       fontSize: 18,
       fill: "#fff",
       selectable: true,
-      visible: false,
+      visible: isFillPolygon,
     });
 
     // Attach custom property after creation
     (text as NamedFabricObject).name = polyName;
 
     const polygon = new fabric.Polygon(point, {
-      fill: color,
-      originX: coordinate[0] ,
-      originY: coordinate[1] ,
+      fill: isFillPolygon ? "transparent" : color,
+      originX: coordinate[0],
+      originY: coordinate[1],
       hasBorders: false,
       hasControls: false,
       stroke: color,
       strokeWidth: 2,
-      opacity: 0.4,
-      visible: false,
+      opacity: isFillPolygon ? 0.9 : 0.4,
+      visible: isFillPolygon,
       lockMovementX: true,
       lockMovementY: true,
     });

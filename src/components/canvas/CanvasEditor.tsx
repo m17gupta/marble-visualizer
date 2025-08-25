@@ -622,7 +622,7 @@ export function CanvasEditor({
       fabricCanvasRef.current.requestRenderAll();
       dispatch(setZoom(1));
     }
-    toast.success("Polygon created successfully! Ready to draw another.");
+    // toast.success("Polygon created successfully! Ready to draw another.");
   }, [dispatch, canvasType]);
 
   // Handle mouse down events
