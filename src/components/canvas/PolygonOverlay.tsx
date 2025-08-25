@@ -599,7 +599,7 @@ useEffect(() => {
             className="relative"
             ref={containerRef}
           >
-            <Card className="overflow-hidden mx-4 border rounded-md shadow-sm bg-white">
+            <Card className="overflow-hidden border rounded-md shadow-sm bg-white">
               <CardContent className="p-0 mx-auto flex items-center justify-center">
                 {/* <div className="relative flex items-center justify-center">                */}
                   <canvas
