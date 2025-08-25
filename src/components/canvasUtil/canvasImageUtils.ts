@@ -197,8 +197,7 @@ export const setBackgroundImage = (
       // Set the image as canvas background (Fabric.js v6 way)
       canvas.backgroundImage = img;
 
-      // Store reference
-      backgroundImageRef.current = img;
+    
 
       // Set background image properties
       img.set({
@@ -207,8 +206,9 @@ export const setBackgroundImage = (
         originX: "left",
         originY: "top",
       });
-
-      console.log("Background image set:", img.width, img.height);
+  // Store reference
+      backgroundImageRef.current = img;
+      
       canvas.renderAll();
 
       if (onLoading) onLoading(false);

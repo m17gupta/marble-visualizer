@@ -14,6 +14,7 @@ import { selectMaterialSegment } from "@/redux/slices/materialSlices/materialSeg
 import { setActiveTab, setSegmentType } from "@/redux/slices/TabControlSlice";
 import {
   addSelectedMasterArray,
+  addUserSelectedSegment,
   updatedSelectedGroupSegment,
   updateSelectedSegment,
 } from "@/redux/slices/MasterArraySlice";
@@ -21,6 +22,7 @@ import {
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 const AllSegments = () => {
   // const [detectedSegment, setDetectedSegment] = useState<MaterialSegmentModel[]>([]);
@@ -58,6 +60,14 @@ const AllSegments = () => {
           dispatch(addSelectedMasterArray(masterArray[0]));
           dispatch(updateSelectedSegment(firstGroup.segments[0]));
           dispatch(updatedSelectedGroupSegment(firstGroup));
+          if(firstGroup.segments &&firstGroup.segments.length>0){
+            const userSeg:SegmentModal[]=[]
+            firstGroup.segments.map(item=>{
+              userSeg.push(item)
+            })
+            dispatch(addUserSelectedSegment(userSeg))
+          }
+          
           isFirst.current = false;
         }
 

@@ -9,6 +9,7 @@ interface MasterArrayState {
   selectedGroupSegment: MasterGroupModel | null;
   selectedSegment?: SegmentModal | null;
   isCreatedMasterArray?: boolean;
+  userSelectedSegment?: SegmentModal[]
 }
 
 const initialState: MasterArrayState = {
@@ -18,6 +19,7 @@ const initialState: MasterArrayState = {
   selectedSegment: null,
   // Initialize isCreatedMasterArray to false
   isCreatedMasterArray: false,
+  userSelectedSegment: []
 };
 
 const masterArraySlice = createSlice({
@@ -226,14 +228,36 @@ const masterArraySlice = createSlice({
     updateSelectedSegment: (state, action) => {
       const segment = action.payload;
       state.selectedSegment = segment;
-    }
-    ,
+    },
+    addUserSelectedSegment: (state, action) => {
+      
+      if (!state.userSelectedSegment) {
+        state.userSelectedSegment = [];
+      }
+      state.userSelectedSegment = action.payload;
+    },
+    updateUserSelectedSegment: (state, action) => {
+     const { segment } = action.payload;
+     // Ensure userSelectedSegment is always an array
+     if (!state.userSelectedSegment) {
+       state.userSelectedSegment = [];
+     }
+     // check if segment exists
+     const index = state.userSelectedSegment.findIndex(seg => seg.id === segment.id);
+     if (index !== -1 && state.userSelectedSegment.length) {
+       state.userSelectedSegment.push(segment);
+     } else {
+       // delete from array
+       state.userSelectedSegment = state.userSelectedSegment.filter(seg => seg.id !== segment.id);
+     }
+    },
     clearMasterArray: (state) => {
       state.masterArray = [];
       state.selectedMasterArray = null;
       state.selectedGroupSegment = null;
       state.selectedSegment = null;
       state.isCreatedMasterArray = false;
+      state.userSelectedSegment = [];
     }
   },
 });
@@ -250,6 +274,8 @@ export const {
   changeGroupSelectedSegment,
   deletedChangeGroupSegment,
   deleteSegment,
+  addUserSelectedSegment,
+  updateUserSelectedSegment
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;
