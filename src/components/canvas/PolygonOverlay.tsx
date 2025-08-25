@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from "@/redux/store";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -48,7 +48,7 @@ const PolygonOverlay = ({
   const { allSegments: allSegmentArray } = useSelector(
     (state: RootState) => state.segments
   );
-
+  const containerRef = useRef<HTMLDivElement>(null);
   const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
@@ -66,6 +66,62 @@ const PolygonOverlay = ({
     (state: RootState) => state.masterArray
   );
   const { isResetZoom } = useSelector((state: RootState) => state.canvas);
+
+  const [canvasWidth, setCanvasWidth] = useState(width);
+  const [canvasHeight, setCanvasHeight] = useState(height);
+
+   
+    
+const resizeCanvas = useMemo(
+  () => (fabricCanvas: fabric.Canvas) => {
+
+    const container = containerRef.current;
+   
+     
+    if (container && canvasRef.current) {
+      const canvas = canvasRef.current;
+      // const dpr = window.devicePixelRatio || 1;
+      // const wrap = canvas.parentElement ?? document.body;
+      // const rect = wrap.getBoundingClientRect();
+      // console.log("rect", rect);
+      // console.log("dpr", dpr);
+      // console.log("container", container);
+      const { offsetWidth, offsetHeight } = container;
+
+      // Set the canvas element size
+      canvasRef.current.width = offsetWidth;
+      canvasRef.current.height = offsetHeight;
+
+      // Set the Fabric canvas size
+      fabricCanvas.setWidth(offsetWidth);
+      fabricCanvas.setHeight(offsetHeight);
+
+      // Scale background image proportionally (optional)
+      const backgroundImage = fabricCanvas.backgroundImage as fabric.Image;
+      if (backgroundImage) {
+        const scale = Math.min(
+          offsetWidth / backgroundImage.width!,
+          offsetHeight / backgroundImage.height!
+        );
+        backgroundImage.scale(scale);
+        fabricCanvas.requestRenderAll();
+      } else {
+        fabricCanvas.renderAll();
+      }
+    }
+  },
+  []
+);
+
+useEffect(() => {
+  const handleResize = () => {
+    if (fabricCanvasRef.current) {
+    //  resizeCanvas(fabricCanvasRef.current);
+    }
+  };
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, [resizeCanvas]);
 
   // upate all segmnet Array
   useEffect(() => {
@@ -85,22 +141,25 @@ const PolygonOverlay = ({
     }
   }, [selectedSegment]);
 
-  const handleMouseMove = useCallback((event: fabric.TEvent) => {
-    if (!fabricCanvasRef.current) return;
-    const canvas = fabricCanvasRef.current;
-    console.log("canvas", canvas.getObjects());
-    const fabricEvent = event as unknown as { target?: NamedFabricObject };
-    const target = fabricEvent.target;
-    console.log("target", target?.name);
-    if (target !== undefined) {
-      const targetName = target.name;
-      if (targetName) {
-        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+  const handleMouseMove = useCallback(
+    (event: fabric.TEvent) => {
+      if (!fabricCanvasRef.current) return;
+      const canvas = fabricCanvasRef.current;
+      console.log("canvas", canvas.getObjects());
+      const fabricEvent = event as unknown as { target?: NamedFabricObject };
+      const target = fabricEvent.target;
+      console.log("target", target?.name);
+      if (target !== undefined) {
+        const targetName = target.name;
+        if (targetName) {
+          handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+        }
+      } else {
+        HideAllSegments(fabricCanvasRef);
       }
-    } else {
-      HideAllSegments(fabricCanvasRef);
-    }
-  }, []);
+    },
+    []
+  );
 
   // Initialize Fabric.js canvas
   useEffect(() => {
@@ -121,6 +180,7 @@ const PolygonOverlay = ({
       ? ([...canvas.viewportTransform] as fabric.TMat2D)
       : null;
 
+      // resizeCanvas(canvas);
     // Canvas event handlers
     // canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", (event) => {
@@ -320,7 +380,7 @@ const PolygonOverlay = ({
     };
 
     tryLoadImage();
-  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
+  }, [imageUrl, isCanvasReady, canvasWidth, canvasHeight, onImageLoad]);
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -531,15 +591,16 @@ const PolygonOverlay = ({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
             className="relative px-4"
+            ref={containerRef}
           >
             <Card className="overflow-hidden">
               <CardContent className="p-0">
                 {/* min-h-[720px] min-w-[1280px]" */}
-                <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px]  min-w-[800px]">
+                <div className="relative bg-gray-50 flex items-center justify-center">
                   <canvas
                     ref={canvasRef}
-                    className="border-0 block mx-auto"
-                    style={{ maxWidth: "100%", height: "auto" }}
+                    className="border-0 block mx-auto w-full h-full"
+                    style={{ width: "100%", height: "100%", display: "block" }}
                   />
 
                   {/* Image Loading Overlay */}

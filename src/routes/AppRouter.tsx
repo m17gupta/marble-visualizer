@@ -18,10 +18,10 @@ import { PrivateRoute } from "@/components/PrivateRoute";
 import { SwatchBookPage } from "@/pages/SwatchBookPage";
 import MainLandingPage from "@/pages/MainLandingPage";
 import WorkspaceProjectPage from "@/pages/WorkspaceProjectPage";
-import Homepage from "@/pages/Homepage";
+import Homepage from "@/pages/template/Homepage";
 import ProjectPdf from "@/pages/ProjectPdf";
 import SwatchAddPage from "@/components/swatchBook/SwatchAddPage";
-import ProjectHome from "@/pages/projectPage/ProjectHome";
+import ProjectHome from "@/pages/projectPage/template/ProjectHome";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);

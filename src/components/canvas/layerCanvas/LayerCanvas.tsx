@@ -3,6 +3,7 @@ import {
   AddImageToCanvas,
   LoadImageWithCORS,
   LoadImageWithFetch,
+  setBackgroundImage,
 } from "@/components/canvasUtil/canvasImageUtils";
 import { setCanvasReady, setZoom } from "@/redux/slices/canvasSlice";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -19,7 +20,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { PointModel } from "../canvasEdit/CanvasEdit";
-import { setBackgroundImage } from "./SetBackGroundImage";
 
 type NamedFabricObject = fabric.Object & { name?: string };
 
@@ -73,6 +73,7 @@ const LayerCanvas = ({
 
     const [loading, setLoading] = useState(false);
 
+ const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
 
   useEffect(() => {
   if (!canvasRef.current || fabricCanvasRef.current||!imageUrl) return;
@@ -90,12 +91,12 @@ const LayerCanvas = ({
     ? ([...canvas.viewportTransform] as fabric.TMat2D)
     : null;
 
-  // Load background image (800x600)
-  setBackgroundImage(
-    canvas,
-    imageUrl,
-    setLoading
-  );
+  // // Load background image (800x600)
+  // setBackgroundImage(
+  //   canvas,
+  //   imageUrl,
+  //   setLoading
+  // );
 
   canvas.on("mouse:move", handleMouseMove);
   canvas.on("mouse:wheel", () => {
@@ -112,139 +113,94 @@ const LayerCanvas = ({
   };
 }, [width, height, imageUrl, dispatch, handleMouseMove]);
 
+ 
+ useEffect(() => {
+    if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
+      return;
+    }
 
-  // Initialize Fabric.js canvas
-  // useEffect(() => {
-  //   if (!canvasRef.current || fabricCanvasRef.current) return;
+    const canvas = fabricCanvasRef.current;
 
-  //   const canvas = new fabric.Canvas(canvasRef.current, {
-  //     width: 800,
-  //     height: 600,
-  //     selection: true,
-  //     preserveObjectStacking: true,
-  //     backgroundColor: "#282828",
-  //   });
+    //Remove existing background image (ensure full cleanup)
+    if (backgroundImageRef.current) {
+      canvas.remove(backgroundImageRef.current);
+      backgroundImageRef.current = null;
+      canvas.discardActiveObject();
+      canvas.renderAll();
+    }
 
-  //   fabricCanvasRef.current = canvas;
+    const tryLoadImage = async () => {
+      setIsImageLoading(true); // Start loading indicator
 
-  //   // Store the original viewport transform
-  //   originalViewportTransform.current = canvas.viewportTransform
-  //     ? ([...canvas.viewportTransform] as fabric.TMat2D)
-  //     : null;
+      // Strategy 1: Try different CORS modes
+      const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+      for (const corsMode of corsOptions) {
+        try {
+          const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
+        }
+      }
 
-  //   // Canvas event handlers
-  //   // canvas.on("mouse:down", handleMouseDown);
-  //   canvas.on("mouse:move", (event) => {
-  //     handleMouseMove(event);
-  //   });
-  //    canvas.on("mouse:move", (event) => {
-  //     handleMouseMove(event);
-  //   });
-  //   // canvas.on("mouse:dblclick", handleDoubleClick);
+      // Strategy 2: Try different fetch modes
+      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+      for (const fetchMode of fetchModes) {
+        try {
+          const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
+          // setImageWidth(imgElement.width);
+          // setImageHeight(imgElement.height);
+          setBackgroundImage(
+            fabricCanvasRef,
+            imageUrl,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+        }
+      }
 
-  //   // canvas.on("selection:cleared", () => {
+      // All strategies failed
+      setIsImageLoading(false); // Stop loading indicator on failure
+      console.error("All image loading strategies failed for URL:", imageUrl);
+      const errorMessage = imageUrl.includes("s3.")
+        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+        : "Failed to load background image. The image server may not allow cross-origin requests.";
 
-  //   // });
+      toast.error(errorMessage, {
+        duration: 6000,
+        description: "Check browser console for detailed error information.",
+      });
 
-  //   canvas.on("mouse:wheel", (event) => {
-  //     //  handleMouseWheel(event);
-  //     dispatch(setZoom(canvas.getZoom()));
-  //   });
+      if (onImageLoad) {
+        onImageLoad();
+      }
+    };
 
-  //   // Keyboard shortcuts
-  //   // document.addEventListener("keydown", handleKeyDown);
-
-  //   dispatch(setCanvasReady(true));
-
-  //   return () => {
-  //     canvas.dispose();
-  //     fabricCanvasRef.current = null;
-  //     backgroundImageRef.current = null;
-  //     dispatch(setCanvasReady(false));
-  //   };
-  // }, [width, height, dispatch, handleMouseMove]);
-
+    tryLoadImage();
+  }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
   
-  
-  // Load background image with comprehensive CORS and fallback handling
-  // useEffect(() => {
-  //   if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
-  //     return;
-  //   }
-
-  //   const canvas = fabricCanvasRef.current;
-
-  //   // Remove existing background image (ensure full cleanup)
-  //   if (backgroundImageRef.current) {
-  //     canvas.remove(backgroundImageRef.current);
-  //     backgroundImageRef.current = null;
-  //     canvas.discardActiveObject();
-  //     canvas.renderAll();
-  //   }
-
-  //   const tryLoadImage = async () => {
-  //     // Strategy 1: Try different CORS modes
-  //     const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
-  //     for (const corsMode of corsOptions) {
-  //       try {
-  //         const imgElement = await LoadImageWithCORS(imageUrl, corsMode);
-
-  //         AddImageToCanvas(
-  //           imgElement,
-  //           fabricCanvasRef,
-  //           width,
-  //           height,
-  //           backgroundImageRef,
-  //           onImageLoad
-  //         );
-  //         return;
-  //       } catch (error) {
-  //         console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
-  //       }
-  //     }
-
-  //     // Strategy 2: Try different fetch modes
-  //     const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
-  //     for (const fetchMode of fetchModes) {
-  //       try {
-  //         const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-
-  //         AddImageToCanvas(
-  //           imgElement,
-  //           fabricCanvasRef,
-  //           width,
-  //           height,
-  //           backgroundImageRef,
-  //           onImageLoad
-  //         );
-  //         return;
-  //       } catch (error) {
-  //         console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
-  //       }
-  //     }
-
-  //     // All strategies failed
-  //     console.error("All image loading strategies failed for URL:", imageUrl);
-  //     const errorMessage = imageUrl.includes("s3.")
-  //       ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
-  //       : "Failed to load background image. The image server may not allow cross-origin requests.";
-
-  //     toast.error(errorMessage, {
-  //       duration: 6000,
-  //       description: "Check browser console for detailed error information.",
-  //     });
-
-  //     if (onImageLoad) {
-  //       onImageLoad();
-  //     }
-  //   };
-
-  //   tryLoadImage();
-  // }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
-
-
-
   useEffect(() => {
     console.log("annotation", allPolygon);
 

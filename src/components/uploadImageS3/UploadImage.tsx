@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DirectS3UploadService, UploadProgress, UploadResult } from '@/services/uploadImageService/directS3UploadService';
 import { useSelector } from 'react-redux';
 import { selectProfile } from '@/redux/slices/userProfileSlice';
+import { convertImageFileToWebp } from './ConvertImageFileToWebp';
 
 interface UploadImageProps {
   onUploadSuccess?: (fileUrl: string, key: string) => void;
@@ -51,26 +52,62 @@ const UploadImage: React.FC<UploadImageProps> = ({
   }, [createdProjectId]);
 
   // Handle file selection
-  const handleFileSelect = useCallback((file: File) => {
-    // Validate file using direct S3 upload service
-    const validation = DirectS3UploadService.validateFile(file, maxSize, allowedTypes);
-    if (!validation.valid) {
-      setUploadResult({
-        success: false,
-        error: validation.error,
-      });
-      onUploadError?.(validation.error || 'Invalid file');
-      return;
-    }
 
-    // Create preview URL
-    const fileWithPreview = file as FileWithPreview;
-    fileWithPreview.preview = URL.createObjectURL(file);
+
+const handleFileSelect = useCallback(async (file: File) => {
+  // Validate file using direct S3 upload service
+  const validation = DirectS3UploadService.validateFile(file, maxSize, allowedTypes);
+  if (!validation.valid) {
+    setUploadResult({
+      success: false,
+      error: validation.error,
+    });
+    onUploadError?.(validation.error || 'Invalid file');
+    return;
+  }
+
+  // Convert to WebP
+  let webpFile: File;
+  try {
+    webpFile = await convertImageFileToWebp(file);
+  } catch (err) {
+    setUploadResult({
+      success: false,
+      error: 'Failed to convert image to WebP.',
+    });
+    onUploadError?.('Failed to convert image to WebP.');
+    return;
+  }
+
+  // Create preview URL
+  const fileWithPreview = webpFile as FileWithPreview;
+  fileWithPreview.preview = URL.createObjectURL(webpFile);
+
+  setSelectedFile(fileWithPreview);
+  setUploadResult(null);
+  setUploadProgress(null);
+  jobImageUpload(webpFile);
+}, [maxSize, allowedTypes, onUploadError, jobImageUpload]);
+  // const handleFileSelect = useCallback((file: File) => {
+  //   // Validate file using direct S3 upload service
+  //   const validation = DirectS3UploadService.validateFile(file, maxSize, allowedTypes);
+  //   if (!validation.valid) {
+  //     setUploadResult({
+  //       success: false,
+  //       error: validation.error,
+  //     });
+  //     onUploadError?.(validation.error || 'Invalid file');
+  //     return;
+  //   }
+
+  //   // Create preview URL
+  //   const fileWithPreview = file as FileWithPreview;
+  //   fileWithPreview.preview = URL.createObjectURL(file);
     
-    setSelectedFile(fileWithPreview);
-    setUploadResult(null);
-    setUploadProgress(null);
-  }, [maxSize, allowedTypes, onUploadError]);
+  //   setSelectedFile(fileWithPreview);
+  //   setUploadResult(null);
+  //   setUploadProgress(null);
+  // }, [maxSize, allowedTypes, onUploadError]);
 
   // Handle file input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

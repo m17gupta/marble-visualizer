@@ -36,6 +36,7 @@ export function StudioMainCanvas({
   onFileUpload,
 }: StudioMainCanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
@@ -46,6 +47,10 @@ export function StudioMainCanvas({
 
   const [canvasWidth, setCanvasWidth] = useState(1023);
   const [canvasHeight, setCanvasHeight] = useState(592);
+ 
+
+
+    
   // // update the canvas image
   useEffect(() => {
     if (canvasType) {
@@ -105,7 +110,7 @@ export function StudioMainCanvas({
           className="p-6 pt-0 pe-0 ps-0"
         >
           {/* Canvas Content */}
-          <div className="relative flex gap-4">
+          <div className="relative flex gap-4" ref={containerRef} style={{ minHeight: 300 }}>
             {/* Main Canvas Section */}
 
             <div className="flex-1">
