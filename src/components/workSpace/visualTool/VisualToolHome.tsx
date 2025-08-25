@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Clock, Home, ArrowLeft } from "lucide-react";
 import { Button } from "../../ui/button";
 
-import ViewUploader from "./ViewUploader";
+import ViewUploader, { convertToWebP } from "./ViewUploader";
 import UploadingProgress from "./UploadingProgress";
 import {
   setIsContinue,
@@ -34,21 +34,27 @@ import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 
 import { PiImagesDuotone } from "react-icons/pi";
-import { setIsAnalyseImage, setJobUrl, setProjectId } from "@/redux/slices/projectAnalyseSlice";
-
+import {
+  setIsAnalyseImage,
+  setJobUrl,
+  setProjectId,
+} from "@/redux/slices/projectAnalyseSlice";
 
 type Props = {
   resetProjectCreated: () => void;
-}
+};
 const VisualToolHome = ({ resetProjectCreated }: Props) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { profile } = useSelector((state: RootState) => state.userProfile);
-  const { list: projectList } = useSelector((state: RootState) => state.projects);
+  const { list: projectList } = useSelector(
+    (state: RootState) => state.projects
+  );
   const { workspace_type } = useSelector((state: RootState) => state.workspace);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
+  const [uploadWebp, setUploadWeb] = React.useState<File | null>(null);
   const [typeView, setTypeView] = React.useState<string>("");
   const [uploadProgress, setUploadProgress] = React.useState<number>(0);
   const [isCreatingProject, setIsCreatingProject] =
@@ -63,19 +69,21 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
     isAllViewsUploaded,
   } = useViewFiles();
 
-
   const createdProjectId = useRef<number | null>(null);
 
-
   // Upload a file for a given view
-  const handleFileUpload = (file: File, view: ViewType) => {
+  const handleFileUpload = async (file: File, view: ViewType) => {
+    const data: any = await convertToWebP(file);
+
     setViewFile(view, file);
     setUploadedFile(file);
+    setUploadWeb(data);
     setTypeView(view);
   };
 
   const handleFileRemove = (view: ViewType) => {
     removeViewFile(view);
+    setUploadWeb(null);
   };
 
   const handleContinue = () => {
@@ -104,7 +112,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
 
     try {
       const result = await dispatch(createProject(projectData)).unwrap();
-      console.log("Project created successfully:", result);
+
       if (result.id) {
         createdProjectId.current = result.id;
         //toast.success("Project created successfully!");
@@ -134,8 +142,8 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
     { key: "left", label: "Left View" },
     { key: "right", label: "Right View" },
   ];
+
   const handleUpload = async () => {
-    
     if (!uploadedFile || !profile?.id) return;
 
     // Check if AWS credentials are configured
@@ -149,7 +157,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
 
     try {
       // Use direct S3 upload service
-  
+
       const result = await DirectS3UploadService.uploadFile(
         uploadedFile,
         profile.id,
@@ -158,8 +166,16 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
           setUploadProgress(progress.percentage || 0);
         }
       );
-   
+
       if (result.success && result.fileUrl && result.key) {
+        const res = await DirectS3UploadService.uploadFile(
+          uploadWebp!,
+          profile.id
+          // (progress: UploadProgress) => {
+          //   // Calculate percentage from the upload progress
+          //   setUploadProgress(progress.percentage || 0);
+          // }
+        );
         dispatch(addHouseImage(result.fileUrl));
         // create job with uploaded file
         const jobData: CreateJobParams = {
@@ -176,7 +192,6 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
         setIsCreatingJob(true);
         CreateJob(jobData, {
           resetForm: () => {
-            ;
             setIsCreatingJob(false);
 
             // Navigate to the project page or workspace after job creation
@@ -199,6 +214,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
           },
           clearImages: () => {
             setUploadedFile(null);
+            setUploadWeb(null);
             setIsCreatingJob(false);
           },
         });
@@ -234,8 +250,9 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
               <Button
                 onClick={handleGoBack}
                 variant="outline"
-                className="text-lg absolute left-0 top-0 md:top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900 bg-transparent border-0 shadow-none">
-                <ArrowLeft className="h-6 w-6 md:w-4 md:w-4" />
+                className="text-lg absolute left-0 top-0 md:top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900 bg-transparent border-0 shadow-none"
+              >
+                <ArrowLeft className="h-6 w-6 md:w-4" />
                 <span>Back</span>
               </Button>
 
@@ -251,7 +268,6 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
                   (Additional views available after delivery of initial project)
                 </p>
               </div>
-
             </div>
           </div>
         </div>
@@ -314,8 +330,6 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
                       {/* </div> */}
                       {/* <img src={Camera} alt="Camera Icon" className="h-18 w-32 object-contain" /> */}
                       <LuImageUp className="h-10 w-10 text-gray-600" />
-
-
                     </div>
                     <div>
                       <p className="text-sm text-gray-700">
@@ -335,9 +349,6 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
                       {/* <img src={Homeimage} alt="Home Icon" className="h-18 w-36 object-contain" /> */}
                       {/* <LuImageUp className="text-2xl text-gray-700 mt-1"/> */}
                       <PiImagesDuotone className="h-10 w-10 text-gray-600" />
-
-
-
                     </div>
                     <div>
                       <p className="text-sm text-gray-700">
@@ -404,15 +415,17 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
             <Button
               onClick={handleContinue}
               disabled={!hasAnyFiles || !projectName.trim()}
-              className={`py-4 text-sm font-semibold rounded-lg transition-all ${hasAnyFiles && projectName.trim()
+              className={`py-4 text-sm font-semibold rounded-lg transition-all ${
+                hasAnyFiles && projectName.trim()
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}>
+              }`}
+            >
               {!projectName.trim()
                 ? "Please enter a project name"
                 : hasAnyFiles
-                  ? `Continue with (${typeView} view)`
-                  : "Upload at least one view to continue"}
+                ? `Continue with (${typeView} view)`
+                : "Upload at least one view to continue"}
             </Button>
           </div>
 

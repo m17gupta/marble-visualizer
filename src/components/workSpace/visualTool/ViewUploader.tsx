@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Upload, Check } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { Upload, Check } from "lucide-react";
 
 interface ViewUploaderProps {
   viewType: string;
@@ -7,6 +7,35 @@ interface ViewUploaderProps {
   onFileUpload: (file: File, viewType: string) => void;
   onFileRemove: () => void;
   disabled?: boolean;
+}
+
+export async function convertToWebP(file: any) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event: any) => {
+      const img: any = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx: any = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(
+          (blob: any) => {
+            resolve(
+              new File([blob], file.name.replace(/\.\w+$/, ".webp"), {
+                type: "image/webp",
+              })
+            );
+          },
+          "image/webp",
+          0.5
+        );
+      };
+    };
+  });
 }
 
 const ViewUploader: React.FC<ViewUploaderProps> = ({
@@ -23,12 +52,12 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
   // Map view types to background images
   const getBackgroundImage = (view: string) => {
     const viewMap: { [key: string]: string } = {
-      'Front View': 'https://dzinly.in/img/view-front.png',
-      'Rear View': 'https://dzinly.in/img/view-rear.png',
-      'Left View': 'https://dzinly.in/img/view-left.png',
-      'Right View': 'https://dzinly.in/img/view-right.png',
+      "Front View": "https://dzinly.in/img/view-front.png",
+      "Rear View": "https://dzinly.in/img/view-rear.png",
+      "Left View": "https://dzinly.in/img/view-left.png",
+      "Right View": "https://dzinly.in/img/view-right.png",
     };
-    return viewMap[view] || 'https://dzinly.in/img/view-front.png';
+    return viewMap[view] || "https://dzinly.in/img/view-front.png";
   };
 
   // Generate image preview when file is uploaded
@@ -54,24 +83,50 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         onFileUpload(file, viewType);
       }
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      // onFileUpload(e.target.files[0], viewType);
+      // const data: any = await convertToWebP(e.target.files[0]);
+
       onFileUpload(e.target.files[0], viewType);
     }
   };
+
+  // const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     console.log("...-----jpg", e.target.files[0].size);
+
+  //     // Convert to WebP
+  //     const data: File = await convertToWebP(e.target.files[0]);
+  //     console.log("----webpsize", data.size);
+
+  //     // Upload
+  //     onFileUpload(data, viewType);
+
+  //     // Download after upload
+  //     const url = URL.createObjectURL(data);
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = data.name; // ensures filename ends with .webp
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //     URL.revokeObjectURL(url);
+  //   }
+  // };
 
   const openFileSelector = () => {
     if (!disabled) {
@@ -81,17 +136,20 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
 
   return (
     <div className="relative">
-      <h3 className="text-md font-medium text-gray-700 mb-3 text-center font-medium ">{viewType}</h3>
+      <h3 className="text-md font-medium text-gray-700 mb-3 text-center ">
+        {viewType}
+      </h3>
 
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${disabled
-          ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
-          : dragActive
-            ? 'border-blue-500 bg-blue-50'
+        className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${
+          disabled
+            ? "border-gray-200 bg-gray-50 cursor-not-allowed"
+            : dragActive
+            ? "border-blue-500 bg-blue-50"
             : uploadedFile
-              ? 'border-green-500 bg-green-50'
-              : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
-          }`}
+            ? "border-green-500 bg-green-50"
+            : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50"
+        }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -132,7 +190,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
             <div className="w-8 h-8 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-2">
               <Check className="h-4 w-4 text-green-600" />
             </div>
-            
+
             <p className="text-xs font-medium text-white bg-black bg-opacity-50 rounded px-2 py-1">
               Image Selected
             </p>
@@ -144,12 +202,10 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
               }}
               className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/80 hover:bg-gray-50 p-0 text-black hover:text-black flex items-center justify-center shadow-md transition-all"
             >
-              <span className='text-sm' style={{paddingLeft:"1px"}}>X</span>
+              <span className="text-sm" style={{ paddingLeft: "1px" }}>
+                X
+              </span>
             </button>
-
-
-
-
           </div>
         ) : (
           <div className="absolute inset-0 flex flex-col justify-center items-center z-10">
@@ -157,10 +213,10 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
               <Upload className="h-4 w-4 text-gray-600" />
             </div>
             <p className="text-xs font-medium text-gray-700 bg-white bg-opacity-80 rounded px-2 py-1">
-              {disabled ? 'Only one image allowed' : 'Select'}
+              {disabled ? "Only one image allowed" : "Select"}
             </p>
             <p className="text-xs text-gray-500 bg-white bg-opacity-80 rounded px-2 py-1 mt-1">
-              {disabled ? '' : 'JPG, PNG'}
+              {disabled ? "" : "JPG, PNG"}
             </p>
           </div>
         )}
