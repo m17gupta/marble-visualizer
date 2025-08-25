@@ -28,7 +28,7 @@ interface FilterSwatchProps {
   expanded?: string | null;
   finaldata?: any[];
   handleSelectMaterial?: (data: any, name: string, segment: any) => void;
-  segment: any;
+  segment?: any;
 }
 
 const FilterSwatch: React.FC<FilterSwatchProps> = ({
