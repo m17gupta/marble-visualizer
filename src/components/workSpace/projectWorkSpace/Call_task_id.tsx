@@ -63,7 +63,7 @@
 // export default Call_task_id;
 
 import { TaskApiModel } from "@/models/genAiModel/GenAiModel";
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { genAiService } from "@/services/genAi/genAiService";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
@@ -115,7 +115,6 @@ const Call_task_id = ({ taskId, resetChatTask, resetChatTaskFail }: Props) => {
     },
     [resetChatTask, resetChatTaskFail]
   );
-
   useEffect(() => {
     isComponentMounted.current = true;
 
@@ -125,8 +124,6 @@ const Call_task_id = ({ taskId, resetChatTask, resetChatTaskFail }: Props) => {
         pollTaskStatus(taskId);
       }, 30000);
     }
-
-    const [tID, setTID] = useState<string>("");
 
     return () => {
       isComponentMounted.current = false;

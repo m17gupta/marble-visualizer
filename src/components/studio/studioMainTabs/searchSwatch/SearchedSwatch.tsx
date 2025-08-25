@@ -16,18 +16,17 @@ interface FilterSwatchProps {
   activeTabData?: any;
   expanded?: string | null;
   finaldata?: any[];
-  handleSelectMaterial?: (data: any, name: string) => void;
+  handleSelectMaterial?: (data: any, name: string, segment: any) => void;
+  segment: any;
 }
 
-type Props = {
-  onCountSwatch: (count: number) => void;
-};
 const SearchedSwatch = ({
   onCountSwatch,
   activeTabData,
   expanded,
   finaldata,
   handleSelectMaterial,
+  segment,
 }: FilterSwatchProps) => {
   const dispatch = useDispatch();
   const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
@@ -263,7 +262,7 @@ const SearchedSwatch = ({
                 onClick={() => {
                   handleSelectedSwatch(src);
                   if (expanded != null && handleSelectMaterial) {
-                    handleSelectMaterial(src, expanded!);
+                    handleSelectMaterial(src, expanded!, segment);
                   }
                 }}
               >

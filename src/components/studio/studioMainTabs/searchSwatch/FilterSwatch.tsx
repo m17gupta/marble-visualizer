@@ -27,7 +27,8 @@ interface FilterSwatchProps {
   activeTabData?: any;
   expanded?: string | null;
   finaldata?: any[];
-  handleSelectMaterial?: (data: any, name: string) => void;
+  handleSelectMaterial?: (data: any, name: string, segment: any) => void;
+  segment: any;
 }
 
 const FilterSwatch: React.FC<FilterSwatchProps> = ({
@@ -36,6 +37,7 @@ const FilterSwatch: React.FC<FilterSwatchProps> = ({
   expanded,
   finaldata,
   handleSelectMaterial,
+  segment,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [query, setQuery] = useState("");
@@ -55,6 +57,7 @@ const FilterSwatch: React.FC<FilterSwatchProps> = ({
   const handleCloseSheet = () => {
     setIsSheetOpen(false);
   };
+
   return (
     <>
       <SheetContent
@@ -194,6 +197,7 @@ const FilterSwatch: React.FC<FilterSwatchProps> = ({
             expanded={expanded}
             finaldata={finaldata}
             handleSelectMaterial={handleSelectMaterial}
+            segment={segment}
           />
         </div>
       </SheetContent>

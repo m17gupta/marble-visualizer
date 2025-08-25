@@ -128,10 +128,7 @@ class GenAiService {
   // delete genAi _chat from table based on id
   async deleteGenAiChat(id: string): Promise<GenAiDeleteResponse> {
     try {
-      const { error } = await supabase
-        .from("genai_chat")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("genai_chat").delete().eq("id", id);
 
       if (error) {
         throw new Error(error.message || "Failed to delete GenAI chat");
@@ -141,34 +138,32 @@ class GenAiService {
     } catch (error) {
       console.error("Error deleting GenAI chat:", error);
       return { success: false, id };
-
     }
-  
-}
-
-// update genAi _chat in table based on id
-async updateGenAiChatId(chatData: GenAiChat): Promise<GenAiChat> {
-  try {
-    const { data, error } = await supabase
-      .from("genai_chat")
-      .update(chatData)
-      .eq("id", chatData.id)
-      .select(); // Add select() to retrieve the updated data
-
-    if (error) {
-      throw new Error(error.message || "Failed to update GenAI chat");
-    }
-    console.log("Updated data:", data);
-    if (data && data.length > 0) {
-      return data[0] as GenAiChat;
-    } else {
-      throw new Error("No data returned after update");
-    }
-  } catch (error) {
-    console.error("Error updating GenAI chat:", error);
-    throw error;
   }
-}
+
+  // update genAi _chat in table based on id
+  async updateGenAiChatId(chatData: GenAiChat): Promise<GenAiChat> {
+    try {
+      const { data, error } = await supabase
+        .from("genai_chat")
+        .update(chatData)
+        .eq("id", chatData.id)
+        .select(); // Add select() to retrieve the updated data
+
+      if (error) {
+        throw new Error(error.message || "Failed to update GenAI chat");
+      }
+      console.log("Updated data:", data);
+      if (data && data.length > 0) {
+        return data[0] as GenAiChat;
+      } else {
+        throw new Error("No data returned after update");
+      }
+    } catch (error) {
+      console.error("Error updating GenAI chat:", error);
+      throw error;
+    }
+  }
 }
 export const genAiService = new GenAiService();
 export default genAiService;

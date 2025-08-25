@@ -8,6 +8,9 @@ import {
   Image,
   PDFViewer, // optional: for quick preview in browser
 } from "@react-pdf/renderer";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { meterArea } from "@/components/canvasUtil/CalculatePolygonArea";
 
 const logoUrl = "https://dzinly.in/img/logo.png";
 
@@ -125,12 +128,14 @@ interface JobData {
 }
 
 interface Props {
-  imageUrl: string; // The URL for the main project image
+  imageUrl?: string; // The URL for the main project image
   jobData: JobData;
   activeTab: string;
   selectedUnit: string;
   masterArray: MasterArrayItem[];
   convertArea: (area: number) => string;
+  pdfData: any;
+  PixelRatio: any;
 }
 
 // --- STYLES (UNCHANGED) ---
@@ -185,12 +190,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "#e0e0e0",
   },
 
-  projectSummary:{
-   display:"flex",
-   justifyContent:"space-between",
-   alignItems:"center",
+  projectSummary: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-
 
   infoBlock: {
     marginBottom: 15,
@@ -200,14 +204,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#eeeeee",
   },
-  infoBlocks:{
-  
-  },
+  infoBlocks: {},
 
-  infoTitle:{
+  infoTitle: {
     fontSize: 11,
     color: "#555",
-    fontWeight:"600",
+    fontWeight: "600",
   },
   infoText: {
     marginBottom: 8,
@@ -296,22 +298,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12, // Added more space between rows
   },
   summaryItem: {
-    width: '48%', // Each item takes almost half the space
+    width: "48%", // Each item takes almost half the space
   },
   summaryLabel: {
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: "Helvetica-Bold",
     fontSize: 10,
-    color: '#333',
+    color: "#333",
     marginBottom: 3, // Space between label and value
   },
   summaryValue: {
     fontSize: 10,
-    color: '#666',
+    color: "#666",
   },
 });
 
@@ -322,8 +324,88 @@ export const MeasurementReportPDF: React.FC<Props> = ({
   selectedUnit,
   masterArray,
   convertArea,
+  pdfData,
+  PixelRatio,
 }) => {
   const activeTabData = masterArray.find((item) => item.name === activeTab);
+  const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
+  const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
+
+  const materialSummary = pdfData
+    .flat()
+    .map((d: any) => {
+      return d.selected_material
+        .map((data: any) => {
+          return {
+            ...data,
+            price: "1500 / box",
+            coverage: "10 sq.m / box",
+            labor: "100 sq.m",
+            groupname: d.groupname,
+            totalArea: convertArea(
+              d.segment.reduce(
+                (total: number, segment: any) =>
+                  total +
+                  parseFloat(
+                    meterArea(segment.seg_area_pixel || 0, PixelRatio).toFixed(
+                      2
+                    )
+                  ),
+                0
+              )
+            ),
+          };
+        })
+        .flat();
+    })
+    .flat();
+
+  const segments = pdfData
+    .map((data: any) => {
+      return data.segment;
+    })
+    .flat();
+
+  console.log(segments);
+
+  const formula = (prodprice: any, area: any, labor: any, coverage: any) => {
+    const parseValue = (val: any) => {
+      if (typeof val === "number") return val;
+      if (typeof val === "string") return Number(val.split(" ")[0]) || 0;
+      return 0;
+    };
+
+    prodprice = parseValue(prodprice);
+    area = parseValue(area);
+    labor = parseValue(labor);
+    coverage = parseValue(coverage);
+
+    const qty = coverage > 0 ? Math.ceil(area / coverage) : 0;
+    const materialCost = Math.ceil((area / coverage) * prodprice || 0);
+    const laborCost = area * labor;
+
+    return { qty, materialCost, laborCost };
+  };
+
+  console.log(pdfData);
+
+  // const prices = pdfData.flat().map((data: any) => {
+  //   return {
+  //     groupname: data.groupname,
+  //     totalArea: convertArea(
+  //       data.segment.reduce(
+  //         (total: number, segment: any) =>
+  //           total +
+  //           parseFloat(
+  //             meterArea(segment.seg_area_pixel || 0, PixelRatio).toFixed(2)
+  //           ),
+  //         0
+  //       )
+  //     ),
+  //   };
+  // });
+
+  console.log(materialSummary);
 
   return (
     <Document>
@@ -338,17 +420,11 @@ export const MeasurementReportPDF: React.FC<Props> = ({
         </View>
 
         {/* Hero Image */}
-        <Image
-          style={styles.mainImage}
-          src=
-          
-            "https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/styled_output_52f90df66fb8433e91a6c746f98c9d67_(1)_1755614109956_db4zhk.png"
-          
-        />
+        <Image style={styles.mainImage} src={imageUrl} />
 
         {/* Project Summary */}
         <Text style={styles.sectionTitle}>Project Summary</Text>
-     <View style={styles.infoBlockss}>
+        <View style={styles.infoBlockss}>
           <View style={styles.summaryRow}>
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>Project:</Text>
@@ -373,14 +449,18 @@ export const MeasurementReportPDF: React.FC<Props> = ({
 
         {/* Materials Summary (top-level) */}
         <Text style={styles.sectionTitle}>Material Summary</Text>
-        {materialData.map((material, index) => (
-          <View key={index} style={styles.materialBlock}>
+        {materialSummary.map((material: any) => (
+          <View key={material.id} style={styles.materialBlock}>
             <Image
               style={styles.materialSwatch}
-              src={material.imageUrl || fallbackMaterialImageUrl}
+              src={
+                material.bucket_path === "default"
+                  ? `${path}/${material.photo}` // ✅ use same object
+                  : `${newPath}/${material.bucket_path}`
+              }
             />
             <View style={styles.materialTextContainer}>
-              <Text style={styles.materialTitle}>{material.name}</Text>
+              <Text style={styles.materialTitle}>{material.title}</Text>
               <View style={styles.materialDetailRow}>
                 <Text style={styles.materialDetailText}>
                   Price: {material.price}
@@ -400,41 +480,49 @@ export const MeasurementReportPDF: React.FC<Props> = ({
         <Text style={styles.sectionTitle}>
           Wall — Sub-Segments &amp; Materials (5)
         </Text>
-        {wallSegmentMaterials.map((m, i) => (
-          <View key={`wall-sub-${i}`} style={styles.materialBlock}>
-            <Image
-              style={styles.materialSwatch}
-              src={m.imageUrl || fallbackMaterialImageUrl}
-            />
-            <View style={styles.materialTextContainer}>
-              <Text style={styles.materialTitle}>
-                {m.id}: {m.name}
-              </Text>
-
-              {/* Row 1 */}
-              <View style={styles.materialDetailRow}>
-                <Text style={styles.materialDetailText}>Type: {m.type}</Text>
-                <Text style={styles.materialDetailText}>
-                  Coverage: {m.coverage}
+        {materialSummary.map((m: any) => {
+          const { qty, materialCost, laborCost } = formula(
+            m.price,
+            m.totalArea,
+            m.labor,
+            m.coverage
+          );
+          return (
+            <View key={`${m.groupname}-${m.id}`} style={styles.materialBlock}>
+              <Image
+                style={styles.materialSwatch}
+                src={fallbackMaterialImageUrl}
+              />
+              <View style={styles.materialTextContainer}>
+                <Text style={styles.materialTitle}>
+                  {m.groupname}: {m.title}
                 </Text>
-                <Text style={styles.materialDetailText}>
+
+                {/* Row 1 */}
+                <View style={styles.materialDetailRow}>
+                  {/* <Text style={styles.materialDetailText}>Type: {m.type}</Text> */}
+                  <Text style={styles.materialDetailText}>
+                    Coverage: {m.coverage}
+                  </Text>
+                  {/* <Text style={styles.materialDetailText}>
                   Coats: {m.coats ?? "—"}
-                </Text>
-              </View>
+                </Text> */}
+                </View>
 
-              {/* Row 2 */}
-              <View style={styles.materialDetailRow}>
-                <Text style={styles.materialDetailText}>
-                  Area: {m.areaSqft} sqft
-                </Text>
-                <Text style={styles.materialDetailText}>Qty: {m.qty}</Text>
-                <Text style={styles.materialDetailText}>
-                  Material: {m.materialCost} | Labor: {m.laborCost}
-                </Text>
+                {/* Row 2 */}
+                <View style={styles.materialDetailRow}>
+                  <Text style={styles.materialDetailText}>
+                    Area: {m.totalArea} sq.m.
+                  </Text>
+                  <Text style={styles.materialDetailText}>Qty: {qty}</Text>
+                  <Text style={styles.materialDetailText}>
+                    Material: $ {materialCost} | Labor: $ {laborCost}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
 
         {/* --- CHANGE: WRAPPED THIS SECTION IN A VIEW WITH A 'break' PROP (kept as in your code) --- */}
         <View break>
@@ -444,14 +532,12 @@ export const MeasurementReportPDF: React.FC<Props> = ({
               <Text style={styles.tableColHeader}>Group</Text>
               <Text style={styles.tableColHeader}>Segment ID</Text>
               <Text style={styles.tableColHeader}>Title</Text>
-              <Text style={styles.tableColHeader}>
-                Area ({selectedUnit})
-              </Text>
+              <Text style={styles.tableColHeader}>Area ({selectedUnit})</Text>
             </View>
-            {activeTabData?.allSegments.map((group) =>
-              group.segments.map((segment, idx) => (
+            {pdfData?.map((group: any) =>
+              group.segment.map((segment: any, idx: number) => (
                 <View
-                  key={idx}
+                  key={segment.id}
                   style={
                     idx % 2 !== 0
                       ? [styles.tableRow, styles.tableRowAlt]
@@ -459,13 +545,15 @@ export const MeasurementReportPDF: React.FC<Props> = ({
                   }
                   wrap={false}
                 >
-                  <Text style={styles.tableCol}>{group.groupName}</Text>
+                  <Text style={styles.tableCol}>
+                    {segment.group_label_system}
+                  </Text>
                   <Text style={styles.tableCol}>{segment.short_title}</Text>
                   <Text style={styles.tableCol}>
                     {segment.title || "Untitled"}
                   </Text>
                   <Text style={styles.tableCol}>
-                    {convertArea(segment.seg_area_sqmt || 0)}
+                    {convertArea(meterArea(segment.seg_area_pixel, PixelRatio))}
                   </Text>
                 </View>
               ))
@@ -494,13 +582,16 @@ export const MeasurementReportPDF: React.FC<Props> = ({
               >
                 <Text style={styles.tableCol}>{m.id}</Text>
                 <Text style={styles.tableCol}>
-                  {m.type} {m.coats ? `• ${m.coats} coats` : ""}{"\n"}
+                  {m.type} {m.coats ? `• ${m.coats} coats` : ""}
+                  {"\n"}
                   Area: {m.areaSqft} sqft{"\n"}
                   Coverage: {m.coverage}
                 </Text>
                 <Text style={styles.tableCol}>
-                  Qty: {m.qty}{"\n"}
-                  Material: {m.materialCost}{"\n"}
+                  Qty: {m.qty}
+                  {"\n"}
+                  Material: {m.materialCost}
+                  {"\n"}
                   Labor: {m.laborCost}
                 </Text>
                 <Text style={styles.tableCol}>{m.subtotal}</Text>
@@ -524,56 +615,56 @@ export const MeasurementReportPDF: React.FC<Props> = ({
 /*  Wrap in your app to preview. Remove if you only need the component above. */
 /* -------------------------------------------------------------------------- */
 
-export const SampleMeasurementReportPDF: React.FC = () => {
-  const jobData: JobData = {
-    projectName: "Lodha Greenwood Elevation Refresh",
-    date: "2025-08-25",
-    address: "C-142, Sector 31, Gurugram, Haryana 122003",
-  };
+// export const SampleMeasurementReportPDF: React.FC = () => {
+//   const jobData: JobData = {
+//     projectName: "Lodha Greenwood Elevation Refresh",
+//     date: "2025-08-25",
+//     address: "C-142, Sector 31, Gurugram, Haryana 122003",
+//   };
 
-  const masterArray: MasterArrayItem[] = [
-    {
-      name: "Walls",
-      allSegments: [
-        {
-          groupName: "Front Elevation",
-          segments: [
-            { short_title: "W-1", title: "Left Bay", seg_area_sqmt: 18.5 },
-            { short_title: "W-2", title: "Center Field", seg_area_sqmt: 26.9 },
-          ],
-        },
-        {
-          groupName: "Right Elevation",
-          segments: [
-            { short_title: "W-3", title: "Right Field", seg_area_sqmt: 22.1 },
-          ],
-        },
-        {
-          groupName: "Rear Elevation",
-          segments: [
-            { short_title: "W-4", title: "Patio Wall", seg_area_sqmt: 15.8 },
-            { short_title: "W-5", title: "Garden Wall", seg_area_sqmt: 12.2 },
-          ],
-        },
-      ],
-    },
-  ];
+//   const masterArray: MasterArrayItem[] = [
+//     {
+//       name: "Walls",
+//       allSegments: [
+//         {
+//           groupName: "Front Elevation",
+//           segments: [
+//             { short_title: "W-1", title: "Left Bay", seg_area_sqmt: 18.5 },
+//             { short_title: "W-2", title: "Center Field", seg_area_sqmt: 26.9 },
+//           ],
+//         },
+//         {
+//           groupName: "Right Elevation",
+//           segments: [
+//             { short_title: "W-3", title: "Right Field", seg_area_sqmt: 22.1 },
+//           ],
+//         },
+//         {
+//           groupName: "Rear Elevation",
+//           segments: [
+//             { short_title: "W-4", title: "Patio Wall", seg_area_sqmt: 15.8 },
+//             { short_title: "W-5", title: "Garden Wall", seg_area_sqmt: 12.2 },
+//           ],
+//         },
+//       ],
+//     },
+//   ];
 
-  const convertArea = (sqmt: number) => {
-    const sqft = sqmt * 10.7639;
-    return `${sqft.toFixed(1)} sqft`;
-  };
+//   const convertArea = (sqmt: number) => {
+//     const sqft = sqmt * 10.7639;
+//     return `${sqft.toFixed(1)} sqft`;
+//   };
 
-  return (
-    <PDFViewer style={{ width: "100%", height: "100vh" }}>
-      <MeasurementReportPDF
-        imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/styled_output_52f90df66fb8433e91a6c746f98c9d67_(1)_1755614109956_db4zhk.png"
-        jobData={jobData}
-        activeTab="Walls"
-        selectedUnit="sqft"
-        masterArray={masterArray}
-        convertArea={convertArea}
-      />
-    </PDFViewer>
-  );
-};
+//   return (
+//     <PDFViewer style={{ width: "100%", height: "100vh" }}>
+//       <MeasurementReportPDF
+//         imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/styled_output_52f90df66fb8433e91a6c746f98c9d67_(1)_1755614109956_db4zhk.png"
+//         jobData={jobData}
+//         activeTab="Walls"
+//         selectedUnit="sqft"
+//         masterArray={masterArray}
+//         convertArea={convertArea}
+//       />
+//     </PDFViewer>
+//   );
+// };

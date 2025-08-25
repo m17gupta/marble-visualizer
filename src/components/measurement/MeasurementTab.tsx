@@ -24,17 +24,20 @@ import styleIcon from "../../../public/assets/image/line-md--list-3-twotone (1).
 
 interface MeasurementTabProps {
   selectedUnit: string;
+  pdfData: { groupname: string; selected_material: any[] }[];
+  handleSelectMaterial: (data: any, name: string, segment: any) => void;
 }
 
-const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
+const MeasurementTab: React.FC<MeasurementTabProps> = ({
+  selectedUnit,
+  pdfData,
+  handleSelectMaterial,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [editingGroup, setEditingGroup] = useState<string | null>(null);
   const [editingGroupValue, setEditingGroupValue] = useState<string>("");
-  const [pdfData, setPdfData] = useState<
-    { groupname: string; selected_material: any[] }[]
-  >([]);
   const [expandedGroups, setExpandedGroups] = useState<SegmentModal[]>([]);
   const [expandedGroupsName, setExpandedGroupsName] = useState<string | null>(
     null
@@ -47,33 +50,6 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
     pdfData
       .find((d) => d.groupname == expandedGroupsName)
       ?.selected_material.map((d) => d.id) ?? [];
-
-  const handleSelectMaterial = (data: any, name: string) => {
-    const copied = structuredClone(pdfData);
-    const id = data.id;
-    const isPresent = copied.find((d: any) => d.groupname == name);
-    if (isPresent) {
-      if (isPresent?.selected_material.find((d) => d.id == id)) {
-        const newdata = isPresent.selected_material.filter((d) => d.id !== id);
-        isPresent.selected_material = newdata;
-        const filtered = copied.filter((d: any) => d.groupname != name);
-        filtered.push(isPresent);
-        setPdfData(filtered);
-      } else {
-        isPresent.selected_material.push(data);
-        const filtered = pdfData.filter((d: any) => d.groupname != name);
-        filtered.push(isPresent);
-        setPdfData(filtered);
-      }
-    } else {
-      const final = {
-        groupname: name,
-        selected_material: [data],
-      };
-      copied.push(final);
-      setPdfData(copied);
-    }
-  };
 
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { list: joblist } = useSelector((state: RootState) => state.jobs);
@@ -174,6 +150,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
     // console.log("Segment Type:", segment);
     setIsOpen(true);
   };
+
   return (
     <>
       {/* Tab Navigation */}
@@ -216,6 +193,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({ selectedUnit }) => {
                 setIsSheetOpen={setIsOpen}
                 activeTabData={activeTabData}
                 expanded={expandedGroupsName}
+                segment={expandedGroups}
                 finaldata={expandedDetails}
                 handleSelectMaterial={handleSelectMaterial}
               />

@@ -17,7 +17,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { updateIsDistanceRef } from "@/redux/slices/jobSlice";
@@ -80,6 +80,42 @@ const MeasurementContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { list: joblist } = useSelector((state: RootState) => state.jobs);
+
+  const PixelRatio: number =
+    (joblist[0]?.distance_ref?.distance_meter ?? 0) /
+    (joblist[0]?.distance_ref?.distance_pixel ?? 1);
+
+  const [pdfData, setPdfData] = useState<
+    { groupname: string; selected_material: any[] }[]
+  >([]);
+
+  const handleSelectMaterial = (data: any, name: string, segment: any) => {
+    const copied = structuredClone(pdfData);
+    const id = data.id;
+    const isPresent = copied.find((d: any) => d.groupname == name);
+    if (isPresent) {
+      if (isPresent?.selected_material.find((d) => d.id == id)) {
+        const newdata = isPresent.selected_material.filter((d) => d.id !== id);
+        isPresent.selected_material = newdata;
+        const filtered = copied.filter((d: any) => d.groupname != name);
+        filtered.push(isPresent);
+        setPdfData(filtered);
+      } else {
+        isPresent.selected_material.push(data);
+        const filtered = pdfData.filter((d: any) => d.groupname != name);
+        filtered.push(isPresent);
+        setPdfData(filtered);
+      }
+    } else {
+      const final = {
+        groupname: name,
+        selected_material: [data],
+        segment: segment,
+      };
+      copied.push(final);
+      setPdfData(copied);
+    }
+  };
 
   // Set initial active tab
   useEffect(() => {
@@ -186,8 +222,6 @@ const MeasurementContent: React.FC = () => {
     return convertedArea.toFixed(2);
   };
 
-  const activeTabData = getActiveTabData();
-
   return (
     <div className="max-h-full bg-white">
       {/* Header */}
@@ -205,23 +239,21 @@ const MeasurementContent: React.FC = () => {
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">Unit:</span>
 
-       <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-      <SelectTrigger className="w-[120px] bg-white">
-        <SelectValue placeholder="Select unit" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Units</SelectLabel>
-          {units.map((unit) => (
-            <SelectItem key={unit} value={unit}>
-              {unit}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-
-        
+            <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+              <SelectTrigger className="w-[120px] bg-white">
+                <SelectValue placeholder="Select unit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Units</SelectLabel>
+                  {units.map((unit) => (
+                    <SelectItem key={unit} value={unit}>
+                      {unit}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -259,7 +291,11 @@ const MeasurementContent: React.FC = () => {
         </div>
 
         {/* Tab Navigation */}
-        <MeasurementTab selectedUnit={selectedUnit} />
+        <MeasurementTab
+          handleSelectMaterial={handleSelectMaterial}
+          selectedUnit={selectedUnit}
+          pdfData={pdfData}
+        />
 
         {/* Footer Action */}
         <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
@@ -277,12 +313,14 @@ const MeasurementContent: React.FC = () => {
       {/* PDF Modal */}
       {showPDFModal && (
         <PDFModal
+          pdfData={pdfData}
           setShowPDFModal={setShowPDFModal}
           mockJobData={mockJobData}
           activeTab={activeTab}
           selectedUnit={selectedUnit}
           convertArea={convertArea}
           masterArray={masterArray}
+          PixelRatio={PixelRatio}
         />
       )}
     </div>
@@ -298,6 +336,8 @@ const PDFModal = ({
   selectedUnit,
   convertArea,
   masterArray,
+  pdfData,
+  PixelRatio,
 }: any) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -317,25 +357,28 @@ const PDFModal = ({
         <div className="p-4 bg-gray-50 h-[80vh] overflow-auto">
           <PDFViewer width="100%" height="100%">
             <MeasurementReportPDF
-              imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/Tom_Reformatted_(1)_1756101811285_ifc4o9.png"
+              imageUrl="https://pellakconstruction.com/wp-content/uploads/2023/09/old-new-house-split-in-two.webp"
               jobData={mockJobData}
               activeTab={activeTab}
               selectedUnit={selectedUnit}
               masterArray={masterArray}
               convertArea={convertArea}
+              pdfData={pdfData}
+              PixelRatio={PixelRatio}
             />
           </PDFViewer>
         </div>
-        <div className="p-4 flex justify-end border-t border-gray-200">
+        {/* <div className="p-4 flex justify-end border-t border-gray-200">
           <PDFDownloadLink
             document={
               <MeasurementReportPDF
-                imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/Tom_Reformatted_(1)_1756101811285_ifc4o9.png"
+                // imageUrl="https://testvizualizer.s3.us-east-2.amazonaws.com/uploads/images/11/styled_output_52f90df66fb8433e91a6c746f98c9d67_(1)_1755614109956_db4zhk.png"
                 jobData={mockJobData}
                 activeTab={activeTab}
                 selectedUnit={selectedUnit}
                 masterArray={masterArray}
                 convertArea={convertArea}
+                pdfData={pdfData}
               />
             }
             fileName="measurement-report.pdf"
@@ -349,7 +392,7 @@ const PDFModal = ({
               </button>
             )}
           </PDFDownloadLink>
-        </div>
+        </div> */}
       </div>
     </div>
   );
