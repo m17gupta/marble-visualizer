@@ -226,7 +226,7 @@ const GuidancePanel: React.FC = () => {
         prompt={requests.prompt?.[0] || "Change wall color to lemon green"}
       />
 
-      <div className={`bg-white rounded-sm p-4`}>
+      <div className={`bg-white rounded-sm p-4 border border-gray-200`}>
         <div className="flex items-center">
           <h2 className="text-lg font-semibold ">AI Guidance</h2>
           <TooltipProvider delayDuration={0}>
@@ -259,7 +259,7 @@ const GuidancePanel: React.FC = () => {
           }}
         />
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="mb-4">
           {/* Prompt Tag */}
           {requests.prompt && requests.prompt.length > 0 && (
             <UserInputPopOver
