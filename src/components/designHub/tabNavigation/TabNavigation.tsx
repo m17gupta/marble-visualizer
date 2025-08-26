@@ -31,7 +31,7 @@ import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
 
 type Props = {
   title?: string;
-  segment: SegmentModal;
+  segment?: SegmentModal;
 };
 const TabNavigation = ({ title, segment }: Props) => {
   const [active, setActive] = useState("palette");

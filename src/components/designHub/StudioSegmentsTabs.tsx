@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, act } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -33,6 +33,8 @@ const StudioTabs = () => {
   const [currentSelectedGroupSegment, setCurrentSelectedGroupSegment] =
     useState<MasterGroupModel | null>(null);
 
+  const [active, setActive] = useState<number[]>([]);
+
   const { selectedMasterArray, selectedGroupSegment } = useSelector(
     (state: RootState) => state.masterArray
   );
@@ -51,10 +53,11 @@ const StudioTabs = () => {
             (a.short_title ?? "").localeCompare(b.short_title ?? "")
           );
       });
-      console.log("First Segment:", firstSegment);
+
       setActiveTab(firstGroup.groupName);
       setInnerTabValue(firstSegment[0]?.[0]?.short_title ?? "");
       setCurrentSelectedGroupSegment(firstGroup);
+      setActive(firstSegment[0].map((d) => d.id!));
     } else {
       setMasterArray(null);
     }
@@ -89,13 +92,21 @@ const StudioTabs = () => {
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
     setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
+    const tabs = group.segments.map((d) => d.id!);
+    setActive(tabs);
     setInnerTabValue(group.segments[0]?.short_title ?? "");
   };
 
   const handleInnerTabClick = (seg: SegmentModal) => {
-    if (!seg || !seg.short_title) return;
-    dispatch(updateSelectedSegment(seg));
-    setInnerTabValue(seg.short_title);
+    if (!seg || active.length == 1) {
+      return;
+    }
+
+    if (active.includes(seg.id!)) {
+      setActive((prev) => prev.filter((d) => d != seg.id));
+    } else {
+      setActive((prev) => [...prev, seg.id!]);
+    }
   };
 
   const handleGroupHover = (group: MasterGroupModel) => {
@@ -129,7 +140,7 @@ const StudioTabs = () => {
 
   if (!masterArray || masterArray.allSegments.length === 0) {
     return (
-      <div className=" flex flex-col items-center justify-center grid items-start content-center h-[90%]">
+      <div className=" flex flex-col items-center justify-center grid items-start content-center h-[90%] w-full">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -311,6 +322,45 @@ const StudioTabs = () => {
           </Button>
         </div>
 
+        {/* <div className="w-full">
+          <Swiper spaceBetween={10} slidesPerView={2} className="flex w-full">
+            {currentSelectedGroupSegment?.segments.map((d) => {
+              return (
+                <SwiperSlide key={d.id} className="border-2 w-10">
+                  <button
+                    // ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
+                    // onClick={() => handleInnerTabClick(tab)}
+                    // onMouseEnter={() =>
+                    //   handleEachSegmentHover(tab.short_title ?? "")
+                    // }
+                    onMouseLeave={handleLeaveGroupHover}
+                    className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 focus:outline-none"
+                  >
+                    {d.short_title}
+                  </button>
+                </SwiperSlide>
+              );
+            })}
+            {currentSelectedGroupSegment?.segments.map((d) => {
+              return (
+                <SwiperSlide key={d.id} className="!w-auto">
+                  <button
+                    // ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
+                    // onClick={() => handleInnerTabClick(tab)}
+                    // onMouseEnter={() =>
+                    //   handleEachSegmentHover(tab.short_title ?? "")
+                    // }
+                    onMouseLeave={handleLeaveGroupHover}
+                    className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 focus:outline-none"
+                  >
+                    {d.short_title}
+                  </button>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+        </div> */}
+
         {masterArray.allSegments.map((wall) => (
           <TabsContent value={wall.groupName} key={wall.groupName}>
             <Tabs value={innerTabValue} className="w-full">
@@ -326,44 +376,56 @@ const StudioTabs = () => {
                     .sort((a, b) =>
                       (a.short_title ?? "").localeCompare(b.short_title ?? "")
                     )
-                    .map((tab) => (
-                      <SwiperSlide key={tab.short_title} className="!w-auto">
-                        <TabsTrigger
-                          value={tab.short_title ?? ""}
-                          ref={(el) =>
-                            (tabRefs.current[tab.short_title ?? ""] = el)
-                          }
-                          onClick={() => handleInnerTabClick(tab)}
-                          onMouseEnter={() =>
-                            handleEachSegmentHover(tab.short_title ?? "")
-                          }
-                          onMouseLeave={handleLeaveGroupHover}
-                          className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 data-[state=active]:text-purple-600 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 foucs:ring-0 focus:outline-none focus:ring-transparent"
-                        >
-                          {tab.short_title}
-                        </TabsTrigger>
-                      </SwiperSlide>
-                    ))}
+                    .map((tab) => {
+                      const isPresent = active.includes(tab.id!);
+                      return (
+                        <SwiperSlide key={tab.short_title} className="!w-auto">
+                          <Button
+                            ref={(el) =>
+                              (tabRefs.current[tab.short_title ?? ""] = el)
+                            }
+                            onClick={() => handleInnerTabClick(tab)}
+                            onMouseEnter={() =>
+                              handleEachSegmentHover(tab.short_title ?? "")
+                            }
+                            onMouseLeave={handleLeaveGroupHover}
+                            className={`uppercase text-sm font-semibold px-3 py-1 text-white  focus:ring-transparent  border border-black  hover:text-black ${
+                              isPresent
+                                ? "bg-green-500 hover:border-green-500 hover:bg-green-200"
+                                : "bg-red-500 hover:border-red-500 hover:bg-red-200"
+                            }`}
+                          >
+                            {tab.short_title}
+                          </Button>
+                        </SwiperSlide>
+                      );
+                    })}
                 </Swiper>
               </TabsList>
-
-              {currentSelectedGroupSegment?.segments.map((segment) => (
-                <TabsContent
-                  key={segment.short_title}
-                  value={segment.short_title ?? ""}
-                  className=""
-                >
-                  {innerTabValue === segment.short_title && (
-                    <TabNavigation
-                      title={segment.short_title}
-                      segment={segment || {}}
-                    />
-                  )}
-                </TabsContent>
-              ))}
             </Tabs>
           </TabsContent>
         ))}
+
+        <TabNavigation />
+
+        {/* {currentSelectedGroupSegment?.segments.map((segment) => (
+          <div
+          key={segment.short_title}
+          value={segment.short_title ?? ""}
+          className=""
+          >
+            <TabNavigation
+              title={segment.short_title}
+              segment={segment || {}}
+            />
+            {innerTabValue === segment.short_title && (
+              <TabNavigation
+                title={segment.short_title}
+                segment={segment || {}}
+              />
+            )}
+          </div>
+        ))} */}
       </Tabs>
     </>
   );
