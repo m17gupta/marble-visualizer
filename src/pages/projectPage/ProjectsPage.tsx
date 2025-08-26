@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -30,17 +30,8 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { toast } from "sonner";
-import {
-  Plus,
-  Calendar,
-  Globe,
-  Lock,
-  FolderOpen,
-  Users,
-
-} from "lucide-react";
+import { Plus, Calendar, Globe, Lock, FolderOpen, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 import VisualToolHome from "@/components/workSpace/visualTool/VisualToolHome";
@@ -48,11 +39,11 @@ import {
   addbreadcrumb,
   updateWorkspaceType,
 } from "@/redux/slices/visualizerSlice/workspaceSlice";
-import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import {
-  addHouseImage,
-
-} from "@/redux/slices/visualizerSlice/genAiSlice";
+  updateJobList,
+  updateSidebarHeaderCollapse,
+} from "@/redux/slices/jobSlice";
+import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import ProjectHeader from "./ProjectHeader";
 import ProjectStaticCard from "./ProjectStaticCard";
@@ -71,14 +62,16 @@ export function ProjectsPage() {
   const navigate = useNavigate();
   const [userProjects, setUserProjects] = useState<ProjectModel[]>([]);
   const [updatingProjectId, setUpdatingProjectId] = useState<number[]>([]);
-   const {isDeleteModalOpen, currentProject} = useSelector((state: RootState) => state.projects);
+  const { isDeleteModalOpen, currentProject } = useSelector(
+    (state: RootState) => state.projects
+  );
   const {
     list: projects,
     isLoading,
     error,
     isUpdating,
   } = useSelector((state: RootState) => state.projects);
-   const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const { isCreateDialogOpen } = useSelector(
     (state: RootState) => state.projects
   );
@@ -96,8 +89,6 @@ export function ProjectsPage() {
     newState.projectId = -1;
     setIsOpen(newState);
   };
-
-
 
   /// update userProjects
   useEffect(() => {
@@ -166,8 +157,6 @@ export function ProjectsPage() {
       }
     }
   };
-
-
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -238,11 +227,9 @@ export function ProjectsPage() {
     const newState = { ...isOpen };
     // newState.project = project;
     newState.visible = true;
-    newState.projectId = project.id
-      ? project.id
-      : -1;
+    newState.projectId = project.id ? project.id : -1;
     setIsOpen(newState);
-  }
+  };
 
   const handleCreateProject = () => {
     dispatch(updateWorkspaceType("renovate"));
@@ -255,29 +242,28 @@ export function ProjectsPage() {
     setSelectedProjectId(undefined);
   };
 
-
   const handleCancelProjectDelete = () => {
     dispatch(setIsDeleteModalOpen(false));
     dispatch(clearCurrentProject());
-  }
+  };
 
-   const handleDeleteProject = async (project: ProjectModel) => {
+  const handleDeleteProject = async (project: ProjectModel) => {
     dispatch(setIsDeleteModalOpen(true));
-      if (!project.id) return;
-  
-      try {
-        // Call the deleteProjectById method from ProjectsService
-        const result = await dispatch(deleteProject(project.id));
-  
-        if (deleteProject.fulfilled.match(result)) {
-          toast.success("Project deleted successfully");
-        } else {
-          toast.error((result.payload as string) || "Failed to delete project");
-        }
-      } catch (error) {
-        console.error("Error deleting project:", error);
+    if (!project.id) return;
+
+    try {
+      // Call the deleteProjectById method from ProjectsService
+      const result = await dispatch(deleteProject(project.id));
+
+      if (deleteProject.fulfilled.match(result)) {
+        toast.success("Project deleted successfully");
+      } else {
+        toast.error((result.payload as string) || "Failed to delete project");
       }
-    };
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+  };
   return (
     <>
       {!isCreateDialogOpen && (
@@ -404,7 +390,6 @@ export function ProjectsPage() {
                       {isUpdating &&
                         updatingProjectId.includes(project.id!) && <Loader />}
 
-
                       <ProjectAction
                         project={project}
                         openAnalysedData={handleOpenAnalysedData}
@@ -442,13 +427,19 @@ export function ProjectsPage() {
       )}
 
       {/* delete project */}
-    { isDeleteModalOpen&&
-    <DeleteModal
-      isOpen={isDeleteModalOpen}
-      onCancel={handleCancelProjectDelete}
-      onConfirm={(data) => handleDeleteProject(data)}
-    />}
-
+      {isDeleteModalOpen && (
+        // <DeleteModal
+        //   isOpen={isDeleteModalOpen}
+        //   onCancel={handleCancelProjectDelete}
+        //   onConfirm={(data) => handleDeleteProject(data)}
+        // />
+        <DeleteModal
+          isOpen={isDeleteModalOpen}
+          onCancel={handleCancelProjectDelete}
+          type="project"
+          onDeleteProject={handleDeleteProject}
+        />
+      )}
     </>
   );
 }
