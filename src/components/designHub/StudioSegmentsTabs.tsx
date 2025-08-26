@@ -56,6 +56,11 @@ const StudioTabs = () => {
   const [masterArray, setMasterArray] = useState<MasterModel | null>(null);
   const [currentSelectedGroupSegment, setCurrentSelectedGroupSegment] =
     useState<MasterGroupModel | null>(null);
+  const [edit, setEdit] = useState(false);
+
+  const handleEditOption = () => {
+    setEdit((prev) => !prev);
+  };
 
   const [active, setActive] = useState<number[]>([]);
 
@@ -432,12 +437,14 @@ const StudioTabs = () => {
           </TabsContent>
         ))}
 
-        <TabNavigation />
+        <TabNavigation handleEditOption={handleEditOption} />
 
-        <SegmentEditComp
-          currentSelectedGroupSegment={currentSelectedGroupSegment}
-          totalGroups={totalGroups}
-        />
+        {edit && (
+          <SegmentEditComp
+            currentSelectedGroupSegment={currentSelectedGroupSegment}
+            totalGroups={totalGroups}
+          />
+        )}
 
         {/* {currentSelectedGroupSegment?.segments.map((segment) => (
           <div
@@ -467,7 +474,7 @@ export default StudioTabs;
 
 interface SegmentEditCompProps {
   currentSelectedGroupSegment: any;
-  totalGroups: string[];
+  totalGroups?: string[];
 }
 
 export const SegmentEditComp = ({
@@ -480,12 +487,16 @@ export const SegmentEditComp = ({
   const [groupName, setGroupName] = useState("");
   const [shortName, setShortName] = useState("");
   const [childName, setChildName] = useState("");
-  const [groupArray, setGroupArray] = useState<string[]>([]);
+  const [groupArray, setGroupArray] = useState<string[] | undefined>([]);
   const [selectedCatogory, setSelectedCategory] = useState<string>("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [new_master, setNewMaster] = useState<MaterialSegmentModel | null>(
     null
   );
+
+  useEffect(() => {
+    setGroupArray(totalGroups);
+  }, []);
 
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
@@ -501,7 +512,6 @@ export const SegmentEditComp = ({
     (state: RootState) => state.masterArray
   );
 
-  // console.log("====>>>", selectedSegment);
   const [isUpdated, setIsUpdated] = useState(false);
 
   useEffect(() => {
@@ -513,10 +523,14 @@ export const SegmentEditComp = ({
       selectedSegment.title
     ) {
       // setSegType(selectedSegment.segment_type);
-
       setSegType(currentSelectedGroupSegment.segments[0].segment_type);
       setGroupName(selectedSegment.group_label_system);
       setShortName(selectedSegment.short_title);
+      const categories = segments.find(
+        (d) => d.name == currentSelectedGroupSegment.segments[0].segment_type
+      )?.categories;
+      setAllCategories(categories!);
+      // handleSegmetName();
     }
   }, [currentSelectedGroupSegment]);
 
@@ -558,26 +572,26 @@ export const SegmentEditComp = ({
     }
   };
 
-  // update categories when segType changes
-  useEffect(() => {
-    if (segments && segments.length > 0 && segType && isUpdated) {
-      const seg = segments.find((seg) => seg.name === segType);
-      const categories = seg?.categories || [];
-      const uniqueCategories = Array.from(new Set(categories));
-      setAllCategories(uniqueCategories);
-
-      if (masterArray && seg?.short_code && seg && seg.name) {
-        handleSegGroupName(masterArray, segType, seg?.short_code, seg);
-      }
-    }
-  }, [segments, segType, masterArray, isUpdated]);
+  // useEffect(() => {
+  //   if (segments && segments.length > 0 && segType && isUpdated) {
+  //     const seg = segments.find((seg) => seg.name === segType);
+  //     const categories = seg?.categories || [];
+  //     const uniqueCategories = Array.from(new Set(categories));
+  //     setAllCategories(uniqueCategories);
+  //     if (masterArray && seg?.short_code && seg && seg.name) {
+  //       handleSegGroupName(masterArray, segType, seg?.short_code, seg);
+  //     }
+  //   }
+  // }, [segments, segType, masterArray, isUpdated]);
 
   const handleAddGroup = () => {
     setIsUpdated(true);
-    const groupLength = groupArray.length;
-    const newGroupName = `${segType}${groupLength + 1}`;
-    setGroupArray([...groupArray, newGroupName]);
-    toast.success(`Group ${newGroupName} added successfully!`);
+    if (groupArray != undefined) {
+      const groupLength = groupArray.length;
+      const newGroupName = `${segType}${groupLength + 1}`;
+      setGroupArray([...groupArray, newGroupName]);
+      toast.success(`Group ${newGroupName} added successfully!`);
+    }
   };
 
   const handleSave = async () => {
@@ -623,13 +637,13 @@ export const SegmentEditComp = ({
   };
 
   return (
-    <div className="w-full bg-white border rounded-lg shadow p-6 flex flex-col border-red-900">
+    <div className="w-full bg-white  rounded-lg shadow px-4 py-2 flex flex-col ">
       {/* Header */}
-      <div className="border-b pb-3 mb-4">
+      <div className="border-b pb-3">
         <h2 className="text-xl font-semibold">
           Edit Segment: <span>{currentSelectedGroupSegment.groupName}</span>
         </h2>
-        <div className="pt-4">
+        <div className="pt-2">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-semibold">Select Segment</h4>
           </div>
@@ -671,9 +685,9 @@ export const SegmentEditComp = ({
       </div>
 
       {/* Select segment type */}
-      <div className="pt-4">
+      <div className="pt-2">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-semibold">Select Segment</h4>
+          <h4 className="font-semibold">Select Segment Type</h4>
         </div>
         <div className="relative w-full">
           <select
@@ -715,7 +729,7 @@ export const SegmentEditComp = ({
       </div>
 
       {/* Select Group */}
-      <div className="pt-6">
+      <div className="pt-2">
         <div className="flex items-center justify-between mb-2">
           <h4 className="font-semibold">Select Group</h4>
           <button
@@ -724,6 +738,43 @@ export const SegmentEditComp = ({
           >
             +
           </button>
+        </div>
+        <div className="relative w-full">
+          <select
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+          >
+            <option value="" disabled>
+              Select Group Name
+            </option>
+            {groupArray &&
+              groupArray.map((opt) => {
+                return (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                );
+              })}
+          </select>
+
+          {/* Dropdown arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg
+              className="h-5 w-5 text-gray-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
         </div>
         {/* <Select value={groupName} onValueChange={setGroupName}>
           <SelectTrigger className="w-full">
@@ -740,51 +791,50 @@ export const SegmentEditComp = ({
             </SelectGroup>
           </SelectContent>
         </Select> */}
-        <div className="pt-4">
-          <div className="relative w-full">
-            <select
-              value={groupName}
-              onChange={(e) => setSegType(e.target.value)}
-              className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
-            >
-              <option value="" disabled>
-                Select Group Name
-              </option>
-              {totalGroups &&
-                totalGroups.map((opt) => {
-                  return (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  );
-                })}
-            </select>
-
-            {/* Dropdown arrow */}
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg
-                className="h-5 w-5 text-gray-500"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Categories */}
-      <div className="pt-6">
+      <div className="pt-2">
         <h4 className="font-semibold pb-3">Categories</h4>
-        <Select
+        <div className="relative w-full">
+          <select
+            value={selectedCatogory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+          >
+            <option value="" disabled>
+              Select Category
+            </option>
+            {allcatogories &&
+              allcatogories.length > 0 &&
+              allcatogories.map((opt) => {
+                return (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                );
+              })}
+          </select>
+
+          {/* Dropdown arrow */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg
+              className="h-5 w-5 text-gray-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </div>
+        {/* <Select
           value={selectedCatogory}
           onValueChange={(value) => {
             setSelectedCategory(value);
@@ -804,7 +854,7 @@ export const SegmentEditComp = ({
                 ))}
             </SelectGroup>
           </SelectContent>
-        </Select>
+        </Select> */}
 
         {selectedItems.length > 0 && (
           <div className="mt-4 space-y-2">

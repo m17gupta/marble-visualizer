@@ -32,9 +32,10 @@ import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
 type Props = {
   title?: string;
   segment?: SegmentModal;
+  handleEditOption: () => void;
 };
-const TabNavigation = ({ title, segment }: Props) => {
-  const [active, setActive] = useState("palette");
+const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
+  const [active, setActive] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const buttons = [
     {
@@ -51,7 +52,14 @@ const TabNavigation = ({ title, segment }: Props) => {
     {
       id: "edit",
       tooltip: "Edit Options",
-      isDropdown: true,
+      // isDropdown: true,
+      icon: (
+        <img
+          src="/assets/image/line-md--edit-twotone.svg"
+          alt="Edit"
+          className="h-5 w-5"
+        />
+      ),
     },
     {
       id: "measurement",
@@ -117,14 +125,28 @@ const TabNavigation = ({ title, segment }: Props) => {
     setIsDeleteModalOpen(true);
   };
 
+  const handleOptionSelect = (val: string) => {
+    if (active == val) {
+      if (active == "edit") {
+        handleEditOption();
+      }
+      setActive(null);
+    } else {
+      if (active == "val") {
+        handleEditOption();
+      }
+      setActive(val);
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
         {buttons.map((btn) => {
-          if (btn.id === "edit") {
+          if (btn.id === "") {
             return (
               <DropdownMenu key="edit">
-                <Tooltip>
+                {/* <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
                       <button
@@ -211,7 +233,7 @@ const TabNavigation = ({ title, segment }: Props) => {
                       onDeleteSegment={handleDeleteSegment}
                     />
                   )}
-                </DropdownMenuContent>
+                </DropdownMenuContent> */}
               </DropdownMenu>
             );
           }
@@ -220,7 +242,7 @@ const TabNavigation = ({ title, segment }: Props) => {
             <Tooltip key={btn.id}>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => setActive(btn.id)}
+                  onClick={() => handleOptionSelect(btn.id)}
                   className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
  ${
    active === btn.id
