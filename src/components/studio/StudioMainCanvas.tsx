@@ -18,8 +18,8 @@ import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
 import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
-import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
+import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import DefaultHoverTemplate from "./canvasTemplate/DefaultHoverTemplate";
 // import TestCanvas from "../canvas/TestCanvas";
 
@@ -170,11 +170,26 @@ export function StudioMainCanvas({
             )}
             {canvasMode == "hover-default" && (
               <>
-              {  <DefaultHoverTemplate
+
+                  { canvasImage && <DefaultHoverTemplate
                   canvasImage={canvasImage}
                   canvasWidth={canvasWidth}
                   canvasHeight={canvasHeight}
                 />}
+ 
+                {/* <HoverHeader />
+                <div className="w-full p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+
+                  {currentTabContent === "compare" ? (
+                    <CompareGenAiHome />
+                  ) : (
+                    <ImagePreview />
+                  )}
+                  <>
+                    <DesignProject />
+                    <GuidancePanel />
+                  </>
+                </div> */}
               </>
             )}
             {canvasMode == "measurement" && (

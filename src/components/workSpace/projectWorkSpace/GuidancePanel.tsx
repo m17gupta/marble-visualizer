@@ -272,6 +272,8 @@ const GuidancePanel: React.FC = () => {
             />
           )}
 
+          
+
           {/* pallet image */}
           {
             requests.paletteUrl && requests.paletteUrl.length > 0 && requests.paletteUrl[0] !== "" && (

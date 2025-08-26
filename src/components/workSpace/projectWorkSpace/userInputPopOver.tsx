@@ -51,7 +51,8 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen
                     </PopoverContent>
                 </Popover>}
 
-            {inputKey == "inspiration-image" && <Popover open={open} onOpenChange={setOpen}>
+            {inputKey == "inspiration-image" &&
+       <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <div
                         onMouseEnter={() => setOpen(true)}
@@ -66,8 +67,6 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen
                                 >&times;
                              </span>
                         </div>
-
-
                     </div>
                 </PopoverTrigger>
 
@@ -75,9 +74,9 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen
                     className="w-[240px] p-3 rounded-xl shadow-lg"
                     sideOffset={8}
                     // onMouseEnter={() => setOpen(true)}
-                    onMouseLeave={() => setOpen(false)}>
+                     onMouseLeave={() => setOpen(false)}>
               <h6 className='text-md font-semibold mb-2'>{name} </h6>
-                    <img
+                     <img
                         src={value}
                         alt="seg-img"
                         className='rounded-md'
