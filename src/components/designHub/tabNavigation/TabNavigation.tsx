@@ -152,7 +152,7 @@ const TabNavigation = ({ title, segment }: Props) => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => handleEditSegment(segment)}
+                    onClick={() => handleEditSegment(segment!)}
                   >
                     <img
                       src="/assets/image/line-md--edit-twotone.svg"
@@ -163,7 +163,7 @@ const TabNavigation = ({ title, segment }: Props) => {
                   </DropdownMenuItem>
 
                   <DropdownMenuItem
-                    onClick={() => handleEditSegmentAnnotation(segment)}
+                    onClick={() => handleEditSegmentAnnotation(segment!)}
                   >
                     <img
                       src="/assets/image/line-md--edit-twotone.svg"
@@ -175,7 +175,7 @@ const TabNavigation = ({ title, segment }: Props) => {
 
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => handleReAnnotation(segment)}
+                    onClick={() => handleReAnnotation(segment!)}
                   >
                     <img
                       src="/assets/image/carbon--area.svg"
