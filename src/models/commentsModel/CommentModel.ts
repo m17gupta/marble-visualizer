@@ -13,6 +13,7 @@ export interface JobCommentModel {
 }
 
 export interface CommentModel {
+    is_resolved: any;
     userId: string;
     name: string;
     commentText: string;

@@ -365,6 +365,7 @@ const pointer = fabricCanvasRef.current?.getPointer(event.e);
 
   return (
     <>
+  
       <TooltipProvider>
         <div className={cn("flex flex-col space-y-4", className)}>
           <CommonToolBar
