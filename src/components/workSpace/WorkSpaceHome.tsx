@@ -40,6 +40,7 @@ const WorkSpaceHome = () => {
         {currentTabContent === "compare" && <CompareGenAiHome />}
 
         <div className="mt-4 ">
+          
           <DesignProject/>
           <GuidancePanel />
           {/* <GenAiImages /> */}
