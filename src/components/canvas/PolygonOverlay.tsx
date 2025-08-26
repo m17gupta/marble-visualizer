@@ -27,6 +27,7 @@ import {
 } from "@/redux/slices/canvasSlice";
 import {
   handlePolygonVisibilityOnMouseMove,
+  handlePolygonVisibilityTest,
   HideAllSegments,
 } from "../canvasUtil/HoverSegment";
 import { SelectedAnimation } from "../canvasUtil/SelectedAnimation";
@@ -151,15 +152,18 @@ const PolygonOverlay = ({
   const handleMouseMove = useCallback((event: fabric.TEvent) => {
     if (!fabricCanvasRef.current) return;
     const canvas = fabricCanvasRef.current;
-    // console.log("canvas", canvas.getObjects());
+   //  console.log("canvas", canvas.getObjects());
     const fabricEvent = event as unknown as { target?: NamedFabricObject };
     const target = fabricEvent.target;
-    
+       const pointer = fabricCanvasRef.current?.getPointer(event.e);
     if (target !== undefined) {
       const targetName = target.name;
+     // console.log(" targetName", targetName);
       if (targetName) {
-        //getOverlappingPolygonNamesFabric(fabricCanvasRef, targetName);
-        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+         const fabricPoint = new fabric.Point(pointer.x, pointer.y);
+        
+       // handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+        handlePolygonVisibilityTest(fabricCanvasRef, targetName, fabricPoint);
       }
     } else {
       HideAllSegments(fabricCanvasRef);
