@@ -20,6 +20,7 @@ import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
+import DefaultHoverTemplate from "./canvasTemplate/DefaultHoverTemplate";
 // import TestCanvas from "../canvas/TestCanvas";
 
 interface StudioMainCanvasProps {
@@ -169,18 +170,11 @@ export function StudioMainCanvas({
             )}
             {canvasMode == "hover-default" && (
               <>
-               <PolygonOverlay
-                  key={`canvas-hover-${canvasImage}`}
-                  imageUrl={canvasImage}
-                  width={canvasWidth}
-                  height={canvasHeight}
-                  className="mb-6"
-                  onImageLoad={handleImageLoad}
-                />
-                <>
-                  <DesignProject />
-                  <GuidancePanel />
-                </>
+              { canvasImage && <DefaultHoverTemplate
+                  canvasImage={canvasImage}
+                  canvasWidth={canvasWidth}
+                  canvasHeight={canvasHeight}
+                />}
               </>
             )}
             {canvasMode == "measurement" && (

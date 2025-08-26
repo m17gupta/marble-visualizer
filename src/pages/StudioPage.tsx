@@ -54,6 +54,7 @@ import MarkingDimensionHome from "@/components/measurement/MarkingDimensionHome"
 import GetAllJobComments from "@/components/comments/GetAllJobComments";
 import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
+import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -167,6 +168,8 @@ export function StudioPage() {
 
     navigate("/projects");
   };
+
+  
   return (
     <>
       <RefreshHandler />
@@ -224,7 +227,7 @@ export function StudioPage() {
         <SwatchBookDataHome />
 
         {/* get all GenAi Image based on job ID */}
-        {/* <GetGenAiImageJobIdBased /> */}
+        <GetGenAiImageJobIdBased />
 
        { selectedProject &&
         selectedProject.id &&

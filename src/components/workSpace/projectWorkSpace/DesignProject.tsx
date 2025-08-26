@@ -26,6 +26,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
 import { toast } from "sonner";
 import { DeleteDesignProject } from "./DeleteDesignProject";
+import { resetCanvas, updateIsCompare } from "@/redux/slices/canvasSlice";
 
 const DesignProject = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -59,7 +60,8 @@ const DesignProject = () => {
   const handleImageSwitch = (imageSet: GenAiChat) => {
     dispatch(setIsGenerated(true));
     dispatch(setCurrentGenAiImage(imageSet));
-    dispatch(setCurrentTabContent("compare"));
+    dispatch(updateIsCompare(true))
+    // dispatch(setCurrentTabContent("compare"));
     dispatch(addInspirationImage(imageSet.reference_img));
     dispatch(addPaletteImage(imageSet.palette_image_path));
     dispatch(addHouseImage(imageSet.master_image_path));
@@ -67,6 +69,7 @@ const DesignProject = () => {
   };
 
   const handleInspirationSection = () => {
+    dispatch(updateIsCompare(false));
     dispatch(setCurrentTabContent("home"));
     dispatch(setCurrentGenAiImage(null));
     dispatch(setIsGenerated(false));
