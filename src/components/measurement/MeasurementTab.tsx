@@ -22,6 +22,8 @@ import {
 // import styleIcon from "../../../public/assets/line-md--list-3-twotone.svg";
 import styleIcon from "../../../public/assets/image/line-md--list-3-twotone (1).svg";
 import { updateHoverGroup } from "@/redux/slices/canvasSlice";
+import { supabase } from "@/lib/supabase";
+import { updateGroupNameSegment } from "@/redux/slices/MasterArraySlice";
 
 interface MeasurementTabProps {
   selectedUnit: string;
@@ -46,6 +48,9 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
   );
+  const [activeTabData, setActiveTabData] = useState<
+    MasterModel | undefined | null
+  >(null);
 
   const expandedDetails =
     pdfData
@@ -59,6 +64,10 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
     (joblist[0]?.distance_ref?.distance_meter ?? 0) /
     (joblist[0]?.distance_ref?.distance_pixel ?? 1);
 
+  const getActiveTabData = (): MasterModel | undefined => {
+    return masterArray.find((item) => item.name === activeTab);
+  };
+
   useEffect(() => {
     if (
       masterArray &&
@@ -69,6 +78,11 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
       setActiveTab(masterArray[0]?.name);
     }
   }, [masterArray, activeTab]);
+
+  useEffect(() => {
+    const data = getActiveTabData();
+    setActiveTabData(data);
+  }, [activeTab, masterArray]);
 
   const getTotalSegmentsForTab = (tabName: string): number => {
     const tabData = masterArray.find((item) => item.name === tabName);
@@ -116,13 +130,6 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
     setEditingGroupValue(groupName);
   };
 
-  const handleSaveGroupEdit = (): void => {
-    // Here you would typically dispatch an action to update the group name
-    // For now, just close the editing mode
-    setEditingGroup(null);
-    setEditingGroupValue("");
-  };
-
   const handleCancelGroupEdit = (): void => {
     setEditingGroup(null);
     setEditingGroupValue("");
@@ -134,11 +141,39 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
       : "border-b-2 border-b-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50";
   };
 
-  const getActiveTabData = (): MasterModel | undefined => {
-    return masterArray.find((item) => item.name === activeTab);
-  };
+  // const data = getActiveTabData();
 
-  const activeTabData = getActiveTabData();
+  // const activeTabData = getActiveTabData();
+
+  const handleSaveGroupEdit = async (groupname: string) => {
+    try {
+      const checkObject = activeTabData?.allSegments.find(
+        (d: any) => d.groupName == groupname
+      );
+      if (!checkObject) {
+        return;
+      }
+      const ids = checkObject?.segments?.map((d: any) => d.id);
+      const { data, error } = await supabase
+        .from("job_segments")
+        .update({ group_name_user: editingGroupValue })
+        .in("id", ids)
+        .select("*");
+      if (!error) {
+      }
+      const final = {
+        segments: data,
+        type: data?.[0].segment_type,
+        groupname: groupname,
+        newgroupname: editingGroupValue,
+      };
+      dispatch(updateGroupNameSegment(final));
+      setEditingGroup(null);
+      setEditingGroupValue("");
+    } catch (error) {
+      console.error("Error in Handling Change in Group Name: ", error);
+    }
+  };
 
   const handleSelectStyle = async (data: string) => {
     const segment = segments.find((segment) =>
@@ -148,7 +183,6 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
     if (!segment) return;
     dispatch(setFilterSwatchSegmentType(segment));
     await dispatch(fetchAllCategories(segment.categories));
-    // console.log("Segment Type:", segment);
     setIsOpen(true);
   };
 
@@ -160,14 +194,11 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
 
   const handleLeaveGroupHover = () => dispatch(updateHoverGroup(null));
 
+  const handleEachSegmentHover = (segment: string) => {
+    dispatch(updateHoverGroup(null));
+    dispatch(updateHoverGroup([segment]));
+  };
 
-   const handleEachSegmentHover = (segment: string) => {
-
-   
-      dispatch(updateHoverGroup(null));
-      dispatch(updateHoverGroup([segment]));
-    };
-  
   return (
     <>
       {/* Tab Navigation */}
@@ -255,7 +286,8 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
                                 autoFocus
                                 onKeyDown={(e) => {
                                   e.stopPropagation(); // Prevent button click
-                                  if (e.key === "Enter") handleSaveGroupEdit();
+                                  if (e.key === "Enter")
+                                    handleSaveGroupEdit(group.groupName);
                                   if (e.key === "Escape")
                                     handleCancelGroupEdit();
                                 }}
@@ -264,7 +296,7 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleSaveGroupEdit();
+                                  handleSaveGroupEdit(group.groupName);
                                 }}
                                 className="p-1 text-green-600 hover:bg-green-100 rounded"
                               >
@@ -351,7 +383,6 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
                               Select Style
                             </button>
                           </div>
-
                           {expandedGroups.length === 0 ? (
                             <div className="text-center py-6 text-gray-400">
                               <p>No segments in this group</p>
@@ -386,19 +417,17 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
                                   </div>
 
                                   {/* Segment info on the right - NOT editable */}
-                                  <div className="flex items-center space-x-3"
-                                     onMouseEnter={() =>
-                                          handleEachSegmentHover(
-                                            segment.short_title ?? ""
-                                          )
-                                        }
-                                        onMouseLeave={handleLeaveGroupHover}
+                                  <div
+                                    className="flex items-center space-x-3"
+                                    onMouseEnter={() =>
+                                      handleEachSegmentHover(
+                                        segment.short_title ?? ""
+                                      )
+                                    }
+                                    onMouseLeave={handleLeaveGroupHover}
                                   >
                                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                      <span
-                                        className="text-xs font-bold text-blue-600"
-                                     
-                                      >
+                                      <span className="text-xs font-bold text-blue-600">
                                         {segment.short_title}
                                       </span>
                                     </div>

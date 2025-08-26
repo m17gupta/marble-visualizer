@@ -81,6 +81,8 @@ const MeasurementContent: React.FC = () => {
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
   const { list: joblist } = useSelector((state: RootState) => state.jobs);
 
+  // console.log("-----Master", masterArray);
+
   const PixelRatio: number =
     (joblist[0]?.distance_ref?.distance_meter ?? 0) /
     (joblist[0]?.distance_ref?.distance_pixel ?? 1);
