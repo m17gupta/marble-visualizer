@@ -269,10 +269,11 @@ const CommentCanvas = ({
 
     const fabricEvent = event as unknown as { target?: NamedFabricObject };
     const target = fabricEvent.target;
-
+const pointer = fabricCanvasRef.current?.getPointer(event.e);
     if (target !== undefined) {
       const targetName = target.name;
       if (targetName) {
+         const fabricPoint = new fabric.Point(pointer.x, pointer.y);
         handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
       }
     } else {
@@ -289,6 +290,7 @@ const CommentCanvas = ({
       HideAllSegments(fabricCanvasRef);
     } else if (hoverGroup.length > 0) {
       hoverGroup.forEach((groupName) => {
+        //  const fabricPoint = new fabric.Point(pointer.x, pointer.y);
         handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
       });
     }

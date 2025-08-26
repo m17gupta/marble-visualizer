@@ -86,20 +86,7 @@ export const getCutOutArea = (
   allSegregatedSegments?: SegmentModal[]
 ): number | null => {
 
-  console.log("getCutOutArea called with:", {
-    canvasRef,
-    targetPoly,
-    segName,
-    segShortName,
-    groupName,
-    subGroupName,
-    coordinate,
-    segColor,
-    scaleX,
-    scaleY,
-    subtractionPloyName,
-    // allSegregatedSegments
-  });
+
   const canvas = canvasRef.current;
   if (!canvas) return null;
 
@@ -175,13 +162,13 @@ export const getCutOutArea = (
       subTargetCheck: true,
       // name: segName, // Attach as custom property below
     });
-
+  
     // Attach custom properties after creation
     (group as NamedFabricObject).groupName = groupName;
     (group as NamedFabricObject).subGroupName = subGroupName;
     (group as NamedFabricObject).isActived = true;
     (group as NamedFabricObject).name = segName;
-    (group as any).childGroupName = segShortName; // Your custom property
+ // Your custom property
   canvas?.add(group);
   canvas?.renderAll();
   DeletePolygonFromCanvas(canvasRef,segName);

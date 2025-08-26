@@ -50,13 +50,11 @@ const LayerCanvas = ({
     (state: RootState) => state.materialSegments
   );
 
-  const { allPolygon } = useSelector(
-    (state: RootState) => state.testCanvas
-  );
+  const { allPolygon } = useSelector((state: RootState) => state.testCanvas);
   const handleMouseMove = useCallback((event: fabric.TEvent) => {
     if (!fabricCanvasRef.current) return;
     const canvas = fabricCanvasRef.current;
-    console.log("canavvsss",canvas)
+    console.log("canavvsss", canvas);
     console.log("canvas", canvas.getObjects());
     const fabricEvent = event as unknown as { target?: NamedFabricObject };
     const target = fabricEvent.target;
@@ -71,50 +69,49 @@ const LayerCanvas = ({
     }
   }, []);
 
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
- const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
 
   useEffect(() => {
-  if (!canvasRef.current || fabricCanvasRef.current||!imageUrl) return;
+    if (!canvasRef.current || fabricCanvasRef.current || !imageUrl) return;
 
-  const canvas = new fabric.Canvas(canvasRef.current, {
-    selection: true,
-    preserveObjectStacking: true,
-    width: width,
-    height: height,
-  });
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      selection: true,
+      preserveObjectStacking: true,
+      width: width,
+      height: height,
+    });
 
-  fabricCanvasRef.current = canvas;
+    fabricCanvasRef.current = canvas;
 
-  originalViewportTransform.current = canvas.viewportTransform
-    ? ([...canvas.viewportTransform] as fabric.TMat2D)
-    : null;
+    originalViewportTransform.current = canvas.viewportTransform
+      ? ([...canvas.viewportTransform] as fabric.TMat2D)
+      : null;
 
-  // // Load background image (800x600)
-  // setBackgroundImage(
-  //   canvas,
-  //   imageUrl,
-  //   setLoading
-  // );
+    // // Load background image (800x600)
+    // setBackgroundImage(
+    //   canvas,
+    //   imageUrl,
+    //   setLoading
+    // );
 
-  canvas.on("mouse:move", handleMouseMove);
-  canvas.on("mouse:wheel", () => {
-    dispatch(setZoom(canvas.getZoom()));
-  });
+    canvas.on("mouse:move", handleMouseMove);
+    canvas.on("mouse:wheel", () => {
+      dispatch(setZoom(canvas.getZoom()));
+    });
 
-  dispatch(setCanvasReady(true));
+    dispatch(setCanvasReady(true));
 
-  return () => {
-    canvas.dispose();
-    fabricCanvasRef.current = null;
-    backgroundImageRef.current = null;
-    dispatch(setCanvasReady(false));
-  };
-}, [width, height, imageUrl, dispatch, handleMouseMove]);
+    return () => {
+      canvas.dispose();
+      fabricCanvasRef.current = null;
+      backgroundImageRef.current = null;
+      dispatch(setCanvasReady(false));
+    };
+  }, [width, height, imageUrl, dispatch, handleMouseMove]);
 
- 
- useEffect(() => {
+  useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
       return;
     }
@@ -200,11 +197,19 @@ const LayerCanvas = ({
     tryLoadImage();
   }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
-  
   useEffect(() => {
     console.log("annotation", allPolygon);
 
-    if (fabricCanvasRef.current && allPolygon.length > 0 ) {
+    if (fabricCanvasRef.current && allPolygon.length > 0) {
+      //first remove all existing polygons
+      const canvas = fabricCanvasRef.current;
+      if (canvas) {
+        canvas.getObjects().forEach((obj) => {
+          if (obj.type === "polygon") {
+            canvas.remove(obj);
+          }
+        });
+      }
       allPolygon.forEach((polygon, index) => {
         createPolygon(polygon.annotation, polygon.box, index);
       });
@@ -215,12 +220,14 @@ const LayerCanvas = ({
         }
       });
       fabricCanvasRef.current.renderAll();
-    } else if (fabricCanvasRef.current&&allPolygon.length === 0) {
+    } else if (fabricCanvasRef.current && allPolygon.length === 0) {
       // remove existing polygon if annotation is empty
       console.log("Removing existing polygons as annotation is empty");
       const canvas = fabricCanvasRef.current;
       // Remove all group objects (polygons) from the canvas
-      const groupObjects = canvas.getObjects().filter((obj) => obj.type === "polygon");
+      const groupObjects = canvas
+        .getObjects()
+        .filter((obj) => obj.type === "polygon");
       if (groupObjects.length > 0) {
         groupObjects.forEach((group) => canvas.remove(group));
         canvas.renderAll();
@@ -228,41 +235,44 @@ const LayerCanvas = ({
     }
   }, [fabricCanvasRef, allPolygon, dispatch, backgroundImageRef]);
 
+  const createPolygon = (
+    annotation: number[],
+    box: number[],
+    index: number
+  ) => {
+    const canvas = fabricCanvasRef.current;
+    const bgImg = backgroundImageRef.current;
+    const scaleX = bgImg?.scaleX ?? 1;
+    const scaleY = bgImg?.scaleY ?? 1;
+    const left = bgImg?.left ?? 0;
+    const top = bgImg?.top ?? 0;
+    const ratioWidth = width / 800;
+    const ratioHeight = height / 600;
+    if (!canvas) return;
+    const point: PointModel[] = [];
+    for (let i = 0; i < annotation.length; i += 2) {
+      const x = annotation[i] * ratioWidth + left;
+      const y = annotation[i + 1] * ratioHeight + top;
+      point.push({ x, y });
+    }
 
-  const createPolygon =(annotation:number[],box:number[],index:number)=>{
- const canvas = fabricCanvasRef.current;
- const bgImg = backgroundImageRef.current;
-const scaleX = bgImg?.scaleX ?? 1;
-const scaleY = bgImg?.scaleY ?? 1;
-const left = bgImg?.left ?? 0;
-const top = bgImg?.top ?? 0;
-const ratioWidth = width / 800;
-const ratioHeight = height / 600;
-if (!canvas) return;
-      const point: PointModel[] = [];
-      for (let i = 0; i < annotation.length; i += 2) {
-        const x = annotation[i]*ratioWidth + left;
-        const y = annotation[i + 1]*ratioHeight + top;
-        point.push({ x, y });
-      }
-
-      const polygon = new fabric.Polygon(point, {
-        fill: "green",
-        originX: box[0]+left,
-        originY: box[1]+top,
-        hasBorders: false,
-        hasControls: false,
-        stroke: "red",
-        strokeWidth: 2,
-        opacity: 0.4,
-        visible: true,
-        lockMovementX: true,
-        lockMovementY: true,
-      });
-      (polygon as NamedFabricObject).name = `segment-Test-${index}`;
-      canvas.add(polygon);
-      canvas.renderAll();
-  }
+    const polygon = new fabric.Polygon(point, {
+      fill: "green",
+      originX: box[0] + left,
+      originY: box[1] + top,
+      hasBorders: false,
+      hasControls: false,
+      stroke: "red",
+      strokeWidth: 2,
+      opacity: 0.4,
+      visible: true,
+      lockMovementX: true,
+      lockMovementY: true,
+    });
+    (polygon as NamedFabricObject).name = `segment-Test-${index}`;
+    canvas.add(polygon);
+    canvas.renderAll();
+  };
   return (
     <>
       <TooltipProvider>
