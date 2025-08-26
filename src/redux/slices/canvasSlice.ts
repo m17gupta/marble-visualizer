@@ -36,7 +36,6 @@ export type CanvasMode =
   // Define the state interface
 interface CanvasState {
   currentZoom: number;
-
   zoomMode: ZoomMode;
   mousePosition: MouseCoordinates;
   isCanvasReady: boolean;

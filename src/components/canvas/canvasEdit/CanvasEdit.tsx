@@ -56,6 +56,10 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   const backgroundImageRef = useRef<fabric.Image | null>(null);
   const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
   const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
+  const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
+    (state: RootState) => state.canvas
+  );
+
   // For dragging a polygon point
   const [dragInfo, setDragInfo] = useState<{
     poly?: fabric.Polygon;
@@ -388,7 +392,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   }, [width, height, dispatch, dragInfo, anchorWrapper]);
 
   // Load background image
- useEffect(() => {
+  useEffect(() => {
     if (!fabricCanvasRef.current || !isCanvasReady || !imageUrl) {
       return;
     }
@@ -488,6 +492,9 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       selectedSegment.segment_bb_float.length > 0 &&
       selectedSegment.short_title
     ) {
+      const { width: canvasWidth, height: canvasHeight } = canvas;
+      const ratioWidth = canvasWidth / aiTrainImageWidth;
+      const ratioHeight = canvasHeight / aiTrainImageHeight;
       const points: PointModel[] = [];
       for (
         let i = 0;
@@ -495,15 +502,15 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
         i += 2
       ) {
         points.push({
-          x: selectedSegment.annotation_points_float[i],
-          y: selectedSegment.annotation_points_float[i + 1],
+          x: selectedSegment.annotation_points_float[i] * ratioWidth,
+          y: selectedSegment.annotation_points_float[i + 1] * ratioHeight,
         });
       }
 
       // Make editable polygon
       const polygon = new fabric.Polygon(points, {
-        left: selectedSegment.segment_bb_float[0],
-        top: selectedSegment.segment_bb_float[1],
+        left: selectedSegment.segment_bb_float[0] * ratioWidth,
+        top: selectedSegment.segment_bb_float[1] * ratioHeight,
         fill: "transparent",
         strokeWidth: 2,
         stroke: "rgb(7 239 253)",
@@ -565,9 +572,11 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   const handleSaveAnnotation = () => {
     const canvas = fabricCanvasRef.current;
     if (canvas) {
+          const ratioWidth = aiTrainImageWidth / (canvas.width);
+    const ratioHeight = aiTrainImageHeight / (canvas.height);
       const poly = canvas.getActiveObject() as fabric.Polygon | null;
       if (poly && poly.points) {
-        const updatedPoints = poly.points.map((pt) => ({ x: pt.x, y: pt.y }));
+        const updatedPoints = poly.points.map((pt) => ({ x: pt.x*ratioWidth, y: pt.y*ratioHeight }));
         const polygonNumberArray = updatedPoints.flatMap((point) => [
           Number(point.x.toFixed(2)),
           Number(point.y.toFixed(2)),
@@ -618,12 +627,18 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       toast.error("Failed to update segment.");
     }
   };
+
+
+  const handleCancelAnnotation  =()=>{
+    dispatch(setCanvasType("hover"))
+  }
   return (
     <TooltipProvider>
       <div className={cn("flex flex-col space-y-4", className)}>
         <CommonToolBar
           title={"Edit Annotation"}
           onSaveAnnotation={handleSaveAnnotation}
+          onCancel={handleCancelAnnotation}
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}

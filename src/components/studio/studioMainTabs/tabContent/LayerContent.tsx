@@ -6,10 +6,12 @@ import { Badge } from '@/components/ui/badge'
 import { useAppDispatch } from '@/redux/hooks'
 import { clearTestCanvas, PolyModel, setAnnotation } from '@/redux/slices/TestCanvasSlices'
 import { CanvasSizeSlider } from '@/components/canvas/layerCanvas/CanvasSizeSlider'
+import { jsonData } from "../../../../components/canvas/layerCanvas/JsonData";
 
 const LayerContent = () => {
   const [inputValue, setInputValue] = useState('')
   const [isFormatted, setIsFormatted] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'error'>('idle')
    const dispatch = useAppDispatch()
   const parsedData = useMemo(() => {
     if (!inputValue.trim()) return null
@@ -24,7 +26,7 @@ const LayerContent = () => {
   // console.log("Parsed Data:", parsedData)
   // console.log("Input Value:", inputValue)
   const formatJSON = () => {
-    console.log("Formatting JSON input", parsedData)
+  
     if (parsedData) {
       const formatted = JSON.stringify(parsedData, null, 2)
       setInputValue(formatted)
@@ -68,6 +70,19 @@ const LayerContent = () => {
   const stats = getDataStats()
 
 
+
+  const handleCopyJSON = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2));
+      setCopyStatus('success');
+      setTimeout(() => setCopyStatus('idle'), 1500);
+    } catch (err) {
+      setCopyStatus('error');
+      setTimeout(() => setCopyStatus('idle'), 1500);
+    }
+  }
+
+
   return (
     <div className="p-6 space-y-6">
 
@@ -75,10 +90,25 @@ const LayerContent = () => {
       <div className="space-y-2">
 
         <div className="flex items-center justify-between">
-          <Label htmlFor="response-input" className="text-sm font-medium">
+          {/* <Label htmlFor="response-input" className="text-sm font-medium">
             Paste JSON Response
-          </Label>
-          <div className="flex gap-2">
+          </Label> */}
+
+          <div className="flex gap-2 items-center">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleCopyJSON}
+              // disabled={!parsedData}
+            >
+              Copy JSON
+            </Button>
+            {copyStatus === 'success' && (
+              <span className="text-green-600 text-xs ml-1">Copied!</span>
+            )}
+            {copyStatus === 'error' && (
+              <span className="text-red-600 text-xs ml-1">Copy failed</span>
+            )}
             <Button 
               variant="outline" 
               size="sm" 

@@ -170,7 +170,7 @@ export function StudioMainCanvas({
             )}
             {canvasMode == "hover-default" && (
               <>
-              { canvasImage && <DefaultHoverTemplate
+              {  <DefaultHoverTemplate
                   canvasImage={canvasImage}
                   canvasWidth={canvasWidth}
                   canvasHeight={canvasHeight}
