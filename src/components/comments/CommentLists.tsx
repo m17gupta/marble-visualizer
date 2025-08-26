@@ -26,7 +26,8 @@ const CommentLists = () => {
   const items = useMemo(() => projectComments ?? [], [projectComments]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      
       {items.length > 0 &&
         items.map((projectComment) => {
           const allComments = JSON.parse(projectComment.comments || "[]") as CommentModel[];

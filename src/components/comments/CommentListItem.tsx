@@ -1,16 +1,17 @@
 import React, { useMemo } from "react";
+import { motion } from "framer-motion"; // 1. Framer Motion ko import karein
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Plus } from "lucide-react";
 import { CommentModel } from "@/models/commentsModel/CommentModel";
+
+// 2. Card ka motion version banayein
+const MotionCard = motion(Card);
 
 type CommentListItemProps = {
   replies: CommentModel[];
   commentId: string;
-  /** Parent-controlled active id */
   activeCommentId: string | null;
-  /** Click -> parent sets active id */
   onSelect: (id: string) => void;
 };
 
@@ -23,35 +24,21 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
   const root = replies?.[0];
   const isActive = activeCommentId === commentId;
 
+  // Aapka date logic aacha hai, use waise hi rakha hai
   const createdAtDate = useMemo(
     () => (root?.created_at ? new Date(root.created_at) : null),
     [root?.created_at]
   );
-
-  const formattedDate =
-    createdAtDate &&
-    createdAtDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-  const formattedTime =
-    createdAtDate &&
-    createdAtDate.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
+  const formattedDate = createdAtDate?.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const formattedTime = createdAtDate?.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
 
   const handleActivate = () => {
-    // single-select: already active ho to kuch mat karo (no toggle-off)
     if (!isActive) onSelect(commentId);
   };
 
   return (
-    <Card
+    // 3. MotionCard use karein aur animation props add karein
+    <MotionCard
       key={commentId}
       role="button"
       tabIndex={0}
@@ -67,70 +54,55 @@ const CommentListItem: React.FC<CommentListItemProps> = ({
         e.preventDefault();
         e.stopPropagation();
       }}
-      className={`relative m-0 mb-[0px] w-full cursor-pointer rounded-sm transition-all rounded-lg 
+      className={`relative w-full cursor-pointer overflow-hidden rounded-lg transition-colors duration-200 
         ${isActive
-          ? "bg-blue-50/60 border border-blue-300 shadow-md ring-1 ring-blue-200"
-          : "bg-white border border-gray-300 shadow-none hover:bg-gray-50 hover:shadow-md"
+          ? "bg-blue-50 border-blue-500 shadow-md"
+          : "bg-white border-gray-200 hover:bg-gray-50"
         }`}
-      style={{ padding: 0, marginBottom: "0px" }}
+      style={{ padding: 0 }}
+      layout // Smooth transitions ke liye
+      whileHover={{ scale: 1.02 }} // Hover par animation
+      whileTap={{ scale: 0.98 }} // Click par animation
     >
       <div
-        className={`absolute left-0 top-0 h-full w-1 rounded-l-4xl transition-all hover:bg-gray-50
-        ${isActive ? "bg-blue-500" : "bg-transparent"}`}
+        className={`absolute left-0 top-0 h-full w-1.5 transition-colors
+        ${isActive ? "bg-blue-600" : "bg-transparent"}`}
       />
 
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <Avatar className="h-10 w-10 shrink-0">
-            <AvatarFallback className="bg-primary text-primary-foreground text-lg font-medium">
-              {root?.name?.charAt(0)?.toUpperCase() || "A"}
-            </AvatarFallback>
-          </Avatar>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <p className="truncate text-sm font-semibold text-foreground">
+      <CardContent className="p-3">
+        {/* Upar ka hissa: Avatar, Naam, Timestamp, aur Icon */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-9 w-9 shrink-0">
+              <AvatarFallback>
+                {root?.name?.charAt(0)?.toUpperCase() || "A"}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="truncate text-sm font-bold text-gray-900">
                 {root?.name || "Anonymous"}
               </p>
-              <CheckCircle
-                className={`h-4 w-4 shrink-0 ${isActive ? "text-green-600" : "text-green-500"}`}
-              />
+              <span className="text-xs text-gray-500">
+                {createdAtDate ? `${formattedDate} at ${formattedTime}` : "Unknown Date"}
+              </span>
             </div>
-            <span className="text-xs text-muted-foreground">
-              {createdAtDate ? `${formattedDate} at ${formattedTime}` : "Unknown Date"}
-            </span>
           </div>
+          {root?.is_resolved && <CheckCircle className="h-5 w-5 shrink-0 text-green-500" />}
         </div>
 
-        <div className="mt-3 pl-12 flex justify-between">
-        
-
-          <div
-            className={`rounded-lg px-0 py-0 text-sm leading-relaxed
-              ${isActive ? "shadow-none" : ""}`}
-          >
+        {/* Neeche ka hissa: Message aur Number Badge */}
+        <div className="mt-2 pl-12 flex items-end justify-between">
+          <p className="text-sm text-gray-700">
             {root?.commentText || ""}
-          </div>
+          </p>
 
-  <div className="mb-2 flex items-center gap-2">
-            {replies?.length > 1 ? (
-              <Badge
-                variant="secondary"
-                className={`flex items-center gap-1 ${isActive ? "ring-1 ring-blue-200" : ""}`}
-              >
-                <span>{replies.length - 1}</span>
-                <Plus className="h-3 w-3" />
-              </Badge>
-            ) : (
-              <Badge variant="outline" className={isActive ? "ring-1 ring-blue-200" : ""}>
-                {replies?.length ?? 0}
-              </Badge>
-            )}
+          {/* 4. Badge ko naye design jaisa banane ke liye style kiya */}
+          <div className="flex items-center justify-center h-6 w-6 rounded-md border bg-white text-xs font-semibold text-gray-600">
+            {replies?.length ?? 0}
           </div>
-
         </div>
       </CardContent>
-    </Card>
+    </MotionCard>
   );
 };
 
