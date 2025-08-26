@@ -1,4 +1,3 @@
-
 import AllSegments from "../../segment/AllSegments";
 
 import StudioSegmentsTabs from "../../../designHub/StudioSegmentsTabs";
@@ -19,7 +18,6 @@ const DesignHubContent = () => {
         <div className="flex flex-col">
           <StudioSegmentsTabs />
           {/* {memoizedSwatch} */}
-          <SwatchRecommendations />
         </div>
       </div>
     </>

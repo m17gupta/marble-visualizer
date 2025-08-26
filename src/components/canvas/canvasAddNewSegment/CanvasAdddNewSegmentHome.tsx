@@ -1,25 +1,45 @@
-import { AppDispatch, RootState } from '@/redux/store';
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import MasterDataAnnotation from './MasterDataAnnotation';
-import AddSegmentModal from './AddSegmentModal';
-import { addSegment, cancelDrawing, updateAddSegMessage, updateIsAddSegmentModalOpen, updateIsMasterDataAnnotationOpen, updateIsNewMasterArray, updateNewSegmentDrawn } from '@/redux/slices/segmentsSlice';
-import { SegmentModal, MsterDataAnnotationResponse } from '@/models/jobSegmentsModal/JobSegmentModal';
-import { addNewSegmentToMasterArray, addNewSegmentToSelectedMasterArray } from '@/redux/slices/MasterArraySlice';
-import { setCanvasType } from '@/redux/slices/canvasSlice';
-import AddSegSidebar from './AddSegSidebar';
-import { calculatePolygonAreaInPixels } from '@/components/canvasUtil/CalculatePolygonArea';
+import { AppDispatch, RootState } from "@/redux/store";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import MasterDataAnnotation from "./MasterDataAnnotation";
+import AddSegmentModal from "./AddSegmentModal";
+import {
+  addSegment,
+  cancelDrawing,
+  updateAddSegMessage,
+  updateIsAddSegmentModalOpen,
+  updateIsMasterDataAnnotationOpen,
+  updateIsNewMasterArray,
+  updateNewSegmentDrawn,
+} from "@/redux/slices/segmentsSlice";
+import {
+  SegmentModal,
+  MsterDataAnnotationResponse,
+} from "@/models/jobSegmentsModal/JobSegmentModal";
+import {
+  addNewSegmentToMasterArray,
+  addNewSegmentToSelectedMasterArray,
+} from "@/redux/slices/MasterArraySlice";
+import { setCanvasType } from "@/redux/slices/canvasSlice";
+import AddSegSidebar from "./AddSegSidebar";
+import { calculatePolygonAreaInPixels } from "@/components/canvasUtil/CalculatePolygonArea";
 
 const CanvasAdddNewSegmentHome = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const [segmentData, setSegmentData] = React.useState<SegmentModal | null>(null);
+  const [segmentData, setSegmentData] = React.useState<SegmentModal | null>(
+    null
+  );
 
-  const { segmentDrawn, isAddSegmentModalOpen, isMasterDataAnnotationOpen } = useSelector((state: RootState) => state.segments);
+  const { segmentDrawn, isAddSegmentModalOpen, isMasterDataAnnotationOpen } =
+    useSelector((state: RootState) => state.segments);
 
-  const { isNewMasterArray } = useSelector((state: RootState) => state.segments);
+  const { isNewMasterArray } = useSelector(
+    (state: RootState) => state.segments
+  );
   const [isOpenModal, setIsOpenModal] = React.useState(isAddSegmentModalOpen);
-  const [isNewAddedMasterArray, setIsNewAddedMasterArray] = React.useState(isNewMasterArray);
+  const [isNewAddedMasterArray, setIsNewAddedMasterArray] =
+    React.useState(isNewMasterArray);
 
   const { list } = useSelector((state: RootState) => state.jobs);
   // update open and close modal
@@ -30,7 +50,6 @@ const CanvasAdddNewSegmentHome = () => {
       setIsOpenModal(false);
     }
   }, [isAddSegmentModalOpen]);
-
 
   // update new master array modal
   useEffect(() => {
@@ -49,13 +68,12 @@ const CanvasAdddNewSegmentHome = () => {
 
   const handleSaveModal = () => {
     dispatch(updateIsAddSegmentModalOpen(false));
-    dispatch(updateIsMasterDataAnnotationOpen(true))
+    dispatch(updateIsMasterDataAnnotationOpen(true));
     setIsOpenModal(false);
   };
 
-
   const handleResetModal = async (data: MsterDataAnnotationResponse) => {
-     const area_pixel= calculatePolygonAreaInPixels(data.annotation||[])
+    const area_pixel = calculatePolygonAreaInPixels(data.annotation || []);
     const segData: SegmentModal = {
       job_id: list[0]?.id,
       title: segmentDrawn.category,
@@ -74,27 +92,25 @@ const CanvasAdddNewSegmentHome = () => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       group_label_system: segmentDrawn.groupName,
-
-    }
+    };
     const response = await dispatch(addSegment(segData)).unwrap();
     dispatch(updateAddSegMessage(" Updating segment details..."));
     if (response && response.success) {
-
       // update into master Array
       dispatch(updateAddSegMessage(null));
-      dispatch(cancelDrawing())
+      dispatch(cancelDrawing());
       dispatch(addNewSegmentToMasterArray(response.data));
-      dispatch(addNewSegmentToSelectedMasterArray(response.data))
+      dispatch(addNewSegmentToSelectedMasterArray(response.data));
       dispatch(updateNewSegmentDrawn(response.data));
     }
     setSegmentData(segData);
-    dispatch(setCanvasType("hover"))
+    dispatch(setCanvasType("hover"));
     dispatch(updateIsMasterDataAnnotationOpen(false));
-  }
+  };
 
   const handleResetModalFail = () => {
     dispatch(updateIsMasterDataAnnotationOpen(false));
-  }
+  };
 
   const handleCloseNewMasterArrayModal = () => {
     setIsNewAddedMasterArray(false);
@@ -103,29 +119,30 @@ const CanvasAdddNewSegmentHome = () => {
   };
 
   const handleSaveNewMasterArrayModal = () => {
-    dispatch(setCanvasType("draw"))
+    dispatch(setCanvasType("draw"));
     setIsNewAddedMasterArray(false);
     dispatch(updateIsNewMasterArray(false));
-
   };
   return (
     <>
-      {isOpenModal && <AddSegSidebar
-        open={isOpenModal}
-        onClose={handleCloseModal}
-        onSave={handleSaveModal}
-      />}
+      {isOpenModal && (
+        <AddSegSidebar
+          open={isOpenModal}
+          onClose={handleCloseModal}
+          onSave={handleSaveModal}
+        />
+      )}
 
-      {
-        isMasterDataAnnotationOpen &&
+      {isMasterDataAnnotationOpen &&
         segmentDrawn.annotation.length > 0 &&
-        segmentDrawn.childName &&
-        <MasterDataAnnotation
-          annotationPointsFloat={segmentDrawn.annotation}
-          segName={segmentDrawn.childName}
-          resetAnnotationPoints={handleResetModal}
-          resetAnnotationPointsFail={handleResetModalFail}
-        />}
+        segmentDrawn.childName && (
+          <MasterDataAnnotation
+            annotationPointsFloat={segmentDrawn.annotation}
+            segName={segmentDrawn.childName}
+            resetAnnotationPoints={handleResetModal}
+            resetAnnotationPointsFail={handleResetModalFail}
+          />
+        )}
 
       {/*  add new Master Array modal */}
       <AddSegmentModal
@@ -134,7 +151,7 @@ const CanvasAdddNewSegmentHome = () => {
         onSave={handleSaveNewMasterArrayModal}
       />
     </>
-  )
-}
+  );
+};
 
-export default CanvasAdddNewSegmentHome
+export default CanvasAdddNewSegmentHome;

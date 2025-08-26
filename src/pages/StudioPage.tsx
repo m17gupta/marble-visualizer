@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import {  Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -18,19 +18,20 @@ import { StudioMainCanvas } from "@/components/studio";
 // import { ShareProjectDialog } from '@/components/ShareProjectDialog';
 import { toast } from "sonner";
 
-import { resetWorkspace, updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import {
+  resetWorkspace,
+  updateActiveTab,
+} from "@/redux/slices/visualizerSlice/workspaceSlice";
 
 import SwatchBookDataHome from "@/components/swatchBookData/SwatchBookDataHome";
 
-
 import WorkSpaceHome from "@/components/workSpace/WorkSpaceHome";
-import { clearCurrentImage, setCurrentTabContent } from "@/redux/slices/studioSlice";
-import JobHome from "@/components/job/JobHome";
 import {
-
-  resetCanvas,
-  setIsCanvasModalOpen,
-} from "@/redux/slices/canvasSlice";
+  clearCurrentImage,
+  setCurrentTabContent,
+} from "@/redux/slices/studioSlice";
+import JobHome from "@/components/job/JobHome";
+import { resetCanvas, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
 
 import CreateMaterArrays from "@/components/studio/segment/CreateMaterArrays";
@@ -58,17 +59,15 @@ import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/G
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
-  const [selectedProject, setSelectedProject] = useState<ProjectModel | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectModel | null>(
+    null
+  );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const {
-
-    error: jobError,
-    isCreating: isJobRunning,
-  } = useSelector((state: RootState) => state.jobs);
-  const { currentProject } = useSelector(
-    (state: RootState) => state.projects
+  const { error: jobError, isCreating: isJobRunning } = useSelector(
+    (state: RootState) => state.jobs
   );
+  const { currentProject } = useSelector((state: RootState) => state.projects);
   const { activeTab: activeTabFromStore } = useSelector(
     (state: RootState) => state.workspace
   );
@@ -81,7 +80,6 @@ export function StudioPage() {
 
   // Check permissions
   const canEdit = projectId ? canEditProject(projectId) : false;
-
 
   const { currentImageUrl } = useSelector((state: RootState) => state.studio);
   const { addSegMessage } = useSelector((state: RootState) => state.segments);
@@ -96,7 +94,6 @@ export function StudioPage() {
       setLoadingMessage(null);
     }
   }, [addSegMessage]);
-
 
   useEffect(() => {
     if (currentImageUrl && currentImageUrl !== "") {
@@ -113,17 +110,14 @@ export function StudioPage() {
     }
   }, [jobError, dispatch]);
 
-
   // update current SelectedProject
   useEffect(() => {
     if (currentProject === null) {
       setSelectedProject(null);
-
     } else if (currentProject && currentProject.id) {
       setSelectedProject(currentProject);
     }
   }, [currentProject]);
-
 
   const handleFileUpload = async (file: File) => {
     if (!canEdit) {
@@ -143,7 +137,6 @@ export function StudioPage() {
     }
   };
 
-
   useEffect(() => {
     if (!activeTabFromStore) {
       dispatch(updateActiveTab("inspiration"));
@@ -157,10 +150,10 @@ export function StudioPage() {
   const handleBackToProject = () => {
     dispatch(resetSegmentSlice());
     dispatch(clearCurrentJob());
-    dispatch(clearCurrentProject())
+    dispatch(clearCurrentProject());
     dispatch(clearMasterArray());
     dispatch(resetCanvas());
-    dispatch(resetWorkspace())
+    dispatch(resetWorkspace());
     dispatch(resetGenAiState());
     dispatch(resetJobCommentsState());
 
@@ -169,11 +162,10 @@ export function StudioPage() {
     navigate("/projects");
   };
 
-  
   return (
     <>
       <RefreshHandler />
-      {loadingMessage && loadingMessage!= null && (
+      {loadingMessage && loadingMessage != null && (
         <LoadingOverlay message={loadingMessage} />
       )}
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
@@ -182,15 +174,16 @@ export function StudioPage() {
           <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
             <div className="text-start">
               <Link to="/">
-              <img
-                className="w-44 text-center"
-                src={dzinlylogo}
-                alt="dzinly logo"
-              ></img>
+                <img
+                  className="w-44 text-center"
+                  src={dzinlylogo}
+                  alt="dzinly logo"
+                ></img>
               </Link>
             </div>
             {/* <Link to="/"> */}
-            <Button className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
+            <Button
+              className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
               onClick={handleBackToProject}
             >
               <IoMdArrowRoundBack className="w-4 h-4" />
@@ -199,11 +192,7 @@ export function StudioPage() {
             {/* </Link> */}
           </div>
 
-          
           <StudioMainTabs />
- 
-
-
         </div>
 
         {/* Main Canvas */}
@@ -211,9 +200,9 @@ export function StudioPage() {
         {/* {activeTabFromStore === "inspiration" ? (
           <WorkSpaceHome />
         ) : ( */}
-          <>
-            {/* other thaninspiration tab content */}
-            <StudioMainCanvas
+        <>
+          {/* other thaninspiration tab content */}
+          <StudioMainCanvas
             // currentCanvasImage={currentCanvasImage}
             isUploading={true}
             canEdit={canEdit}
@@ -221,7 +210,7 @@ export function StudioPage() {
             onFileUpload={handleFileUpload}
             onClearImage={() => dispatch(clearCurrentImage())}
           />
-          </>
+        </>
         {/* )} */}
 
         <SwatchBookDataHome />
@@ -229,9 +218,9 @@ export function StudioPage() {
         {/* get all GenAi Image based on job ID */}
         <GetGenAiImageJobIdBased />
 
-       { selectedProject &&
-        selectedProject.id &&
-       <JobHome selectedProjectId={selectedProject?.id} />}
+        {selectedProject && selectedProject.id && (
+          <JobHome selectedProjectId={selectedProject?.id} />
+        )}
 
         {isCanvasModalOpen && (
           <ModelCanvas
@@ -247,18 +236,18 @@ export function StudioPage() {
       {/* get all segments based on job Id */}
       <GetSegments />
 
-{/*  after send request for genAi image -get task id and update the state in GenAiImageGeneration DB and Redux */}
+      {/*  after send request for genAi image -get task id and update the state in GenAiImageGeneration DB and Redux */}
       <GenAiImageGeneration />
 
-       <SegmentHome/>
+      <SegmentHome />
 
-       <MarkingDimensionHome />
+      <MarkingDimensionHome />
 
-       {/* <CalculateArea/> */}
+      {/* <CalculateArea/> */}
 
-       <GetAllJobComments />
-       
-        <MaterialData />
+      <GetAllJobComments />
+
+      <MaterialData />
     </>
   );
 }
