@@ -65,7 +65,7 @@ const HoverHeader = () => {
     <>
       <Card>
         <CardContent className="py-2 px-4 flex items-center justify-between ">
-          <div className="flex items-center space-x-2">
+         {canvasType === "hover"||canvasType === "outline"&&  <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
@@ -102,23 +102,12 @@ const HoverHeader = () => {
                 {activeCanvas === "showSegments" ? "Hide Segments" : "Show Segments"}
               </span>
             </Button>
-          </div>
+          </div>}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">
-                {/* <Button
-                  variant={activeButton === "view" ? "default" : "outline"}
-                  size="sm"
-                  onClick={handleHover}>
-                  View
-                </Button>
-                <Button
-                  variant={activeButton === "chat" ? "default" : "outline"}
-                  size="sm"
-                  onClick={handleChat}>
-                  Chat
-                </Button> */}
+              
                 {canvasType === "hover" && (
                   <Button
                     variant={activeButton === "chat" ? "default" : "outline"}

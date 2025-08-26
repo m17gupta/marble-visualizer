@@ -1,5 +1,11 @@
 import { AppDispatch, RootState } from "@/redux/store";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -25,6 +31,9 @@ import {
 } from "../canvasUtil/HoverSegment";
 import { SelectedAnimation } from "../canvasUtil/SelectedAnimation";
 import { ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
+import { all } from "axios";
+import { getContainedPolygonNamesByBoundingBox } from "../canvasUtil/DetectPolygonUnderTarget";
+import { getCutOutArea } from "../canvasUtil/CutOutArea";
 
 type NamedFabricObject = fabric.Object & { name?: string };
 
@@ -62,7 +71,6 @@ const PolygonOverlay = ({
     (state: RootState) => state.canvas
   );
 
-
   const [imageWidth, setImageWidth] = useState<number>(0);
   const [imageHeight, setImageHeight] = useState<number>(0);
   const [updateSelectedSegment, setUpdateSelectedSegment] =
@@ -73,7 +81,7 @@ const PolygonOverlay = ({
   );
   const { isResetZoom } = useSelector((state: RootState) => state.canvas);
 
-   // upate all segmnet Array
+  // upate all segmnet Array
   useEffect(() => {
     if (allSegmentArray && allSegmentArray.length > 0) {
       setAllSegArray(allSegmentArray);
@@ -81,59 +89,55 @@ const PolygonOverlay = ({
       setAllSegArray([]);
     }
   }, [allSegmentArray]);
-    
-const resizeCanvas = useMemo(
-  () => (fabricCanvas: fabric.Canvas) => {
 
-    const container = containerRef.current;
-   
-     
-    if (container && canvasRef.current) {
-      const canvas = canvasRef.current;
-      // const dpr = window.devicePixelRatio || 1;
-      // const wrap = canvas.parentElement ?? document.body;
-      // const rect = wrap.getBoundingClientRect();
-      // console.log("rect", rect);
-      // console.log("dpr", dpr);
-      // console.log("container", container);
-      const { offsetWidth, offsetHeight } = container;
+  const resizeCanvas = useMemo(
+    () => (fabricCanvas: fabric.Canvas) => {
+      const container = containerRef.current;
 
-      // Set the canvas element size
-      canvasRef.current.width = offsetWidth;
-      canvasRef.current.height = offsetHeight;
+      if (container && canvasRef.current) {
+        const canvas = canvasRef.current;
+        // const dpr = window.devicePixelRatio || 1;
+        // const wrap = canvas.parentElement ?? document.body;
+        // const rect = wrap.getBoundingClientRect();
+        // console.log("rect", rect);
+        // console.log("dpr", dpr);
+        // console.log("container", container);
+        const { offsetWidth, offsetHeight } = container;
 
-      // Set the Fabric canvas size
-      fabricCanvas.setWidth(offsetWidth);
-      fabricCanvas.setHeight(offsetHeight);
+        // Set the canvas element size
+        canvasRef.current.width = offsetWidth;
+        canvasRef.current.height = offsetHeight;
 
-      // Scale background image proportionally (optional)
-      const backgroundImage = fabricCanvas.backgroundImage as fabric.Image;
-      if (backgroundImage) {
-        const scale = Math.min(
-          offsetWidth / backgroundImage.width!,
-          offsetHeight / backgroundImage.height!
-        );
-        backgroundImage.scale(scale);
-        fabricCanvas.requestRenderAll();
-      } else {
-        fabricCanvas.renderAll();
+        // Set the Fabric canvas size
+        fabricCanvas.setWidth(offsetWidth);
+        fabricCanvas.setHeight(offsetHeight);
+
+        // Scale background image proportionally (optional)
+        const backgroundImage = fabricCanvas.backgroundImage as fabric.Image;
+        if (backgroundImage) {
+          const scale = Math.min(
+            offsetWidth / backgroundImage.width!,
+            offsetHeight / backgroundImage.height!
+          );
+          backgroundImage.scale(scale);
+          fabricCanvas.requestRenderAll();
+        } else {
+          fabricCanvas.renderAll();
+        }
       }
-    }
-  },
-  []
-);
+    },
+    []
+  );
 
-useEffect(() => {
-  const handleResize = () => {
-    if (fabricCanvasRef.current) {
-    //  resizeCanvas(fabricCanvasRef.current);
-    }
-  };
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, [resizeCanvas]);
-
-  
+  useEffect(() => {
+    const handleResize = () => {
+      if (fabricCanvasRef.current) {
+        //  resizeCanvas(fabricCanvasRef.current);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [resizeCanvas]);
 
   // Update selected segment
   useEffect(() => {
@@ -144,25 +148,23 @@ useEffect(() => {
     }
   }, [selectedSegment]);
 
-  const handleMouseMove = useCallback(
-    (event: fabric.TEvent) => {
-      if (!fabricCanvasRef.current) return;
-      const canvas = fabricCanvasRef.current;
-      console.log("canvas", canvas.getObjects());
-      const fabricEvent = event as unknown as { target?: NamedFabricObject };
-      const target = fabricEvent.target;
-      console.log("target", target?.name);
-      if (target !== undefined) {
-        const targetName = target.name;
-        if (targetName) {
-          handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
-        }
-      } else {
-        HideAllSegments(fabricCanvasRef);
+  const handleMouseMove = useCallback((event: fabric.TEvent) => {
+    if (!fabricCanvasRef.current) return;
+    const canvas = fabricCanvasRef.current;
+    // console.log("canvas", canvas.getObjects());
+    const fabricEvent = event as unknown as { target?: NamedFabricObject };
+    const target = fabricEvent.target;
+    
+    if (target !== undefined) {
+      const targetName = target.name;
+      if (targetName) {
+        //getOverlappingPolygonNamesFabric(fabricCanvasRef, targetName);
+        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
       }
-    },
-    []
-  );
+    } else {
+      HideAllSegments(fabricCanvasRef);
+    }
+  }, []);
 
   // Initialize Fabric.js canvas
   useEffect(() => {
@@ -173,8 +175,7 @@ useEffect(() => {
       height,
       selection: true,
       preserveObjectStacking: true,
-      backgroundColor: "#282828", 
-      
+      backgroundColor: "#282828",
     });
 
     fabricCanvasRef.current = canvas;
@@ -184,7 +185,7 @@ useEffect(() => {
       ? ([...canvas.viewportTransform] as fabric.TMat2D)
       : null;
 
-      // resizeCanvas(canvas);
+    // resizeCanvas(canvas);
     // Canvas event handlers
     // canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", (event) => {
@@ -310,7 +311,7 @@ useEffect(() => {
     //Remove existing background image (ensure full cleanup)
     if (backgroundImageRef.current) {
       canvas.remove(backgroundImageRef.current);
-       backgroundImageRef.current = null;
+      backgroundImageRef.current = null;
       canvas.discardActiveObject();
       canvas.renderAll();
     }
@@ -386,119 +387,103 @@ useEffect(() => {
     tryLoadImage();
   }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
+
+  const isPolygonUpdate = useRef(false);
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
-    // if (!canvas) {
-    //   console.warn("[PolygonOverlay] No canvas instance available.");
-    //   return;
-    // }
-    // if (allSegArray.length === 0) {
-    //   console.warn("[PolygonOverlay] allSegArray is empty.");
-    //   return;
-    // }
-    
-    // if (!backgroundImageRef.current) {
-    //   console.warn("[PolygonOverlay] Background image not loaded yet.");
-    //   return;
-    // }
 
-    // Remove previous polygons and groups (but not the background image)
-    // const objectsToRemove = canvas
-    //   .getObjects()
-    //   .filter(
-    //     (obj) =>
-    //       obj.type === "polygon" ||
-    //       (obj.type === "group" &&
-    //         (obj as NamedFabricObject).name !== "backgroundImage")
-    //   );
-    // objectsToRemove.forEach((obj) => canvas.remove(obj));
-
-     if(allSegArray && 
-      allSegArray.length>0 &&
-      segments && segments.length > 0 &&  
-      height && width &&
+    if (
+      allSegArray &&
+      allSegArray.length > 0 &&
+      segments &&
+      segments.length > 0 &&
+      height &&
+      width &&
       canvas
     ) {
-      console.log("Redrawing polygons on canvas");
-    allSegArray.forEach((seg, idx) => {
-      const {
-        segment_type,
-        group_label_system,
-        short_title,
-        annotation_points_float,
-        segment_bb_float,
-      } = seg;
-      const segColor =
-        segments.find(
-          (s: { name: string; color_code: string }) => s.name === segment_type
-        )?.color_code || "#FF1493";
-      const isFill = false;
-      if (!annotation_points_float || annotation_points_float.length === 0) {
-        console.warn(
-          `[PolygonOverlay] Segment ${idx} missing annotation_points_float`,
-          seg
+      allSegArray.forEach((seg, idx) => {
+        const {
+          segment_type,
+          group_label_system,
+          short_title,
+          annotation_points_float,
+          segment_bb_float,
+        } = seg;
+        const segColor =
+          segments.find(
+            (s: { name: string; color_code: string }) => s.name === segment_type
+          )?.color_code || "#FF1493";
+        const isFill = false;
+        if (!annotation_points_float || annotation_points_float.length === 0) {
+          console.warn(
+            `[PolygonOverlay] Segment ${idx} missing annotation_points_float`,
+            seg
+          );
+          return;
+        }
+        if (!segment_bb_float || segment_bb_float.length === 0) {
+          console.warn(
+            `[PolygonOverlay] Segment ${idx} missing segment_bb_float`,
+            seg
+          );
+          return;
+        }
+        if (!group_label_system) {
+          console.warn(
+            `[PolygonOverlay] Segment ${idx} missing group_label_system`,
+            seg
+          );
+          return;
+        }
+        if (!short_title) {
+          console.warn(
+            `[PolygonOverlay] Segment ${idx} missing short_title`,
+            seg
+          );
+          return;
+        }
+        if (!segment_type) {
+          console.warn(
+            `[PolygonOverlay] Segment ${idx} missing segment_type`,
+            seg
+          );
+          return;
+        }
+        if (!segColor) {
+          console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
+          return;
+        }
+        if (!fabricCanvasRef.current) {
+          console.warn(
+            `[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`
+          );
+          return;
+        }
+
+        collectPoints(
+          annotation_points_float,
+          short_title,
+          segment_bb_float,
+          segment_type,
+          group_label_system,
+          segColor,
+          fabricCanvasRef, // Pass the actual Canvas instance, not the ref
+          isFill,
+          height,
+          width,
+          aiTrainImageWidth,
+          aiTrainImageHeight
         );
-        return;
-      }
-      if (!segment_bb_float || segment_bb_float.length === 0) {
-        console.warn(
-          `[PolygonOverlay] Segment ${idx} missing segment_bb_float`,
-          seg
-        );
-        return;
-      }
-      if (!group_label_system) {
-        console.warn(
-          `[PolygonOverlay] Segment ${idx} missing group_label_system`,
-          seg
-        );
-        return;
-      }
-      if (!short_title) {
-        console.warn(
-          `[PolygonOverlay] Segment ${idx} missing short_title`,
-          seg
-        );
-        return;
-      }
-      if (!segment_type) {
-        console.warn(
-          `[PolygonOverlay] Segment ${idx} missing segment_type`,
-          seg
-        );
-        return;
-      }
-      if (!segColor) {
-        console.warn(`[PolygonOverlay] Segment ${idx} missing segColor`, seg);
-        return;
-      }
-      if (!fabricCanvasRef.current) {
-        console.warn(
-          `[PolygonOverlay] fabricCanvasRef.current missing at segment ${idx}`
-        );
-        return;
+          if(idx==allSegArray.length-1  ){
+            console.log("All segments added to canvas");
+            isPolygonUpdate.current = true;
       }
 
-      collectPoints(
-        annotation_points_float,
-        short_title,
-        segment_bb_float,
-        segment_type,
-        group_label_system,
-        segColor,
-        fabricCanvasRef, // Pass the actual Canvas instance, not the ref
-        isFill,
-        height,
-        width,
-        aiTrainImageWidth,
-        aiTrainImageHeight
-      );
-    });
+      });
 
-   
-
-    canvas.renderAll();
-  }
+      canvas.renderAll();
+     
+    }
   }, [
     allSegArray,
     segments,
@@ -506,23 +491,9 @@ useEffect(() => {
     height,
     width,
     aiTrainImageWidth,
-    aiTrainImageHeight
+    aiTrainImageHeight,
   ]);
 
-  // Debug function to check canvas state
-  useEffect(() => {
-    if (!fabricCanvasRef.current) return;
-
-    const canvas = fabricCanvasRef.current;
-    const objects = canvas.getObjects();
-
-    objects.forEach((obj, index) => {
-      const namedObj = obj as NamedFabricObject;
-      console.log(
-        `[PolygonOverlay Debug] Object ${index}: type=${obj.type}, name=${namedObj.name}, visible=${obj.visible}`
-      );
-    });
-  }, [allSegArray, imageWidth, imageHeight, width, height]);
 
   // hover on group segment
   const { hoverGroup } = useSelector((state: RootState) => state.canvas);
@@ -587,6 +558,50 @@ useEffect(() => {
     }
   };
 
+  // cut out section
+ 
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+
+    const canvas = fabricCanvasRef.current;
+    const objects = canvas.getObjects();
+    const scalex = canvas.width / aiTrainImageWidth;
+    const scaley = canvas.height / aiTrainImageHeight;
+    if (isPolygonUpdate.current && allSegArray && allSegArray.length > 0) {
+      const getWallSegment = allSegArray.filter((seg) => seg.segment_type === "Wall");
+      if (getWallSegment.length > 0) {
+        // Do something with wall segments
+        getWallSegment.map(item => {
+                const getAllPolyName=getContainedPolygonNamesByBoundingBox(fabricCanvasRef,item?.short_title??"");
+                console.log("getAllPolyName",getAllPolyName);
+                if(getAllPolyName.length>0){
+                  const allTrimPoly = getAllPolyName.filter(
+                (polyName) => polyName.startsWith("WI") || polyName.startsWith("TR")
+              );
+
+                  if(allTrimPoly.length>0){
+                    getCutOutArea(
+                      fabricCanvasRef,
+                      item.annotation_points_float || [],
+                      item.short_title || "",
+                      item.short_title || "",
+                      item.segment_type || "",
+                      item.group_label_system || "",
+                      item.segment_bb_float || [],
+                      "red",
+                      scalex,
+                      scaley,
+                      allTrimPoly,
+                      allSegArray
+
+                    )
+                  }
+                }
+              })
+             }
+      }
+  }, [allSegArray,isPolygonUpdate]);
+
   return (
     <>
       <TooltipProvider>
@@ -602,38 +617,35 @@ useEffect(() => {
             <Card className="overflow-hidden border rounded-md shadow-sm bg-white">
               <CardContent className="p-0 mx-auto flex items-center justify-center">
                 {/* <div className="relative flex items-center justify-center">                */}
-                  <canvas
-                    ref={canvasRef}
-                    className="border-0 block mx-auto w-full h-full"
-                    style={{ width: "100%", height: "100%", display: "block" }}
-                  />
+                <canvas
+                  ref={canvasRef}
+                  className="border-0 block mx-auto w-full h-full"
+                  style={{ width: "100%", height: "100%", display: "block" }}
+                />
 
-                  {/* Image Loading Overlay */}
-                  {isImageLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80 z-10">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                        <p className="text-sm text-muted-foreground">
-                          Loading background image...
-                        </p>
-                      </div>
+                {/* Image Loading Overlay */}
+                {isImageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80 z-10">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                      <p className="text-sm text-muted-foreground">
+                        Loading background image...
+                      </p>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Canvas Status */}
-                  {!isCanvasReady && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                        <p className="text-sm text-muted-foreground">
-                          Initializing canvas...
-                        </p>
-                      </div>
+                {/* Canvas Status */}
+                {!isCanvasReady && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                      <p className="text-sm text-muted-foreground">
+                        Initializing canvas...
+                      </p>
                     </div>
-                  )}
-
-                 
-            
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>

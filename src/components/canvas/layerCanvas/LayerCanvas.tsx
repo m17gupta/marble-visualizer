@@ -217,12 +217,13 @@ const LayerCanvas = ({
       fabricCanvasRef.current.renderAll();
     } else if (fabricCanvasRef.current&&allPolygon.length === 0) {
       // remove existing polygon if annotation is empty
-      const existingPolygon = fabricCanvasRef.current.getObjects().find(
-        (obj) => obj.type === "polygon"
-      );
-      if (existingPolygon) {
-        fabricCanvasRef.current.remove(existingPolygon);
-        fabricCanvasRef.current.renderAll();
+      console.log("Removing existing polygons as annotation is empty");
+      const canvas = fabricCanvasRef.current;
+      // Remove all group objects (polygons) from the canvas
+      const groupObjects = canvas.getObjects().filter((obj) => obj.type === "polygon");
+      if (groupObjects.length > 0) {
+        groupObjects.forEach((group) => canvas.remove(group));
+        canvas.renderAll();
       }
     }
   }, [fabricCanvasRef, allPolygon, dispatch, backgroundImageRef]);

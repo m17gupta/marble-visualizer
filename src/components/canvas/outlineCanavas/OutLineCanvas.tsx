@@ -323,7 +323,7 @@ const OutLineCanvas = ({
             
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-               <h4>outline</h4>
+              
                 <div className="relative bg-gray-50 flex items-center justify-center">
                   <canvas
                     ref={canvasRef}

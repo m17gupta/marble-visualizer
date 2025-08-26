@@ -357,6 +357,10 @@ const CommentCanvas = ({
     };
   }, [isCanvasReady, handleMouseDown, handleMouseMove]);
 
+  const handleCancel = () => {
+    // Handle cancel logic here
+  };
+
   return (
     <>
       <TooltipProvider>
@@ -367,6 +371,7 @@ const CommentCanvas = ({
               // Handle save annotation logic here
               // toast.success("Annotation saved successfully!");
             }}
+            onCancel={handleCancel}
           />
           {/* Canvas Container */}
           <motion.div

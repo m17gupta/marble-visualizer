@@ -11,14 +11,19 @@ import { Separator } from '@/components/ui/separator';
 type CommonToolBarProps = {
     title: string
     onSaveAnnotation: () => void;
+    onCancel: () => void;
 }
-const CommonToolBar = ({ title, onSaveAnnotation }: CommonToolBarProps) => {
+const CommonToolBar = ({ title, onSaveAnnotation, onCancel }: CommonToolBarProps) => {
     const { selectedSegment } = useSelector((state: RootState) => state.masterArray);
 
 
     const { canvasType } = useSelector((state: RootState) => state.canvas);
     const handleSaveAnnotation = () => {
         onSaveAnnotation();
+    };
+
+    const handleCancelAnnotation = () => {
+        onCancel();
     };
     return (
         <Card>
@@ -29,12 +34,22 @@ const CommonToolBar = ({ title, onSaveAnnotation }: CommonToolBarProps) => {
                     <div className="flex items-center space-x-2">
 
 
-                        {canvasType === "edit" && <Button
-                            variant={"ghost"}
-                            onClick={handleSaveAnnotation}
-                        >
-                            Save Annotation
-                        </Button>}
+                        {canvasType === "edit" && (
+                            <Button
+                                variant={"ghost"}
+                                onClick={handleSaveAnnotation}
+                            >
+                                Save Annotation
+                            </Button>
+                        )}
+                        {canvasType === "edit" && (
+                            <Button
+                                variant={"ghost"}
+                                onClick={handleCancelAnnotation}
+                            >
+                                cancel Annotation
+                            </Button>
+                        )}
 
 
 
@@ -63,35 +78,6 @@ const CommonToolBar = ({ title, onSaveAnnotation }: CommonToolBarProps) => {
                 <div className="flex items-center space-x-2">
 
 
-
-
-
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-
-                                className='py-0 px-3 '
-                                onClick={handleCancelDrawing}
-                            >
-                                <span className="text-xs font-bold ">Cancel Draw</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Cancel draw action</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-
-                                className='py-0 px-3 '
-                                onClick={handleResetZoom}
-                            >
-                                <span className="text-xs font-bold ">Reset </span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Reset zoom to 100%</TooltipContent>
-                    </Tooltip> */}
 
 
 
