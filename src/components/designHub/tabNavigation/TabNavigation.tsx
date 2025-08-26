@@ -17,18 +17,23 @@ import {
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
-import { deleteSegmentById, updateIsSegmentEdit } from "@/redux/slices/segmentsSlice";
-import { deleteSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
+import {
+  deleteSegmentById,
+  updateIsSegmentEdit,
+} from "@/redux/slices/segmentsSlice";
+import {
+  deleteSegment,
+  updateSelectedSegment,
+} from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { toast } from "sonner";
-
+import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
 
 type Props = {
   title?: string;
-  segment: SegmentModal
-}
+  segment: SegmentModal;
+};
 const TabNavigation = ({ title, segment }: Props) => {
-
   const [active, setActive] = useState("palette");
   const dispatch = useDispatch<AppDispatch>();
   const buttons = [
@@ -37,7 +42,7 @@ const TabNavigation = ({ title, segment }: Props) => {
       tooltip: "Materials",
       icon: (
         <img
-              src="/assets/image/line-md--arrows-vertical-alt.svg"
+          src="/assets/image/line-md--arrows-vertical-alt.svg"
           alt="Materials"
           className="h-5 w-5"
         />
@@ -53,8 +58,7 @@ const TabNavigation = ({ title, segment }: Props) => {
       tooltip: "Measurement",
       icon: (
         <img
-      
-             src="/assets/image/line-md--gauge-loop.svg"
+          src="/assets/image/line-md--gauge-loop.svg"
           alt="Information"
           className="h-5 w-5"
         />
@@ -71,12 +75,9 @@ const TabNavigation = ({ title, segment }: Props) => {
         />
       ),
     },
-
   ];
 
-
   const handleEditSegment = (segment: SegmentModal) => {
-   
     dispatch(updateSelectedSegment(segment));
     dispatch(updateIsSegmentEdit(true));
     // Implement your edit logic here
@@ -84,24 +85,20 @@ const TabNavigation = ({ title, segment }: Props) => {
 
   const handleReAnnotation = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
-    dispatch(setCanvasType("reannotation"))
+    dispatch(setCanvasType("reannotation"));
     // Implement your re-annotation logic here
   };
 
   const handleEditSegmentAnnotation = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
-    dispatch(setCanvasType("edit"))
-
-  }
+    dispatch(setCanvasType("edit"));
+  };
 
   const handleDeleteSegment = async (segmentId: number) => {
-    
     try {
       const response = await dispatch(deleteSegmentById(segmentId)).unwrap();
-     
-      if (response && response.success) {
-      
 
+      if (response && response.success) {
         // delete segment from master array
         dispatch(deleteSegment(segmentId));
         toast.success("Segment deleted successfully");
@@ -110,6 +107,16 @@ const TabNavigation = ({ title, segment }: Props) => {
       console.error("Error deleting segment:", error);
     }
   };
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const handleCancelProjectDelete = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
   return (
     <TooltipProvider>
       <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
@@ -122,10 +129,11 @@ const TabNavigation = ({ title, segment }: Props) => {
                     <DropdownMenuTrigger asChild>
                       <button
                         onClick={() => setActive("edit")}
-                        className={`px-3 py-1 rounded-md border transition-colors focus:outline-none ${active === "edit"
-                          ? "bg-blue-50 text-white border-gray-800"
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                          }`}
+                        className={`px-3 py-1 rounded-md border transition-colors focus:outline-none ${
+                          active === "edit"
+                            ? "bg-blue-50 text-white border-gray-800"
+                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+                        }`}
                       >
                         <img
                           src="/assets/image/line-md--edit-twotone.svg"
@@ -142,8 +150,10 @@ const TabNavigation = ({ title, segment }: Props) => {
                 <DropdownMenuContent className="w-44">
                   <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer"
-                    onClick={() => handleEditSegment(segment)}>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => handleEditSegment(segment)}
+                  >
                     <img
                       src="/assets/image/line-md--edit-twotone.svg"
                       alt="Edit"
@@ -152,7 +162,8 @@ const TabNavigation = ({ title, segment }: Props) => {
                     Edit Segment
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem onClick={() => handleEditSegmentAnnotation(segment)}
+                  <DropdownMenuItem
+                    onClick={() => handleEditSegmentAnnotation(segment)}
                   >
                     <img
                       src="/assets/image/line-md--edit-twotone.svg"
@@ -162,7 +173,8 @@ const TabNavigation = ({ title, segment }: Props) => {
                     Edit Annotation
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem className="cursor-pointer"
+                  <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={() => handleReAnnotation(segment)}
                   >
                     <img
@@ -172,8 +184,9 @@ const TabNavigation = ({ title, segment }: Props) => {
                     />
                     Re-Annotation
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer"
-                    onClick={() => handleDeleteSegment(segment.id ?? 0)}
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => handleOpenDeleteModal()}
                   >
                     <img
                       src="/assets/image/line-md--trash.svg"
@@ -182,6 +195,22 @@ const TabNavigation = ({ title, segment }: Props) => {
                     />
                     Delete
                   </DropdownMenuItem>
+                  {isDeleteModalOpen && (
+                    // <DeleteModal
+                    //   isOpen={isDeleteModalOpen}
+                    //   onCancel={handleCancelProjectDelete}
+                    //   handleDeleteSegment={handleDeleteSegment}
+                    //   segment={segment}
+                    // />
+
+                    <DeleteModal
+                      isOpen={isDeleteModalOpen}
+                      onCancel={handleCancelProjectDelete}
+                      type="segment"
+                      segment={segment}
+                      onDeleteSegment={handleDeleteSegment}
+                    />
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             );
@@ -193,10 +222,11 @@ const TabNavigation = ({ title, segment }: Props) => {
                 <button
                   onClick={() => setActive(btn.id)}
                   className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
- ${active === btn.id
-                      ? "bg-blue-100 text-white border-blue-800"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                    }`}
+ ${
+   active === btn.id
+     ? "bg-blue-100 text-white border-blue-800"
+     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+ }`}
                 >
                   {btn.icon}
                 </button>
