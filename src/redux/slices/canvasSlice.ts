@@ -22,7 +22,6 @@ export type CanvasMode =
   | "measurement"
   | "test-canvas"
   | "outline"
-  | "compare"
   | "zoom"
   |"showSegments"
 
@@ -56,6 +55,7 @@ interface CanvasState {
   activeCanvas: string;
   aiTrainImageWidth: number;
   aiTrainImageHeight: number;
+  isCompare: boolean;
 }
 
 // Initial state
@@ -78,7 +78,8 @@ const initialState: CanvasState = {
   isResetZoom: false, // Flag to indicate if the canvas has been reset
   activeCanvas: "hideSegments",
   aiTrainImageWidth: 800,
-  aiTrainImageHeight: 600
+  aiTrainImageHeight: 600,
+  isCompare: false,
 };
 
 // Create the canvas slice
@@ -166,6 +167,10 @@ const canvasSlice = createSlice({
       state.activeCanvas = action.payload;
     },
 
+    // ;start compare
+    updateIsCompare: (state, action: PayloadAction<boolean>) => {
+      state.isCompare = action.payload;
+    },  
     // Reset canvas state to initial values
     resetCanvas(state) {
       state.currentZoom = 1;
@@ -177,6 +182,7 @@ const canvasSlice = createSlice({
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       state.activeCanvas = "hideSegments";
+      state.isCompare
     },
    setIsResetZoom: (state, action: PayloadAction<boolean>) => {
       state.isResetZoom = action.payload; // Update the reset zoom flag 
@@ -204,7 +210,8 @@ export const {
   updateIsGenerateMask,
   updateIsScreenShotTaken,
   updateScreenShotUrl,
-  setIsResetZoom,setActiveTab
+  setIsResetZoom,setActiveTab,
+  updateIsCompare
 } = canvasSlice.actions;
 
 // Export reducer

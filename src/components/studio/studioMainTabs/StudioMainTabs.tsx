@@ -31,7 +31,7 @@ const StudioMainTabs = () => {
   };
 
   const handleDesignHubClick = () => {
-    dispatch(setCanvasReady(false))
+   
   dispatch(setCanvasType("hover"))
     dispatch(updateActiveTab("design-hub"));
     dispatch(setCurrentTabContent("home"));
@@ -40,10 +40,10 @@ const StudioMainTabs = () => {
   };
 
   const handleInspirationClick = () => {
-    // setActiveTab("inspiration");
-     dispatch(setCanvasReady(false))
+  
     dispatch(setCurrentTabContent("home"));
     dispatch(updateActiveTab("inspiration"));
+    dispatch(setCanvasType("hover-default")) // Set canvas type to hover when Inspiration tab is clicked
   };
 
   const handleMeasurementClick = () => {

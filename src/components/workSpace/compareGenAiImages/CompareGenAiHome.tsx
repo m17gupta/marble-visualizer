@@ -11,6 +11,7 @@ import {
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
+import { resetCanvas, updateIsCompare } from "@/redux/slices/canvasSlice";
 
 const CompareGenAiHome: React.FC = () => {
   const dispatch = useDispatch();
@@ -42,11 +43,12 @@ const CompareGenAiHome: React.FC = () => {
 
   // Handle close compare view
   const handleCloseCompare = () => {
-    setShowCompareView(false);
+    // setShowCompareView(false);
     dispatch(setCurrentTabContent("home"));
     dispatch(setCurrentGenAiImage(null));
     dispatch(setIsGenerated(false));
     dispatch(resetRequest());
+    dispatch(updateIsCompare(false));
   };
 
   // const [viewMode, setViewMode] = useState<"slider" | "side-by-side">("slider");
