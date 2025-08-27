@@ -16,7 +16,7 @@ export function SelectPalletPopover() {
   };
 
   return (
-    <div className="flex items-baseline  gap-4 rounded-md border border-gray-200 bg-white px-2  mb-4">
+    <div className="flex items-baseline  gap-4 rounded-md border border-gray-200 bg-white px-2  mb-4 mx-4">
       <div className="flex flex-grow gap-2 overflow-x-auto scroll-thin p-2 ">
         {/* Replace Popover with HoverCard */}
         <HoverCard>

@@ -609,7 +609,7 @@ const PolygonOverlay = ({
   return (
     <>
       <TooltipProvider>
-        <div className={cn("flex flex-col space-y-4 mt-4", className)}>
+        <div className={cn("flex flex-col space-y-4 mt-4 px-4", className)}>
           {/* Canvas Container */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

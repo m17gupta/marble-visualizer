@@ -291,3 +291,12 @@ button:focus-visible {
 .sheet-scrollbar .btn_close{
   display: none !important;
 }
+
+#anything-llm-header div{
+  justify-content: start;
+  padding-left: 15px;
+}
+#anything-llm-header div img{
+    max-width: 145px !important;
+    max-height: 70px !important;
+}
