@@ -37,7 +37,7 @@ const DesignProject = () => {
   const { genAiImages, error, isFetchingGenAiImages, currentGenAiImage } =
     useSelector((state: RootState) => state.genAi);
 
-  console.log("DesignProject component mounted", currentGenAiImage);
+
   // Update all GenAiImages
   useEffect(() => {
     try {

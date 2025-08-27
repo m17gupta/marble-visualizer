@@ -57,6 +57,7 @@ const OldCommentAvatar = ({ onSave, onDeleteComment }: Props) => {
   ) => {
     if (localMessage.trim()) {
       const data: CommentModel = {
+        is_resolved: "pending",
         userId: user?.id || "",
         name: user?.name || "Anonymous",
         commentText: localMessage,

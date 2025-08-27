@@ -22,33 +22,41 @@ export const handlePolygonVisibilityTest = (
         typeof (obj as fabric.Group).getObjects === "function"
       ) {
         const allGroupObjects = (obj as fabric.Group).getObjects();
-        // console.log(" allGroupObjects", allGroupObjects[0]);
+        // Find polygon/path and text objects in the group
+  let polygonObj: fabric.Polygon | undefined = undefined;
+  let pathObj: fabric.Path | undefined = undefined;
+  let textObj: fabric.Text | undefined = undefined;
+  let namedObj: NamedFabricObject | undefined = undefined;
         allGroupObjects.forEach((groupObj) => {
-          const namedGroupObj = groupObj as NamedFabricObject;
-          const currentPoly = groupObj as fabric.Polygon;
-          const currentPath = groupObj as fabric.Path;
-
-          if (currentPoly instanceof fabric.Polygon) {
-            const vertices = currentPoly.get("points");
-            const checkvalue = isPointInPolygon(pointer, vertices || []);
-            if (checkvalue) {
-            
-              const polyName = (currentPoly as NamedFabricObject).name;
-         
-              namedGroupObj.set({ visible: true });
-            }
-          }else if (currentPath instanceof fabric.Path) {
-            const pathData = currentPath.get("path");
-              const pathPoints = getPathPoints(pathData);
-            const checkvalue = isPointInPolygon(pointer, pathPoints || []);
-        
-            if (checkvalue) {
-              const polyName = (currentPath as NamedFabricObject).name;
-              console.log(" polyName", polyName);
-              namedGroupObj.set({ visible: true });
-            }
+          if (groupObj instanceof fabric.Polygon) {
+            polygonObj = groupObj as fabric.Polygon;
+            namedObj = groupObj as NamedFabricObject;
+          } else if (groupObj instanceof fabric.Path) {
+            pathObj = groupObj as fabric.Path;
+            namedObj = groupObj as NamedFabricObject;
+          } else if (groupObj instanceof fabric.Text) {
+            textObj = groupObj as fabric.Text;
           }
         });
+        // Check polygon
+        if (polygonObj) {
+          const vertices = (polygonObj as fabric.Polygon).points;
+          const checkvalue = isPointInPolygon(pointer, vertices || []);
+          if (checkvalue) {
+            if (namedObj) (namedObj as fabric.Object).set({ visible: true });
+            if (textObj) (textObj as fabric.Object).set({ visible: true });
+          }
+        }
+        // Check path
+        if (pathObj) {
+          const pathData = (pathObj as fabric.Path).path;
+          const pathPoints = getPathPoints(pathData);
+          const checkvalue = isPointInPolygon(pointer, pathPoints || []);
+          if (checkvalue) {
+            if (namedObj) (namedObj as fabric.Object).set({ visible: true });
+            if (textObj) (textObj as fabric.Object).set({ visible: true });
+          }
+        }
       }
     });
     canvas.current.renderAll();
@@ -67,7 +75,7 @@ export const HideAllSegments = (canvas: React.RefObject<fabric.Canvas>) => {
       const allGroupObjects = (obj as fabric.Group).getObjects();
       allGroupObjects.forEach((groupObj) => {
         const namedGroupObj = groupObj as NamedFabricObject;
-        namedGroupObj.set({ visible: false });
+        (namedGroupObj as fabric.Object).set({ visible: false });
       });
     }
   });
@@ -103,11 +111,12 @@ export const handlePolygonVisibilityOnMouseMove = (
         allGroupObjects.forEach((groupObj) => {
           const namedGroupObj = groupObj as NamedFabricObject;
           const currentPoly = groupObj as fabric.Polygon;
-
+          const currentText = groupObj as fabric.Text;
           const polyName = namedGroupObj.name;
 
           if (polyName === targetName) {
             namedGroupObj.set({ visible: true });
+            currentText.set({ visible: true });
           }
         });
       }

@@ -37,47 +37,18 @@ const AllSegments = () => {
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
   );
+ const { masterArray } = useSelector((state: RootState) => state.masterArray);
 
-  const { masterArray } = useSelector((state: RootState) => state.masterArray);
-  const isFirst = useRef<boolean>(true);
-  // update master Array
-  useEffect(() => {
-    if (masterArray && masterArray.length > 0) {
-      if (
-        masterArray &&
-        masterArray[0] &&
-        masterArray[0].allSegments &&
-        masterArray[0].allSegments.length > 0
-      ) {
-        const firstGroup = masterArray[0].allSegments[0];
 
-        if (
-          firstGroup &&
-          firstGroup.groupName &&
-          firstGroup.segments.length > 0 &&
-          isFirst.current
-        ) {
-          dispatch(addSelectedMasterArray(masterArray[0]));
-          dispatch(updateSelectedSegment(firstGroup.segments[0]));
-          dispatch(updatedSelectedGroupSegment(firstGroup));
-          if(firstGroup.segments &&firstGroup.segments.length>0){
-            const userSeg:SegmentModal[]=[]
-            firstGroup.segments.map(item=>{
-              userSeg.push(item)
-            })
-            dispatch(addUserSelectedSegment(userSeg))
-          }
-          
-          isFirst.current = false;
-        }
-
-        setUpdatedMasterArray(masterArray);
-      }
-    } else {
-      setUpdatedMasterArray(null);
-    }
-  }, [masterArray, isFirst]);
-
+ useEffect(() => {
+  if(masterArray && masterArray.length > 0){
+    setActiveSegment(masterArray[0].id ? masterArray[0].id : null);
+    setUpdatedMasterArray(masterArray);
+  } else{
+    setUpdatedMasterArray(null);
+  }
+  
+ }, [masterArray]);
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
     if (selectedSeg && selectedSeg.id && selectedSeg.name) {

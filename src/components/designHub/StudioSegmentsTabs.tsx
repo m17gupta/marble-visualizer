@@ -25,27 +25,11 @@ import {
   updateAddSegMessage,
   updateIsNewMasterArray,
 } from "@/redux/slices/segmentsSlice";
-import {
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "../ui/sheet";
-import AddSegLists from "../canvas/canvasAddNewSegment/AddSegLists";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@radix-ui/react-select";
 import { IoMdClose } from "react-icons/io";
 import { MaterialSegmentModel } from "@/models/materialSegment";
 import { toast } from "sonner";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
+import NoSegment from "./NoSegment";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -155,10 +139,7 @@ const StudioTabs = () => {
     dispatch(setCanvasType("draw"));
   };
 
-  const handleAddSegment = () => {
-    dispatch(updateIsNewMasterArray(true));
-    //  dispatch(setCanvasType("draw"))
-  };
+ 
 
   const handleEachSegmentHover = (segment: string) => {
     dispatch(updateHoverGroup(null));
@@ -169,119 +150,19 @@ const StudioTabs = () => {
   //   dispatch(updateHoverGroup(null));
   // };
 
-  if (!masterArray || masterArray.allSegments.length === 0) {
-    return (
-      <div className=" flex flex-col items-center justify-center grid items-start content-center h-[90%] w-full">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                className="rounded-full w-24 h-24 mx-auto mb-4"
-                onClick={handleAddSegment}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="70"
-                  height="70"
-                  viewBox="0 0 24 24"
-                >
-                  <path fill="currentColor" fill-opacity="0" d="M10 14h4v6h-4Z">
-                    <animate
-                      fill="freeze"
-                      attributeName="fill-opacity"
-                      begin="1.1s"
-                      dur="0.15s"
-                      values="0;0.3"
-                    />
-                  </path>
-                  <g
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-dasharray="16"
-                      stroke-dashoffset="16"
-                      d="M5 21h14"
-                    >
-                      <animate
-                        fill="freeze"
-                        attributeName="stroke-dashoffset"
-                        dur="0.2s"
-                        values="16;0"
-                      />
-                    </path>
-                    <path
-                      stroke-dasharray="14"
-                      stroke-dashoffset="14"
-                      d="M5 21v-13M19 21v-13"
-                    >
-                      <animate
-                        fill="freeze"
-                        attributeName="stroke-dashoffset"
-                        begin="0.2s"
-                        dur="0.2s"
-                        values="14;0"
-                      />
-                    </path>
-                    <path
-                      stroke-dasharray="24"
-                      stroke-dashoffset="24"
-                      d="M9 21v-8h6v8"
-                    >
-                      <animate
-                        fill="freeze"
-                        attributeName="stroke-dashoffset"
-                        begin="0.4s"
-                        dur="0.4s"
-                        values="24;0"
-                      />
-                    </path>
-                    <path
-                      stroke-dasharray="28"
-                      stroke-dashoffset="28"
-                      d="M2 10l10 -8l10 8"
-                    >
-                      <animate
-                        fill="freeze"
-                        attributeName="stroke-dashoffset"
-                        begin="0.5s"
-                        dur="0.6s"
-                        values="28;0"
-                      />
-                    </path>
-                  </g>
-                </svg>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add Segment</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
 
-        <p className="text-gray-500 mb-2 text-center">
-          No segments available. Please add a segment.
-        </p>
-
-        <Button
-          className="btn-primary bg-primary hover:bg-primary/90 text-white hover:text-white w-32 mx-auto"
-          variant="outline"
-          size="sm"
-          onClick={handleAddSegment}
-        >
-          Select Segment
-        </Button>
-      </div>
-    );
-  }
+  // if (!masterArray || masterArray.allSegments.length === 0) {
+  //   return (
+   
+  //   );
+  // }
 
   return (
     <>
-      <Tabs
+    {!masterArray || masterArray.allSegments.length === 0  ?(
+       <NoSegment />
+    ):( 
+    <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
         className="box-border overflow-y-auto border-2 "
@@ -353,44 +234,7 @@ const StudioTabs = () => {
           </Button>
         </div>
 
-        {/* <div className="w-full">
-          <Swiper spaceBetween={10} slidesPerView={2} className="flex w-full">
-            {currentSelectedGroupSegment?.segments.map((d) => {
-              return (
-                <SwiperSlide key={d.id} className="border-2 w-10">
-                  <button
-                    // ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
-                    // onClick={() => handleInnerTabClick(tab)}
-                    // onMouseEnter={() =>
-                    //   handleEachSegmentHover(tab.short_title ?? "")
-                    // }
-                    onMouseLeave={handleLeaveGroupHover}
-                    className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 focus:outline-none"
-                  >
-                    {d.short_title}
-                  </button>
-                </SwiperSlide>
-              );
-            })}
-            {currentSelectedGroupSegment?.segments.map((d) => {
-              return (
-                <SwiperSlide key={d.id} className="!w-auto">
-                  <button
-                    // ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
-                    // onClick={() => handleInnerTabClick(tab)}
-                    // onMouseEnter={() =>
-                    //   handleEachSegmentHover(tab.short_title ?? "")
-                    // }
-                    onMouseLeave={handleLeaveGroupHover}
-                    className="uppercase text-sm font-semibold px-3 py-1 text-gray-500 hover:text-purple-600 hover:border-b-2 hover:border-purple-600 focus:outline-none"
-                  >
-                    {d.short_title}
-                  </button>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
-        </div> */}
+      
 
         {masterArray.allSegments.map((wall) => (
           <TabsContent
@@ -465,10 +309,10 @@ const StudioTabs = () => {
           </div>
         ))} */}
         <SwatchRecommendations />
-      </Tabs>
+      </Tabs>)}
     </>
   );
-};
+}
 
 export default StudioTabs;
 

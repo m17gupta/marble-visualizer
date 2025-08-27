@@ -49,7 +49,7 @@ const handleDeleteComment = async () => {
   const handleSaveComment = async () => {
     // Fix the condition logic and null checks
     const segId = allSegments.find(seg => seg.short_title === segmentName)?.id;
-    if (!currentProject || !currentProject.id || !jobList[0]?.id || !segmentName || !localMessage.trim()) {
+    if (!currentProject || !currentProject.id || !jobList[0]?.id || !segmentName || !localMessage.trim() || !user ||user.id) {
       console.error("Missing required data to save comment:", {
         projectId: currentProject?.id,
         jobId: jobList[0]?.id,
@@ -66,6 +66,7 @@ const handleDeleteComment = async () => {
         userId: user?.id || '',
         name: user?.name || 'Anonymous',
         commentText: localMessage,
+        is_resolved: "pending",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

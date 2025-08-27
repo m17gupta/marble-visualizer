@@ -34,30 +34,34 @@ const CreateMasterArrays = () => {
       segments.forEach((segment) => {
         const grpName = segment.name;
         const sameGrpSeg: MasterGroupModel[] = [];
-        const allsameGrp = allSegments.filter(
-          (item) => item.segment_type === grpName
-        );
-        const getallGrpName = Array.from(
-          new Set(
-            allsameGrp.map((item) => {
-              if (item.group_name_user !== null) {
-                return item.group_name_user;
-              } else {
-                return item.group_label_system;
-              }
-              // item.group_label_system;
-            })
-          )
-        );
+            const allsameGrp = allSegments.filter((item) => item.segment_type === grpName);
+        const getallGrpName = Array.from(new Set(allsameGrp.map((item) => item.group_label_system)));
+        // console.log("getallGrpName", getallGrpName);
+        // const allsameGrp = allSegments.filter(
+        //   (item) => item.segment_type === grpName
+        // );
+        // const getallGrpName = Array.from(
+        //   new Set(                                      //group_label_system
+        //     allsameGrp.map((item) => {                    //group_name_user
+        //       if (item.group_label_system !== null) {
+        //         return item.group_label_system;
+        //       } else {
+        //         return item.group_name_user;
+        //       }
+        //       // item.group_label_system;
+        //     })
+        //   )
+        // );
 
         getallGrpName.forEach((grp) => {
-          const sameGrp = allsameGrp.filter((item) => {
-            if (item.group_name_user) {
-              return item.group_name_user === grp;
-            } else {
-              return item.group_label_system == grp;
-            }
-          });
+           const sameGrp = allsameGrp.filter((item) => item.group_label_system === grp);
+          // const sameGrp = allsameGrp.filter((item) => {
+          //   if (item.group_name_user) {
+          //     return item.group_name_user === grp;
+          //   } else {
+          //     return item.group_label_system == grp;
+          //   }
+          // });
           sameGrpSeg.push({
             groupName: grp ?? "",
             segments: sameGrp,
@@ -82,47 +86,7 @@ const CreateMasterArrays = () => {
         dispatch(setMasterArray(segData));
       }
     }
-    //  else if (allSegments && allSegments.length === 0 &&!isCreatedMasterArray && isSegmentLoaded) {
-    //     console.log("allSegments is empty, creating master array from segments");
-    //     if (segments &&
-    //       segments.length > 0 &&
-    //       currentProject && currentProject.analysed_data &&
-    //       currentProject.analysed_data.segments_detected
-
-    //     ) {
-
-    //       if (Object.keys(currentProject.analysed_data.segments_detected).length > 0) {
-    //         const allDetectedSegments = Object.keys(currentProject.analysed_data.segments_detected);
-
-    //         allDetectedSegments.forEach((seg) => {
-    //           const foundSegment = segments.find((item) => {
-    //             const itemName = (item.name || '').toLowerCase();
-    //             const segLower = (seg || '').toLowerCase();
-    //             return itemName.startsWith(segLower) || segLower.startsWith(itemName);
-    //           });
-
-    //           if (foundSegment) {
-    //             segData.push({
-    //               id: foundSegment.id,
-    //               name: foundSegment.name,
-    //               icon: foundSegment.icon,
-    //               color: foundSegment.color,
-    //               color_code: foundSegment.color_code,
-    //               short_code: foundSegment.short_code,
-    //               categories: foundSegment.categories,
-    //               overAllSwatch: [],
-    //               allSegments: [],
-    //             })
-    //           }
-    //         });
-    //       }
-    //       if (segData.length > 0) {
-    //         dispatch(setMasterArray(segData));
-    //       }
-
-    //     }
-
-    //   }
+   
   }, [
     isSegmentLoaded,
     segments,

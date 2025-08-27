@@ -68,7 +68,7 @@ const initialState: CanvasState = {
   canavasActiveTool: "",
   isCanvasModalOpen: false,
   masks: [],
-  canvasType: "hover-default", // Default canvas type
+  canvasType: "hover", // Default canvas type
   deleteMaskId: null, // Initialize as null
   isGenerateMask: false,
   hoverGroup: null,
@@ -177,11 +177,11 @@ const canvasSlice = createSlice({
       state.isBusy = false;
       state.error = null;
       state.masks = [];
-      state.canvasType = "hover-default";
+      state.canvasType = "hover";
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       state.activeCanvas = "hideSegments";
-      state.isCompare
+      state.isCompare= false
     },
    setIsResetZoom: (state, action: PayloadAction<boolean>) => {
       state.isResetZoom = action.payload; // Update the reset zoom flag 

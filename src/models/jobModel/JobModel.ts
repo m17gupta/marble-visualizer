@@ -5,6 +5,7 @@ import { SegmentModal } from "../jobSegmentsModal/JobSegmentModal";
 export interface MasterGroupModel {
   //  items: any;
   groupName: string;
+   usergroupName?: string;
   segments: SegmentModal[];
 }
 
