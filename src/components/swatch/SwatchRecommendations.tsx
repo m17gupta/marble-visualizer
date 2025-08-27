@@ -10,7 +10,7 @@ import { FaInfo } from "react-icons/fa6";
 
 import { FaRegStar } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { addPaletteImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { addPaletteImage, addUpdateRequestPalette } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
@@ -42,7 +42,17 @@ export function SwatchRecommendations() {
   const { selectedMasterArray } = useSelector(
     (state: RootState) => state.masterArray
   );
-  // update the selected Swatch recommentation
+
+  // update selected segment
+  useEffect(() => {
+    if (userSelectedSegment && userSelectedSegment.length > 0) {
+      setUserSelectedSegmentState(userSelectedSegment);
+    }else{
+      setUserSelectedSegmentState([]);
+    }
+  }, [userSelectedSegment]);
+
+  // update the selected Swatch recommendation
   useEffect(() => {
     if (
       selectedMasterArray &&
@@ -106,7 +116,18 @@ export function SwatchRecommendations() {
   
         dispatch(addPaletteImage(image_path))
         dispatch(setCanvasType("hover")); // Set canvas type to hover-default when a swatch is selected
-  
+        if(userSelectedSegmentState && userSelectedSegmentState.length > 0) {
+          // Do something with userSelectedSegmentState
+          const allSegName= userSelectedSegmentState.map(seg => seg.short_title);
+          const groupName = userSelectedSegmentState[0]?.group_label_system
+          console.log("allSegName", allSegName);
+          dispatch(addUpdateRequestPalette({
+            id:src.id,
+            segments: allSegName,
+            groupName: groupName,
+            url: image_path
+          }))
+        }
     };
 
   return (

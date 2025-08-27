@@ -4,7 +4,7 @@ import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareG
 import DesignProject from "@/components/workSpace/projectWorkSpace/DesignProject";
 import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel";
 import RequestgenAitemplate from "@/components/workSpace/projectWorkSpace/request_template/RequestgenAitemplate";
-import { SelectPalletPopover } from "@/components/workSpace/projectWorkSpace/SelectPalletPopover";
+
 import { RootState } from "@/redux/store";
 import React, { useCallback } from "react";
 import { useSelector } from "react-redux";
@@ -17,7 +17,7 @@ type Props={
 const Hovertemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
 
   const {isCompare} = useSelector((state:RootState) => state.canvas);
-  
+   const {requests} = useSelector((state:RootState) => state.genAi);
   const handleImageLoad = useCallback(() => {
     // setImageLoading(false);
   }, []);
@@ -38,7 +38,12 @@ const Hovertemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
       ) : (
         <CompareGenAiHome />
       )}
-      <RequestgenAitemplate />
+     {requests &&
+      ( ( requests.paletteUrl && requests.paletteUrl.length > 0 )||
+       ( requests.referenceImageUrl && requests.referenceImageUrl.length > 0 )||
+       ( requests.prompt && requests.prompt.length > 0 )) ? (
+        <RequestgenAitemplate />
+      ) : null}
       <DesignProject />
       <GuidancePanel />
     </>

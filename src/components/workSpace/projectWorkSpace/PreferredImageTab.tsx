@@ -4,7 +4,7 @@ import React from 'react';
 import SidebarObject from './SidebarObject';
 
 import ImageQuality from './ImageQuality';
-import ExteriorSeg from './ExteriorSeg';
+
 
 import "react-lazy-load-image-component/src/effects/blur.css";
 import InspirationImages from './InspirationImages';
@@ -37,7 +37,7 @@ const StyleAndRenovationPanel: React.FC = () => {
       {/* Additional Sections */}
       <ImageQuality />
       <SidebarObject />
-      <ExteriorSeg />
+      
     </div>
   );
 };

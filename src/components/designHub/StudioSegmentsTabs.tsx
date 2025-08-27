@@ -32,6 +32,7 @@ import { MaterialSegmentModel } from "@/models/materialSegment";
 import { toast } from "sonner";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
 import NoSegment from "./NoSegment";
+import { updateSegmentIntoRequestPallet } from "@/redux/slices/visualizerSlice/genAiSlice";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -128,6 +129,7 @@ const StudioTabs = () => {
     }
     console.log("Active segments:", seg);
     dispatch(updateUserSelectedSegment(seg));
+    dispatch(updateSegmentIntoRequestPallet(seg));
   };
 
   const handleGroupHover = (group: MasterGroupModel) => {

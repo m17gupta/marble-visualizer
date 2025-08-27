@@ -228,6 +228,20 @@ const genAiSlice = createSlice({
         state.currentRequestPalette.push(action.payload);
       }
     },
+    updateSegmentIntoRequestPallet:(state,action)=>{
+       const segData = action.payload;
+         debugger
+       const existingPalette = state.currentRequestPalette.find((p) => p.groupName === segData.group_label_system);
+      if (existingPalette) {
+          const allSegName = existingPalette.segments
+          //check segData.short_title if found then deklete else add
+          if (allSegName.includes(segData.short_title)) {
+            existingPalette.segments = allSegName.filter((name) => name !== segData.short_title);
+          } else {
+            existingPalette.segments.push(segData.short_title);
+          }
+      }
+    },
 
     resetRequest: (state) => {
       state.requests = {
@@ -398,7 +412,8 @@ export const {
   updateTaskId,
   setCurrentGenAiImage,
   resetMaskIntoRequest,
-  addUpdateRequestPalette
+  addUpdateRequestPalette,
+  updateSegmentIntoRequestPallet
 } = genAiSlice.actions;
 
 // Export reducer

@@ -20,8 +20,6 @@ import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
 import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
-import DefaultHoverTemplate from "./canvasTemplate/DefaultHoverTemplate";
-// import TestCanvas from "../canvas/TestCanvas";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
