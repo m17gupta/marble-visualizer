@@ -113,7 +113,8 @@ export interface GenAiDeleteResponse{
 }
 
 export interface RequestPaletteModel {
-  id: string;
+  id: number;
   url: string;
+  groupName: string;
   segments: string[];
 }

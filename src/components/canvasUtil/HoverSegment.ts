@@ -105,7 +105,7 @@ export const handlePolygonVisibilityOnMouseMove = (
     if (!canvas.current) return; // Ensure canvas is defined
 
     const targetName = name;
-      console.log("targetName", targetName);
+   
     const allObjects = canvas.current.getObjects();
     allObjects.forEach((obj) => {
       if (
@@ -115,7 +115,7 @@ export const handlePolygonVisibilityOnMouseMove = (
         const allGroupObjects = (obj as fabric.Group).getObjects();
         allGroupObjects.forEach((groupObj) => {
           const namedGroupObj = groupObj as NamedFabricObject;
-          console.log("namedGroupObj", namedGroupObj);
+        
           // const currentPoly = groupObj as fabric.Polygon;
           // const currentText = groupObj as fabric.Text;
            const polyName = namedGroupObj.name;

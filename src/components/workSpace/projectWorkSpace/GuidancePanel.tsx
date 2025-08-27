@@ -142,7 +142,7 @@ const GuidancePanel: React.FC = () => {
       dispatch(resetInspirationImage());
     } else if (data === "palette-image") {
         dispatch(resetPaletteImage())
-      console.log("Deleting palette image");
+      
     }
   };
 
