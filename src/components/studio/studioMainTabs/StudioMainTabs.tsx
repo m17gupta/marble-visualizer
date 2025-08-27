@@ -43,13 +43,12 @@ const StudioMainTabs = () => {
   
     dispatch(setCurrentTabContent("home"));
     dispatch(updateActiveTab("inspiration"));
-    dispatch(setCanvasType("hover-default")) // Set canvas type to hover when Inspiration tab is clicked
+    dispatch(setCanvasType("hover")) // Set canvas type to hover when Inspiration tab is clicked
   };
 
   const handleMeasurementClick = () => {
-    // setActiveTab("measurement");
-     dispatch(setCanvasReady(false))
-    dispatch(setCanvasType("measurement")); // Set canvas type to measurement when Measurement tab is clicked
+   
+    dispatch(setCanvasType("hover")); // Set canvas type to measurement when Measurement tab is clicked
     dispatch(updateActiveTab("measurement"));
   };
 

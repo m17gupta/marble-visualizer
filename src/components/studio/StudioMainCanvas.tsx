@@ -168,7 +168,7 @@ export function StudioMainCanvas({
                 />
               </>
             )}
-            {canvasMode == "hover-default" && (
+            {/* {canvasMode == "hover-default" && (
               <>
 
                   { canvasImage && <DefaultHoverTemplate
@@ -177,19 +177,7 @@ export function StudioMainCanvas({
                   canvasHeight={canvasHeight}
                 />}
  
-                {/* <HoverHeader />
-                <div className="w-full p-4 flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
-
-                  {currentTabContent === "compare" ? (
-                    <CompareGenAiHome />
-                  ) : (
-                    <ImagePreview />
-                  )}
-                  <>
-                    <DesignProject />
-                    <GuidancePanel />
-                  </>
-                </div> */}
+               
               </>
             )}
             {canvasMode == "measurement" && (
@@ -207,7 +195,7 @@ export function StudioMainCanvas({
                   <GuidancePanel />
                 </>
               </>
-            )}
+            )} */}
           </>
         ) : (
           <motion.div

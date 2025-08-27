@@ -77,7 +77,7 @@ export function getContainedPolygonNamesByBoundingBox(
   if (!canvas) return [];
 
   const targetPolygon = findPolygon(canvasRef, targetPolygonName);
-   console.log("targetPolygon-->", targetPolygon);
+  
   if (!targetPolygon) return [];
 
 //  const targetRect = targetPolygon.getBoundingRect(true);

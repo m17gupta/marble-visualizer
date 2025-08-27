@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -42,7 +42,7 @@ import CanvasAdddNewSegmentHome from "@/components/canvas/canvasAddNewSegment/Ca
 //type DrawingTool = "select" | "polygon";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { resetSegmentSlice } from "@/redux/slices/segmentsSlice";
-import { clearMasterArray } from "@/redux/slices/MasterArraySlice";
+import { addSelectedMasterArray, addUserSelectedSegment, clearMasterArray, updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 import GetSegments from "@/components/getSegments/GetSegments";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
@@ -56,6 +56,7 @@ import GetAllJobComments from "@/components/comments/GetAllJobComments";
 import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -85,6 +86,53 @@ export function StudioPage() {
   const { addSegMessage } = useSelector((state: RootState) => state.segments);
 
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
+ 
+    const { masterArray } = useSelector((state: RootState) => state.masterArray);
+    const isFirst = useRef<boolean>(true);
+    // update master Array
+   
+    useEffect(() => {
+      if (masterArray && masterArray.length > 0) {
+         console.log("masterArray in all segments", masterArray);
+        if (
+          masterArray &&
+          masterArray[0] &&
+          masterArray[0].allSegments &&
+          masterArray[0].allSegments.length > 0
+        ) {
+          const firstGroup = masterArray[0].allSegments[0];
+          console.log("masterArray in firstGroup", firstGroup);
+          console.log("isFirst.current", isFirst.current);
+          if (
+            firstGroup &&
+            firstGroup.groupName &&
+            firstGroup.segments.length > 0 &&
+            isFirst.current
+          ) {
+            console.log("firstGroup", firstGroup);
+            dispatch(addSelectedMasterArray(masterArray[0]));
+            dispatch(updateSelectedSegment(firstGroup.segments[0]));
+            dispatch(updatedSelectedGroupSegment(firstGroup));
+            if(firstGroup.segments &&firstGroup.segments.length>0){
+              const userSeg:SegmentModal[]=[]
+              firstGroup.segments.map(item=>{
+                userSeg.push(item)
+              })
+              dispatch(addUserSelectedSegment(userSeg))
+            }
+            
+            isFirst.current = false;
+          }
+  
+         // setUpdatedMasterArray(masterArray);
+        }
+      } else {
+//        setUpdatedMasterArray(null);
+        // isFirst.current = false;
+      }
+    }, [masterArray, isFirst]);
+  // update intial selected masterArray
+
   // update message
 
   useEffect(() => {

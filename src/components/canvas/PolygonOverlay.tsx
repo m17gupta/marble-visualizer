@@ -23,6 +23,7 @@ import { Card, CardContent } from "../ui/card";
 import {
   setCanvasReady,
   setIsResetZoom,
+  setMousePosition,
   setZoom,
 } from "@/redux/slices/canvasSlice";
 import {
@@ -152,17 +153,20 @@ const PolygonOverlay = ({
   const handleMouseMove = useCallback((event: fabric.TEvent) => {
     if (!fabricCanvasRef.current) return;
     const canvas = fabricCanvasRef.current;
-   //  console.log("canvas", canvas.getObjects());
+    //  console.log("canvas", canvas.getObjects());
     const fabricEvent = event as unknown as { target?: NamedFabricObject };
     const target = fabricEvent.target;
-       const pointer = fabricCanvasRef.current?.getPointer(event.e);
+    const pointer = fabricCanvasRef.current?.getPointer(event.e);
     if (target !== undefined) {
       const targetName = target.name;
-     // console.log(" targetName", targetName);
+      // console.log(" targetName", targetName);
       if (targetName) {
-         const fabricPoint = new fabric.Point(pointer.x, pointer.y);
-        
-       // handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
+        const fabricPoint = new fabric.Point(pointer.x, pointer.y);
+           dispatch(setMousePosition({
+            x: Math.round(fabricPoint.x),
+            y: Math.round(fabricPoint.y),
+           }));
+        // handlePolygonVisibilityOnMouseMove(fabricCanvasRef, targetName);
         handlePolygonVisibilityTest(fabricCanvasRef, targetName, fabricPoint);
       }
     } else {
@@ -391,7 +395,6 @@ const PolygonOverlay = ({
     tryLoadImage();
   }, [imageUrl, isCanvasReady, width, height, onImageLoad]);
 
-
   const isPolygonUpdate = useRef(false);
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -478,15 +481,13 @@ const PolygonOverlay = ({
           aiTrainImageWidth,
           aiTrainImageHeight
         );
-          if(idx==allSegArray.length-1  ){
-            console.log("All segments added to canvas");
-            isPolygonUpdate.current = true;
-      }
+        if (idx == allSegArray.length - 1) {
 
+          isPolygonUpdate.current = true;
+        }
       });
 
       canvas.renderAll();
-     
     }
   }, [
     allSegArray,
@@ -497,7 +498,6 @@ const PolygonOverlay = ({
     aiTrainImageWidth,
     aiTrainImageHeight,
   ]);
-
 
   // hover on group segment
   const { hoverGroup } = useSelector((state: RootState) => state.canvas);
@@ -563,7 +563,7 @@ const PolygonOverlay = ({
   };
 
   // cut out section
- 
+
   useEffect(() => {
     if (!fabricCanvasRef.current) return;
 
@@ -572,39 +572,47 @@ const PolygonOverlay = ({
     const scalex = canvas.width / aiTrainImageWidth;
     const scaley = canvas.height / aiTrainImageHeight;
     if (isPolygonUpdate.current && allSegArray && allSegArray.length > 0) {
-      const getWallSegment = allSegArray.filter((seg) => seg.segment_type === "Wall");
+      const getWallSegment = allSegArray.filter(
+        (seg) => seg.segment_type === "Wall"
+      );
       if (getWallSegment.length > 0) {
         // Do something with wall segments
-        getWallSegment.map(item => {
-                const getAllPolyName=getContainedPolygonNamesByBoundingBox(fabricCanvasRef,item?.short_title??"");
-                console.log("getAllPolyName",getAllPolyName);
-                if(getAllPolyName.length>0){
-                  const allTrimPoly = getAllPolyName.filter(
-                (polyName) => polyName.startsWith("WI") || polyName.startsWith("TR")
+        getWallSegment.map((item) => {
+          const getAllPolyName = getContainedPolygonNamesByBoundingBox(
+            fabricCanvasRef,
+            item?.short_title ?? ""
+          );
+          console.log("getAllPolyName", getAllPolyName);
+          if (getAllPolyName.length > 0) {
+            const allTrimPoly = getAllPolyName.filter(
+              (polyName) =>
+                polyName.startsWith("WI") || polyName.startsWith("TR")
+            );
+            const color = segments.find(
+                (s: { name: string; color_code: string }) =>
+                  s.name === item.segment_type
+              )?.color_code || "#FE0056";
+            if (allTrimPoly.length > 0) {
+              getCutOutArea(
+                fabricCanvasRef,
+                item.annotation_points_float || [],
+                item.short_title || "",
+                item.short_title || "",
+                item.segment_type || "",
+                item.group_label_system || "",
+                item.segment_bb_float || [],
+                color,
+                scalex,
+                scaley,
+                allTrimPoly,
+                allSegArray
               );
-
-                  if(allTrimPoly.length>0){
-                    getCutOutArea(
-                      fabricCanvasRef,
-                      item.annotation_points_float || [],
-                      item.short_title || "",
-                      item.short_title || "",
-                      item.segment_type || "",
-                      item.group_label_system || "",
-                      item.segment_bb_float || [],
-                      "red",
-                      scalex,
-                      scaley,
-                      allTrimPoly,
-                      allSegArray
-
-                    )
-                  }
-                }
-              })
-             }
+            }
+          }
+        });
       }
-  }, [allSegArray,isPolygonUpdate]);
+    }
+  }, [allSegArray, isPolygonUpdate]);
 
   return (
     <>
