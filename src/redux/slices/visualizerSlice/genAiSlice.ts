@@ -3,6 +3,7 @@ import {
   GenAiChat,
   GenAiRequest,
   GenAiResponse,
+  RequestPaletteModel,
   SubmitGenAiResponseModel,
 } from "@/models/genAiModel/GenAiModel";
 import genAiService from "@/services/genAi/genAiService";
@@ -18,10 +19,11 @@ interface GenAiState {
   isRenameGenAiModal: boolean;
   error: string | null;
   currentRequestId: string | null;
-
+  currentRequestPalette: RequestPaletteModel[];
   isSubmitGenAiFailed?: boolean;
   task_id?: string | null;
   isFetchingGenAiImages: boolean;
+  
 }
 
 // Initial state
@@ -48,6 +50,7 @@ const initialState: GenAiState = {
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
   task_id: null, // Optional field for storing task ID
   isFetchingGenAiImages: false,
+  currentRequestPalette: []
 };
 
 // Async thunk for submitting a GenAI request
@@ -146,10 +149,7 @@ const genAiSlice = createSlice({
 
       state.requests.referenceImageUrl = [imageValue];
     },
-    setCurrentGenAiImage: (
-      state,
-      action: PayloadAction<GenAiChat | null>
-    ) => {
+    setCurrentGenAiImage: (state, action: PayloadAction<GenAiChat | null>) => {
       state.currentGenAiImage = action.payload;
     },
     resetInspirationImage: (state) => {
@@ -158,7 +158,19 @@ const genAiSlice = createSlice({
     },
 
     addPaletteImage: (state, action) => {
-      state.requests.paletteUrl = [action.payload];
+      // state.requests.paletteUrl = [action.payload];
+      if (!state.requests.paletteUrl) {
+        state.requests.paletteUrl = [];
+      }
+      state.requests.paletteUrl.push(action.payload);
+    },
+    removePaletteImage: (state, action) => {
+      const palette = action.payload;
+      if (state.requests.paletteUrl) {
+        state.requests.paletteUrl = state.requests.paletteUrl.filter(
+          (url) => url !== palette
+        );
+      }
     },
     resetPaletteImage: (state) => {
       state.requests.paletteUrl = []; // Reset the palette URL to an empty array
@@ -205,7 +217,17 @@ const genAiSlice = createSlice({
     updateTaskId: (state, action: PayloadAction<string>) => {
       state.task_id = action.payload; // Update the task_id in the state
     },
-    
+    addUpdateRequestPalette: (state, action) => {
+      const { id, name, segments } = action.payload;
+      const existingPalette = state.currentRequestPalette.find((p) => p.id === id);
+      if (existingPalette) {
+        // delete
+        state.currentRequestPalette = state.currentRequestPalette.filter((p) => p.id !== id); 
+      } else {
+        // Add new palette
+        state.currentRequestPalette.push(action.payload);
+      }
+    },
 
     resetRequest: (state) => {
       state.requests = {
@@ -234,7 +256,7 @@ const genAiSlice = createSlice({
       .addCase(submitGenAiRequest.fulfilled, (state, action) => {
         state.loading = false;
         state.isSubmitGenAiFailed = false;
-        state.genAiRequestSubmit = action.payload
+        state.genAiRequestSubmit = action.payload;
       })
       .addCase(submitGenAiRequest.rejected, (state, action) => {
         state.loading = false;
@@ -361,6 +383,8 @@ export const {
   updateResponse,
   addHouseImage,
   addPaletteImage,
+  removePaletteImage,
+  resetPaletteImage,
   addPrompt,
   addInspirationImage,
   resetInspirationImage,
@@ -374,7 +398,7 @@ export const {
   updateTaskId,
   setCurrentGenAiImage,
   resetMaskIntoRequest,
-  resetPaletteImage
+  addUpdateRequestPalette
 } = genAiSlice.actions;
 
 // Export reducer

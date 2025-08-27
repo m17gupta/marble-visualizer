@@ -111,3 +111,9 @@ export interface GenAiDeleteResponse{
   success: boolean;
   id: string;
 }
+
+export interface RequestPaletteModel {
+  id: string;
+  url: string;
+  segments: string[];
+}

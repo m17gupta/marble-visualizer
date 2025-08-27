@@ -150,11 +150,6 @@ export const makePolygon = (
     (group as NamedFabricObject).subGroupName = subGroupName;
     (group as NamedFabricObject).isActived = true;
     (group as NamedFabricObject).name = polyName;
-
-    console.log(
-      `[makePolygon] Created polygon group: ${polyName}, visible: ${group.visible}`
-    );
-
     canvasRef.current?.setActiveObject(group);
     canvasRef.current?.add(group);
     canvasRef.current?.requestRenderAll();

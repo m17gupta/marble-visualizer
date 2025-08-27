@@ -2,7 +2,12 @@ import * as fabric from "fabric";
 import { isPointInPolygon } from "./ISPointInsidePolygon";
 
 // Custom type for objects with a data property containing a name
-type NamedFabricObject = fabric.Object & { name?: string };
+type NamedFabricObject = fabric.Object & { 
+  name?: string;
+   groupName?: string;
+  subGroupName?: string;
+  isActived?: boolean;
+ };
 
 
 export const handlePolygonVisibilityTest = (
@@ -95,12 +100,12 @@ export const handlePolygonVisibilityOnMouseMove = (
   canvas: React.RefObject<fabric.Canvas>,
   name: string
 ) => {
-  HideAllSegments(canvas);
+  // HideAllSegments(canvas);
   if (name) {
     if (!canvas.current) return; // Ensure canvas is defined
 
     const targetName = name;
-
+      console.log("targetName", targetName);
     const allObjects = canvas.current.getObjects();
     allObjects.forEach((obj) => {
       if (
@@ -110,13 +115,14 @@ export const handlePolygonVisibilityOnMouseMove = (
         const allGroupObjects = (obj as fabric.Group).getObjects();
         allGroupObjects.forEach((groupObj) => {
           const namedGroupObj = groupObj as NamedFabricObject;
-          const currentPoly = groupObj as fabric.Polygon;
-          const currentText = groupObj as fabric.Text;
-          const polyName = namedGroupObj.name;
+          console.log("namedGroupObj", namedGroupObj);
+          // const currentPoly = groupObj as fabric.Polygon;
+          // const currentText = groupObj as fabric.Text;
+           const polyName = namedGroupObj.name;
 
           if (polyName === targetName) {
             namedGroupObj.set({ visible: true });
-            currentText.set({ visible: true });
+            
           }
         });
       }
