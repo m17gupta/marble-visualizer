@@ -65,7 +65,7 @@ const HoverHeader = () => {
     <>
       <Card>
         <CardContent className="py-2 px-4 flex items-center justify-between ">
-         {canvasType === "hover"||canvasType === "outline"&&  <div className="flex items-center space-x-2">
+         { <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
@@ -119,33 +119,28 @@ const HoverHeader = () => {
                 )}
               </div>
 
-              <Badge variant="secondary" className="flex items-center gap-2">
-                <span>Zoom:100%</span>
-                <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
-                    <ZoomIn className="h-3 w-3" />
+              <Badge variant="secondary" className="flex items-center gap-2 py-1">
+                 <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                    <ZoomIn className="h-4 w-4" />
                   </Button>
-
-                  <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
-                    <ZoomOut className="h-3 w-3" />
+                   <span>100%</span>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                    <ZoomOut className="h-4 w-4" />
                   </Button>
-                </div>
+             
+                     <Button variant="ghost" size="icon" className="h-6 w-20 p-0">  Reset</Button>
               </Badge>
 
-              <div className="flex gap-1">
-                <Badge
-                  variant="secondary"
-                  className="grid items-center gap-2 w-20"
-                >
-                  <span>X: 524</span>
+
+              <div className="flex flex-col gap-1">
+                <Badge variant="secondary" className="grid items-center gap-2 w-20 h-4 pt-0" >
+                  <span className="text-[10px]">X: 524</span>
                 </Badge>
-                <Badge
-                  variant="secondary"
-                  className="grid items-center gap-2 w-20"
-                >
-                  <span>Y: 32</span>
+                <Badge variant="secondary"  className="grid items-center gap-2 w-20 h-4 pt-0">
+                  <span className="text-[10px]">Y: 32</span>
                 </Badge>
               </div>
+
             </div>
           </div>
         </CardContent>

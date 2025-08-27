@@ -226,7 +226,7 @@ const GuidancePanel: React.FC = () => {
         prompt={requests.prompt?.[0] || "Change wall color to lemon green"}
       />
 
-      <div className={`bg-white rounded-sm p-4 border border-gray-200`}>
+      <div className={`bg-white rounded-sm p-4 border border-gray-200 mx-4 mb-4`}>
         <div className="flex items-center">
           <h2 className="text-lg font-semibold ">AI Guidance</h2>
           <TooltipProvider delayDuration={0}>
