@@ -12,13 +12,15 @@ import { FaRegStar } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { addPaletteImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 
 
 export function SwatchRecommendations() {
  
   const dispatch = useDispatch();
-
+  const [ userSelectedSegmentState, setUserSelectedSegmentState ] = useState<SegmentModal[]>([]);  
+  const { userSelectedSegment } = useSelector((state: RootState) => state.masterArray);
 
   const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
   const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
@@ -103,7 +105,7 @@ export function SwatchRecommendations() {
         : `${newPath}/${src.bucket_path}`;
   
         dispatch(addPaletteImage(image_path))
-        dispatch(setCanvasType("hover-default")); // Set canvas type to hover-default when a swatch is selected
+        dispatch(setCanvasType("hover")); // Set canvas type to hover-default when a swatch is selected
   
     };
 

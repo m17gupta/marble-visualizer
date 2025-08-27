@@ -68,6 +68,7 @@ const PolygonOverlay = ({
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
   );
+    const { hoverGroup } = useSelector((state: RootState) => state.canvas);
 
   const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
     (state: RootState) => state.canvas
@@ -500,13 +501,14 @@ const PolygonOverlay = ({
   ]);
 
   // hover on group segment
-  const { hoverGroup } = useSelector((state: RootState) => state.canvas);
+
   useEffect(() => {
     if (!fabricCanvasRef.current) return;
     if (hoverGroup == null) {
       HideAllSegments(fabricCanvasRef);
     } else if (hoverGroup.length > 0) {
       hoverGroup.forEach((groupName) => {
+        
         handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
       });
     }

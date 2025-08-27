@@ -51,6 +51,7 @@ const AllSegments = () => {
  }, [masterArray]);
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
+    console.log("Selected segment:", selectedSeg);
     if (selectedSeg && selectedSeg.id && selectedSeg.name) {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
@@ -60,6 +61,7 @@ const AllSegments = () => {
         const firstSegment = firstGroup.segments[0];
         dispatch(updateSelectedSegment(firstSegment));
         dispatch(updatedSelectedGroupSegment(firstGroup));
+        dispatch(addUserSelectedSegment(firstGroup.segments));
       }
       //segMent tye in tab slice
       dispatch(setSegmentType(selectedSeg.name));

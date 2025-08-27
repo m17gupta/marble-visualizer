@@ -93,7 +93,6 @@ export function StudioPage() {
    
     useEffect(() => {
       if (masterArray && masterArray.length > 0) {
-         console.log("masterArray in all segments", masterArray);
         if (
           masterArray &&
           masterArray[0] &&
@@ -101,15 +100,12 @@ export function StudioPage() {
           masterArray[0].allSegments.length > 0
         ) {
           const firstGroup = masterArray[0].allSegments[0];
-          console.log("masterArray in firstGroup", firstGroup);
-          console.log("isFirst.current", isFirst.current);
           if (
             firstGroup &&
             firstGroup.groupName &&
             firstGroup.segments.length > 0 &&
             isFirst.current
           ) {
-            console.log("firstGroup", firstGroup);
             dispatch(addSelectedMasterArray(masterArray[0]));
             dispatch(updateSelectedSegment(firstGroup.segments[0]));
             dispatch(updatedSelectedGroupSegment(firstGroup));

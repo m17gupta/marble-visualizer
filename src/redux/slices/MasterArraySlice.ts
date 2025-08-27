@@ -274,25 +274,28 @@ const masterArraySlice = createSlice({
       state.selectedSegment = segment;
     },
     addUserSelectedSegment: (state, action) => {
+      
       if (!state.userSelectedSegment) {
         state.userSelectedSegment = [];
       }
       state.userSelectedSegment = action.payload;
     },
     updateUserSelectedSegment: (state, action) => {
-      const { segment } = action.payload;
-      // Ensure userSelectedSegment is always an array
+      const segment = action.payload;
+     
       if (!state.userSelectedSegment) {
         state.userSelectedSegment = [];
       }
-      // check if segment exists
+     
       const index = state.userSelectedSegment.findIndex(
         (seg) => seg.id === segment.id
       );
-      if (index !== -1 && state.userSelectedSegment.length) {
+     
+      if (index === -1) {
+        // If not present, add to array
         state.userSelectedSegment.push(segment);
       } else {
-        // delete from array
+        // If present, remove from array
         state.userSelectedSegment = state.userSelectedSegment.filter(
           (seg) => seg.id !== segment.id
         );

@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import {
+  addUserSelectedSegment,
   updatedSelectedGroupSegment,
   updateSelectedSegment,
+  updateUserSelectedSegment,
 } from "@/redux/slices/MasterArraySlice";
 import {
   Tooltip,
@@ -107,8 +109,10 @@ const StudioTabs = () => {
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
     setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
+    console.log("Group segments:", group.segments);
+    dispatch (addUserSelectedSegment(group.segments))
     const tabs = group.segments.map((d) => d.id!);
-    setActive(tabs);
+    setActive(tabs);  
     setInnerTabValue(group.segments[0]?.short_title ?? "");
   };
 
@@ -116,12 +120,14 @@ const StudioTabs = () => {
     if (!seg || active.length == 1) {
       return;
     }
-
+      // 
     if (active.includes(seg.id!)) {
       setActive((prev) => prev.filter((d) => d != seg.id));
     } else {
       setActive((prev) => [...prev, seg.id!]);
     }
+    console.log("Active segments:", seg);
+    dispatch(updateUserSelectedSegment(seg));
   };
 
   const handleGroupHover = (group: MasterGroupModel) => {

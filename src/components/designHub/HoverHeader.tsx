@@ -61,7 +61,6 @@ const HoverHeader = () => {
     }
   }, [canvasType]);
 
-  console.log("Canvas Mode:", canvasMode);
   const handleChat = () => {
     // Handle chat action here
     dispatch(setCanvasType("hover-default"));
