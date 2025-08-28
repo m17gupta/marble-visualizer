@@ -58,7 +58,7 @@ const DesignProject = () => {
   }, [genAiImages]);
 
   const handleImageSwitch = (imageSet: GenAiChat) => {
-    dispatch(setIsGenerated(true));
+    // dispatch(setIsGenerated(true));
     dispatch(setCurrentGenAiImage(imageSet));
     dispatch(updateIsCompare(true))
     // dispatch(setCurrentTabContent("compare"));

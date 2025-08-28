@@ -27,12 +27,11 @@ const Hovertemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
       {!isCompare  ? (
         canvasImage && (
           <PolygonOverlay
-            key={`canvas-hover-${canvasImage}`}
             imageUrl={canvasImage}
             width={canvasWidth}
             height={canvasHeight}
             className="mb-6"
-            onImageLoad={handleImageLoad}
+           // onImageLoad={handleImageLoad}
           />
         )
       ) : (

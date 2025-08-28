@@ -20,6 +20,7 @@ import { addHouseImage, addInspirationImage, addPaletteImage, addPrompt, setCurr
 import { setCurrentInspTab } from "@/redux/slices/InspirationalSlice/InspirationTabSlice";
 import { GenAiChat } from "@/models/genAiModel/GenAiModel";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
+import { updateIsCompare } from "@/redux/slices/canvasSlice";
 
 
 
@@ -66,16 +67,24 @@ export default function ChatHistory() {
     }
   };
 
-     const handleMasterImage = (imagePath: string) => {
+     const handleMasterImage = (imageSet: GenAiChat) => {
         
-          dispatch(addHouseImage(imagePath));
-           dispatch(setCurrentInspTab("chat"));
+          dispatch(setCurrentGenAiImage(imageSet));
+           dispatch(updateIsCompare(true))
+          // dispatch(setCurrentTabContent("compare"));
+          dispatch(addInspirationImage(imageSet.reference_img));
+          dispatch(addPaletteImage(imageSet.palette_image_path));
+          dispatch(addHouseImage(imageSet.master_image_path));
+          dispatch(addPrompt(imageSet.user_input_text));
+          // dispatch(addHouseImage(imagePath));
+          //  dispatch(setCurrentInspTab("chat"));
       };
 
       const handleImageSwitch = (imageSet: GenAiChat) => {
           
           dispatch(setCurrentGenAiImage(imageSet));
-          dispatch(setCurrentTabContent("compare"));
+           dispatch(updateIsCompare(true))
+          // dispatch(setCurrentTabContent("compare"));
           dispatch(addInspirationImage(imageSet.reference_img));
           dispatch(addPaletteImage(imageSet.palette_image_path));
           dispatch(addHouseImage(imageSet.master_image_path));
@@ -125,7 +134,7 @@ export default function ChatHistory() {
                 className="w-full rounded-xl object-cover"
               />
               <div className="absolute top-5 right-5 bg-white/80 rounded-full p-2 shadow-sm cursor-pointer hover:bg-white"
-                onClick={() => handleMasterImage(jobList[0]?.full_image || '')}
+               // onClick={() => handleImageSwitch()}
               >
                 <TbHomePlus className="text-lg"/>
               </div>
@@ -148,7 +157,7 @@ export default function ChatHistory() {
             </div>
           </AccordionContent>
         </AccordionItem>
-
+     {/*  all history of genai images */}
 
         {genAiImages &&
           genAiImages.length > 0 &&
@@ -167,7 +176,9 @@ export default function ChatHistory() {
                         height={40}
                         className="rounded object-cover"
                       />
-                      <div className="text-sm">
+                      <div className="text-sm"
+                      onClick={() => handleMasterImage(genAi)}
+                      >
                         <div className="font-semibold text-gray-900 leading-tight">
                           {genAi.name == null ? "Design " + (index + 1) : genAi.name}
                         </div>
@@ -185,7 +196,7 @@ export default function ChatHistory() {
                 </AccordionTrigger>
 
                 <AccordionContent className="pb-3">
-                  <Tabs defaultValue="view" className="w-full mt-1 px-3">
+                  <Tabs defaultValue="show" className="w-full mt-1 px-3">
                     <div className="flex items-center gap-4">
                       <TabsList className="bg-transparent p-0 h-auto mt-2 gap-2">
                         <TabsTrigger
@@ -218,11 +229,11 @@ export default function ChatHistory() {
                       <InfoView />
                     </TabsContent>
 
-                    <TabsContent value="show" className="text-sm text-gray-600 mt-3">
+                    {/* <TabsContent value="show" className="text-sm text-gray-600 mt-3">
                       <div className="p-4 text-center">
                         <p>Show content will be displayed here</p>
                       </div>
-                    </TabsContent>
+                    </TabsContent> */}
                   </Tabs>
                 </AccordionContent>
               </AccordionItem>

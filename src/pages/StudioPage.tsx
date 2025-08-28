@@ -200,7 +200,7 @@ export function StudioPage() {
     dispatch(resetWorkspace());
     dispatch(resetGenAiState());
     dispatch(resetJobCommentsState());
-
+    dispatch(clearCurrentImage());
     dispatch(setCurrentTabContent("home"));
 
     navigate("/projects");
