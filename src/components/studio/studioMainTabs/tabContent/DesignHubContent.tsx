@@ -14,7 +14,7 @@ const DesignHubContent = () => {
         </div>
 
         {/* Studio Sidebar - Right Side */}
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full w-[21vw]">
           <StudioSegmentsTabs />
           {/* {memoizedSwatch} */}
         </div>
