@@ -32,42 +32,42 @@ import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
 type Props = {
   title?: string;
   segment?: SegmentModal;
-  handleEditOption: () => void;
+  handleEditOption: (val: boolean, data: string) => void;
 };
 const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const [active, setActive] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const buttons = [
     {
-      id: "materials",
-      tooltip: "Materials",
+      id: "edit-segment",
+      tooltip: "Edit Segment",
       icon: (
         <img
-          src="/assets/image/line-md--arrows-vertical-alt.svg"
-          alt="Materials"
+          src="/assets/image/line-md--edit-twotone.svg"
+          alt="Edit Segment"
           className="h-5 w-5"
         />
       ),
     },
     {
-      id: "edit",
-      tooltip: "Edit Options",
-      // isDropdown: true,
+      id: "edit-annotation",
+      tooltip: "Edit Annotation",
+     
       icon: (
         <img
-          src="/assets/image/line-md--edit-twotone.svg"
+          src="/assets/image/carbon--area.svg"
           alt="Edit"
           className="h-5 w-5"
         />
       ),
     },
     {
-      id: "measurement",
-      tooltip: "Measurement",
+      id: "delete-segment",
+      tooltip: "Delete Segment",
       icon: (
         <img
-          src="/assets/image/line-md--gauge-loop.svg"
-          alt="Information"
+          src="/assets/image/line-md--trash.svg"
+          alt="Delete Segment"
           className="h-5 w-5"
         />
       ),
@@ -127,14 +127,11 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
 
   const handleOptionSelect = (val: string) => {
     if (active == val) {
-      if (active == "edit") {
-        handleEditOption();
-      }
+      
       setActive(null);
-    } else {
-      if (active == "val") {
-        handleEditOption();
-      }
+       handleEditOption(false, val);
+    }  else {
+      handleEditOption(true, val);
       setActive(val);
     }
   };
@@ -143,101 +140,6 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
     <TooltipProvider>
       <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
         {buttons.map((btn) => {
-          if (btn.id === "") {
-            return (
-              <DropdownMenu key="edit">
-                {/* <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        onClick={() => setActive("edit")}
-                        className={`px-3 py-1 rounded-md border transition-colors focus:outline-none ${
-                          active === "edit"
-                            ? "bg-blue-50 text-white border-gray-800"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                        }`}
-                      >
-                        <img
-                          src="/assets/image/line-md--edit-twotone.svg"
-                          alt="Edit"
-                          className="h-5 w-5"
-                        />
-                      </button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{btn.tooltip}</p>
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenuContent className="w-44">
-                  <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={() => handleEditSegment(segment!)}
-                  >
-                    <img
-                      src="/assets/image/line-md--edit-twotone.svg"
-                      alt="Edit"
-                      className="h-4 w-4 mr-2"
-                    />
-                    Edit Segment
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    onClick={() => handleEditSegmentAnnotation(segment!)}
-                  >
-                    <img
-                      src="/assets/image/line-md--edit-twotone.svg"
-                      alt="Edit"
-                      className="h-4 w-4 mr-2"
-                    />
-                    Edit Annotation
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={() => handleReAnnotation(segment!)}
-                  >
-                    <img
-                      src="/assets/image/carbon--area.svg"
-                      alt="Re-annotate"
-                      className="h-4 w-4 mr-2"
-                    />
-                    Re-Annotation
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={() => handleOpenDeleteModal()}
-                  >
-                    <img
-                      src="/assets/image/line-md--trash.svg"
-                      alt="Delete"
-                      className="h-4 w-4 mr-2"
-                    />
-                    Delete
-                  </DropdownMenuItem>
-                  {isDeleteModalOpen && (
-                    // <DeleteModal
-                    //   isOpen={isDeleteModalOpen}
-                    //   onCancel={handleCancelProjectDelete}
-                    //   handleDeleteSegment={handleDeleteSegment}
-                    //   segment={segment}
-                    // />
-
-                    <DeleteModal
-                      isOpen={isDeleteModalOpen}
-                      onCancel={handleCancelProjectDelete}
-                      type="segment"
-                      segment={segment}
-                      onDeleteSegment={handleDeleteSegment}
-                    />
-                  )}
-                </DropdownMenuContent> */}
-              </DropdownMenu>
-            );
-          }
-
           return (
             <Tooltip key={btn.id}>
               <TooltipTrigger asChild>

@@ -23,19 +23,15 @@ type inspirationTabContent = 'home' | 'compare' | 'canvas';
 interface StudioState {
 
   currentTabContent: inspirationTabContent;
-  // currentProjectId: string | null;
-  // selectedSegmentType: string | null;
-  // designSettings: DesignSettings;
+  
   currentImageUrl: string | null;
-  // currentJob: StudioJob | null;
-  // jobHistory: StudioJob[];
-  // isUploading: boolean;
-  // error: string | null;
+  currentInspirationTab:string
 }
 
 const initialState: StudioState = {
   currentTabContent: 'home',
   currentImageUrl: null,
+  currentInspirationTab:"chat"
 
 };
 
@@ -52,7 +48,11 @@ const studioSlice = createSlice({
       setCurrentImageUrl: (state, action: PayloadAction<string | null>) => {
           state.currentImageUrl = action.payload;
       },
-       clearCurrentImage: () => {
+
+      updateCurrentInspirationTab: (state, action: PayloadAction<string>) => {
+          state.currentInspirationTab = action.payload;
+      },
+        clearCurrentImage: () => {
       return initialState
     },
   },
@@ -62,7 +62,8 @@ const studioSlice = createSlice({
 export const {
   setCurrentTabContent,
   setCurrentImageUrl,
-  clearCurrentImage
+  clearCurrentImage,
+  updateCurrentInspirationTab
 } = studioSlice.actions;
 
 export default studioSlice.reducer;

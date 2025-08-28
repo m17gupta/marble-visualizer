@@ -257,6 +257,7 @@ const genAiSlice = createSlice({
       state.genAiRequestSubmit = null; // Reset the genAiRequestSubmit to null
       state.isSubmitGenAiFailed = false; // Reset the submission failure flag
     },
+    
   },
   extraReducers: (builder) => {
     // Handle submitGenAiRequest
@@ -413,7 +414,8 @@ export const {
   setCurrentGenAiImage,
   resetMaskIntoRequest,
   addUpdateRequestPalette,
-  updateSegmentIntoRequestPallet
+  updateSegmentIntoRequestPallet,
+
 } = genAiSlice.actions;
 
 // Export reducer

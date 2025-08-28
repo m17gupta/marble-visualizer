@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Upload, Image as ImageIcon, Loader2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import * as fabric from "fabric";
+import type { Canvas } from "fabric/fabric-impl";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import PolygonOverlay from "../canvas/PolygonOverlay";
@@ -20,6 +21,8 @@ import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
 import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
+import CanavasImage from "../canvas/CanavasImage";
+import React from "react";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -96,12 +99,34 @@ export function StudioMainCanvas({
     const file = e.target.files?.[0];
     if (file) onFileUpload(file);
   };
+  const fabricCanvasRef = useRef<Canvas | null>(null);
+  const canavasImageRef = React.useRef<any>(null);
+  const [canvasEvent, setCanvasEvent] = useState<fabric.TEvent | null>(null);
+  const handleMouseMove = (event: fabric.TEvent) => {
+    setCanvasEvent(event);
+  };
 
+  useEffect(() => {
+    const fabricCanvas = canavasImageRef.current?.getFabricCanvas?.();
+    if (fabricCanvas) {
+      fabricCanvasRef.current = fabricCanvas;
+      // Do something with the fabricCanvas
+    }
+  }, [canavasImageRef]);
   return (
     <div className="w-full md:w-3/4  flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
       <AnimatePresence mode="wait">
         {canvasImage ? (
           <>
+
+          {/* <CanavasImage
+        imageUrl={canvasImage}
+        width={canvasWidth}
+        height={canvasHeight}
+        onImageLoad={handleImageLoad}
+        ref={canavasImageRef}
+         onMouseMove={handleMouseMove}
+      /> */}
             {(canvasMode == "draw" ||
               canvasMode == "reannotation" ||
               canvasMode == "dimension") && (
@@ -143,6 +168,12 @@ export function StudioMainCanvas({
                   canvasWidth={canvasWidth}
                   canvasHeight={canvasHeight}
                 />
+               {/* {fabricCanvasRef && fabricCanvasRef.current && (
+                 <Hovertemplate
+                   canvas={fabricCanvasRef as React.RefObject<Canvas>}
+                 />
+               )} */}
+              
               </>
             )}
             {canvasMode == "outline" && (

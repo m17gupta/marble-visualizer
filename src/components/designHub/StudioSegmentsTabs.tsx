@@ -33,6 +33,8 @@ import { toast } from "sonner";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
 import NoSegment from "./NoSegment";
 import { updateSegmentIntoRequestPallet } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { SegmentEditComp } from "./editSegment/SegmentEditComp";
+import { set } from "date-fns";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -44,9 +46,11 @@ const StudioTabs = () => {
   const [currentSelectedGroupSegment, setCurrentSelectedGroupSegment] =
     useState<MasterGroupModel | null>(null);
   const [edit, setEdit] = useState(false);
-
-  const handleEditOption = () => {
-    setEdit((prev) => !prev);
+  const [optionEdit, setOptionEdit] = useState<string | null>(null);
+  const handleEditOption = (data:boolean, option:string) => {
+    // console.log("Edit option clicked", data);
+    setEdit(data);
+    setOptionEdit(option);
   };
 
   const [active, setActive] = useState<number[]>([]);
@@ -165,6 +169,10 @@ const StudioTabs = () => {
   //   );
   // }
 
+  const handleCancelEdit = () => {
+      setEdit(false);
+    setOptionEdit(null);
+  };
   return (
     <>
     {!masterArray || masterArray.allSegments.length === 0  ?(
@@ -289,12 +297,15 @@ const StudioTabs = () => {
           </TabsContent>
         ))}
 
-        <TabNavigation handleEditOption={handleEditOption} />
+        <TabNavigation 
+        handleEditOption={handleEditOption} />
 
-        {edit && (
+        {edit && optionEdit &&(
           <SegmentEditComp
-            currentSelectedGroupSegment={currentSelectedGroupSegment}
             totalGroups={totalGroups}
+            optionEdit={optionEdit}
+            onCancel={handleCancelEdit}
+
           />
         )}
 
@@ -316,7 +327,7 @@ const StudioTabs = () => {
             )}
           </div>
         ))} */}
-        <SwatchRecommendations />
+      { !edit && <SwatchRecommendations />}
       </Tabs>)}
     </>
   );
@@ -324,423 +335,3 @@ const StudioTabs = () => {
 
 export default StudioTabs;
 
-interface SegmentEditCompProps {
-  currentSelectedGroupSegment: any;
-  totalGroups?: string[];
-}
-
-export const SegmentEditComp = ({
-  currentSelectedGroupSegment,
-  totalGroups,
-}: SegmentEditCompProps) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [segType, setSegType] = useState("");
-  const [allcatogories, setAllCategories] = useState<string[]>([]);
-  const [groupName, setGroupName] = useState("");
-  const [shortName, setShortName] = useState("");
-  const [childName, setChildName] = useState("");
-  const [groupArray, setGroupArray] = useState<string[] | undefined>([]);
-  const [selectedCatogory, setSelectedCategory] = useState<string>("");
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [new_master, setNewMaster] = useState<MaterialSegmentModel | null>(
-    null
-  );
-
-  useEffect(() => {
-    setGroupArray(totalGroups);
-  }, []);
-
-  const { segments } = useSelector(
-    (state: RootState) => state.materialSegments
-  );
-
-  const finalSegments = currentSelectedGroupSegment.segments.map(
-    (d: any) => d.short_title
-  );
-
-  const [selSeg, setSelSeg] = useState("");
-
-  const { selectedSegment, masterArray } = useSelector(
-    (state: RootState) => state.masterArray
-  );
-
-  const [isUpdated, setIsUpdated] = useState(false);
-
-  useEffect(() => {
-    if (
-      selectedSegment &&
-      selectedSegment.segment_type &&
-      selectedSegment.group_label_system &&
-      selectedSegment.short_title &&
-      selectedSegment.title
-    ) {
-      // setSegType(selectedSegment.segment_type);
-      setSegType(currentSelectedGroupSegment.segments[0].segment_type);
-      setGroupName(selectedSegment.group_label_system);
-      setShortName(selectedSegment.short_title);
-      const categories = segments.find(
-        (d) => d.name == currentSelectedGroupSegment.segments[0].segment_type
-      )?.categories;
-      setAllCategories(categories!);
-      // handleSegmetName();
-    }
-  }, [currentSelectedGroupSegment]);
-
-  const handleSegGroupName = (
-    masterArray: MasterModel[],
-    segType: string,
-    short_title: string,
-    newMaster: MaterialSegmentModel
-  ) => {
-    if (masterArray && masterArray.length > 0 && segType && short_title) {
-      const grpArry: string[] = [];
-      let count: number = 0;
-      masterArray.map((master) => {
-        const allSeg = master.allSegments;
-        if (allSeg && allSeg.length > 0 && master.name === segType) {
-          allSeg.forEach((seg) => {
-            grpArry.push(seg.groupName);
-            const allSegs = seg.segments.length;
-            count = allSegs + count;
-          });
-        }
-      });
-      if (grpArry && grpArry.length > 0) {
-        setNewMaster(newMaster);
-        setGroupArray(grpArry);
-        setShortName(`${short_title}${count + 1}`);
-        setGroupName(`${segType}1`);
-      } else {
-        setNewMaster(newMaster);
-        setGroupArray([`${segType}1`]);
-        setShortName(`${short_title}${1}`);
-        setGroupName(`${segType}1`);
-      }
-    } else {
-      setNewMaster(newMaster);
-      setGroupName(`${segType}1`);
-      setGroupArray([`${segType}1`]);
-      setShortName(`${short_title}${1}`);
-    }
-  };
-
-  // useEffect(() => {
-  //   if (segments && segments.length > 0 && segType && isUpdated) {
-  //     const seg = segments.find((seg) => seg.name === segType);
-  //     const categories = seg?.categories || [];
-  //     const uniqueCategories = Array.from(new Set(categories));
-  //     setAllCategories(uniqueCategories);
-  //     if (masterArray && seg?.short_code && seg && seg.name) {
-  //       handleSegGroupName(masterArray, segType, seg?.short_code, seg);
-  //     }
-  //   }
-  // }, [segments, segType, masterArray, isUpdated]);
-
-  const handleAddGroup = () => {
-    setIsUpdated(true);
-    if (groupArray != undefined) {
-      const groupLength = groupArray.length;
-      const newGroupName = `${segType}${groupLength + 1}`;
-      setGroupArray([...groupArray, newGroupName]);
-      toast.success(`Group ${newGroupName} added successfully!`);
-    }
-  };
-
-  const handleSave = async () => {
-    if (
-      !segType ||
-      !groupName ||
-      !shortName ||
-      !selectedSegment ||
-      !new_master
-    ) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
-    const newSegment = {
-      id: selectedSegment.id,
-      job_id: selectedSegment.job_id,
-      title: selectedCatogory,
-      segment_type: segType,
-      group_label_system: groupName,
-      short_title: shortName,
-      group_name_user: groupName,
-      annotation_type: selectedSegment.annotation_type,
-      segment_bb_float: selectedSegment.segment_bb_float,
-      annotation_points_float: selectedSegment.annotation_points_float,
-      seg_perimeter: selectedSegment.seg_perimeter,
-      seg_area_sqmt: selectedSegment.seg_area_sqmt,
-      seg_skewx: selectedSegment.seg_skewx,
-      seg_skewy: selectedSegment.seg_skewy,
-      created_at: selectedSegment.created_at,
-      updated_at: new Date().toISOString(),
-      group_desc: selectedSegment.group_desc,
-    } as SegmentModal;
-
-    dispatch(updateAddSegMessage(" Updating segment details..."));
-    // onSave(newSegment, new_master);
-
-    setGroupArray([]);
-    setShortName("");
-    setGroupName("");
-    setNewMaster(null);
-    setIsUpdated(false);
-  };
-
-  return (
-    <div className="w-full bg-white  rounded-lg shadow px-4 py-2 flex flex-col ">
-      {/* Header */}
-      <div className="border-b pb-3">
-        <h2 className="text-xl font-semibold">
-          Edit Segment: <span>{currentSelectedGroupSegment.groupName}</span>
-        </h2>
-        <div className="pt-2">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="font-semibold">Select Segment</h4>
-          </div>
-          <div className="relative w-full">
-            <select
-              value={selSeg}
-              onChange={(e) => setSelSeg(e.target.value)}
-              className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
-            >
-              <option value="" disabled>
-                Select Segment
-              </option>
-              {finalSegments.map((opt: string) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-
-            {/* Dropdown arrow */}
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg
-                className="h-5 w-5 text-gray-500"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Select segment type */}
-      <div className="pt-2">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="font-semibold">Select Segment Type</h4>
-        </div>
-        <div className="relative w-full">
-          <select
-            value={segType}
-            onChange={(e) => setSegType(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
-          >
-            <option value="" disabled>
-              Select Segment Type
-            </option>
-            {segments &&
-              segments.map((opt) => {
-                return (
-                  <option key={opt.id} value={opt.name}>
-                    {opt.name}
-                  </option>
-                );
-              })}
-          </select>
-
-          {/* Dropdown arrow */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg
-              className="h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Select Group */}
-      <div className="pt-2">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="font-semibold">Select Group</h4>
-          <button
-            className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
-            onClick={handleAddGroup}
-          >
-            +
-          </button>
-        </div>
-        <div className="relative w-full">
-          <select
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
-          >
-            <option value="" disabled>
-              Select Group Name
-            </option>
-            {groupArray &&
-              groupArray.map((opt) => {
-                return (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                );
-              })}
-          </select>
-
-          {/* Dropdown arrow */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg
-              className="h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-        </div>
-        {/* <Select value={groupName} onValueChange={setGroupName}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a group" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {groupArray &&
-                groupArray.map((group, index) => (
-                  <SelectItem key={index} value={group}>
-                    {group}
-                  </SelectItem>
-                ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
-      </div>
-
-      {/* Categories */}
-      <div className="pt-2">
-        <h4 className="font-semibold pb-3">Categories</h4>
-        <div className="relative w-full">
-          <select
-            value={selectedCatogory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
-          >
-            <option value="" disabled>
-              Select Category
-            </option>
-            {allcatogories &&
-              allcatogories.length > 0 &&
-              allcatogories.map((opt) => {
-                return (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                );
-              })}
-          </select>
-
-          {/* Dropdown arrow */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg
-              className="h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-        </div>
-        {/* <Select
-          value={selectedCatogory}
-          onValueChange={(value) => {
-            setSelectedCategory(value);
-          }}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {allcatogories &&
-                allcatogories.length > 0 &&
-                allcatogories.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
-                  </SelectItem>
-                ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
-
-        {selectedItems.length > 0 && (
-          <div className="mt-4 space-y-2">
-            <p className="text-sm font-semibold text-gray-600">
-              Selected Values:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {selectedItems.map((item) => (
-                <span
-                  key={item}
-                  className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full"
-                >
-                  {item}
-                  <IoMdClose
-                    className="w-5 h-5 ps-1 cursor-pointer"
-                    // onClick={() => handleRemove(item)}
-                  />
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="border-t mt-6 pt-4 flex justify-end gap-3">
-        <Button
-          className="bg-black text-white hover:bg-gray-800"
-          onClick={handleSave}
-        >
-          Submit
-        </Button>
-        <Button variant="outline">Cancel</Button>
-      </div>
-    </div>
-  );
-};

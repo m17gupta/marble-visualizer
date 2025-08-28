@@ -21,6 +21,7 @@ export const handlePolygonVisibilityTest = (
     if (!canvas.current) return; // Ensure canvas is defined
 
     const allObjects = canvas.current.getObjects();
+    // console.log("allObjects", allObjects);
     allObjects.forEach((obj) => {
       if (
         obj.type === "group" &&
@@ -44,9 +45,11 @@ export const handlePolygonVisibilityTest = (
           }
         });
         // Check polygon
+       // console.log("pointer", pointer, polygonObj);
         if (polygonObj) {
           const vertices = (polygonObj as fabric.Polygon).points;
           const checkvalue = isPointInPolygon(pointer, vertices || []);
+          // console.log("checkvalue", checkvalue, pointer);
           if (checkvalue) {
             if (namedObj) (namedObj as fabric.Object).set({ visible: true });
             if (textObj) (textObj as fabric.Object).set({ visible: true });

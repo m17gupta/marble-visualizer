@@ -3,11 +3,13 @@ import InspirationContent from "./tabContent/InspirationContent";
 import ChatHome from "./chat/ChatHome";
 import GenAiImageGeneration from "@/components/workSpace/projectWorkSpace/genAiImageGeneration/GenAiImageGeneration";
 import ChatHistory from "./genAiHistory/ChatHistory";
-import { useInspirationTab } from "@/hooks/useInspirationTab";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { updateCurrentInspirationTab } from "@/redux/slices/studioSlice";
 
 export function StudioStyleTabs() {
-  const { currentTab, handleTabChange, isTabActive } = useInspirationTab("chat");
-
+  const dispatch = useDispatch();
+  const currentTab = useSelector((state: RootState) => state.studio.currentInspirationTab);
 
   // Tab configuration for easier management
   const tabs = [
@@ -30,6 +32,12 @@ export function StudioStyleTabs() {
       content: <ChatHistory />
     }
   ];
+
+  const handleTabChange = (value: string) => {
+    dispatch(updateCurrentInspirationTab(value));
+  };
+
+  const isTabActive = (value: string) => currentTab === value;
 
   return (
     <div className="flex w-full flex-col gap-6">
