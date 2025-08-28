@@ -11,6 +11,7 @@ import { Button } from "../../ui/button";
 import { updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { on } from "events";
+import { Badge } from "@/components/ui/badge";
 
 interface SegmentEditCompProps {
  
@@ -216,41 +217,77 @@ export const SegmentEditComp = ({
       // Implement your re-annotation logic here
     };
   return (
-    <div className="w-full bg-white  rounded-lg shadow px-4 py-2 flex flex-col ">
+    <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[60vh] sm:max-h-[68vh]">
       {/* Header */}
-      <div className="border-b pb-3">
-        <h4 className="text-xl font-semibold">
-          Edit Segment: <span>{userSelectedSegment[0]?.group_label_system}</span>
-        </h4>
-        <div className="pt-2">
+      <div className="pb-3">
+        <div className="flex items-center justify-between border-b pb-2 px-4">
+           <h5 className="text-md font-semibold">
+          Edit Segment: 
+        </h5>
+
+          <Badge
+          variant="secondary"
+          className="bg-blue-500 text-white dark:bg-blue-600 hover:bg-blue-600"
+        >
+         {userSelectedSegment[0]?.group_label_system}
+        </Badge>
+       
+        </div>
+
+        <div className="pt-2 px-3">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="font-semibold">choose segment to edit</h4>
+            <h4 className="font-regular">choose segment to edit</h4>
           </div>
-          <div className="flex flex-col gap-2 w-full px-1 py-2 bg-gray-50 rounded-lg border border-gray-200 max-h-56 overflow-y-auto custom-scrollbar">
+          <div className="flex flex-col gap-2 w-full px-1 py-2 rounded-lg  max-h-56 overflow-y-auto custom-scrollbar">
             {userSelectedSegment.length === 0 && (
               <span className="text-gray-400 text-sm">No segments available</span>
             )}
-            {userSelectedSegment.map((opt: SegmentModal) => (
-              <label key={opt.id} className="flex items-center gap-2 py-1 cursor-pointer hover:bg-blue-50 rounded px-2">
-                <input
-                  type="radio"
-                  name="segment-single-select"
-                  checked={shortName === opt.short_title}
-                  onChange={() => handleSegSelection(opt)}
-                  className="accent-blue-600 w-4 h-4 rounded-full border-gray-300 focus:ring-blue-500"
-                />
-                <span className="text-gray-800 font-medium">{opt.short_title}</span>
-              </label>
-            ))}
+
+
+        <div
+  role="radiogroup"
+  aria-label="Select color group"
+  className="flex flex-wrap gap-2"
+>
+  {userSelectedSegment.map((opt: SegmentModal) => {
+    const selected = shortName === opt.short_title;
+    return (
+      <button
+        key={opt.id}
+        type="button"
+        role="radio"
+        aria-checked={selected}
+        onClick={() => handleSegSelection(opt)}
+        className={`px-4 py-1.5 rounded-full text-sm font-semibold leading-none transition-colors
+          focus-visible:outline-none bg-gray-50 focus-visible:ring-2 focus-visible:ring-purple-400
+
+          ${
+            selected
+              // ACTIVE: light-purple background + darker text (screenshot feel)
+              ? "bg-purple-100 text-black-200 border border-purple-800 shadow-sm "
+              // INACTIVE: light gray chip
+              : "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200"
+          }`}
+      >
+        {opt.short_title}
+      </button>
+    );
+  })}
+</div>
+
+            
+          
+
           </div>
         </div>
       </div>
 
 
-           {/* Select Group */}
+<div className="px-3">
+        {/* Select Group */}
     {optionEdit==="edit-segment"  && <div className="pt-2">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-semibold">Select Group</h4>
+          <h4 className="font-medium">Select Group</h4>
           <button
             className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
             onClick={handleAddGroup}
@@ -262,7 +299,7 @@ export const SegmentEditComp = ({
           <select
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+            className="w-full appearance-none rounded-md border-2 border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>
               Select Group Name
@@ -297,16 +334,17 @@ export const SegmentEditComp = ({
         </div>
         
       </div>}
+      
       {/* Select segment type */}
       {optionEdit==="edit-segment"  && <div className="pt-2">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-semibold">Select Segment Type</h4>
+          <h4 className="font-medium">Select Segment Type</h4>
         </div>
         <div className="relative w-full">
           <select
             value={segType}
             onChange={(e) => setSegType(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+            className="w-full appearance-none rounded-md border-2 border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>
               Select Segment Type
@@ -346,12 +384,12 @@ export const SegmentEditComp = ({
       {/* Categories */}
       {optionEdit==="edit-segment"  &&
        <div className="pt-2">
-        <h4 className="font-semibold pb-3">Categories</h4>
+        <h4 className="font-medium pb-3">Categories</h4>
         <div className="relative w-full">
           <select
             value={selectedCatogory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+            className="w-full appearance-none rounded-md border-2 border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>
               Select Category
@@ -430,9 +468,15 @@ export const SegmentEditComp = ({
         )}
       </div>
       }
+</div>
+
+
+
+
+
 
       {/* Footer */}
-      <div className="border-t mt-6 pt-4 flex justify-end gap-3">
+      <div className="border-t mt-6 pt-2 px-3 flex justify-end gap-3">
 
         {/* edit Segment */}
        {optionEdit==="edit-segment"  &&  <Button
@@ -475,6 +519,7 @@ export const SegmentEditComp = ({
           onClick={onCancel}
         >Cancel</Button>
       </div>
+
     </div>
   );
 };

@@ -13,7 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+ 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
@@ -28,7 +28,7 @@ import {
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { toast } from "sonner";
 import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
-
+ 
 type Props = {
   title?: string;
   segment?: SegmentModal;
@@ -84,28 +84,28 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
       ),
     },
   ];
-
+ 
   const handleEditSegment = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
     dispatch(updateIsSegmentEdit(true));
     // Implement your edit logic here
   };
-
+ 
   const handleReAnnotation = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
     dispatch(setCanvasType("reannotation"));
     // Implement your re-annotation logic here
   };
-
+ 
   const handleEditSegmentAnnotation = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
     dispatch(setCanvasType("edit"));
   };
-
+ 
   const handleDeleteSegment = async (segmentId: number) => {
     try {
       const response = await dispatch(deleteSegmentById(segmentId)).unwrap();
-
+ 
       if (response && response.success) {
         // delete segment from master array
         dispatch(deleteSegment(segmentId));
@@ -115,19 +115,19 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
       console.error("Error deleting segment:", error);
     }
   };
-
+ 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const handleCancelProjectDelete = () => {
     setIsDeleteModalOpen(false);
   };
-
+ 
   const handleOpenDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
-
+ 
   const handleOptionSelect = (val: string) => {
     if (active == val) {
-      
+     
       setActive(null);
        handleEditOption(false, val);
     }  else {
@@ -135,7 +135,7 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
       setActive(val);
     }
   };
-
+ 
   return (
     <TooltipProvider>
       <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
@@ -165,5 +165,5 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
     </TooltipProvider>
   );
 };
-
+ 
 export default TabNavigation;
