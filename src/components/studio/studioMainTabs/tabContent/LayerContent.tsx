@@ -67,6 +67,7 @@ const LayerContent = () => {
             name: item.label || "",
             box: item.box || [],
             annotation: flattened,
+            score: item.score || 0,
           };
           allpoly.push(data);
         });
@@ -91,8 +92,6 @@ const LayerContent = () => {
     }
   };
   const handleSegmentClick = (item: PolyModel) => {
-    console.log("Segment clicked:", item);
-
     dispatch(updateAnnotation(item));
   };
   const { currentTab, handleTabChange } = useInspirationTab("all");
@@ -174,9 +173,15 @@ const AllCommentIcon = (props: React.SVGProps<SVGSVGElement>) => ( <svg xmlns="h
                         defaultChecked
                         className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
                       />
-                      <div className="grid gap-1.5 font-normal">
-                        <p className="text-sm leading-none font-medium">{item.name}</p>
-                      </div>
+                   <div className="grid gap-1.5 font-normal">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm leading-none font-medium">{item.name}</span>
+                    <span className="text-xs text-gray-500">Score:</span>
+                    <span className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-semibold">
+                      {typeof item.score === 'number' ? item.score.toFixed(2) : item.score}
+                    </span>
+                  </div>
+                  </div>
                     </Label>
                   </div>
                 ))}

@@ -10,20 +10,20 @@ import * as fabric from "fabric";
 import type { Canvas } from "fabric/fabric-impl";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import PolygonOverlay from "../canvas/PolygonOverlay";
+// import PolygonOverlay from "../canvas/PolygonOverlay";
 import CanvasEdit from "../canvas/canvasEdit/CanvasEdit";
 import CommentCanvas from "../canvas/commentCanavs/CommentCanvas";
 import HoverHeader from "../designHub/HoverHeader";
-import ImagePreview from "../workSpace/projectWorkSpace/ImagePreview";
-import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
-import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
-import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
+// import ImagePreview from "../workSpace/projectWorkSpace/ImagePreview";
+// import DesignProject from "../workSpace/projectWorkSpace/DesignProject";
+// import GuidancePanel from "../workSpace/projectWorkSpace/GuidancePanel";
+// import CompareGenAiHome from "../workSpace/compareGenAiImages/CompareGenAiHome";
 import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
-import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
+// import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import CanavasImage from "../canvas/CanavasImage";
 import React from "react";
-//import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
+import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -52,7 +52,7 @@ export function StudioMainCanvas({
 
   const [canvasWidth, setCanvasWidth] = useState(1023);
   const [canvasHeight, setCanvasHeight] = useState(592);
-
+  const { isCompare } = useSelector((state: RootState) => state.canvas);
   // // update the canvas image
   useEffect(() => {
     if (canvasType) {
@@ -100,7 +100,7 @@ export function StudioMainCanvas({
     const file = e.target.files?.[0];
     if (file) onFileUpload(file);
   };
- 
+
   const canavasImageRef = React.useRef<any>(null);
   const [canvasEvent, setCanvasEvent] = useState<fabric.TEvent | null>(null);
   const handleMouseMove = (event: fabric.TEvent) => {
@@ -112,33 +112,35 @@ export function StudioMainCanvas({
       <AnimatePresence mode="wait">
         {canvasImage ? (
           <>
-            {/* <HoverHeader />
-            <CanavasImage
-              imageUrl={canvasImage}
-              width={canvasWidth}
-              height={canvasHeight}
-              onImageLoad={handleImageLoad}
-              ref={canavasImageRef}
-              onMouseMove={handleMouseMove}
-            />  */}
-
-              {canvasMode == "hover" && (
+            {canvasMode == "hover" && (
               <>
-                <Hovertemplate
+                {!isCompare && (
+                  <>
+                    <HoverHeader />
+                    <CanavasImage
+                      imageUrl={canvasImage}
+                      width={canvasWidth}
+                      height={canvasHeight}
+                      onImageLoad={handleImageLoad}
+                      ref={canavasImageRef}
+                      onMouseMove={handleMouseMove}
+                    />
+                  </>
+                )}
+                {/* <Hovertemplate
                   canvasImage={canvasImage}
                   canvasWidth={canvasWidth}
                   canvasHeight={canvasHeight}
+                /> */}
+
+                <Hovertesttemplate
+                  canvas={canavasImageRef}
+                  width={canvasWidth}
+                  height={canvasHeight}
                 />
-
-                  {/* <Hovertesttemplate
-                    canvas={canavasImageRef}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                  /> */}
-
               </>
             )}
-            {canvasMode == "outline" && (
+            {/* {canvasMode == "outline" && (
               <>
                 <OutlineTemplate
                   canvasImage={canvasImage}
@@ -146,13 +148,13 @@ export function StudioMainCanvas({
                   canvasHeight={canvasHeight}
                 />
 
-                  {/* <OutlineTemplate
+                  <OutlineTemplate
                     canvas={canavasImageRef}
                     width={canvasWidth}
                     height={canvasHeight}
-                  /> */}
+                  />
               </>
-            )}
+            )} */}
             {(canvasMode == "draw" ||
               canvasMode == "reannotation" ||
               canvasMode == "dimension") && (
@@ -187,7 +189,7 @@ export function StudioMainCanvas({
                 onImageLoad={handleImageLoad}
               />
             )}
-          
+
             {canvasMode == "test-canvas" && (
               <>
                 <LayerCanvas
