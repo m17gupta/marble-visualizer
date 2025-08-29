@@ -217,7 +217,7 @@ export const SegmentEditComp = ({
       // Implement your re-annotation logic here
     };
   return (
-    <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[60vh] sm:max-h-[68vh]">
+    <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[70vh] sm:max-h-[70vh]">
       {/* Header */}
       <div className="pb-3">
         <div className="flex items-center justify-between border-b pb-2 px-4">
@@ -236,7 +236,7 @@ export const SegmentEditComp = ({
 
         <div className="pt-2 px-3">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="font-regular">choose segment to edit</h4>
+            <h4 className="font-regular text-sm">choose segment to edit</h4>
           </div>
           <div className="flex flex-col gap-2 w-full px-1 py-2 rounded-lg  max-h-56 overflow-y-auto custom-scrollbar">
             {userSelectedSegment.length === 0 && (
@@ -287,7 +287,7 @@ export const SegmentEditComp = ({
         {/* Select Group */}
     {optionEdit==="edit-segment"  && <div className="pt-2">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-medium">Select Group</h4>
+          <h4 className="font-medium text-sm">Select Group</h4>
           <button
             className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
             onClick={handleAddGroup}
@@ -299,7 +299,7 @@ export const SegmentEditComp = ({
           <select
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+            className="w-full appearance-none rounded-md border border-1 border-gray-300 px-4 py-1.5 text-sm bg-gray-100 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>
               Select Group Name
@@ -315,7 +315,7 @@ export const SegmentEditComp = ({
           </select>
 
           {/* Dropdown arrow */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+          <div className="pointer-events-none absolute inset-y-0  right-0 flex items-center pr-3">
             <svg
               className="h-5 w-5 text-gray-500"
               xmlns="http://www.w3.org/2000/svg"
@@ -338,13 +338,13 @@ export const SegmentEditComp = ({
       {/* Select segment type */}
       {optionEdit==="edit-segment"  && <div className="pt-2">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-medium">Select Segment Type</h4>
+          <h4 className="font-medium text-sm">Select Segment Type</h4>
         </div>
         <div className="relative w-full">
           <select
             value={segType}
             onChange={(e) => setSegType(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+            className="w-full appearance-none rounded-md border border-1  border-gray-300 bg-gray-100 px-4 py-1.5 text-sm pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>
               Select Segment Type
@@ -384,12 +384,12 @@ export const SegmentEditComp = ({
       {/* Categories */}
       {optionEdit==="edit-segment"  &&
        <div className="pt-2">
-        <h4 className="font-medium pb-3">Categories</h4>
+        <h4 className="font-medium pb-2 text-sm">Categories</h4>
         <div className="relative w-full">
           <select
             value={selectedCatogory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full appearance-none rounded-md border-2 border-gray-300 bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
+            className="w-full appearance-none rounded-md border border-1 border-gray-300 bg-gray-100 px-4 py-1.5 text-sm pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>
               Select Category

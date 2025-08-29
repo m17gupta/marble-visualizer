@@ -156,6 +156,7 @@ const StudioTabs = () => {
   if (!masterArray || masterArray.allSegments.length === 0) {
     return <NoSegment />;
   }
+  
 
   return (
     <>
@@ -164,9 +165,9 @@ const StudioTabs = () => {
         onValueChange={setActiveTab}
         className="box-border overflow-y-auto border-2">
         {/* Top: Group tabs row */}
-        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0">
-          <TabsList className="whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent">
-            <Swiper
+        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0  ">
+          <TabsList className="whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent w-full">
+             <Swiper
               spaceBetween={8}
               slidesPerView="auto"
               className="max-w-full">
@@ -186,7 +187,7 @@ const StudioTabs = () => {
             </Swiper>
           </TabsList>
 
-          <Button
+          {/* <Button
             variant="ghost"
             className="ml-2 p-2 bg-white hover:bg-gray-200 rounded-md shadow-sm border border-gray-300"
             onClick={handleAddGroupSegment}
@@ -223,7 +224,7 @@ const StudioTabs = () => {
                 </path>
               </g>
             </svg>
-          </Button>
+          </Button> */}
         </div>
 
         {/* Per-group content */}
@@ -278,11 +279,11 @@ const StudioTabs = () => {
                             }
                             onMouseLeave={handleLeaveGroupHover}
                             className={`cursor-pointer uppercase border border-purple-500 hover:bg-white-200 text-sm font-semibold px-3 py-1 focus:ring-transparent transition-colors focus:outline-none duration-200
-                ${
-                  isPresent
-                    ? "bg-purple-100 border border-purple-500 border-b-2 text-black rounded-md shadow-sm cursor-pointer"
-                    : "bg-white border-b-2 border-blue-500 text-gray-700 hover:bg-blue-100"
-                }`}>
+                            ${
+                              isPresent
+                                ? "bg-purple-100 border border-purple-500 border-b-2 text-black rounded-md shadow-sm cursor-pointer"
+                                : "bg-white border-b-2 border-blue-500 text-gray-700 hover:bg-blue-100"
+                            }`}>
                             {tab.short_title}
                           </Button>
                         </SwiperSlide>
@@ -303,7 +304,6 @@ const StudioTabs = () => {
             onCancel={handleCancelEdit}
           />
         )}
-
         {!edit && <SwatchRecommendations />}
       </Tabs>
     </>
