@@ -208,14 +208,14 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab?.name ?? "")}
-              className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-all border border-gray-300 ${getTabStyle(
+              className={`px-2 py-1 text-sm font-medium whitespace-nowrap transition-all border border-gray-300 ${getTabStyle(
                 tab.name ?? ""
               )}`}
               type="button"
             >
               <div className="flex items-center space-x-1">
                 <span>{tab.name}</span>
-                <span className="text-xs bg-blue-200  text-gray-600 rounded-full px-1.5 py-0.5 min-w-[18px] text-center ">
+                <span className="text-xs bg-blue-200  text-gray-600 rounded-full px-1.5 py-0.5 min-w-[10px] text-center ">
                   {getTotalSegmentsForTab(tab.name ?? "")}
                 </span>
               </div>
