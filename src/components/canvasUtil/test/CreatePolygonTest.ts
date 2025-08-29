@@ -25,8 +25,8 @@ export const collectPoints = (
   canvasHeight: number,
   canvasWidth: number,
   aiTrainImageWidth: number,
-  aiTrainImageHeight: number,
-  subGroupName?: string
+  aiTrainImageHeight: number
+  // subGroupName?: string
 ) => {
   if (!canvasRef.current.getFabricCanvas()) {
     console.warn(
@@ -64,8 +64,8 @@ export const collectPoints = (
       canvasRef,
       isFillPolygon,
       ratioWidth,
-      ratioHeight,
-      subGroupName
+      ratioHeight
+      // subGroupName
     );
   } else {
     console.warn(
@@ -101,57 +101,66 @@ export const makePolygon = (
       );
       return;
     }
-    const allObjects = fabricCanvas?.getObjects();
-    // const allObjects = canvasRef.current?.getObjects();
-    // Remove existing object with the same name (if any)
 
-    const text = new fabric.Text(polyName, {
-      left: coordinate[0] * ratioWidth,
-      top: coordinate[1] * ratioHeight,
-      fontFamily: "Arial",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      fontSize: 18,
-      fill: "#fff",
-      selectable: true,
-      visible: isFillPolygon,
-    });
+    // Helper to create a group with a specific groupName
+    const createGroup = (groupName: string) => {
+      const text = new fabric.Text(polyName, {
+        left: coordinate[0] * ratioWidth,
+        top: coordinate[1] * ratioHeight,
+        fontFamily: "Arial",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        fontSize: 18,
+        fill: "#fff",
+        selectable: true,
+        visible: isFillPolygon,
+      });
+      (text as NamedFabricObject).name = polyName;
 
-    // Attach custom property after creation
-    (text as NamedFabricObject).name = polyName;
+      const polygon = new fabric.Polygon(point, {
+        fill: color,
+        originX: coordinate[0],
+        originY: coordinate[1],
+        hasBorders: false,
+        hasControls: false,
+        stroke: color,
+        strokeWidth: 2,
+        opacity: 0.4,
+        visible: isFillPolygon,
+        lockMovementX: true,
+        lockMovementY: true,
+        shadow: new fabric.Shadow({
+          color: "#7e2727ff",
+          blur: 25,
+          offsetX: 0,
+          offsetY: 0,
+        }),
+      });
+      (polygon as NamedFabricObject).name = polyName;
 
-    const polygon = new fabric.Polygon(point, {
-       fill: isFillPolygon ? "transparent" : color,
-      originX: coordinate[0],
-      originY: coordinate[1],
-      hasBorders: false,
-      hasControls: false,
-      stroke: color,
-      strokeWidth: 2,
-      opacity: isFillPolygon ? 0.9 : 0.4,
-      visible: isFillPolygon,
-      lockMovementX: true,
-      lockMovementY: true,
-    });
-    (polygon as NamedFabricObject).name = polyName;
+      const group = new fabric.Group([polygon, text], {
+        selectable: true,
+        lockMovementX: true,
+        lockMovementY: true,
+        hasBorders: false,
+        hasControls: false,
+        subTargetCheck: true,
+      });
+      (group as NamedFabricObject).groupName = groupName;
+      (group as NamedFabricObject).subGroupName = subGroupName;
+      (group as NamedFabricObject).isActived = true;
+      (group as NamedFabricObject).name = polyName;
+      return group;
+    };
 
-    // Only pass valid Fabric.Group options
-    const group = new fabric.Group([polygon, text], {
-      selectable: true,
-      lockMovementX: true,
-      lockMovementY: true,
-      hasBorders: false,
-      hasControls: false,
-      subTargetCheck: true,
-      //  name: polyName,
-    });
+    // Create and add each group
+    const hoverGroup = createGroup("hover");
+    const outlineGroup = createGroup("outline");
+    const maskGroup = createGroup("mask");
 
-    // Attach custom properties after creation
-  (group as NamedFabricObject).groupName = groupName;
-  (group as NamedFabricObject).subGroupName = overlaySubGroupName || subGroupName;
-  (group as NamedFabricObject).isActived = true;
-  (group as NamedFabricObject).name = polyName;
-    fabricCanvas.setActiveObject(group);
-    fabricCanvas.add(group);
+    fabricCanvas.add(hoverGroup);
+    fabricCanvas.add(outlineGroup);
+    fabricCanvas.add(maskGroup);
+    fabricCanvas.setActiveObject(maskGroup); // Optionally set one as active
     fabricCanvas.requestRenderAll();
   }
 };

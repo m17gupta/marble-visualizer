@@ -11,7 +11,8 @@ import { Card, CardContent } from "../ui/card";
 import { setCanvasReady, setMousePosition } from '@/redux/slices/canvasSlice';
 import { LoadImageWithCORS, LoadImageWithFetch, setBackgroundImage } from '../canvasUtil/canvasImageUtils';
 import { toast } from 'sonner';
-import { handlePolygonVisibilityTest, HideAllSegments } from '../canvasUtil/HoverSegment';
+import {  HideAll, HideAllSegments, hideMaskSegment, ShowOutline } from '../canvasUtil/HoverSegment';
+import { handlePolygonVisibilityTest } from '../canvasUtil/test/HoverSegmentTest';
 type NamedFabricObject = fabric.Object & { name?: string };
 
 interface CanvasHoverLayerProps {
@@ -27,11 +28,9 @@ const CanavasImage = forwardRef(({ imageUrl, width, height, className, onImageLo
       const dispatch = useDispatch<AppDispatch>();
     
       const { isCanvasReady } = useSelector((state: RootState) => state.canvas);
-      const { allSegments: allSegmentArray } = useSelector(
-        (state: RootState) => state.segments
-      );
+     
       const containerRef = useRef<HTMLDivElement>(null);
-      const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
+  
       const canvasRef = useRef<HTMLCanvasElement>(null);
       const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
       const backgroundImageRef = useRef<fabric.Image | null>(null);
@@ -39,16 +38,8 @@ const CanavasImage = forwardRef(({ imageUrl, width, height, className, onImageLo
       const { segments } = useSelector(
         (state: RootState) => state.materialSegments
       );
-        const { hoverGroup } = useSelector((state: RootState) => state.canvas);
-    
-      const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
-        (state: RootState) => state.canvas
-      );
-    
-      const [imageWidth, setImageWidth] = useState<number>(0);
-      const [imageHeight, setImageHeight] = useState<number>(0);
-      const [updateSelectedSegment, setUpdateSelectedSegment] =
-        useState<SegmentModal | null>(null);
+   
+
       const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
       const { selectedSegment } = useSelector(
         (state: RootState) => state.masterArray
@@ -57,39 +48,78 @@ const CanavasImage = forwardRef(({ imageUrl, width, height, className, onImageLo
        const {canvasType} = useSelector((state: RootState) => state.canvas);
 
 
-       const [canvasMode, setCanvasMode] = useState<string>('hover');
+  const [canvasMode, setCanvasMode] = useState<string>('hover');
+  
+  const canvasActiveRef = useRef<string>('');
 
        // update canvas Mode
        useEffect(() => {
          setCanvasMode(canvasType);
        }, [canvasType]);
 
+ const { activeCanvas } = useSelector((state: RootState) => state.canvas); 
+       useEffect(() => {
+         if (activeCanvas) {
+          
+           canvasActiveRef.current = activeCanvas;
+         } else {
+          
+           canvasActiveRef.current = 'hideSegments';
+         }
+       }, [activeCanvas]);
 
+   
       const handleMouseMove = useCallback((event: fabric.TEvent) => {
-       
-          if (canvasMode === 'hover') {
-            const fabricCanvas = fabricCanvasRef.current;
-             if (!fabricCanvas) return;
-             const fabricRef = { current: fabricCanvas };
-             const fabricEvent = event as unknown as { target?: NamedFabricObject };
-             const target = fabricEvent.target;
-             const pointer = fabricCanvas.getPointer(event.e);
-             if (target !== undefined) {
-               const targetName = target.name;
-               if (targetName) {
-                 const fabricPoint = new fabric.Point(pointer.x, pointer.y);
-                 dispatch(setMousePosition({
-                   x: Math.round(fabricPoint.x),
-                   y: Math.round(fabricPoint.y),
-                 }));
-                 handlePolygonVisibilityTest(fabricRef, targetName, fabricPoint);
-               }
+         const currentCanvasActive = canvasActiveRef.current;
+    
+         if (canvasMode === 'hover' && currentCanvasActive === "hideSegments") {
+           const fabricCanvas = fabricCanvasRef.current;
+           if (!fabricCanvas) return;
+        
+           const fabricRef = { current: fabricCanvas };
+           const pointer = fabricCanvas.getPointer(event.e);
+
+           if (pointer) {
+             const fabricPoint = new fabric.Point(pointer.x, pointer.y);
+               dispatch(setMousePosition({
+                 x: Math.round(fabricPoint.x),
+                 y: Math.round(fabricPoint.y),
+               }));
+               handlePolygonVisibilityTest(fabricRef, fabricPoint);
              }
-            }
-       }, [canvasMode]);
+          //  }
+         } else if (canvasMode === 'hover' && currentCanvasActive === "mask") {
+           const fabricCanvas = fabricCanvasRef.current;
+            if(!fabricCanvasRef.current) return;
+            // Create a local ref object with getFabricCanvas for ShowOutline
+            const showOutlineRef = {
+              current: {
+                getFabricCanvas: () => fabricCanvasRef.current
+              }
+            };
+           
+           if (!fabricCanvas) return;
+           const fabricRef = { current: fabricCanvas };
+           const pointer = fabricCanvas.getPointer(event.e);
+           if (pointer) {
+             const fabricPoint = new fabric.Point(pointer.x, pointer.y);
+             dispatch(setMousePosition({
+               x: Math.round(fabricPoint.x),
+               y: Math.round(fabricPoint.y),
+             }));
+          const isHideMask=   hideMaskSegment(fabricRef, fabricPoint);
+          if(!isHideMask){
+       
+           
+            ShowOutline(showOutlineRef, "mask");
+          
+           }
+         }
+        } 
+       }, [canvasMode, fabricCanvasRef, dispatch]);
 
         // Initialize Fabric.js canvas
-        useEffect(() => {
+        useEffect(() => { 
           if (!canvasRef.current || fabricCanvasRef.current) return;
       
           const canvas = new fabric.Canvas(canvasRef.current, {
@@ -186,7 +216,7 @@ const CanavasImage = forwardRef(({ imageUrl, width, height, className, onImageLo
             backgroundImageRef.current = null;
             dispatch(setCanvasReady(false));
           };
-        }, [width, height, dispatch, handleMouseMove]);
+        }, [width, height, dispatch]);
       
 
          // Only update background image if imageUrl or canvasType changes
@@ -198,12 +228,12 @@ const CanavasImage = forwardRef(({ imageUrl, width, height, className, onImageLo
 
            const canvas = fabricCanvasRef.current;
 
-           // Remove existing background image (ensure full cleanup)
-          //  if (backgroundImageRef.current) {
-          //    canvas.backgroundImage = undefined;
-          //    backgroundImageRef.current = null;
-          //    canvas.renderAll();
-          //  }
+           //Remove existing background image (ensure full cleanup)
+           if (backgroundImageRef.current) {
+             canvas.backgroundImage = undefined;
+             backgroundImageRef.current = null;
+             canvas.renderAll();
+           }
 
            const tryLoadImage = async () => {
              setIsImageLoading(true); // Start loading indicator
@@ -270,7 +300,7 @@ const CanavasImage = forwardRef(({ imageUrl, width, height, className, onImageLo
            };
 
            tryLoadImage();
-         }, [imageUrl, isCanvasReady, onImageLoad, canvasType]); // Added canvasType to dependencies
+         }, [imageUrl, isCanvasReady, onImageLoad]); // Added canvasType to dependencies
 
 
    useImperativeHandle(ref, () => ({

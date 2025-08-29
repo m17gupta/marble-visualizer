@@ -9,12 +9,12 @@ import { RootState } from "@/redux/store";
 import React, { useCallback } from "react";
 import { useSelector } from "react-redux";
 
-type Props={
-  canvasImage: string | null;
-  canvasWidth: number;
-  canvasHeight: number;
-}
-const Hovertemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
+type Props = {
+  canvas: React.RefObject<any>;
+  width: number;
+  height: number;
+};
+const Hovertemplate = ({ canvas, width, height  }: Props) => {
 
   const {isCompare} = useSelector((state:RootState) => state.canvas);
    const {requests} = useSelector((state:RootState) => state.genAi);
@@ -23,17 +23,14 @@ const Hovertemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
   }, []);
   return (
     <>
-       <HoverHeader />
-      {!isCompare  ? (
-        canvasImage && (
-          <PolygonOverlay
-            imageUrl={canvasImage}
-            width={canvasWidth}
-            height={canvasHeight}
-            className="mb-6"
-           // onImageLoad={handleImageLoad}
-          />
-        )
+      
+      {!isCompare && canvas.current ? (
+        <PolygonOverlay
+          canvas={canvas}
+          width={width}
+          height={height}
+          className="mb-6"
+        />
       ) : (
         <CompareGenAiHome />
       )}

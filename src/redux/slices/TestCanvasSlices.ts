@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
   id: number ;
   name: string;
   box: number[];
+  score: number;
   annotation: number[];
 }
 interface TestCanvasState {

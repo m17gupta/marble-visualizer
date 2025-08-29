@@ -1,173 +1,253 @@
-// import { AppDispatch, RootState } from "@/redux/store";
-// import React, {
-//   useCallback,
-//   useEffect,
-//   useMemo,
-//   useState,
-// } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import * as fabric from "fabric";
+import { AppDispatch, RootState } from "@/redux/store";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import * as fabric from "fabric";
 
-// import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { collectPoints } from "@/components/canvasUtil/test/CreatePolygonTest";
+import { HideAll, ShowOutline } from "@/components/canvasUtil/HoverSegment";
+import { getContainedPolygonNamesByBoundingBox } from "@/components/canvasUtil/test/DetectPolygonUnderTargetTest";
+import { getCutOutArea } from "@/components/canvasUtil/test/CutOutAreaTest";
+import { HideAllSegments } from "@/components/canvasUtil/test/HoverSegmentTest";
 
-// import { collectPoints } from "@/components/canvasUtil/CreatePolygon";
+type NamedFabricObject = fabric.Object & {
+  name?: string;
+  groupName?: string;
+  subGroupName?: string;
+  isActived?: boolean;
+};
 
-// type NamedFabricObject = fabric.Object & { 
-//   name?: string;
-//   groupName?: string;
-//   subGroupName?: string;
-//   isActived?: boolean;
-// };
+interface CanvasHoverLayerProps {
+  canvas: React.RefObject<any>;
+  className?: string;
+  width?: number;
+  height?: number;
+}
+const PolygonOverlayTest = ({
+  canvas,
+  width,
+  height,
+  className,
+}: CanvasHoverLayerProps) => {
+  const dispatch = useDispatch<AppDispatch>();
 
-// interface CanvasHoverLayerProps {
-//   canvas: React.RefObject<any>;
-//   className?: string;
-//   width?: number;
-//   height?: number;
-// }
-// const PolygonOverlayTest = ({
-//   canvas,
-//   width,
-//   height,
-//   className
+  const { allSegments: allSegmentArray } = useSelector(
+    (state: RootState) => state.segments
+  );
+  // Remove unused refs: containerRef, backgroundImageRef, fabricCanvasRef
+  const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
+  const originalViewportTransform = React.useRef<fabric.TMat2D | null>(null);
+  const { segments } = useSelector(
+    (state: RootState) => state.materialSegments
+  );
+  const { hoverGroup } = useSelector((state: RootState) => state.canvas);
 
-// }: CanvasHoverLayerProps) => {
+  const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
+    (state: RootState) => state.canvas
+  );
 
-//   const dispatch = useDispatch<AppDispatch>();
+  const [updateSelectedSegment, setUpdateSelectedSegment] =
+    useState<SegmentModal | null>(null);
 
-  
-//   const { allSegments: allSegmentArray } = useSelector(
-//     (state: RootState) => state.segments
-//   );
-//   // Remove unused refs: containerRef, backgroundImageRef, fabricCanvasRef
-//   const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
-//   const originalViewportTransform = React.useRef<fabric.TMat2D | null>(null);
-//   const { segments } = useSelector(
-//     (state: RootState) => state.materialSegments
-//   );
-//     const { hoverGroup } = useSelector((state: RootState) => state.canvas);
+  const { selectedSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
+  const { isResetZoom } = useSelector((state: RootState) => state.canvas);
 
-//   const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
-//     (state: RootState) => state.canvas
-//   );
+  const { canvasType, isSwitchCanvas } = useSelector(
+    (state: RootState) => state.canvas
+  );
+    const activeCanvas = useSelector(
+      (state: RootState) => state.canvas.activeCanvas
+    );  
 
+  const [canvasMode, setCanvasMode] = useState<string>("hover");
+  const isPolygonUpdate= useRef<boolean>(false)
 
-//   const [updateSelectedSegment, setUpdateSelectedSegment] =
-//     useState<SegmentModal | null>(null);
+  // update canvas Mode
+  useEffect(() => {
+    setCanvasMode(canvasType);
+  }, [canvasType]);
 
-//   const { selectedSegment } = useSelector(
-//     (state: RootState) => state.masterArray
-//   );
-//   const { isResetZoom } = useSelector((state: RootState) => state.canvas);
+  // upate all segmnet Array
+  useEffect(() => {
+    if (allSegmentArray && allSegmentArray.length > 0) {
+      setAllSegArray(allSegmentArray);
+    } else {
+      setAllSegArray([]);
+    }
+  }, [allSegmentArray]);
 
+  // Removed resizeCanvas and containerRef logic as it's not used after refactor
 
-//   // upate all segmnet Array
-//   useEffect(() => {
-//     if (allSegmentArray && allSegmentArray.length > 0) {
-//       setAllSegArray(allSegmentArray);
-//     } else {
-//       setAllSegArray([]);
-//     }
-//   }, [allSegmentArray]);
+  // Removed handleResize effect as fabricCanvasRef is not used locally
 
-//   // Removed resizeCanvas and containerRef logic as it's not used after refactor
+  // Update selected segment
+  useEffect(() => {
+    if (selectedSegment) {
+      setUpdateSelectedSegment(selectedSegment);
+    } else {
+      setUpdateSelectedSegment(null);
+    }
+  }, [selectedSegment]);
 
-//   // Removed handleResize effect as fabricCanvasRef is not used locally
+  useEffect(() => {
+    // Get the fabric canvas from CanavasImage
+    const fabricCanvas = canvas.current?.getFabricCanvas();
+    if (!fabricCanvas) return;
 
-//   // Update selected segment
-//   useEffect(() => {
-//     if (selectedSegment) {
-//       setUpdateSelectedSegment(selectedSegment);
-//     } else {
-//       setUpdateSelectedSegment(null);
-//     }
-//   }, [selectedSegment]);
+    // Remove only overlays created by this component
+    // const overlays = fabricCanvas
+    //   .getObjects()
+    //   .filter((obj: any) => obj.subGroupName === "hover-overlay");
+    // overlays.forEach((obj: any) => fabricCanvas.remove(obj));
 
- 
-//   useEffect(() => {
-//     // Get the fabric canvas from CanavasImage
-//     const fabricCanvas = canvas.current?.getFabricCanvas();
-//     if (!fabricCanvas) return;
+    if (
+      allSegArray &&
+      allSegArray.length > 0 &&
+      segments &&
+      segments.length > 0 &&
+      height &&
+      width &&
+      canvas
+    ) {
+      allSegArray.forEach((seg, idx) => {
+        const {
+          segment_type,
+          group_label_system,
+          short_title,
+          annotation_points_float,
+          segment_bb_float,
+        } = seg;
+        const segColor =
+          segments.find(
+            (s: { name: string; color_code: string }) => s.name === segment_type
+          )?.color_code || "#FF1493";
+        const isFill = false;
+        if (!annotation_points_float || annotation_points_float.length === 0)
+          return;
+        if (!segment_bb_float || segment_bb_float.length === 0) return;
+        if (!group_label_system) return;
+        if (!short_title) return;
+        if (!segment_type) return;
+        if (!segColor) return;
+        if (!canvas.current) return;
 
-//     // Remove only overlays created by this component
-//     const overlays = fabricCanvas.getObjects().filter((obj: any) => obj.subGroupName === 'hover-overlay');
-//     overlays.forEach((obj: any) => fabricCanvas.remove(obj));
+        // Pass a unique subGroupName for overlays
+        collectPoints(
+          annotation_points_float,
+          short_title,
+          segment_bb_float,
+          segment_type,
+          group_label_system,
+          segColor,
+          canvas,
+          isFill,
+          height,
+          width,
+          aiTrainImageWidth,
+          aiTrainImageHeight
+          //'hover-overlay' // extra arg for subGroupName
+        );
+      });
+      fabricCanvas.renderAll();
+      isPolygonUpdate.current = true;
+    }
 
-//     if (
-//       allSegArray &&
-//       allSegArray.length > 0 &&
-//       segments &&
-//       segments.length > 0 &&
-//       height &&
-//       width &&
-//       canvas
-//     ) {
-//       allSegArray.forEach((seg, idx) => {
-//         const {
-//           segment_type,
-//           group_label_system,
-//           short_title,
-//           annotation_points_float,
-//           segment_bb_float,
-//         } = seg;
-//         const segColor =
-//           segments.find(
-//             (s: { name: string; color_code: string }) => s.name === segment_type
-//           )?.color_code || "#FF1493";
-//         const isFill = false;
-//         if (!annotation_points_float || annotation_points_float.length === 0) return;
-//         if (!segment_bb_float || segment_bb_float.length === 0) return;
-//         if (!group_label_system) return;
-//         if (!short_title) return;
-//         if (!segment_type) return;
-//         if (!segColor) return;
-//         if (!canvas.current) return;
+    // Cleanup function: This will remove all overlays when the component unmounts
+    // return () => {
+    //   const unmountOverlays = fabricCanvas
+    //     .getObjects()
+    //     .filter((obj: any) => obj.subGroupName === "hover-overlay");
+    //   unmountOverlays.forEach((obj: any) => fabricCanvas.remove(obj));
+    //   fabricCanvas.renderAll();
+    // };
+  }, [
+    allSegArray,
+    segments,
+    height,
+    width,
+    aiTrainImageWidth,
+    aiTrainImageHeight,
+    canvas,
+  ]);
 
-//         // Pass a unique subGroupName for overlays
-//         collectPoints(
-//           annotation_points_float,
-//           short_title,
-//           segment_bb_float,
-//           segment_type,
-//           group_label_system,
-//           segColor,
-//           canvas,
-//           isFill,
-//           height,
-//           width,
-//           aiTrainImageWidth,
-//           aiTrainImageHeight,
-//           'hover-overlay' // extra arg for subGroupName
-//         );
-//       });
-//       fabricCanvas.renderAll();
-//     }
+  // hover on group segment
 
-//     // Cleanup function: This will remove all overlays when the component unmounts
-//     return () => {
-//       const unmountOverlays = fabricCanvas.getObjects().filter((obj: any) => obj.subGroupName === 'hover-overlay');
-//       unmountOverlays.forEach((obj: any) => fabricCanvas.remove(obj));
-//       fabricCanvas.renderAll();
-//     };
+  // when canvas switch to outLine
+  useEffect(() => {
 
-//   }, [
-//     allSegArray,
-//     segments,
-//     height,
-//     width,
-//     aiTrainImageWidth,
-//     aiTrainImageHeight,
-//     canvas
-//   ]);
-
-//   // hover on group segment
-
-
-//   return (
-//     <>
+    // Get the fabric canvas from CanavasImage
+    const fabricCanvas = canvas.current?.getFabricCanvas();
+    if (!fabricCanvas) return;
+    if (canvasType === "hover" && activeCanvas === "outline") {
+      HideAllSegments(fabricCanvas);
+      // make visible all segments
+      ShowOutline(canvas,"outline");
+    } else if (canvasType === "hover" && activeCanvas === "mask") {
      
-//     </>
-//   );
-// };
+       console.log("mask mode");
+       ShowOutline(canvas,"mask");
+    } else {
+      //hide all segments
+      HideAll(canvas);
+    }
+  }, [canvasType,activeCanvas, canvas]);
 
-// export default PolygonOverlayTest;
+  // cut out section
+    useEffect(() => {
+         const fabricCanvas = canvas.current?.getFabricCanvas();
+    if (!fabricCanvas) return;
+  
+     
+      const objects = fabricCanvas.getObjects();
+      const scalex = fabricCanvas.width / aiTrainImageWidth;
+      const scaley = fabricCanvas.height / aiTrainImageHeight;
+      if (isPolygonUpdate.current && allSegArray && allSegArray.length > 0) {
+        const getWallSegment = allSegArray.filter(
+          (seg) => seg.segment_type === "Wall"
+        );
+        if (getWallSegment.length > 0) {
+          // Do something with wall segments
+          getWallSegment.map((item) => {
+            const getAllPolyName = getContainedPolygonNamesByBoundingBox(
+              canvas,
+              item?.short_title ?? ""
+            );
+            console.log("getAllPolyName", getAllPolyName);
+            if (getAllPolyName.length > 0) {
+              const allTrimPoly = getAllPolyName.filter(
+                (polyName) =>
+                  polyName.startsWith("WI") || polyName.startsWith("TR")
+              );
+              const color = segments.find(
+                  (s: { name: string; color_code: string }) =>
+                    s.name === item.segment_type
+                )?.color_code || "#FE0056";
+              if (allTrimPoly.length > 0) {
+                getCutOutArea(
+                  canvas,
+                  item.annotation_points_float || [],
+                  item.short_title || "",
+                  item.short_title || "",
+                  item.segment_type || "",
+                  item.group_label_system || "",
+                  item.segment_bb_float || [],
+                  color,
+                  scalex,
+                  scaley,
+                  allTrimPoly,
+                  allSegArray
+                );
+              }
+            }
+          });
+        }
+      }
+    }, [allSegArray, isPolygonUpdate, canvas]);
+  
+
+  return <></>;
+};
+
+export default PolygonOverlayTest;

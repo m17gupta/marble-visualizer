@@ -9,8 +9,9 @@ import {
   setActiveTab,
   setCanvasType,
   setIsResetZoom,
+  updateSwitchCanvas,
 } from "@/redux/slices/canvasSlice";
-import { AiOutlineBorderInner } from "react-icons/ai";
+import { AiFillBehanceCircle, AiOutlineBorderInner } from "react-icons/ai";
 
 import { Separator } from "../ui/separator";
 import { ZoomIn, ZoomOut } from "lucide-react";
@@ -31,7 +32,9 @@ const HoverHeader = () => {
   const activeCanvas = useSelector(
     (state: RootState) => state.canvas.activeCanvas
   );
-  const { currentZoom ,mousePosition} = useSelector((state: RootState) => state.canvas);
+  const { currentZoom, mousePosition } = useSelector(
+    (state: RootState) => state.canvas
+  );
 
   // update zoom
   useEffect(() => {
@@ -43,7 +46,7 @@ const HoverHeader = () => {
     }
   }, [currentZoom]);
 
-  // update the mouse position 
+  // update the mouse position
 
   useEffect(() => {
     if (mousePosition) {
@@ -85,12 +88,20 @@ const HoverHeader = () => {
   };
 
   const handleOutline = (type: CanvasMode) => {
-    if (canvasType === "outline") {
-      dispatch(setCanvasType("hover"));
-      dispatch(setActiveTab("showSegments"));
+
+    if (activeCanvas === "outline") {
+      dispatch(setActiveTab("hideSegments"));
     } else {
-      dispatch(setActiveTab("outline"));
-      dispatch(setCanvasType(type));
+      dispatch(setActiveTab(type));
+    
+    }
+  };
+
+  const handleMask = (type: CanvasMode) => {
+    if (activeCanvas === "mask") {
+      dispatch(setActiveTab("hideSegments"));
+    } else {
+      dispatch(setActiveTab(type));
     }
   };
 
@@ -146,13 +157,31 @@ const HoverHeader = () => {
                     : "Show Segments"}
                 </span>
               </Button>
+              <Separator orientation="vertical" className="h-6" />
+
+               <Button
+                variant="outline"
+                size="sm"
+                className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2"
+                onClick={() => handleMask("mask")}
+              >
+                {/* Icon stays visible */}
+                <AiFillBehanceCircle 
+                  className={`h-5 w-5 shrink-0 ${
+                    activeCanvas === "mask" ? "fill-blue-600" : ""
+                  }`}
+                />
+
+                {/* Text appears on hover */}
+                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                  Mask
+                </span>
+              </Button>
             </div>
           }
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-             
-
               <Badge
                 variant="secondary"
                 className="flex items-center gap-2 py-1"
@@ -165,8 +194,11 @@ const HoverHeader = () => {
                   <ZoomOut className="h-4 w-4" />
                 </Button>
 
-                <Button variant="ghost" size="icon" className="h-6 w-20 p-0"
-                 onClick={handleResetZoom}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-20 p-0"
+                  onClick={handleResetZoom}
                 >
                   {" "}
                   Reset

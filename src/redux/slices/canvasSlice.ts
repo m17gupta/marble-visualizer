@@ -55,6 +55,7 @@ interface CanvasState {
   aiTrainImageWidth: number;
   aiTrainImageHeight: number;
   isCompare: boolean;
+  isSwitchCanvas: boolean;
 }
 
 // Initial state
@@ -79,6 +80,7 @@ const initialState: CanvasState = {
   aiTrainImageWidth: 800,
   aiTrainImageHeight: 600,
   isCompare: false,
+  isSwitchCanvas: false
 };
 
 // Create the canvas slice
@@ -169,7 +171,10 @@ const canvasSlice = createSlice({
     // ;start compare
     updateIsCompare: (state, action: PayloadAction<boolean>) => {
       state.isCompare = action.payload;
-    },  
+    },
+    updateSwitchCanvas: (state, action) => {
+      state.isSwitchCanvas = action.payload;
+    },
     // Reset canvas state to initial values
     resetCanvas(state) {
       state.currentZoom = 1;
@@ -210,7 +215,8 @@ export const {
   updateIsScreenShotTaken,
   updateScreenShotUrl,
   setIsResetZoom,setActiveTab,
-  updateIsCompare
+  updateIsCompare,
+  updateSwitchCanvas
 } = canvasSlice.actions;
 
 // Export reducer

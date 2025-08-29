@@ -1,42 +1,17 @@
-// Removes all polygons whose first point is inside the target polygon
 
 import * as fabric from "fabric";
-
 type NamedFabricObject = fabric.Object & {
   name?: string;
   groupName?: string;
   subGroupName?: string;
   isActived?: boolean;
 };
-type Point = { x: number; y: number };
-
-function allObjectPolygons(
-  canvasRef: React.RefObject<fabric.Canvas>,
-  targetPolygonName: string
-): fabric.Polygon[] {
-  const canvas = canvasRef.current;
-  if (!canvas) return [];
-
-  const polygons: fabric.Polygon[] = [];
-
-  canvas.getObjects().forEach((item) => {
-    if (item.type === "group") {
-      const group = item as fabric.Group;
-      const child = group.getObjects()[0] as NamedFabricObject;
-      if (child instanceof fabric.Polygon && (child as NamedFabricObject).name !== targetPolygonName) {
-        polygons.push(child as fabric.Polygon);
-      }
-    }
-  });
-
-  return polygons;
-}
-
 export function findPolygon(
-  canvasRef: React.RefObject<fabric.Canvas>,
+  canvasRef: React.RefObject<any>,
   targetPolygonName: string
 ): fabric.Polygon | undefined {
-  const allObjects = canvasRef.current?.getObjects();
+   const canvas = canvasRef.current.getFabricCanvas();
+  const allObjects = canvas.getObjects();
   if (!allObjects) return;
 
   for (const item of allObjects) {
@@ -49,6 +24,28 @@ export function findPolygon(
     }
   }
   return undefined;
+}
+
+function allObjectPolygons(
+  canvasRef: React.RefObject<any>,
+  targetPolygonName: string
+): fabric.Polygon[] {
+  const canvas = canvasRef.current.getFabricCanvas();
+  if (!canvas) return [];
+
+  const polygons: fabric.Polygon[] = [];
+
+  canvas.getObjects().forEach((item:any) => {
+    if (item.type === "group") {
+      const group = item as fabric.Group;
+      const child = group.getObjects()[0] as NamedFabricObject;
+      if (child instanceof fabric.Polygon && (child as NamedFabricObject).name !== targetPolygonName) {
+        polygons.push(child as fabric.Polygon);
+      }
+    }
+  });
+
+  return polygons;
 }
 
 export const isPointInPolygon = (
@@ -70,12 +67,12 @@ export const isPointInPolygon = (
   return inside;
 };
 export function getContainedPolygonNamesByBoundingBox(
-  canvasRef: React.RefObject<fabric.Canvas>,
+  canvasRef: React.RefObject<any>,
   targetPolygonName: string
 
  
 ): string[] {
-  const canvas = canvasRef.current;
+  const canvas = canvasRef.current.getFabricCanvas();
   if (!canvas) return [];
 
   const targetPolygon = findPolygon(canvasRef, targetPolygonName);
@@ -102,5 +99,3 @@ export function getContainedPolygonNamesByBoundingBox(
   // console.log("Contained polygons by bounding box:", contained);
   return contained;
 }
-
-
