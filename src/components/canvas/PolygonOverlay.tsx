@@ -37,7 +37,12 @@ import { all } from "axios";
 import { getContainedPolygonNamesByBoundingBox } from "../canvasUtil/DetectPolygonUnderTarget";
 import { getCutOutArea } from "../canvasUtil/CutOutArea";
 
-type NamedFabricObject = fabric.Object & { name?: string };
+type NamedFabricObject = fabric.Object & { 
+  name?: string ,
+  groupName?: string
+  
+
+};
 
 interface CanvasHoverLayerProps {
   imageUrl?: string;

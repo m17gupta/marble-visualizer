@@ -23,6 +23,7 @@ import OutlineTemplate from "./canvasTemplate/OutlineTemplate";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import CanavasImage from "../canvas/CanavasImage";
 import React from "react";
+//import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -99,34 +100,59 @@ export function StudioMainCanvas({
     const file = e.target.files?.[0];
     if (file) onFileUpload(file);
   };
-  const fabricCanvasRef = useRef<Canvas | null>(null);
+ 
   const canavasImageRef = React.useRef<any>(null);
   const [canvasEvent, setCanvasEvent] = useState<fabric.TEvent | null>(null);
   const handleMouseMove = (event: fabric.TEvent) => {
     setCanvasEvent(event);
   };
 
-  useEffect(() => {
-    const fabricCanvas = canavasImageRef.current?.getFabricCanvas?.();
-    if (fabricCanvas) {
-      fabricCanvasRef.current = fabricCanvas;
-      // Do something with the fabricCanvas
-    }
-  }, [canavasImageRef]);
   return (
     <div className="w-full md:w-3/4  flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
       <AnimatePresence mode="wait">
         {canvasImage ? (
           <>
+            {/* <HoverHeader />
+            <CanavasImage
+              imageUrl={canvasImage}
+              width={canvasWidth}
+              height={canvasHeight}
+              onImageLoad={handleImageLoad}
+              ref={canavasImageRef}
+              onMouseMove={handleMouseMove}
+            />  */}
 
-          {/* <CanavasImage
-        imageUrl={canvasImage}
-        width={canvasWidth}
-        height={canvasHeight}
-        onImageLoad={handleImageLoad}
-        ref={canavasImageRef}
-         onMouseMove={handleMouseMove}
-      /> */}
+              {canvasMode == "hover" && (
+              <>
+                <Hovertemplate
+                  canvasImage={canvasImage}
+                  canvasWidth={canvasWidth}
+                  canvasHeight={canvasHeight}
+                />
+
+                  {/* <Hovertesttemplate
+                    canvas={canavasImageRef}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                  /> */}
+
+              </>
+            )}
+            {canvasMode == "outline" && (
+              <>
+                <OutlineTemplate
+                  canvasImage={canvasImage}
+                  canvasWidth={canvasWidth}
+                  canvasHeight={canvasHeight}
+                />
+
+                  {/* <OutlineTemplate
+                    canvas={canavasImageRef}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                  /> */}
+              </>
+            )}
             {(canvasMode == "draw" ||
               canvasMode == "reannotation" ||
               canvasMode == "dimension") && (
@@ -161,30 +187,7 @@ export function StudioMainCanvas({
                 onImageLoad={handleImageLoad}
               />
             )}
-            {canvasMode == "hover" && (
-              <>
-                <Hovertemplate
-                  canvasImage={canvasImage}
-                  canvasWidth={canvasWidth}
-                  canvasHeight={canvasHeight}
-                />
-               {/* {fabricCanvasRef && fabricCanvasRef.current && (
-                 <Hovertemplate
-                   canvas={fabricCanvasRef as React.RefObject<Canvas>}
-                 />
-               )} */}
-              
-              </>
-            )}
-            {canvasMode == "outline" && (
-              <>
-                <OutlineTemplate
-                  canvasImage={canvasImage}
-                  canvasWidth={canvasWidth}
-                  canvasHeight={canvasHeight}
-                />
-              </>
-            )}
+          
             {canvasMode == "test-canvas" && (
               <>
                 <LayerCanvas
