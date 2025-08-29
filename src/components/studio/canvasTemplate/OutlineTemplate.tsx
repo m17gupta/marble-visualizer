@@ -1,4 +1,5 @@
 import OutLineCanvas from '@/components/canvas/outlineCanavas/OutLineCanvas';
+//import OutLineCanvasTest from '@/components/canvas/test/OutLineCanvasTest';
 import HoverHeader from '@/components/designHub/HoverHeader';
 import React, { useCallback } from 'react'
 type Props={
@@ -6,7 +7,14 @@ type Props={
   canvasWidth: number;
   canvasHeight: number;
 }
-const OutlineTemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
+// type Props = {
+//   canvas: React.RefObject<any>;
+//   width: number;
+//   height: number;
+// };
+
+ const OutlineTemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
+// const OutlineTemplate = ({ canvas, width, height }: Props) => {
      const handleImageLoad = useCallback(() => {
         // setImageLoading(false);
       }, []);
@@ -22,6 +30,15 @@ const OutlineTemplate = ({ canvasImage, canvasWidth, canvasHeight }: Props) => {
         className="mb-6"
         onImageLoad={handleImageLoad}
       />}
+
+      {/* {canvas.current && (
+        <OutLineCanvasTest
+          canvas={canvas}
+          width={width}
+          height={height}
+          className="mb-6"
+        />
+      )} */}
     </>
   )
 }

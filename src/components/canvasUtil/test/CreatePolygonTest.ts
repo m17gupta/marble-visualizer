@@ -20,15 +20,20 @@ export const collectPoints = (
   segType: string,
   groupName: string,
   color: string,
-  canvasRef: React.RefObject<fabric.Canvas>,
+  canvasRef: React.RefObject<any>,
   isFillPolygon: boolean,
   canvasHeight: number,
   canvasWidth: number,
   aiTrainImageWidth: number,
-  aiTrainImageHeight: number
-
+  aiTrainImageHeight: number,
+  subGroupName?: string
 ) => {
- 
+  if (!canvasRef.current.getFabricCanvas()) {
+    console.warn(
+      `[collectPoints] Canvas not available for segment: ${segName}`
+    );
+    return;
+  }
 
   if (!annotation || annotation.length === 0) {
     console.warn(
@@ -40,30 +45,27 @@ export const collectPoints = (
   const point: PointModel[] = [];
   const polyName = segName;
 
-
-
   const ratioWidth = canvasWidth / aiTrainImageWidth;
   const ratioHeight = canvasHeight / aiTrainImageHeight;
   for (let i = 0; i < annotation.length; i += 2) {
-    const x = annotation[i] * ratioWidth ;
-    const y = annotation[i + 1] * ratioHeight ;
+    const x = annotation[i] * ratioWidth;
+    const y = annotation[i + 1] * ratioHeight;
     point.push({ x, y });
   }
-
-
 
   if (point && point.length > 0 && coordinates && polyName) {
     makePolygon(
       point,
       coordinates,
       polyName,
-      segType,
       groupName,
+      segType,
       color,
       canvasRef,
       isFillPolygon,
       ratioWidth,
-      ratioHeight
+      ratioHeight,
+      subGroupName
     );
   } else {
     console.warn(
@@ -79,10 +81,11 @@ export const makePolygon = (
   groupName: string,
   subGroupName: string,
   color: string,
-  canvasRef: React.RefObject<fabric.Canvas>,
+  canvasRef: React.RefObject<any>,
   isFillPolygon: boolean,
   ratioWidth: number,
-  ratioHeight: number
+  ratioHeight: number,
+  overlaySubGroupName?: string
 ) => {
   if (
     point &&
@@ -91,15 +94,16 @@ export const makePolygon = (
     polyName &&
     canvasRef.current
   ) {
-      
-      const allObjects = canvasRef.current?.getObjects();
-    // Remove existing object with the same name (if any)
-    const currentObject = allObjects.find(
-      (item) => (item as NamedFabricObject).name === polyName
-    );
-    if (currentObject) {
-      canvasRef.current.remove(currentObject);
+    const fabricCanvas = canvasRef.current?.getFabricCanvas();
+    if (!fabricCanvas) {
+      console.warn(
+        `[makePolygon] Fabric canvas not available for polygon: ${polyName}`
+      );
+      return;
     }
+    const allObjects = fabricCanvas?.getObjects();
+    // const allObjects = canvasRef.current?.getObjects();
+    // Remove existing object with the same name (if any)
 
     const text = new fabric.Text(polyName, {
       left: coordinate[0] * ratioWidth,
@@ -116,7 +120,7 @@ export const makePolygon = (
     (text as NamedFabricObject).name = polyName;
 
     const polygon = new fabric.Polygon(point, {
-      fill: isFillPolygon ? "transparent" : color,
+       fill: isFillPolygon ? "transparent" : color,
       originX: coordinate[0],
       originY: coordinate[1],
       hasBorders: false,
@@ -142,12 +146,12 @@ export const makePolygon = (
     });
 
     // Attach custom properties after creation
-    (group as NamedFabricObject).groupName = groupName;
-    (group as NamedFabricObject).subGroupName = subGroupName;
-    (group as NamedFabricObject).isActived = true;
-    (group as NamedFabricObject).name = polyName;
-    canvasRef.current?.setActiveObject(group);
-    canvasRef.current?.add(group);
-    canvasRef.current?.requestRenderAll();
+  (group as NamedFabricObject).groupName = groupName;
+  (group as NamedFabricObject).subGroupName = overlaySubGroupName || subGroupName;
+  (group as NamedFabricObject).isActived = true;
+  (group as NamedFabricObject).name = polyName;
+    fabricCanvas.setActiveObject(group);
+    fabricCanvas.add(group);
+    fabricCanvas.requestRenderAll();
   }
 };
