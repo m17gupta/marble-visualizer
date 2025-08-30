@@ -11,7 +11,7 @@ import {
   setIsResetZoom,
   updateSwitchCanvas,
 } from "@/redux/slices/canvasSlice";
-import { AiFillBehanceCircle, AiOutlineBorderInner } from "react-icons/ai";
+import { AiFillBehanceCircle, AiOutlineBorder, AiOutlineBorderInner, AiTwotoneHome } from "react-icons/ai";
 
 import { Separator } from "../ui/separator";
 import { ZoomIn, ZoomOut } from "lucide-react";
@@ -19,6 +19,7 @@ import { Badge } from "../ui/badge";
 import { MdOutlineHideImage, MdOutlineImage } from "react-icons/md";
 import { BiGitCompare } from "react-icons/bi";
 import ZoomHeader from "../canvasheader/ZoomHeader";
+import { PiPolygonDuotone } from "react-icons/pi";
 
 const HoverHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -94,7 +95,6 @@ const HoverHeader = () => {
       dispatch(setActiveTab("hideSegments"));
     } else {
       dispatch(setActiveTab(type));
-    
     }
   };
 
@@ -110,12 +110,80 @@ const HoverHeader = () => {
     <>
       <Card>
         <CardContent className="py-2 px-4 flex items-center justify-between ">
+
+    <div className="flex gap-3">
+            <Button
+                variant="outline"
+                size="sm"
+                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                ${
+                  activeCanvas === "polygon"
+                    ? "bg-blue-100 text-blue-600 border-blue-400"
+                    : ""
+                }`}
+                onClick={() => handleOutline("polygon")}
+              >
+                {/* Icon stays visible */}
+               <PiPolygonDuotone 
+
+                className={`h-5 w-5 shrink-0 ${
+                    activeCanvas === "outline" ? "fill-blue-600" : ""
+                  }`}
+                  />
+                {/* <AiOutlineBorderInner
+                  className={`h-5 w-5 shrink-0 ${
+                    activeCanvas === "outline" ? "fill-blue-600" : ""
+                  }`}
+                /> */}
+
+                {/* Text appears on hover */}
+                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                  Polygon  
+                </span>
+              </Button>
+
+            <Button
+                variant="outline"
+                size="sm"
+                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                ${
+                  activeCanvas === "rectangle"
+                    ? "bg-blue-100 text-blue-600 border-blue-400"
+                    : ""
+                }`}
+                onClick={() => handleOutline("rectangle")}
+              >
+                {/* Icon stays visible */}
+                <AiOutlineBorder 
+                className={`h-5 w-5 shrink-0 ${
+                    activeCanvas === "outline" ? "fill-blue-600" : ""
+                  }`}
+                  />
+                {/* <AiOutlineBorderInner
+                  className={`h-5 w-5 shrink-0 ${
+                    activeCanvas === "outline" ? "fill-blue-600" : ""
+                  }`}
+                /> */}
+
+                {/* Text appears on hover */}
+                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                  Rectangle 
+                </span>
+              </Button>
+              </div>
+
+          <div className="flex gap-4">
           {
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2"
+                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                ${
+                  activeCanvas === "outline"
+                    ? "bg-blue-100 text-blue-600 border-blue-400"
+                    : ""
+                }`}
                 onClick={() => handleOutline("outline")}
               >
                 {/* Icon stays visible */}
@@ -146,16 +214,16 @@ const HoverHeader = () => {
               >
                 {/* Icon changes dynamically based on Redux */}
                 {activeCanvas === "hideSegments" ? (
-                  <MdOutlineHideImage className="h-5 w-5 shrink-0 " />
+                  <MdOutlineHideImage className="h-5 w-5 shrink-0 fill-blue-600" />
                 ) : (
-                  <MdOutlineImage className="h-5 w-5 shrink-0 fill-blue-600" />
+                  <MdOutlineImage className="h-5 w-5 shrink-0 " />
                 )}
 
                 {/* Text fades in on hover */}
                 <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
                   {activeCanvas === "showSegments"
-                    ? "Hide Segments"
-                    : "Show Segments"}
+                    ? "Show Segments"
+                    : "Hide Segments "}
                 </span>
               </Button>
               <Separator orientation="vertical" className="h-6" />
@@ -163,15 +231,24 @@ const HoverHeader = () => {
                <Button
                 variant="outline"
                 size="sm"
-                className="group relative flex items-center justify-start w-10 hover:w-24 transition-all duration-300 overflow-hidden px-2"
+                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                ${
+                  activeCanvas === "mask"
+                    ? "bg-blue-100 text-blue-600 border-blue-400"
+                    : ""
+                }`}
+                
                 onClick={() => handleMask("mask")}
               >
                 {/* Icon stays visible */}
-                <AiFillBehanceCircle 
+                {/* <AiFillBehanceCircle 
                   className={`h-5 w-5 shrink-0 ${
                     activeCanvas === "mask" ? "fill-blue-600" : ""
                   }`}
-                />
+                /> */}
+                 <AiTwotoneHome   className={`h-5 w-5 shrink-0 ${
+                    activeCanvas === "mask" ? "fill-blue-600" : ""
+                  }`} />
 
                 {/* Text appears on hover */}
                 <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
@@ -183,7 +260,9 @@ const HoverHeader = () => {
               
                 <ZoomHeader
              resetCanvas={handleResetZoom} />
-          
+          </div>
+
+
           {/* <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Badge
