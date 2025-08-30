@@ -37,26 +37,38 @@ const AllSegments = () => {
   const { segments } = useSelector(
     (state: RootState) => state.materialSegments
   );
- const { masterArray } = useSelector((state: RootState) => state.masterArray);
+  const { masterArray, selectedMasterArray } = useSelector(
+    (state: RootState) => state.masterArray
+  );
 
+  // update selected masterArray
+  useEffect(() => {
+    if (
+      selectedMasterArray &&
+      selectedMasterArray.allSegments &&
+      selectedMasterArray.allSegments.length > 0
+    ) {
+      setActiveSegment(selectedMasterArray.id ?? null);
+      dispatch(setSegmentType(selectedMasterArray.name ?? ""));
+    }
+  }, [selectedMasterArray]);
 
- useEffect(() => {
-  if(masterArray && masterArray.length > 0){
-    setActiveSegment(masterArray[0].id ? masterArray[0].id : null);
-    setUpdatedMasterArray(masterArray);
-  } else{
-    setUpdatedMasterArray(null);
-  }
-  
- }, [masterArray]);
+  useEffect(() => {
+    if (masterArray && masterArray.length > 0) {
+      setActiveSegment(masterArray[0].id ? masterArray[0].id : null);
+      setUpdatedMasterArray(masterArray);
+    } else {
+      setUpdatedMasterArray(null);
+    }
+  }, [masterArray]);
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
-    console.log("Selected segment:", selectedSeg);
+    // console.log("Selected segment:", selectedSeg);
     if (selectedSeg && selectedSeg.id && selectedSeg.name) {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
       dispatch(addSelectedMasterArray(selectedSeg));
-    const firstGroup = selectedSeg.allSegments[0];
+      const firstGroup = selectedSeg.allSegments[0];
       if (firstGroup && firstGroup.segments && firstGroup.segments.length > 0) {
         const firstSegment = firstGroup.segments[0];
         dispatch(updateSelectedSegment(firstSegment));
@@ -216,7 +228,6 @@ const AllSegments = () => {
             </Tooltip>
           </TooltipProvider>
         </div>
-        {/* <AddSegSidebar/> */}
       </div>
     </TooltipProvider>
   );

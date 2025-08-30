@@ -127,17 +127,17 @@ export function StudioMainCanvas({
                     />
                   </>
                 )}
-                {/* <Hovertemplate
-                  canvasImage={canvasImage}
-                  canvasWidth={canvasWidth}
-                  canvasHeight={canvasHeight}
-                /> */}
-
-                <Hovertesttemplate
-                  canvas={canavasImageRef}
+                <Hovertemplate
+                    canvas={canavasImageRef}
                   width={canvasWidth}
                   height={canvasHeight}
                 />
+
+                {/* <Hovertesttemplate
+                  canvas={canavasImageRef}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                /> */}
               </>
             )}
             {/* {canvasMode == "outline" && (

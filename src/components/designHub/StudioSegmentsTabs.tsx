@@ -38,6 +38,8 @@ const StudioTabs = () => {
 
   const [edit, setEdit] = useState(false);
   const [optionEdit, setOptionEdit] = useState<string | null>(null);
+
+   const {userSelectedSegment}  = useSelector((state: RootState) => state.masterArray);
   const handleEditOption = (data: boolean, option: string) => {
     setEdit(data);
     setOptionEdit(option);
@@ -94,6 +96,14 @@ const StudioTabs = () => {
     }
   }, [selectedGroupSegment]);
 
+
+  // update on Click event
+  useEffect(() => {
+    if (userSelectedSegment && userSelectedSegment.length > 0) {
+      setActive(userSelectedSegment.map((d) => d.id!));
+    }
+  }, [userSelectedSegment]);
+
   // Auto-scroll active chips into view
   useEffect(() => {
     tabRefs.current[innerTabValue]?.scrollIntoView({
@@ -107,6 +117,21 @@ const StudioTabs = () => {
       block: "nearest",
     });
   }, [activeTab, innerTabValue]);
+
+  // Auto-swipe Swiper to first active chip when 'active' changes
+  useEffect(() => {
+    if (!currentSelectedGroupSegment || !segSwiperRef.current) return;
+    // Get sorted segments as in render
+    const sortedSegments = currentSelectedGroupSegment.segments
+      .slice()
+      .filter((tab) => tab.short_title)
+      .sort((a, b) => (a.short_title ?? "").localeCompare(b.short_title ?? ""));
+    // Find index of first active segment
+    const idx = sortedSegments.findIndex((tab) => active.includes(tab.id!));
+    if (idx >= 0) {
+      segSwiperRef.current.slideTo(idx, 300);
+    }
+  }, [active, currentSelectedGroupSegment]);
 
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
     setActiveTab(group.groupName);
@@ -187,44 +212,7 @@ const StudioTabs = () => {
             </Swiper>
           </TabsList>
 
-          {/* <Button
-            variant="ghost"
-            className="ml-2 p-2 bg-white hover:bg-gray-200 rounded-md shadow-sm border border-gray-300"
-            onClick={handleAddGroupSegment}
-            aria-label="Add Group Segment">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24">
-              <g
-                fill="none"
-                stroke="currentColor"
-                strokeDasharray="16"
-                strokeDashoffset="16"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2">
-                <path d="M5 12h14">
-                  <animate
-                    fill="freeze"
-                    attributeName="stroke-dashoffset"
-                    dur="0.4s"
-                    values="16;0"
-                  />
-                </path>
-                <path d="M12 5v14">
-                  <animate
-                    fill="freeze"
-                    attributeName="stroke-dashoffset"
-                    begin="0.4s"
-                    dur="0.4s"
-                    values="16;0"
-                  />
-                </path>
-              </g>
-            </svg>
-          </Button> */}
+          
         </div>
 
         {/* Per-group content */}
@@ -266,13 +254,7 @@ const StudioTabs = () => {
                             }
                             onClick={() => {
                               handleInnerTabClick(tab);
-                              // OPTION A: clicked chip ko view me lao (recommended)
                               segSwiperRef.current?.slideTo(idx, 300);
-
-                              // OPTION B (nudge feel): pichhle index se compare karke aage/peeche
-                              // if (idx > lastSegIdxRef.current) segSwiperRef.current?.slideNext(250);
-                              // else if (idx < lastSegIdxRef.current) segSwiperRef.current?.slidePrev(250);
-                              // lastSegIdxRef.current = idx;
                             }}
                             onMouseEnter={() =>
                               handleEachSegmentHover(tab.short_title ?? "")
@@ -295,7 +277,8 @@ const StudioTabs = () => {
           </TabsContent>
         ))}
 
-        <TabNavigation handleEditOption={handleEditOption} />
+        <TabNavigation
+         handleEditOption={handleEditOption} />
 
         {edit && optionEdit && (
           <SegmentEditComp

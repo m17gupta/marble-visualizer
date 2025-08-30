@@ -18,6 +18,7 @@ import { ZoomIn, ZoomOut } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { MdOutlineHideImage, MdOutlineImage } from "react-icons/md";
 import { BiGitCompare } from "react-icons/bi";
+import ZoomHeader from "../canvasheader/ZoomHeader";
 
 const HoverHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -179,8 +180,11 @@ const HoverHeader = () => {
               </Button>
             </div>
           }
-
-          <div className="flex items-center justify-between">
+              
+                <ZoomHeader
+             resetCanvas={handleResetZoom} />
+          
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Badge
                 variant="secondary"
@@ -213,12 +217,10 @@ const HoverHeader = () => {
                   <span className="text-[10px]">X: {mouseMove.x}</span>
                   <span className="text-[10px]">Y: {mouseMove.y}</span>
                 </Badge>
-                {/* <Badge variant="secondary"  className="grid items-center gap-2 w-20 h-4 pt-0">
-                  <span className="text-[10px]">Y: 32</span>
-                </Badge> */}
+               
               </div>
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </>
