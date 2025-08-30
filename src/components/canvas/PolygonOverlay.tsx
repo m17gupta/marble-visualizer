@@ -185,8 +185,7 @@ const PolygonOverlay = ({
       // make visible all segments
       ShowOutline(canvas,"outline");
     } else if (canvasType === "hover" && activeCanvas === "mask") {
-     
-       console.log("mask mode");
+    
        ShowOutline(canvas,"mask");
     } else {
       //hide all segments
@@ -214,7 +213,7 @@ const PolygonOverlay = ({
               canvas,
               item?.short_title ?? ""
             );
-            console.log("getAllPolyName", getAllPolyName);
+           
             if (getAllPolyName.length > 0) {
               const allTrimPoly = getAllPolyName.filter(
                 (polyName) =>

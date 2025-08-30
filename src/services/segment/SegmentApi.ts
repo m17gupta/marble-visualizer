@@ -76,7 +76,7 @@ async createSegment(segmentData: SegmentModal): Promise<SegmentApiResponse> {
       if (error) {
         throw error;
       }
-      console.log('Fetched segments:', data);
+    
       return data;
     } catch (error) {
       console.error('Error fetching segments:', error);

@@ -159,7 +159,7 @@ export const getCutOutArea = (
       subTargetCheck: true,
     });
     (group as NamedFabricObject).groupName = groupName;
-    (group as NamedFabricObject).subGroupName = subGroupName;
+    (group as NamedFabricObject).subGroupName = groupName;
     (group as NamedFabricObject).isActived = true;
     (group as NamedFabricObject).name = segName;
     return group;

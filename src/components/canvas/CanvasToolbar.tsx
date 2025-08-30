@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import AddSegLists from "./canvasAddNewSegment/AddSegLists";
+import ZoomHeader from "../canvasheader/ZoomHeader";
 interface CanvasToolbarProps {
   fabricCanvasRef: React.MutableRefObject<fabric.Canvas | null>;
   cancelDrawing: () => void;
@@ -176,68 +177,9 @@ export default function CanvasToolbar({
               <TooltipContent>Cancel Marking</TooltipContent>
             </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="py-0 px-3 "
-                  onClick={handleResetZoom}
-                >
-                  <span className="text-xs font-bold ">Reset </span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Reset zoom to 100%</TooltipContent>
-            </Tooltip>
-
-            {/* Display current zoom level and mouse coordinates */}
-            <Badge variant="secondary" className="flex items-center gap-2">
-              <span>Zoom: {Math.round(currentZoom * 100)}%</span>
-              <div className="flex items-center gap-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 p-0"
-                      onClick={handleZoomIn}
-                    >
-                      <ZoomIn className="h-3 w-3" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Zoom in</TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 p-0"
-                      onClick={handleZoomOut}
-                    >
-                      <ZoomOut className="h-3 w-3" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Zoom out</TooltipContent>
-                </Tooltip>
-              </div>
-            </Badge>
-
-            {/* <span className="w-px h-4 bg-gray-300"></span> */}
-            <div className="flex gap-1">
-              <Badge
-                variant="secondary"
-                className="grid items-center gap-2 w-20"
-              >
-                <span>X: {mousePosition.x}</span>
-              </Badge>
-              <Badge
-                variant="secondary"
-                className="grid items-center gap-2 w-20"
-              >
-                <span>Y: {mousePosition.y}</span>
-              </Badge>
-            </div>
+            <ZoomHeader
+             resetCanvas={handleResetZoom} />
+          
 
             
           </div>

@@ -38,7 +38,6 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const [active, setActive] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const buttons = [
-
     {
       id: "add-segment",
       tooltip: "Add Segment",
@@ -139,10 +138,17 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   };
 
   const handleOptionSelect = (val: string) => {
-    if (active == val) {
-      setActive(null);
+    if (val === "add-segment") {
+      dispatch(setCanvasType("draw"));
       handleEditOption(false, val);
+      setActive(val);
+    } else if (active == val) {
+      setActive(null);
+      
+      handleEditOption(false, val);
+
     } else {
+      dispatch(setCanvasType("hover"));
       handleEditOption(true, val);
       setActive(val);
     }
@@ -162,7 +168,8 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
                     active === btn.id
                       ? "bg-blue-100 text-white border-blue-800"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
-                  }`}>
+                  }`}
+                >
                   {btn.icon}
                 </button>
               </TooltipTrigger>

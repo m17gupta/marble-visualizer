@@ -15,8 +15,7 @@ export const handlePolygonVisibilityTest = (
   pointer: fabric.Point
 ) => {
   HideAllSegments(canvas);
-  // console.log("handlePolygonVisibilityTest name", name);
-  // if (name) {
+  
   if (!canvas.current) return; // Ensure canvas is defined
 
   const allObjects = canvas.current.getObjects();
@@ -130,8 +129,6 @@ export const handlePolygonVisibilityOnMouseMove = (
         allGroupObjects.forEach((groupObj) => {
           const namedGroupObj = groupObj as NamedFabricObject;
 
-          // const currentPoly = groupObj as fabric.Polygon;
-          // const currentText = groupObj as fabric.Text;
           const polyName = namedGroupObj.name;
 
           if (polyName === targetName) {

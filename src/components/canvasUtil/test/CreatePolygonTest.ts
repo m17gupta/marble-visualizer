@@ -128,14 +128,10 @@ export const makePolygon = (
         visible: isFillPolygon,
         lockMovementX: true,
         lockMovementY: true,
-        shadow: new fabric.Shadow({
-          color: "#7e2727ff",
-          blur: 25,
-          offsetX: 0,
-          offsetY: 0,
-        }),
+       
       });
       (polygon as NamedFabricObject).name = polyName;
+      (polygon as NamedFabricObject).subGroupName = groupName;
 
       const group = new fabric.Group([polygon, text], {
         selectable: true,

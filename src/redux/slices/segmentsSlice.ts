@@ -60,10 +60,6 @@ interface SegmentsState {
   isAddSegmentModalOpen: boolean;
   isMasterDataAnnotationOpen: boolean;
 
-  // segmentDrawn: {
-  //   [key: string]: fabric.Point[];
-  // };
-  // currentPoints: SegmentPoint[];
   canvasHistory: string[];
   historyIndex: number;
   maxHistorySize: number;
