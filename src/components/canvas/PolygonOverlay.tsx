@@ -5,7 +5,7 @@ import * as fabric from "fabric";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { collectPoints } from "@/components/canvasUtil/test/CreatePolygonTest";
-import { HideAll, ShowOutline } from "@/components/canvasUtil/HoverSegment";
+import { HideAll, ShowIcon, ShowOutline } from "@/components/canvasUtil/HoverSegment";
 import { getContainedPolygonNamesByBoundingBox } from "@/components/canvasUtil/test/DetectPolygonUnderTargetTest";
 import { getCutOutArea } from "@/components/canvasUtil/test/CutOutAreaTest";
 import { HideAllSegments } from "@/components/canvasUtil/test/HoverSegmentTest";
@@ -187,6 +187,10 @@ const PolygonOverlay = ({
     } else if (canvasType === "hover" && activeCanvas === "mask") {
     
        ShowOutline(canvas,"mask");
+    } else if (canvasType === "hover" && activeCanvas === "showSegments") {
+      // show Icon
+      console.log(" show icon called");
+      ShowIcon(canvas);
     } else {
       //hide all segments
       HideAll(canvas);
