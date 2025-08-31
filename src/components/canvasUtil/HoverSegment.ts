@@ -264,3 +264,23 @@ export const hideMaskSegment = (canvas: React.RefObject<fabric.Canvas>, pointer:
   canvas.current.renderAll();
   return returnValue;
 };
+
+
+export const ShowIcon = (canvasRef: React.RefObject<any>) => {
+  const fabricCanvas = canvasRef.current?.getFabricCanvas();
+  if (!fabricCanvas) return;
+
+  const allObjects = fabricCanvas.getObjects();
+  console.log("All canvas objects:", allObjects);
+  allObjects.forEach((obj: NamedFabricObject) => {
+    if (
+      obj.type === "group" &&
+      obj.groupName === "icon" &&
+      typeof (obj as fabric.Group).getObjects === "function"
+    ) {
+      const allGroupObjects = (obj as fabric.Group).getObjects();
+       console.log("Icon group objects:", allGroupObjects);
+    }
+  });
+  fabricCanvas.renderAll();
+};

@@ -77,8 +77,7 @@ const HoverHeader = () => {
 
   // Use Redux for hide/show image state
   const handleShowHideImage = (data: string) => {
-    // Toggle between 'hideImage' and 'showImage' as activeCanvas
-    // dispatch({ type: "canvas/setActiveTab", payload: activeCanvas === "hideImage" ? "showImage" : "hideImage" });
+
     if (activeCanvas === "hideSegments") {
       // dispatch(setCanvasType("showSegments"));
       dispatch(setActiveTab("showSegments"));

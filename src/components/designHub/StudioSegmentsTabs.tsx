@@ -52,7 +52,6 @@ const StudioTabs = () => {
     (state: RootState) => state.masterArray
   );
 
-  const totalGroups = masterArray?.allSegments.map((d: any) => d.groupName);
 
   const segSwiperRef = useRef<SwiperType | null>(null); // swiper instance
   const lastSegIdxRef = useRef<number>(0);
@@ -282,7 +281,6 @@ const StudioTabs = () => {
 
         {edit && optionEdit && (
           <SegmentEditComp
-            totalGroups={totalGroups}
             optionEdit={optionEdit}
             onCancel={handleCancelEdit}
           />
