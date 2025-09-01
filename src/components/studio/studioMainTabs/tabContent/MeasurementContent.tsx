@@ -230,23 +230,23 @@ const MeasurementContent: React.FC = () => {
       <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center">
               <Ruler className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h3 className="text-md font-semibold text-gray-800">
               Measurements
-            </h2>
+            </h3>
           </div>
 
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">Unit:</span>
 
             <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-              <SelectTrigger className="w-[120px] bg-white">
+              <SelectTrigger className="w-[100px] h-8 bg-white shadow-none">
                 <SelectValue placeholder="Select unit" />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup >
                   <SelectLabel>Units</SelectLabel>
                   {units.map((unit) => (
                     <SelectItem key={unit} value={unit}>

@@ -65,7 +65,7 @@ const CompareGenAiHome: React.FC = () => {
   // };
 
   return (
-    <div className="flex flex-col  md:h-full w-full p-2 pb-0 md:pb-2 bg-gray-100">
+    <div className="flex flex-col  md:h-full w-full p-2 pb-0 md:pb-2 bg-gray-50">
 
 
       {/* Conditional rendering of compare view or image gallery */}
@@ -73,7 +73,7 @@ const CompareGenAiHome: React.FC = () => {
         currentGenAiImage &&
         currentGenAiImage.master_image_path &&
         currentGenAiImage.output_image ? (
-        <div className="h-[23vh] mb-2 md:mb-6 md:h-[100vh]">
+        <div className="h-[23vh] mb-2 md:mb-6 md:h-[80vh]">
           {currentGenAiImage.master_image_path &&
             currentGenAiImage.output_image &&
 

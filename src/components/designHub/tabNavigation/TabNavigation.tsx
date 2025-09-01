@@ -21,6 +21,8 @@ import {
 } from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { toast } from "sonner";
+import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
+import { RiHome8Line, RiHomeOfficeLine } from "react-icons/ri";
 
 type Props = {
   title?: string;
@@ -32,6 +34,21 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeOption } = useSelector((state: RootState) => state.segments);
   const buttons = [
+
+    {
+      id: "add",
+      tooltip: "Pallet",
+      icon: (
+        // <img
+        //   src="/assets/image/solar--home-line-duotone 1 (1).svg"
+        //   alt="Add Segment"
+        //   className="h-5 w-5"
+        // />
+        <RiHomeOfficeLine fontSize={"20px"} color="#000"/>
+
+      ),
+    },
+
     {
       id: "add-segment",
       tooltip: "Add Segment",
@@ -67,17 +84,17 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
         />
       ),
     },
-    {
-      id: "delete-segment",
-      tooltip: "Delete Segment",
-      icon: (
-        <img
-          src="/assets/image/line-md--trash.svg"
-          alt="Delete Segment"
-          className="h-5 w-5"
-        />
-      ),
-    },
+    // {
+    //   id: "delete-segment",
+    //   tooltip: "Delete Segment",
+    //   icon: (
+    //     <img
+    //       src="/assets/image/line-md--trash.svg"
+    //       alt="Delete Segment"
+    //       className="h-5 w-5"
+    //     />
+    //   ),
+    // },
     {
       id: "information",
       tooltip: "Information",
@@ -90,6 +107,13 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
       ),
     },
   ];
+
+  const handlepallet = (segment: SegmentModal) => {
+    dispatch(updateSelectedSegment(segment));
+    dispatch(setCanvasType("reannotation"));
+    // Implement your re-annotation logic here
+  };
+
 
   const handleEditSegment = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
