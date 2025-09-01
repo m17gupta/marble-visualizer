@@ -21,7 +21,9 @@ export const drawLines = (
   existingTempLines.forEach((line) => {
     canvas.remove(line);
   });
-  //  console.log("zoom",zoom)
+    console.log("zoom",zoom)
+    console.log("mouseX",mouseX)
+    console.log("mouseY",mouseY)  
 
   const horizontalLine = new fabric.Line(
     [0, mouseY, canvas.width ?? 0, mouseY],

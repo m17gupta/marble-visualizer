@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel, Keyboard, FreeMode } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/mousewheel";
+import "swiper/css/keyboard";
+
 import { Button } from "@/components/ui/button";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +29,7 @@ import NoSegment from "./NoSegment";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
 import { updateSegmentIntoRequestPallet } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { SegmentEditComp } from "./editSegment/SegmentEditComp";
+import DeleteSegModal from "./deleteSegModal/DeleteSegModal";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,6 +49,7 @@ const StudioTabs = () => {
   const handleEditOption = (data: boolean, option: string) => {
     setEdit(data);
     setOptionEdit(option);
+   
   };
 
   // ids of selected/active segments
@@ -217,7 +224,7 @@ const StudioTabs = () => {
         {/* Per-group content */}
         {masterArray.allSegments.map((wall) => (
           <TabsContent
-            className="overflow-x-auto"
+            className=""
             value={wall.groupName}
             key={wall.groupName}>
             <Tabs value={innerTabValue} className="w-full px-4">
@@ -228,12 +235,17 @@ const StudioTabs = () => {
                   spaceBetween={10}
                   slidesPerView="auto"
                   onSwiper={(sw) => (segSwiperRef.current = sw)}
-                  centeredSlides={false} // ⬅️ center off = no side gutter
+                  centeredSlides={false}
                   centerInsufficientSlides={false}
                   slidesOffsetBefore={0}
                   slidesOffsetAfter={0}
                   watchOverflow={true}
-                  className="w-ful" // ⬅️ pb-2 hatao if extra gap
+                  className="w-ful"
+                  freeMode={true}
+                  mousewheel={true}
+                  // mousewheel={{ forceToAxis: true, sensitivity: 1 }}
+                  keyboard={{ enabled: true }}
+                  touchStartPreventDefault={false}
                 >
                   {wall.segments
                     .slice()
@@ -287,6 +299,8 @@ const StudioTabs = () => {
         )}
         {!edit && <SwatchRecommendations />}
       </Tabs>
+
+      <DeleteSegModal/>
     </>
   );
 };

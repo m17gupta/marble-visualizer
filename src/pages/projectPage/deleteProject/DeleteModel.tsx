@@ -31,15 +31,11 @@ type DeleteModalProps = {
   project?: ProjectModel;
   segment?: SegmentModal;
   onDeleteProject?: (project: ProjectModel) => Promise<void>;
-  onDeleteSegment?: (segmentId: number) => Promise<void>;
+  onDeleteSegment?: () => void;
 };
 
 const DeleteModal = ({
-  // onCancel,
-  // onConfirm,
-  // isOpen,
-  // handleDeleteSegment,
-  // segment,
+  
   onCancel,
   isOpen,
   type,
@@ -50,14 +46,16 @@ const DeleteModal = ({
 }: DeleteModalProps) => {
   const { currentProject } = useSelector((state: RootState) => state.projects);
   const [deleting, setDeleting] = useState(false);
+  const {selectedSegments} = useSelector((state: RootState) => state.segments); 
   const handleConfirm = async () => {
     setDeleting(true);
     try {
       if (type === "project" && currentProject && onDeleteProject && !segment) {
         await onDeleteProject(currentProject);
       }
-      if (type === "segment" && segment && onDeleteSegment) {
-        await onDeleteSegment(segment.id!);
+      if (type === "segment" && selectedSegments && selectedSegments.length > 0 && onDeleteSegment) {
+        console.log("Calling onDeleteSegment");
+         onDeleteSegment();
       }
     } finally {
       setDeleting(false);
@@ -98,9 +96,18 @@ const DeleteModal = ({
                   <DialogDescription className="mt-1 text-slate-600 text-md text-center">
                     Are you sure you want to permanently delete
                     <span className="font-medium text-slate-900 px-1">
-                      Project
+                      {type}
                     </span>
-                    ? This action cannot be undone.
+                        {type === "segment" &&
+                          selectedSegments &&
+                          selectedSegments.length > 0 && (
+                            <span>
+                              {selectedSegments
+                                .map(seg => seg.short_title || seg.title || seg.id)
+                                .filter(Boolean)
+                                .join(', ')}
+                            </span>
+                          )}
                   </DialogDescription>
                 </DialogHeader>
               </div>

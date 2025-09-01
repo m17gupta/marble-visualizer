@@ -1,12 +1,5 @@
-import React, { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import React, { useEffect, useState } from "react";
+
 import {
   Tooltip,
   TooltipContent,
@@ -15,10 +8,11 @@ import {
 } from "@/components/ui/tooltip";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { AppDispatch } from "@/redux/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
 import {
   deleteSegmentById,
+  setActiveOption,
   updateIsSegmentEdit,
 } from "@/redux/slices/segmentsSlice";
 import {
@@ -27,7 +21,6 @@ import {
 } from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { toast } from "sonner";
-import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
 
 type Props = {
   title?: string;
@@ -37,6 +30,7 @@ type Props = {
 const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const [active, setActive] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+  const { activeOption } = useSelector((state: RootState) => state.segments);
   const buttons = [
     {
       id: "add-segment",
@@ -114,19 +108,19 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
     dispatch(setCanvasType("edit"));
   };
 
-  const handleDeleteSegment = async (segmentId: number) => {
-    try {
-      const response = await dispatch(deleteSegmentById(segmentId)).unwrap();
+  // const handleDeleteSegment = async (segmentId: number) => {
+  //   try {
+  //     const response = await dispatch(deleteSegmentById(segmentId)).unwrap();
 
-      if (response && response.success) {
-        // delete segment from master array
-        dispatch(deleteSegment(segmentId));
-        toast.success("Segment deleted successfully");
-      }
-    } catch (error) {
-      console.error("Error deleting segment:", error);
-    }
-  };
+  //     if (response && response.success) {
+  //       // delete segment from master array
+  //       dispatch(deleteSegment(segmentId));
+  //       toast.success("Segment deleted successfully");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting segment:", error);
+  //   }
+  // };
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const handleCancelProjectDelete = () => {
@@ -136,21 +130,26 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const handleOpenDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
+  
+  // update Active option
+  useEffect(() => {
+    if (activeOption == null) {
+      setActive(null);
+    } else if (activeOption) {
+      setActive(activeOption);
+    }
+  }, [activeOption]);
 
   const handleOptionSelect = (val: string) => {
+    dispatch(setActiveOption(val));
     if (val === "add-segment") {
       dispatch(setCanvasType("draw"));
       handleEditOption(false, val);
-      setActive(val);
-    } else if (active == val) {
-      setActive(null);
-      
-      handleEditOption(false, val);
-
-    } else {
+      // setActive(val);
+    }  else {
       dispatch(setCanvasType("hover"));
       handleEditOption(true, val);
-      setActive(val);
+      // setActive(val);
     }
   };
 

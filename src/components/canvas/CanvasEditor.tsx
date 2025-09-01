@@ -41,15 +41,24 @@ import {
 import { ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { AddImageToCanvas, LoadImageWithCORS, LoadImageWithFetch, setBackgroundImage } from "../canvasUtil/canvasImageUtils";
-import { CreateCustomCursor, UpdateCursorOffset } from "../canvasUtil/CreateCustomCursor";
+import {
+  AddImageToCanvas,
+  LoadImageWithCORS,
+  LoadImageWithFetch,
+  setBackgroundImage,
+} from "../canvasUtil/canvasImageUtils";
+import {
+  CreateCustomCursor,
+  UpdateCursorOffset,
+} from "../canvasUtil/CreateCustomCursor";
 import ReAnnotationPoint from "./ReAnnotationPoint";
-import { updateDistanceRefPixel, updateIsDistanceRef } from "@/redux/slices/jobSlice";
+import {
+  updateDistanceRefPixel,
+  updateIsDistanceRef,
+} from "@/redux/slices/jobSlice";
 import { takeFabricCanvasScreenshot } from "../canvasUtil/ScreenShotCanvas";
 
 export type DrawingTool = "select" | "polygon";
-
-// Extend the Fabric.js TEvent type to include absolutePointer
 interface ExtendedTEvent extends fabric.TEvent {
   absolutePointer?: { x: number; y: number };
 }
@@ -83,13 +92,13 @@ export function CanvasEditor({
     isCanvasReady,
     mousePosition,
     canavasActiveTool,
-    canvasType
+    canvasType,
   } = useSelector((state: RootState) => state.canvas);
 
-   const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
-      (state: RootState) => state.canvas
-    );
-  // 
+  const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
+    (state: RootState) => state.canvas
+  );
+  //
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const backgroundImageRef = useRef<fabric.Image | null>(null);
@@ -102,7 +111,6 @@ export function CanvasEditor({
 
   const activeTool = useRef<DrawingTool>("polygon");
 
-
   // Store original viewport transform
   const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
 
@@ -114,11 +122,14 @@ export function CanvasEditor({
   const allSegments = useRef<{ [key: string]: fabric.Point[] }>({});
   const allSegmentsCount = useRef<number>(0);
 
-  const { allSegments: allSegmentArray } = useSelector((state: RootState) => state.segments);
-
+  const { allSegments: allSegmentArray } = useSelector(
+    (state: RootState) => state.segments
+  );
 
   const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
-  const { selectedMasterArray } = useSelector((state: RootState) => state.masterArray);
+  const { selectedMasterArray } = useSelector(
+    (state: RootState) => state.masterArray
+  );
   const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
   // const [hoveredSegmentId] = useState<string | null>(null);
   // upate all segmnet Array
@@ -195,9 +206,7 @@ export function CanvasEditor({
   }, [historyIndex, canvasHistory, dispatch]);
 
   // Delete selected segment
-  const handleDeleteSelected = useCallback(() => {
-
-  }, []);
+  const handleDeleteSelected = useCallback(() => {}, []);
 
   const handleCancelDrawing = useCallback(() => {
     if (fabricCanvasRef.current && isPolygonMode.current) {
@@ -209,11 +218,11 @@ export function CanvasEditor({
         .filter(
           (obj) =>
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "temp-line" ||
+              "temp-line" ||
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "preview-line" ||
+              "preview-line" ||
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "temp-point"
+              "temp-point"
         );
       tempObjects.forEach((obj) => canvas.remove(obj));
       canvas.renderAll();
@@ -245,8 +254,10 @@ export function CanvasEditor({
     fabricCanvasRef.current = canvas;
 
     // Set custom cursor for the canvas element
+    // Use a centered hotspot for the custom cursor (matching pointer location)
     const customCursorUrl = CreateCustomCursor();
-    UpdateCursorOffset(canvas, customCursorUrl);
+    // If your custom cursor is 40x40, set the hotspot to 20,20 (center)
+    UpdateCursorOffset(canvas, customCursorUrl, 20, 20);
     if (canvasRef.current) {
       canvasRef.current.style.cursor = `url(${customCursorUrl}) 20 20, crosshair`;
     }
@@ -272,12 +283,11 @@ export function CanvasEditor({
       dispatch(setZoom(canvas.getZoom()));
     });
 
-
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         switch (
-        e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
+          e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
         ) {
           case "c":
             e.preventDefault();
@@ -386,7 +396,7 @@ export function CanvasEditor({
       for (const fetchMode of fetchModes) {
         try {
           const imgElement = await LoadImageWithFetch(imageUrl, fetchMode);
-         
+
           setBackgroundImage(
             fabricCanvasRef,
             imageUrl,
@@ -461,18 +471,20 @@ export function CanvasEditor({
       const delta = deltaE.deltaY;
       let zoom = fabricCanvasRef.current.getZoom();
 
-
       // Calculate new zoom level based on wheel direction
       // Using 0.999^delta for smoother zooming
       zoom *= 0.999 ** delta;
       if (zoom > 20) zoom = 20; // Set maximum zoom level
-      if (zoom < 1) zoom = 1;   // Set minimum zoom level
+      if (zoom < 1) zoom = 1; // Set minimum zoom level
 
       // Optional: Draw reference lines for better visual feedback
       drawLines(pointer.x, pointer.y, fabricCanvasRef, zoom);
 
       // Always zoom towards mouse position, regardless of zoom boundaries or mode
-      ZoomCanvasMouse(fabricCanvasRef, zoom, { x: Math.round(pointer.x), y: Math.round(pointer.y) });
+      ZoomCanvasMouse(fabricCanvasRef, zoom, {
+        x: Math.round(pointer.x),
+        y: Math.round(pointer.y),
+      });
       event.e.stopPropagation();
       event.e.preventDefault();
 
@@ -536,16 +548,16 @@ export function CanvasEditor({
       .filter(
         (obj) =>
           (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-          "temp-line" ||
+            "temp-line" ||
           (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-          "preview-line" ||
+            "preview-line" ||
           (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-          "temp-point"
+            "temp-point"
       );
     tempObjects.forEach((obj) => canvas.remove(obj));
 
-    const ratioWidth = aiTrainImageWidth / (canvas.width);
-    const ratioHeight = aiTrainImageHeight / (canvas.height);
+    const ratioWidth = aiTrainImageWidth / canvas.width;
+    const ratioHeight = aiTrainImageHeight / canvas.height;
     // Create the actual polygon
     const polygonPoints = tempPoints.current.map(
       (p) => new fabric.Point(p.x, p.y)
@@ -554,9 +566,9 @@ export function CanvasEditor({
       (p) => new fabric.Point(p.x * ratioWidth, p.y * ratioHeight)
     );
 
-    const polygonNumberArray = polygonPointsafterScale.flatMap(point => [
+    const polygonNumberArray = polygonPointsafterScale.flatMap((point) => [
       Number(point.x.toFixed(2)),
-      Number(point.y.toFixed(2))
+      Number(point.y.toFixed(2)),
     ]);
     // Base stroke width value
     const baseStrokeWidth = 2;
@@ -600,12 +612,10 @@ export function CanvasEditor({
 
       dispatch(updateMasks(data));
     } else if (canvasType === "draw") {
-
       dispatch(updateSegmentDrawn(polygonNumberArray));
       // dispatch(updateSegmentDrawn(updatedSegments));
     } else if (canvasType === "reannotation") {
       dispatch(updateReAnnoatationPoints(polygonNumberArray));
-
     }
 
     // Clean up temporary state
@@ -628,8 +638,6 @@ export function CanvasEditor({
   // Handle mouse down events
   const handleMouseDown = useCallback(
     (e: ExtendedTEvent) => {
-
-
       if (!fabricCanvasRef.current || activeTool.current !== "polygon") {
         return;
       }
@@ -659,26 +667,17 @@ export function CanvasEditor({
         ) {
           const convertedSegments: { [key: string]: fabric.Point[] } = {};
 
-          // Object.entries(segmentDrawn).forEach(([key, points]) => {
-          //   // Convert each point to a fabric.Point
-          //   convertedSegments[key] = points.map(
-          //     (p) => new fabric.Point(p.x, p.y)
-          //   );
-          // });
-
           allSegments.current = convertedSegments;
         }
       } else if (pointer) {
         // Check if we have at least 3 points and clicked near the first point
-        if (tempPoints.current.length == 1 && canvasType  ==="dimension") {
+        if (tempPoints.current.length == 1 && canvasType === "dimension") {
           const firstPoint = tempPoints.current[0];
 
           const distance = calculateDistance(firstPoint, pointer);
 
           handleDimensionRefPixel(distance);
-
-        }
-        else if (tempPoints.current.length >= 3) {
+        } else if (tempPoints.current.length >= 3) {
           const firstPoint = tempPoints.current[0];
           const distance = calculateDistance(firstPoint, pointer);
           const snapDistance = 15 / currentZoom; // Adjust snap distance based on zoom
@@ -727,28 +726,28 @@ export function CanvasEditor({
       calculateDistance,
       finishPolygon,
       segmentDrawn,
-      selectedMasterArray
+      selectedMasterArray,
     ]
   );
 
   // handle Dimesion Ref Pixel
   const handleDimensionRefPixel = (pixelDistance: number) => {
-  
     dispatch(updateDistanceRefPixel(pixelDistance));
-    dispatch(setCanvasType("hover"))
+    dispatch(setCanvasType("hover"));
     dispatch(updateIsDistanceRef(true));
     // handleCancelDrawing()
-
-  }
+  };
 
   // Handle mouse move for preview line
   const handleMouseMove = useCallback(
     (e: fabric.TEvent) => {
       if (!fabricCanvasRef.current) return;
-
       const canvas = fabricCanvasRef.current;
-
+      // Always use canvas pointer coordinates (transformed for zoom/pan)
       const pointer = canvas.getPointer(e.e);
+      const pointerCanvas = (e as any)?.absolutePointer;
+      console.log("Pointer:", pointer);
+      console.log("Pointer Canvas:", pointerCanvas);
       const currentZoom = canvas.getZoom();
 
       // Handle auto-panning if enabled
@@ -756,12 +755,18 @@ export function CanvasEditor({
 
       // Update mouse position in Redux and in our ref for auto-panning
       dispatch(
-        setMousePosition({ x: Math.round(pointer.x), y: Math.round(pointer.y) })
+        setMousePosition({
+          x: Math.round(pointerCanvas.x),
+          y: Math.round(pointerCanvas.y),
+        })
       );
-      currentMousePositionRef.current = { x: pointer.x, y: pointer.y };
+      currentMousePositionRef.current = {
+        x: pointerCanvas.x,
+        y: pointerCanvas.y,
+      };
 
-      // update the cursor line
-      drawLines(pointer.x, pointer.y, fabricCanvasRef, currentZoom);
+      // Draw intersection lines at the pointer location (canvas space)
+      drawLines(pointerCanvas.x, pointerCanvas.y, fabricCanvasRef, currentZoom);
 
       if (
         !fabricCanvasRef.current ||
@@ -772,42 +777,43 @@ export function CanvasEditor({
 
       const lastPoint = tempPoints.current[tempPoints.current.length - 1];
 
-      // Remove existing preview line
-      const previewLine = canvas
+      // Remove existing preview polygon outline
+      const previewOutline = canvas
         .getObjects()
         .find(
           (obj) =>
             (obj as fabric.Object & { data?: { type?: string } }).data?.type ===
-            "preview-line"
+            "preview-outline"
         );
-      if (previewLine) {
-        canvas.remove(previewLine);
+      if (previewOutline) {
+        canvas.remove(previewOutline);
       }
 
-      // Base values
-      const baseStrokeWidth = 1;
-      const baseDashArray = [5, 5];
-
-      // Adjust stroke width and dash array inversely proportional to zoom
-      const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
-      const adjustedDashArray = baseDashArray.map(
-        (value) => value / currentZoom
-      );
-
-      // Add new preview line with zoom-adjusted properties
-      const line = new fabric.Line(
-        [lastPoint.x, lastPoint.y, pointer.x, pointer.y],
-        {
-          stroke: "#007bff",
+      // Draw a dashed polygon outline as preview
+      const outlinePoints = [
+        ...tempPoints.current.map((p) => ({ x: p.x, y: p.y })),
+        { x: pointerCanvas.x, y: pointerCanvas.y },
+      ];
+      if (outlinePoints.length > 1) {
+        const baseStrokeWidth = 1;
+        const baseDashArray = [5, 5];
+        const adjustedStrokeWidth = baseStrokeWidth / currentZoom;
+        const adjustedDashArray = baseDashArray.map(
+          (value) => value / currentZoom
+        );
+        const previewPoly = new fabric.Polygon(outlinePoints, {
+          fill: "#FFFAFA", // no fill, just outline
+          stroke: "rgb(7 239 253)",
+          opacity: 0.6,
           strokeWidth: adjustedStrokeWidth,
           strokeDashArray: adjustedDashArray,
           selectable: false,
           evented: false,
-          data: { type: "preview-line" },
-        }
-      );
-
-      canvas.add(line);
+          objectCaching: false,
+        });
+        (previewPoly as any).data = { type: "preview-outline" };
+        canvas.add(previewPoly);
+      }
 
       // Add hover animation for polygon completion (when hovering near first point)
       if (tempPoints.current.length >= 3) {
@@ -881,7 +887,6 @@ export function CanvasEditor({
   useEffect(() => {
     if (!deleteMaskId || !fabricCanvasRef.current) return;
 
-
     const deletePolyId = `poly-${deleteMaskId}`;
     delete allSegments.current[deletePolyId];
     //delete the polygon from fabric canvas
@@ -899,36 +904,34 @@ export function CanvasEditor({
     }
   }, [deleteMaskId, fabricCanvasRef, dispatch]);
 
- // take screen shot of the canvas
- const{isScreenshotTaken} = useSelector((state: RootState) => state.canvas);
- useEffect(() => {
-  if(isScreenshotTaken && fabricCanvasRef.current) {
-    dispatch(updateIsScreenShotTaken(false));
-    
-    handleTakeScreenshot();
+  // take screen shot of the canvas
+  const { isScreenshotTaken } = useSelector((state: RootState) => state.canvas);
+  useEffect(() => {
+    if (isScreenshotTaken && fabricCanvasRef.current) {
+      dispatch(updateIsScreenShotTaken(false));
 
-  }
- },[ isScreenshotTaken]);
+      handleTakeScreenshot();
+    }
+  }, [isScreenshotTaken]);
 
-  const handleTakeScreenshot =async () => {
-    
-    if(!fabricCanvasRef.current) return
-    try{
-const dataURL = await takeFabricCanvasScreenshot(
+  const handleTakeScreenshot = async () => {
+    if (!fabricCanvasRef.current) return;
+    try {
+      const dataURL = await takeFabricCanvasScreenshot(
         fabricCanvasRef.current,
-        'image/png',
+        "image/png",
         1.0,
-        2 
+        2
       );
       console.log("Screenshot taken successfully:", dataURL);
       dispatch(updateScreenShotUrl(dataURL));
-       dispatch(setIsCanvasModalOpen(false));
-    }catch(error) {
+      dispatch(setIsCanvasModalOpen(false));
+    } catch (error) {
       console.error("Error taking screenshot:", error);
       toast.error("Failed to take screenshot. Please try again.");
-       dispatch(setIsCanvasModalOpen(false));
+      dispatch(setIsCanvasModalOpen(false));
     }
-  }
+  };
 
   return (
     <>
@@ -941,7 +944,6 @@ const dataURL = await takeFabricCanvasScreenshot(
             resetCanvas={handleResetCanvas}
             zoomIn={handleZoomIn}
             zoomOut={handleZoomOut}
-
           />
 
           {/* Canvas Container */}
@@ -951,19 +953,14 @@ const dataURL = await takeFabricCanvasScreenshot(
             transition={{ duration: 0.3 }}
             className="relative px-4"
           >
-
-
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-
                 <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
                   <canvas
                     ref={canvasRef}
                     className="border-0 block"
                     style={{ maxWidth: "100%", height: "auto" }}
                   />
-
-
 
                   {/* Canvas Status */}
                   {!isCanvasReady && (
@@ -978,7 +975,6 @@ const dataURL = await takeFabricCanvasScreenshot(
                   )}
 
                   <ReAnnotationPoint />
-
 
                   {/* Hover Material Info */}
                   <AnimatePresence>
@@ -1010,10 +1006,6 @@ const dataURL = await takeFabricCanvasScreenshot(
         /> */}
         </div>
       </TooltipProvider>
-
-
-
     </>
   );
 }
-

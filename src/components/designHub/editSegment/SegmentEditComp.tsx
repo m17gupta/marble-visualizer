@@ -1,7 +1,7 @@
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
-import { updateAddSegMessage } from "@/redux/slices/segmentsSlice";
+import { updateAddSegMessage, updateIsDeleteSegModal } from "@/redux/slices/segmentsSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
@@ -46,6 +46,9 @@ export const SegmentEditComp = ({
     SegmentModal[]
   >([]);
   const [editSeg, setEditSeg] = useState<SegmentModal | null>(null);
+   const {selectedSegments} = useSelector(
+         (state: RootState) => state.segments
+       );
  
 
   // update currentSelectedGroupSegment
@@ -211,17 +214,28 @@ export const SegmentEditComp = ({
   };
 
   const handleReAnnotation = () => {
-    console.log("Re-annotation clicked", shortName);
-    if (shortName === editSeg?.short_title) {
-      dispatch(updateSelectedSegment(editSeg));
-      dispatch(setCanvasType("reannotation"));
-      onCancel();
-    }
+      if(selectedSegments&& selectedSegments.length>1 ){
+        toast.error("Please select only one segment to re-annotate");
+      }else if (selectedSegments && selectedSegments.length === 1) {
+        const segment = selectedSegments[0];
+        if (segment.short_title) {
+          dispatch(updateSelectedSegment(segment));
+          dispatch(setCanvasType("reannotation"));
+          onCancel();
+        }
+      }
 
     //   dispatch(updateSelectedSegment(segment));
     //   dispatch(setCanvasType("reannotation"));
     // Implement your re-annotation logic here
   };
+
+  // delete segment
+  const handleDelete = () => {
+     if(selectedSegments&& selectedSegments.length>0){
+           dispatch(updateIsDeleteSegModal(true));
+       }
+  }
   return (
     <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[70vh] sm:max-h-[70vh]">
       {/* Header */}
@@ -247,8 +261,10 @@ export const SegmentEditComp = ({
                 No segments available
               </span>
             )}
-            
-            <SelectSegment />
+
+            <SelectSegment
+             
+            />
 
           </div>
         </div>
@@ -339,7 +355,7 @@ export const SegmentEditComp = ({
         {optionEdit === "delete-segment" && (
           <Button
             className="bg-black text-white hover:bg-gray-800"
-            // onClick={handleSave}
+             onClick={handleDelete}
           >
             Delete
           </Button>

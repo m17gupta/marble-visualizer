@@ -131,7 +131,7 @@ export const handlePolygonVisibilityOnMouseMove = (
         allGroupObjects.forEach((groupObj) => {
           const namedGroupObj = groupObj as NamedFabricObject;
 
-          const polyName = namedGroupOgbj.name;
+          const polyName = namedGroupObj.name;
 
           if (polyName === targetName) {
             namedGroupObj.set({ visible: true,

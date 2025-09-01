@@ -26,11 +26,11 @@ export const CreateCustomCursor = (): string => {
   return cursorCanvas.toDataURL("image/png", 1);
 };
 
-export const UpdateCursorOffset = (canvas: fabric.Canvas, customCursor: string): void => {
+export const UpdateCursorOffset = (canvas: fabric.Canvas, customCursor: string, offsetX: number, offsetY: number): void => {
   const zoom = canvas.getZoom(); // Get current zoom level
-  const adjustedOffsetX = Math.round(20 / zoom); // Scale X offset
-  const adjustedOffsetY = Math.round(20 / zoom); // Scale Y offset
-
+  const adjustedOffsetX = Math.round(offsetX / zoom); // Scale X offset
+  const adjustedOffsetY = Math.round(offsetY / zoom); // Scale Y offset
+  console.log('Zoom Level:', zoom, 'Adjusted Offsets:', adjustedOffsetX, adjustedOffsetY);
   canvas.defaultCursor = `url(${customCursor}) ${adjustedOffsetX} ${adjustedOffsetY}, crosshair`;
   canvas.hoverCursor = `url(${customCursor}) ${adjustedOffsetX} ${adjustedOffsetY}, crosshair`;
   canvas.moveCursor = `url(${customCursor}) ${adjustedOffsetX} ${adjustedOffsetY}, crosshair`;
