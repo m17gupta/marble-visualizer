@@ -65,14 +65,14 @@ interface SegmentsState {
   maxHistorySize: number;
   error: string | null;
   jobs: JobModel | null;
-  selectedSegments: SegmentModal | null;
+  selectedSegments: SegmentModal[] | null;
+  activeOption: string | null;
+  isDeleteSegModal: boolean;
 
   // Manual annotation states
   isLoadingManualAnnotation: boolean;
   manualAnnotationResult: unknown | null;
   manualAnnotationError: string | null;
-
-  // loading segmnet
 }
 
 const initialState: SegmentsState = {
@@ -99,7 +99,7 @@ const initialState: SegmentsState = {
   maxHistorySize: 50,
   error: null,
   jobs: null,
-  selectedSegments: null,
+  selectedSegments: [],
 
   // Manual annotation initial states
   isLoadingManualAnnotation: false,
@@ -112,6 +112,8 @@ const initialState: SegmentsState = {
   allSegments: [],
   addSegMessage: "",
   isSegmentLoaded: false,
+  activeOption: null,
+  isDeleteSegModal: false,
 };
 
 // Create segment service instance
@@ -188,16 +190,16 @@ export const updateSegmentById = createAsyncThunk(
 );
 
 // delete segment based on id
-export const deleteSegmentById = createAsyncThunk(  
-  'segments/deleteSegmentById',
-  async (segmentId: number, { rejectWithValue }) => {
+export const deleteSegmentById = createAsyncThunk(
+  "segments/deleteSegmentById",
+  async (segmentIds: number[], { rejectWithValue }) => {
     try {
-      return await segmentService.deleteSegmentById(segmentId);
+      return await segmentService.deleteSegmentById(segmentIds);
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to delete segment');
+      return rejectWithValue("Failed to delete segment");
     }
   }
 );
@@ -255,6 +257,41 @@ const segmentsSlice = createSlice({
       state.addNewMasterArray = action.payload;
     },
 
+    // edit segment
+    editSelectedSegment: (
+      state,
+      action: PayloadAction<SegmentModal | null>
+    ) => {
+      const seg = action.payload;
+      if (!seg) return;
+      if (!state.selectedSegments) state.selectedSegments = [];
+      const index = state.selectedSegments.findIndex((s) => s.id === seg.id);
+      if (index === -1) {
+        // Not present, add
+        state.selectedSegments.push(seg);
+      } else {
+        // Present, remove
+        state.selectedSegments.splice(index, 1);
+      }
+    },
+    resetEditSegment: (state) => {
+      state.selectedSegments = [];
+      state.activeOption = null;
+    },
+
+    setActiveOption: (state, action: PayloadAction<string | null>) => {
+      // check if active option is already set
+      if (state.activeOption === action.payload) {
+        state.activeOption = null;
+      } else {
+        state.activeOption = action.payload;
+      }
+    },
+
+    updateIsDeleteSegModal: (state, action) => {
+      state.isDeleteSegModal = action.payload;
+    },
+
     // Segment management
     selectSegment: (state, action: PayloadAction<string | null>) => {
       state.activeSegment = action.payload;
@@ -273,8 +310,8 @@ const segmentsSlice = createSlice({
         state.allSegments = [action.payload];
       }
     },
-    updateAreaInToSegment:(state,action)=>{
-      state.allSegments=action.payload
+    updateAreaInToSegment: (state, action) => {
+      state.allSegments = action.payload;
     },
     changeGroupSegment: (state, action: PayloadAction<SegmentModal>) => {
       const updatedSegment = action.payload;
@@ -380,20 +417,28 @@ const segmentsSlice = createSlice({
         state.manualAnnotationError = action.payload as string;
       })
 
-    // Handle deleteSegmentById thunk
-    .addCase(deleteSegmentById.pending, (state) => {
-      state.isLoadingManualAnnotation = true;
-      state.manualAnnotationError = null;
-    })
-    .addCase(deleteSegmentById.fulfilled, (state, action) => {
-      state.isLoadingManualAnnotation = false;
-      state.allSegments = state.allSegments.filter(seg => seg.id !== action.payload.data?.id);
-      state.manualAnnotationError = null;
-    })
-    .addCase(deleteSegmentById.rejected, (state, action) => {
-      state.isLoadingManualAnnotation = false;
-      state.manualAnnotationError = action.payload as string;
-    });
+      // Handle deleteSegmentById thunk
+      .addCase(deleteSegmentById.pending, (state) => {
+        state.isLoadingManualAnnotation = true;
+        state.manualAnnotationError = null;
+      })
+      .addCase(deleteSegmentById.fulfilled, (state, action) => {
+        state.isLoadingManualAnnotation = false;
+        const allSegId = action.payload.data;
+        if (allSegId && allSegId.length > 0) {
+          allSegId.map((item) => {
+            state.allSegments = state.allSegments.filter(
+              (seg) => seg.id !== item
+            );
+          });
+
+          state.manualAnnotationError = null;
+        }
+      })
+      .addCase(deleteSegmentById.rejected, (state, action) => {
+        state.isLoadingManualAnnotation = false;
+        state.manualAnnotationError = action.payload as string;
+      });
   },
 });
 
@@ -423,7 +468,11 @@ export const {
   changeGroupSegment,
   resetReAnnoatationPoints,
   updateReAnnoatationPoints,
-  updateAreaInToSegment
+  updateAreaInToSegment,
+  editSelectedSegment,
+  resetEditSegment,
+  setActiveOption,
+  updateIsDeleteSegModal,
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;
@@ -469,3 +518,6 @@ export const selectIsMasterDataAnnotationOpen = (state: {
 }) => state.segments.isMasterDataAnnotationOpen;
 export const selectAddSegMessage = (state: { segments: SegmentsState }) =>
   state.segments.addSegMessage;
+
+export const getIsDeleteSegModalOpen = (state: { segments: SegmentsState }) =>
+  state.segments.isDeleteSegModal;

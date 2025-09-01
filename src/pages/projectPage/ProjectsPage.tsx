@@ -248,7 +248,7 @@ export function ProjectsPage() {
   };
 
   const handleDeleteProject = async (project: ProjectModel) => {
-    dispatch(setIsDeleteModalOpen(true));
+    dispatch(setIsDeleteModalOpen(false));
     if (!project.id) return;
 
     try {

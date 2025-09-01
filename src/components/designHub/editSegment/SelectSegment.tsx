@@ -1,34 +1,68 @@
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { updateHoverGroup } from "@/redux/slices/canvasSlice";
+import { editSelectedSegment } from "@/redux/slices/segmentsSlice";
 import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
+type Props = {};
 const SelectSegment = () => {
-     const { selectedGroupSegment } = useSelector(
-        (state: RootState) => state.masterArray
-      );
-     const [userSelectedSegment, setUserSelectedSegment] = useState<
-        SegmentModal[]
-      >([]);
+  const dispatch = useDispatch();
+  const { selectedGroupSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
 
-        const [selectedSeg, setSelectedSeg] = useState<number[]>([]);
+  const { selectedSegments } = useSelector(
+    (state: RootState) => state.segments
+  );
 
-      const handleSelectSegment = (seg_id: number) => {
-        if (selectedSeg.includes(seg_id)) {
-          setSelectedSeg(selectedSeg.filter(id => id !== seg_id));
-        } else {
-          setSelectedSeg([...selectedSeg, seg_id]);
-        }
-      };
-     useEffect(() => {
-        if (
-          selectedGroupSegment &&
-          selectedGroupSegment.segments &&
-          selectedGroupSegment.segments.length > 0
-        ) {
-          setUserSelectedSegment(selectedGroupSegment.segments);
-        }
-      }, [selectedGroupSegment]);
+  const [userSelectedSegment, setUserSelectedSegment] = useState<
+    SegmentModal[]
+  >([]);
+
+  const [selectedSeg, setSelectedSeg] = useState<number[]>([]);
+
+  // update selected Segment
+  useEffect(() => {
+    if (selectedSegments && selectedSegments.length > 0) {
+      const segmentIds = selectedSegments
+        .map((seg) => seg.id)
+        .filter((id): id is number => id !== undefined);
+      if (segmentIds && segmentIds.length > 0) {
+        setSelectedSeg(segmentIds);
+      }
+    } else {
+      setSelectedSeg([]);
+    }
+  }, [selectedSegments]);
+
+  const handleSelectSegment = (opt: SegmentModal, seg_id: number) => {
+    //  console.log("selected segment id", seg_id, opt);
+    // if (selectedSeg.includes(seg_id)) {
+    //   setSelectedSeg(selectedSeg.filter(id => id !== seg_id));
+    // } else {
+    //   setSelectedSeg([...selectedSeg, seg_id]);
+    // }
+    dispatch(editSelectedSegment(opt));
+  };
+  useEffect(() => {
+    if (
+      selectedGroupSegment &&
+      selectedGroupSegment.segments &&
+      selectedGroupSegment.segments.length > 0
+    ) {
+      setUserSelectedSegment(selectedGroupSegment.segments);
+    }
+  }, [selectedGroupSegment]);
+
+  // hover segment
+  const handleMouseEnter = (segTitle: string) => {
+    dispatch(updateHoverGroup([segTitle]));
+  };
+
+  const handleMouseLeave = () => {
+    dispatch(updateHoverGroup(null));
+  };
   return (
     <>
       <div
@@ -56,7 +90,13 @@ const SelectSegment = () => {
                 checked={checked}
                 onChange={() => {
                   if (typeof opt.id !== "number") return;
-                  handleSelectSegment(opt.id);
+                  handleSelectSegment(opt, opt.id);
+                }}
+                onMouseEnter={() => {
+                  handleMouseEnter(opt.short_title??"");
+                }}
+                onMouseLeave={() => {
+                  handleMouseLeave();
                 }}
                 className="accent-purple-600 w-4 h-4"
               />

@@ -272,6 +272,11 @@ const masterArraySlice = createSlice({
     updateSelectedSegment: (state, action) => {
       const segment = action.payload;
       state.selectedSegment = segment;
+
+     if (!state.userSelectedSegment) {
+        state.userSelectedSegment = [];
+      }
+      state.userSelectedSegment.push(segment);
     },
     addUserSelectedSegment: (state, action) => {
       

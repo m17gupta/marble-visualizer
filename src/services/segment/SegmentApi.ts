@@ -9,6 +9,11 @@ export interface SegmentApiResponse {
   message?: string;
   error?: string;
 }
+export interface DeleteSegmentResponse {
+  success: boolean;
+  data: number[];
+  error?: string;
+}
 
 export class SegmentApi {
   // Base URL for the Segment API
@@ -112,14 +117,17 @@ async createSegment(segmentData: SegmentModal): Promise<SegmentApiResponse> {
 
 
   // delete jobSegments based on id
-  async deleteSegmentById(segmentId: number): Promise<SegmentApiResponse> {
+  async deleteSegmentById(segmentId: number[]): Promise<DeleteSegmentResponse> {
+    if (!segmentId || segmentId.length === 0) {
+      throw new Error('Invalid segment ID');
+    }
+
     try {
       const { data, error } = await supabase
         .from('job_segments')
         .delete()
-        .eq('id', segmentId)
-        .select()
-        .single();
+        .in('id', segmentId)
+        .select();
 
       if (error) {
         throw error;
@@ -127,7 +135,7 @@ async createSegment(segmentData: SegmentModal): Promise<SegmentApiResponse> {
 
       return {
         success: true,
-        data: data,
+        data: segmentId
       };
     } catch (error) {
       console.error('Error deleting segment:', error);

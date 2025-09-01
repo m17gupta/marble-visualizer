@@ -21,7 +21,7 @@ import {
 // import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
 import { MasterModel } from "@/models/jobModel/JobModel";
-import { updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
+import { resetEditSegment, updateIsNewMasterArray } from "@/redux/slices/segmentsSlice";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
 const AllSegments = () => {
@@ -63,7 +63,7 @@ const AllSegments = () => {
   }, [masterArray]);
   const dispatch = useDispatch<AppDispatch>();
   const handleSegmentClick = (selectedSeg: MasterModel) => {
-    // console.log("Selected segment:", selectedSeg);
+    dispatch(resetEditSegment())
     if (selectedSeg && selectedSeg.id && selectedSeg.name) {
       setActiveSegment(selectedSeg.id);
       dispatch(selectMaterialSegment(selectedSeg));
