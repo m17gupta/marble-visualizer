@@ -1,4 +1,5 @@
 import PolygonOverlay from "@/components/canvas/PolygonOverlay";
+import CompareHoverHeader from "@/components/designHub/CompareHoverHeader";
 import HoverHeader from "@/components/designHub/HoverHeader";
 import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
 import DesignProject from "@/components/workSpace/projectWorkSpace/DesignProject";
@@ -6,7 +7,7 @@ import GuidancePanel from "@/components/workSpace/projectWorkSpace/GuidancePanel
 import RequestgenAitemplate from "@/components/workSpace/projectWorkSpace/request_template/RequestgenAitemplate";
 
 import { RootState } from "@/redux/store";
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
 
 type Props = {
@@ -21,6 +22,8 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
   const handleImageLoad = useCallback(() => {
     // setImageLoading(false);
   }, []);
+
+  const sliderRef = useRef<HTMLDivElement>(null);
   return (
     <>
       
@@ -32,7 +35,14 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
           className="mb-6"
         />
       ) : (
-        <CompareGenAiHome />
+      <>
+      <CompareHoverHeader 
+        containerRef={sliderRef}   // fullscreen target
+      onBack={() => { /* TODO: implement back action */ }}
+      onClose={() => { /* TODO: implement close action */ }}
+      />
+        <CompareGenAiHome  />
+      </>
       )}
      {requests &&
       ( ( requests.paletteUrl && requests.paletteUrl.length > 0 )||

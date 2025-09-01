@@ -54,7 +54,7 @@ export function StudioStyleTabs() {
               <img
                 src={tab.icon}
                 alt={`${tab.label} Icon`}
-                className="h-5 w-5 mr-2"
+                className="h-5 w-5 mr-2 500"
               />
               {tab.label}
             </TabsTrigger>

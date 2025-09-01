@@ -227,7 +227,7 @@ const StudioTabs = () => {
             className=""
             value={wall.groupName}
             key={wall.groupName}>
-            <Tabs value={innerTabValue} className="w-full px-4">
+            <Tabs value={innerTabValue} className="w-full px-4 overflow-x-auto  thin-scrollbar">
               {/* Inner: Segment chips row with Swiper */}
 
               <div className="whitespace-nowrap py-1 bg-white pb-2">
@@ -275,7 +275,7 @@ const StudioTabs = () => {
                             ${
                               isPresent
                                 ? "bg-purple-100 border border-purple-500 border-b-2 text-black rounded-md shadow-sm cursor-pointer"
-                                : "bg-white border-b-2 border-blue-500 text-gray-700 hover:bg-blue-100"
+                                : "bg-white border-b-1 border-gray-300 text-gray-700 hover:bg-blue-100 shadow-none bg-white"
                             }`}>
                             {tab.short_title}
                           </Button>

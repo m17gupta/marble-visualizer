@@ -11,7 +11,12 @@ import {
   setIsResetZoom,
   updateSwitchCanvas,
 } from "@/redux/slices/canvasSlice";
-import { AiFillBehanceCircle, AiOutlineBorder, AiOutlineBorderInner, AiTwotoneHome } from "react-icons/ai";
+import {
+  AiFillBehanceCircle,
+  AiOutlineBorder,
+  AiOutlineBorderInner,
+  AiTwotoneHome,
+} from "react-icons/ai";
 
 import { Separator } from "../ui/separator";
 import { ZoomIn, ZoomOut } from "lucide-react";
@@ -20,7 +25,12 @@ import { MdOutlineHideImage, MdOutlineImage } from "react-icons/md";
 import { BiGitCompare } from "react-icons/bi";
 import ZoomHeader from "../canvasheader/ZoomHeader";
 import { PiPolygonDuotone } from "react-icons/pi";
-
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 const HoverHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [canvasMode, setCanvasMode] = useState("");
@@ -78,7 +88,6 @@ const HoverHeader = () => {
 
   // Use Redux for hide/show image state
   const handleShowHideImage = (data: string) => {
-
     if (activeCanvas === "hideSegments") {
       // dispatch(setCanvasType("showSegments"));
       dispatch(setActiveTab("showSegments"));
@@ -89,7 +98,6 @@ const HoverHeader = () => {
   };
 
   const handleOutline = (type: CanvasMode) => {
-
     if (activeCanvas === "outline") {
       dispatch(setActiveTab("hideSegments"));
     } else {
@@ -105,162 +113,156 @@ const HoverHeader = () => {
     }
   };
 
+  
+
   return (
     <>
       <Card>
-        <CardContent className="py-2 px-4 flex items-center justify-between ">
-
-    <div className="flex gap-3">
+        <CardContent className="py-2 pt-1.5 px-4 flex items-center justify-between">
+          <div className="flex gap-3">
             <Button
-                variant="outline"
-                size="sm"
-                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+              variant="outline"
+              size="sm"
+              className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
                 ${
                   activeCanvas === "polygon"
                     ? "bg-blue-100 text-blue-600 border-blue-400"
                     : ""
                 }`}
-                onClick={() => handleOutline("polygon")}
-              >
-                {/* Icon stays visible */}
-               <PiPolygonDuotone 
-
+              onClick={() => handleOutline("polygon")}>
+              {/* Icon stays visible */}
+              <PiPolygonDuotone
                 className={`h-5 w-5 shrink-0 ${
-                    activeCanvas === "outline" ? "fill-blue-600" : ""
-                  }`}
-                  />
-                {/* <AiOutlineBorderInner
+                  activeCanvas === "outline" ? "fill-blue-600" : ""
+                }`}
+              />
+              {/* <AiOutlineBorderInner
                   className={`h-5 w-5 shrink-0 ${
                     activeCanvas === "outline" ? "fill-blue-600" : ""
                   }`}
                 /> */}
 
-                {/* Text appears on hover */}
-                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                  Polygon  
-                </span>
-              </Button>
+              {/* Text appears on hover */}
+              <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                Polygon
+              </span>
+            </Button>
 
             <Button
-                variant="outline"
-                size="sm"
-                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+              variant="outline"
+              size="sm"
+              className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
                 ${
                   activeCanvas === "rectangle"
                     ? "bg-blue-100 text-blue-600 border-blue-400"
                     : ""
                 }`}
-                onClick={() => handleOutline("rectangle")}
-              >
-                {/* Icon stays visible */}
-                <AiOutlineBorder 
+              onClick={() => handleOutline("rectangle")}>
+              {/* Icon stays visible */}
+              <AiOutlineBorder
                 className={`h-5 w-5 shrink-0 ${
-                    activeCanvas === "outline" ? "fill-blue-600" : ""
-                  }`}
-                  />
-                {/* <AiOutlineBorderInner
+                  activeCanvas === "outline" ? "fill-blue-600" : ""
+                }`}
+              />
+              {/* <AiOutlineBorderInner
                   className={`h-5 w-5 shrink-0 ${
                     activeCanvas === "outline" ? "fill-blue-600" : ""
                   }`}
                 /> */}
 
-                {/* Text appears on hover */}
-                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                  Rectangle 
-                </span>
-              </Button>
-              </div>
+              {/* Text appears on hover */}
+              <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                Rectangle
+              </span>
+            </Button>
+          </div>
 
           <div className="flex gap-4">
-          {
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+            {
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
                 ${
                   activeCanvas === "outline"
                     ? "bg-blue-100 text-blue-600 border-blue-400"
                     : ""
                 }`}
-                onClick={() => handleOutline("outline")}
-              >
-                {/* Icon stays visible */}
-                <AiOutlineBorderInner
-                  className={`h-5 w-5 shrink-0 ${
-                    activeCanvas === "outline" ? "fill-blue-600" : ""
-                  }`}
-                />
+                  onClick={() => handleOutline("outline")}>
+                  {/* Icon stays visible */}
+                  <AiOutlineBorderInner
+                    className={`h-5 w-5 shrink-0 ${
+                      activeCanvas === "outline" ? "fill-blue-600" : ""
+                    }`}
+                  />
 
-                {/* Text appears on hover */}
-                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                  Outline
-                </span>
-              </Button>
+                  {/* Text appears on hover */}
+                  <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                    Outline
+                  </span>
+                </Button>
 
-              <Separator orientation="vertical" className="h-6" />
+                <Separator orientation="vertical" className="h-6" />
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleShowHideImage(activeCanvas)}
-                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleShowHideImage(activeCanvas)}
+                  className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
                 ${
                   activeCanvas === "hideSegments"
                     ? "bg-blue-100 text-blue-600 border-blue-400"
                     : ""
-                }`}
-              >
-                {/* Icon changes dynamically based on Redux */}
-                {activeCanvas === "hideSegments" ? (
-                  <MdOutlineHideImage className="h-5 w-5 shrink-0 fill-blue-600" />
-                ) : (
-                  <MdOutlineImage className="h-5 w-5 shrink-0 " />
-                )}
+                }`}>
+                  {/* Icon changes dynamically based on Redux */}
+                  {activeCanvas === "hideSegments" ? (
+                    <MdOutlineHideImage className="h-5 w-5 shrink-0 fill-blue-600" />
+                  ) : (
+                    <MdOutlineImage className="h-5 w-5 shrink-0 " />
+                  )}
 
-                {/* Text fades in on hover */}
-                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                  {activeCanvas === "showSegments"
-                    ? "Show Segments"
-                    : "Hide Segments "}
-                </span>
-              </Button>
-              <Separator orientation="vertical" className="h-6" />
+                  {/* Text fades in on hover */}
+                  <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                    {activeCanvas === "showSegments"
+                      ? "Show Segments"
+                      : "Hide Segments "}
+                  </span>
+                </Button>
+                <Separator orientation="vertical" className="h-6" />
 
-               <Button
-                variant="outline"
-                size="sm"
-                className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`group relative flex items-center justify-start w-10 hover:w-36 transition-all duration-300 overflow-hidden px-2
                 ${
                   activeCanvas === "mask"
                     ? "bg-blue-100 text-blue-600 border-blue-400"
                     : ""
                 }`}
-                
-                onClick={() => handleMask("mask")}
-              >
-                {/* Icon stays visible */}
-                {/* <AiFillBehanceCircle 
+                  onClick={() => handleMask("mask")}>
+                  {/* Icon stays visible */}
+                  {/* <AiFillBehanceCircle 
                   className={`h-5 w-5 shrink-0 ${
                     activeCanvas === "mask" ? "fill-blue-600" : ""
                   }`}
                 /> */}
-                 <AiTwotoneHome   className={`h-5 w-5 shrink-0 ${
-                    activeCanvas === "mask" ? "fill-blue-600" : ""
-                  }`} />
+                  <AiTwotoneHome
+                    className={`h-5 w-5 shrink-0 ${
+                      activeCanvas === "mask" ? "fill-blue-600" : ""
+                    }`}
+                  />
 
-                {/* Text appears on hover */}
-                <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
-                  Mask
-                </span>
-              </Button>
-            </div>
-          }
-              
-                <ZoomHeader
-             resetCanvas={handleResetZoom} />
+                  {/* Text appears on hover */}
+                  <span className="ml-2 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                    Mask
+                  </span>
+                </Button>
+              </div>
+            }
+
+            <ZoomHeader resetCanvas={handleResetZoom} />
           </div>
-
 
           {/* <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
