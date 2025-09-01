@@ -24,6 +24,8 @@ export type CanvasMode =
   | "outline"
   | "zoom"
   |"showSegments"
+  | "rectangle"
+  | "polygon"
 
   export type activeCanvasType = 
     |"hideSegments"
