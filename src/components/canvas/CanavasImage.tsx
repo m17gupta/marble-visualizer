@@ -28,6 +28,7 @@ import {
 } from "../canvasUtil/canvasImageUtils";
 import { toast } from "sonner";
 import {
+  handlePolygonVisibilityOnMouseMove,
   HideAll,
   HideAllSegments,
   hideMaskSegment,
@@ -46,6 +47,7 @@ import {
 } from "@/redux/slices/MasterArraySlice";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import DoubleClickHtml from "./DoubleClickHtml";
 type NamedFabricObject = fabric.Object & { name?: string };
 
 interface CanvasHoverLayerProps {
@@ -55,6 +57,11 @@ interface CanvasHoverLayerProps {
   className?: string;
   onImageLoad?: () => void;
   onMouseMove?: (event: fabric.TEvent) => void;
+}
+
+export interface modelPoint {
+  x: number;
+  y: number;
 }
 const CanavasImage = forwardRef(
   (
@@ -218,7 +225,8 @@ const CanavasImage = forwardRef(
       canvas.on("mouse:move", (event) => {
         handleMouseMove(event);
       });
-      // canvas.on("mouse:dblclick", handleDoubleClick);
+
+      canvas.on("mouse:dblclick", (event) => handleDoubleClick(event));
 
       // canvas.on("selection:cleared", () => {
 
@@ -448,6 +456,30 @@ const CanavasImage = forwardRef(
       }
     };
 
+      const [doubleClickPoint, setDoubleClickPoint] = useState<modelPoint | null>(null);
+       // Double click event handler
+      const handleDoubleClick = (event: fabric.TEvent) => {
+        const fabricCanvas = fabricCanvasRef.current;
+        if (!fabricCanvas) return;
+        const pointer = fabricCanvas.getPointer(event.e);
+        if (pointer) {
+          setDoubleClickPoint({ x: pointer.x, y: pointer.y });
+        }
+      };
+
+      //   // hover on group segment
+  const { hoverGroup } = useSelector((state: RootState) => state.canvas);
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+    if (hoverGroup == null) {
+      HideAllSegments(fabricCanvasRef);
+    } else if (hoverGroup.length > 0) {
+      hoverGroup.forEach((groupName) => {
+        
+        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
+      });
+    }
+  }, [hoverGroup, fabricCanvasRef]);
     return (
       <>
         {" "}
@@ -492,6 +524,13 @@ const CanavasImage = forwardRef(
                         </p>
                       </div>
                     </div>
+                  )}
+                  {doubleClickPoint && (
+                    <DoubleClickHtml
+                      doubleClickPoint={doubleClickPoint}
+                      
+                     onClose={() => setDoubleClickPoint(null)}
+                    />
                   )}
                 </CardContent>
               </Card>

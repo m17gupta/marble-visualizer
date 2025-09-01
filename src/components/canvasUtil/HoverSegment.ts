@@ -1,5 +1,6 @@
 import * as fabric from "fabric";
 import { isPointInPolygon } from "./ISPointInsidePolygon";
+import { object } from "zod";
 
 // Custom type for objects with a data property containing a name
 type NamedFabricObject = fabric.Object & {
@@ -120,19 +121,22 @@ export const handlePolygonVisibilityOnMouseMove = (
     const targetName = name;
 
     const allObjects = canvas.current.getObjects();
-    allObjects.forEach((obj) => {
+    allObjects.forEach((obj: NamedFabricObject) => {
       if (
         obj.type === "group" &&
+        obj.groupName === "hover" &&
         typeof (obj as fabric.Group).getObjects === "function"
       ) {
         const allGroupObjects = (obj as fabric.Group).getObjects();
         allGroupObjects.forEach((groupObj) => {
           const namedGroupObj = groupObj as NamedFabricObject;
 
-          const polyName = namedGroupObj.name;
+          const polyName = namedGroupOgbj.name;
 
           if (polyName === targetName) {
-            namedGroupObj.set({ visible: true });
+            namedGroupObj.set({ visible: true,
+              opacity: 0.4
+             });
           }
         });
       }
@@ -263,4 +267,24 @@ export const hideMaskSegment = (canvas: React.RefObject<fabric.Canvas>, pointer:
   });
   canvas.current.renderAll();
   return returnValue;
+};
+
+
+export const ShowIcon = (canvasRef: React.RefObject<any>) => {
+  const fabricCanvas = canvasRef.current?.getFabricCanvas();
+  if (!fabricCanvas) return;
+
+  const allObjects = fabricCanvas.getObjects();
+  console.log("All canvas objects:", allObjects);
+  allObjects.forEach((obj: NamedFabricObject) => {
+    if (
+      obj.type === "group" &&
+      obj.groupName === "icon" &&
+      typeof (obj as fabric.Group).getObjects === "function"
+    ) {
+      const allGroupObjects = (obj as fabric.Group).getObjects();
+       console.log("Icon group objects:", allGroupObjects);
+    }
+  });
+  fabricCanvas.renderAll();
 };
