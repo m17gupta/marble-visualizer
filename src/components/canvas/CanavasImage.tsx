@@ -28,6 +28,7 @@ import {
 } from "../canvasUtil/canvasImageUtils";
 import { toast } from "sonner";
 import {
+  handlePolygonVisibilityOnMouseMove,
   HideAll,
   HideAllSegments,
   hideMaskSegment,
@@ -465,6 +466,20 @@ const CanavasImage = forwardRef(
           setDoubleClickPoint({ x: pointer.x, y: pointer.y });
         }
       };
+
+      //   // hover on group segment
+  const { hoverGroup } = useSelector((state: RootState) => state.canvas);
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+    if (hoverGroup == null) {
+      HideAllSegments(fabricCanvasRef);
+    } else if (hoverGroup.length > 0) {
+      hoverGroup.forEach((groupName) => {
+        
+        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
+      });
+    }
+  }, [hoverGroup, fabricCanvasRef]);
     return (
       <>
         {" "}
