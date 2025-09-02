@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 import { RootState } from "@/redux/store";
@@ -7,23 +7,23 @@ import { Badge } from "@/components/ui/badge";
 import { Target } from "lucide-react";
 import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
 import { FaInfo } from "react-icons/fa6";
-
 import { FaRegStar } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { addPaletteImage, addUpdateRequestPalette } from "@/redux/slices/visualizerSlice/genAiSlice";
+import {
+  addPaletteImage,
+  addUpdateRequestPalette,
+} from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
-
-
 export function SwatchRecommendations() {
- 
   const dispatch = useDispatch();
-  const [ userSelectedSegmentState, setUserSelectedSegmentState ] = useState<SegmentModal[]>([]);  
-  const { userSelectedSegment } = useSelector((state: RootState) => state.masterArray);
 
-  const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
-  const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
+  const [userSelectedSegmentState, setUserSelectedSegmentState] = useState<
+    SegmentModal[]
+  >([]);
+  const [broken, setBroken] = useState<Record<string | number, boolean>>({});
+
   const {
     materials,
     wallMaterials,
@@ -32,71 +32,81 @@ export function SwatchRecommendations() {
     windowMaterials,
     trimMaterials,
   } = useSelector((state: RootState) => state.materials);
+
   const { selectedMaterialSegment } = useSelector(
     (state: RootState) => state.materialSegments
   );
+  const { selectedMasterArray, userSelectedSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
+
   const [recommendedSwatches, setRecommendedSwatches] = useState<
     MaterialModel[]
   >([]);
 
-  const { selectedMasterArray } = useSelector(
-    (state: RootState) => state.masterArray
-  );
+  const s3DefaultBase =
+    "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
+  const s3NewBase = "https://betadzinly.s3.us-east-2.amazonaws.com/material";
 
-  // update selected segment
+  const computeImageUrl = (swatch: MaterialModel): string | null => {
+    const clean = (v?: string | null) =>
+      (v ?? "").toString().trim().replace(/^null$|^undefined$/i, "");
+    const bucket = clean((swatch as any).bucket_path);
+    const photo = clean((swatch as any).photo);
+
+    if (bucket && bucket !== "default") {
+      return `${s3NewBase}/${bucket}`;
+    }
+    if (bucket === "default" && photo) {
+      return `${s3DefaultBase}/${photo}`;
+    }
+    return null;
+  };
+
+  const markBroken = (id: string | number) =>
+    setBroken((prev) => ({ ...prev, [id]: true }));
+
+  const clearBroken = () => setBroken({});
+
   useEffect(() => {
     if (userSelectedSegment && userSelectedSegment.length > 0) {
       setUserSelectedSegmentState(userSelectedSegment);
-    }else{
+    } else {
       setUserSelectedSegmentState([]);
     }
   }, [userSelectedSegment]);
 
-  // update the selected Swatch recommendation
   useEffect(() => {
     if (
       selectedMasterArray &&
       wallMaterials &&
-      wallMaterials.length > 0 &&
       doorMaterials &&
-      doorMaterials.length > 0 &&
       roofMaterials &&
-      roofMaterials.length > 0 &&
       windowMaterials &&
-      windowMaterials.length > 0 &&
-      trimMaterials &&
-      trimMaterials.length > 0
+      trimMaterials
     ) {
-      // Fetch recommended swatches based on the selected segment type
-      const fetchRecommendedSwatches = async () => {
-        // Here you would typically call an API to get the recommended swatches
-        // For now, we will just filter the materials based on the selected segment type
-        let filteredMaterials: MaterialModel[] = [];
-        const title = selectedMasterArray.name;
-        switch (title) {
-          case "Wall":
-            filteredMaterials = wallMaterials;
-
-            break;
-          case "Door":
-            filteredMaterials = doorMaterials;
-            break;
-          case "Roof":
-            filteredMaterials = roofMaterials;
-            break;
-          case "Window":
-            filteredMaterials = windowMaterials;
-            break;
-          case "Trim":
-            filteredMaterials = trimMaterials;
-            break;
-          default:
-            filteredMaterials = materials; // Fallback to all materials
-        }
-        setRecommendedSwatches(filteredMaterials);
-      };
-
-      fetchRecommendedSwatches();
+      let filtered: MaterialModel[] = [];
+      switch (selectedMasterArray.name) {
+        case "Wall":
+          filtered = wallMaterials;
+          break;
+        case "Door":
+          filtered = doorMaterials;
+          break;
+        case "Roof":
+          filtered = roofMaterials;
+          break;
+        case "Window":
+          filtered = windowMaterials;
+          break;
+        case "Trim":
+          filtered = trimMaterials;
+          break;
+        default:
+          filtered = materials || [];
+      }
+      setRecommendedSwatches(filtered || []);
+      clearBroken();
     }
   }, [
     selectedMasterArray,
@@ -108,42 +118,53 @@ export function SwatchRecommendations() {
     materials,
   ]);
 
-    const handleSelectedSwatch = (src: MaterialModel) => {
-      
-      const image_path= src.bucket_path === "default"
-        ? `${path}/${src.photo}`
-        : `${newPath}/${src.bucket_path}`;
-  
-        dispatch(addPaletteImage(image_path))
-        dispatch(setCanvasType("hover")); // Set canvas type to hover-default when a swatch is selected
-        if(userSelectedSegmentState && userSelectedSegmentState.length > 0) {
-          // Do something with userSelectedSegmentState
-          const allSegName= userSelectedSegmentState.map(seg => seg.short_title);
-          const groupName = userSelectedSegmentState[0]?.group_label_system
-          console.log("allSegName", allSegName);
-          dispatch(addUpdateRequestPalette({
-            id:src.id,
-            segments: allSegName,
-            groupName: groupName,
-            url: image_path
-          }))
-        }
-    };
+  const handleSelectedSwatch = (swatch: MaterialModel) => {
+    const url = computeImageUrl(swatch);
+
+    if (url) {
+      dispatch(addPaletteImage(url));
+    }
+
+    dispatch(setCanvasType("hover"));
+
+    if (userSelectedSegmentState && userSelectedSegmentState.length > 0) {
+      const allSegName = userSelectedSegmentState.map((seg) => seg.short_title);
+      const groupName = userSelectedSegmentState[0]?.group_label_system;
+
+      dispatch(
+        addUpdateRequestPalette({
+          id: swatch.id,
+          segments: allSegName,
+          groupName,
+          url: url || "",
+        })
+      );
+    }
+  };
+
+  const cards = useMemo(
+    () =>
+      (recommendedSwatches || []).map((swatch) => {
+        const url = computeImageUrl(swatch);
+        const isBroken = broken[swatch.id];
+        const hideImage = !url || isBroken;
+
+        return { swatch, url, hideImage };
+      }),
+    [recommendedSwatches, broken]
+  );
+
+  if (!selectedMasterArray?.name) return null;
 
   return (
-    <>
-    {selectedMasterArray &&
-    selectedMasterArray.name &&
     <Card className="border-none border-gray-200 rounded-lg shadow-sm p-3">
       <CardHeader className="pb-4 p-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center">
             <Target className="h-5 w-5 mr-2" />
             {selectedMaterialSegment?.name || "All Materials"}
-            {/* Recommended for */}
           </CardTitle>
           <Badge variant="secondary" className="text-xs cursor-pointer">
-            {/* {recommendedSwatches.length} swatches */}
             View All
           </Badge>
         </div>
@@ -154,62 +175,44 @@ export function SwatchRecommendations() {
       </CardHeader>
 
       <CardContent className="space-y-4 p-1 overflow-y-auto max-h-[60vh] sm:max-h-[70vh] pb-40 pt-4">
-        {recommendedSwatches && recommendedSwatches.length > 0 ? (
+        {cards.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-2">
             <AnimatePresence>
-              {recommendedSwatches.map((swatch) => (
-                <Card
-                  key={swatch.id}
-                  className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl border-gray-900">
-                  {/* Image/Color Preview */}
-                  <div className="aspect-square relative overflow-hidden group">
-                    <LazyLoadImage
-                      src={
-                        swatch.bucket_path === "default"
-                          ? `${path}/${swatch.photo}`
-                          : `${newPath}/${swatch.bucket_path}`
-                      }
-                      alt={swatch.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.backgroundColor =
-                          swatch.color || "#908e8eff";
-                        target.style.display = "block";
-                        target.src = "";
-                        target.alt = swatch.id
-                          ? String(swatch.id)
-                          : "image not available";
-                      }}
-                     onClick={() => handleSelectedSwatch(swatch)}
-                    />
-
-                    {/* Info Icon - top-left */}
-                    <span
+              {cards.map(({ swatch, url, hideImage }) =>
+                hideImage ? null : (
+                  <Card
+                    key={swatch.id}
+                    className="cursor-pointer transition-all duration-300 transform hover:scale-[1.03] hover:shadow-lg overflow-hidden bg-card border border-border rounded-xl"
+                  >
+                    <div
+                      className="aspect-square relative overflow-hidden group"
+                      onClick={() => handleSelectedSwatch(swatch)}
                       role="button"
-                      className="absolute top-1 left-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-black/80 transition-colors opacity-0 group-hover:opacity-100">
-                      <FaInfo className="w-3 h-3" />
-                    </span>
+                    >
+                      <LazyLoadImage
+                        src={url as string}
+                        alt={swatch.title || `material-${swatch.id}`}
+                        className="w-full h-full object-cover"
+                        onError={() => markBroken(swatch.id)}
+                      />
 
-                    {/* Star Icon - top-right */}
-                    <span
-                      role="button"
-                      className="absolute top-1 right-1 bg-black bg-opacity-45 p-1 rounded-full text-white hover:bg-yellow-400 transition-colors opacity-0 group-hover:opacity-100">
-                      <FaRegStar className="w-3 h-3" />
-                    </span>
-                  </div>
-                </Card>
-              ))}
+                      <span className="absolute top-1 left-1 bg-black/45 p-1 rounded-full text-white hover:bg-black/80 transition-colors opacity-0 group-hover:opacity-100 pointer-events-none">
+                        <FaInfo className="w-3 h-3" />
+                      </span>
+
+                      <span className="absolute top-1 right-1 bg-black/45 p-1 rounded-full text-white hover:bg-yellow-400 transition-colors opacity-0 group-hover:opacity-100 pointer-events-none">
+                        <FaRegStar className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </Card>
+                )
+              )}
             </AnimatePresence>
           </div>
         ) : (
-          <p className="text-muted-foreground">
-            No recommended swatches available.
-          </p>
+          <p className="text-muted-foreground">No recommended swatches available.</p>
         )}
       </CardContent>
-    </Card>}
-    </>
-    
+    </Card>
   );
 }

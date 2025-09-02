@@ -75,7 +75,8 @@ const CompareHoverHeader: React.FC<CompareHoverHeaderProps> = ({
   useEffect(() => {
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", handleFsChange);
-    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFsChange);
   }, []);
 
   const handleClose = () => {
@@ -85,7 +86,7 @@ const CompareHoverHeader: React.FC<CompareHoverHeaderProps> = ({
 
   // shared classes
   const hoverBtn = (isActive: boolean) =>
-    `group relative flex items-center justify-start w-10 hover:w-28 transition-all duration-300 overflow-hidden px-2
+    `group relative flex items-center justify-start w-10 hover:w-auto transition-all duration-300 overflow-hidden px-2
      ${isActive ? "bg-blue-100 text-blue-600 border-blue-400" : ""}`;
 
   const label =
@@ -97,98 +98,94 @@ const CompareHoverHeader: React.FC<CompareHoverHeaderProps> = ({
         <div className="flex gap-3 align-center justify-between">
           {/* Back */}
           <div>
-          <Button
-            variant="outline"
-            size="sm"
-            className={hoverBtn(activeAction === "back")}
-            onClick={handleBack}
-            aria-label="Back"
-            title="Back"
-          >
-            <IoArrowBackSharp  className="h-5 w-5 shrink-0" />
-            <span className={label}>Back</span>
-          </Button>
-</div>
+            <Button
+              variant="outline"
+              size="sm"
+              className={hoverBtn(activeAction === "back")}
+              onClick={handleBack}
+              aria-label="Back"
+              title="Back">
+              <IoArrowBackSharp className="h-5 w-5 shrink-0" />
+              <span className={label}>Back</span>
+            </Button>
+          </div>
 
-<div className="flex gap-4">
-          {/* Like / Unlike */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLikeToggle}
-            className={hoverBtn(activeAction === "like")}
-            aria-label={liked ? "Unlike" : "Like"}
-            title={liked ? "Unlike" : "Like"}
-          >
-            {liked ? (
-              <BiSolidLike className="h-5 w-5 shrink-0 fill-blue-600" />
-            ) : (
-              <BiLike className="h-5 w-5 shrink-0" />
-            )}
-            <span className={label}>{liked ? "Unlike" : "Like"}</span>
-          </Button>
+          <div className="flex gap-4">
+            {/* Like / Unlike */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLikeToggle}
+              className={hoverBtn(activeAction === "like")}
+              aria-label={liked ? "Unlike" : "Like"}
+              title={liked ? "Unlike" : "Like"}>
+              {liked ? (
+                <BiSolidLike className="h-5 w-5 shrink-0 fill-blue-600" />
+              ) : (
+                <BiLike className="h-5 w-5 shrink-0" />
+              )}
+              <span className={label}>{liked ? "Unlike" : "Like"}</span>
+            </Button>
 
-          {/* Download (AFTER image) */}
-          <Button
-            variant="outline"
-            size="sm"
-            className={hoverBtn(activeAction === "download")}
-            onClick={handleDownload}
-            aria-label="Download"
-            title="Download"
-            disabled={!currentGenAiImage?.output_image}
-          >
-            <MdOutlineFileDownload 
-              className={`h-5 w-5 shrink-0 ${
-                activeAction === "download" ? "fill-blue-600" : ""
-              }`}
-            />
-            <span className={label}>Download</span>
-          </Button>
-
-          {/* Fullscreen */}
-          <Button
-            variant="outline"
-            size="sm"
-            className={hoverBtn(activeAction === "fullscreen")}
-            onClick={toggleFullscreen}
-            aria-label="Fullscreen"
-            title="Fullscreen"
-          >
-            {isFullscreen ? (
-              <RiFullscreenFill 
+            {/* Download (AFTER image) */}
+            <Button
+              variant="outline"
+              size="sm"
+              className={hoverBtn(activeAction === "download")}
+              onClick={handleDownload}
+              aria-label="Download"
+              title="Download"
+              disabled={!currentGenAiImage?.output_image}>
+              <MdOutlineFileDownload
                 className={`h-5 w-5 shrink-0 ${
-                  activeAction === "fullscreen" ? "fill-blue-600" : ""
+                  activeAction === "download" ? "fill-blue-600" : ""
                 }`}
               />
-            ) : (
-              <RiFullscreenFill 
+              <span className={label}>Download</span>
+            </Button>
+
+            {/* Fullscreen */}
+            <Button
+              variant="outline"
+              size="sm"
+              className={hoverBtn(activeAction === "fullscreen")}
+              onClick={toggleFullscreen}
+              aria-label="Fullscreen"
+              title="Fullscreen">
+              {isFullscreen ? (
+                <RiFullscreenFill
+                  className={`h-5 w-5 shrink-0 ${
+                    activeAction === "fullscreen" ? "fill-blue-600" : ""
+                  }`}
+                />
+              ) : (
+                <RiFullscreenFill
+                  className={`h-5 w-5 shrink-0 ${
+                    activeAction === "fullscreen" ? "fill-blue-600" : ""
+                  }`}
+                />
+              )}
+              <span className={label}>
+                {isFullscreen ? "Exit Fullscreen" : "Full Screen"}
+              </span>
+            </Button>
+
+            {/* Close */}
+            <Button
+              variant="outline"
+              size="sm"
+              className={hoverBtn(activeAction === "close")}
+              onClick={handleClose}
+              aria-label="Close"
+              title="Close">
+              <MdClose
                 className={`h-5 w-5 shrink-0 ${
-                  activeAction === "fullscreen" ? "fill-blue-600" : ""
+                  activeAction === "close" ? "fill-blue-600" : ""
                 }`}
               />
-            )}
-            <span className={label}>{isFullscreen ? "Exit Fullscreen" : "Full Screen"}</span>
-          </Button>
-
-          {/* Close */}
-          <Button
-            variant="outline"
-            size="sm"
-            className={hoverBtn(activeAction === "close")}
-            onClick={handleClose}
-            aria-label="Close"
-            title="Close"
-          >
-            <MdClose
-              className={`h-5 w-5 shrink-0 ${
-                activeAction === "close" ? "fill-blue-600" : ""
-              }`}
-            />
-            <span className={label}>Close</span>
-          </Button>
-</div>
-
+              <span className={label}>Close</span>
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

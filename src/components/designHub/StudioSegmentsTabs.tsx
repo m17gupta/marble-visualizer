@@ -202,13 +202,12 @@ const StudioTabs = () => {
         className="box-border overflow-y-auto border-2"
       >
         {/* Top: Group tabs row */}
-        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0  ">
+        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-1 py-0  ">
           <TabsList className="whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent w-full">
             <Swiper
               spaceBetween={8}
               slidesPerView="auto"
-              className="max-w-full"
-            >
+              className="max-w-full">
               {masterArray.allSegments.map((tab) => (
                 <SwiperSlide key={tab.groupName} className="!w-auto">
                   <TabsTrigger
@@ -217,8 +216,7 @@ const StudioTabs = () => {
                     onMouseEnter={() => handleGroupHover(tab)}
                     onMouseLeave={handleLeaveGroupHover}
                     value={tab.groupName}
-                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black"
-                  >
+                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black">
                     {tab.groupName}
                   </TabsTrigger>
                 </SwiperSlide>

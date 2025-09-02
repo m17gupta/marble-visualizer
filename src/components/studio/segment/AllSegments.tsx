@@ -129,13 +129,13 @@ const AllSegments = () => {
                       variant={isActive ? "default" : "outline"}
                       size="icon"
                       className={cn(
-                        "w-12 h-12 border-2 p-1  transition-all duration-200 focus:outline-0",
+                        "w-12 h-12 border-1 p-1  transition-all duration-200 focus:outline-0",
                         isActive && "ring-0 ring-offset-0",
                         isHovered && "shadow-md"
                         // scale-105
                       )}
                       style={{
-                        borderColor: segment.color_code,
+                    borderColor: `${segment.color_code}60`,
                         backgroundColor: isActive
                           ? `${segment.color_code}50`
                           : isHovered

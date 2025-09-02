@@ -57,7 +57,7 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen
                     <div
                         onMouseEnter={() => setOpen(true)}
                         onMouseLeave={() => setOpen(false)}>
-                        <div className="inline-flex items-center bg-white border border-gray-300 rounded-xl px-2 py-1 gap-2 shadow-sm transition-transform duration-200 hover:scale-105 border-red-400">
+                        <div className="inline-flex items-center bg-white border border-gray-300 rounded-md px-2 py-1 gap-2 shadow-sm transition-transform duration-200 hover:scale-105 border-red-400">
                             <img src={value} alt="user-input"
                                 className='w-6 h-6 rounded-md object-cover'
                             />
@@ -91,7 +91,7 @@ const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen
                     <div
                         onMouseEnter={() => setOpen(true)}
                         onMouseLeave={() => setOpen(false)}>
-                        <div className="inline-flex items-center bg-white border border-gray-300 rounded-xl px-2 py-1 gap-2 shadow-sm transition-transform duration-200 hover:scale-105 border-red-400">
+                        <div className="inline-flex items-center bg-white border border-gray-300 rounded-md px-2 py-1 gap-2 shadow-sm transition-transform duration-200 hover:scale-105 border-red-400">
                             <img src={value} alt="user-input"
                                 className='w-6 h-6 rounded-md object-cover'
                             />

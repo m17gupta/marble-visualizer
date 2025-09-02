@@ -28,12 +28,21 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
     <>
       
       {!isCompare && canvas.current ? (
+        <>
         <PolygonOverlay
           canvas={canvas}
           width={width}
           height={height}
           className="mb-6"
         />
+
+      {requests &&
+      ( ( requests.paletteUrl && requests.paletteUrl.length > 0 )||
+       ( requests.referenceImageUrl && requests.referenceImageUrl.length > 0 )||
+       ( requests.prompt && requests.prompt.length > 0 )) ? (
+        <RequestgenAitemplate />
+      ) : null}
+      </>
       ) : (
       <>
       <CompareHoverHeader 
@@ -42,14 +51,10 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
       onClose={() => { /* TODO: implement close action */ }}
       />
         <CompareGenAiHome  />
+        
       </>
       )}
-     {requests &&
-      ( ( requests.paletteUrl && requests.paletteUrl.length > 0 )||
-       ( requests.referenceImageUrl && requests.referenceImageUrl.length > 0 )||
-       ( requests.prompt && requests.prompt.length > 0 )) ? (
-        <RequestgenAitemplate />
-      ) : null}
+    
       <DesignProject />
       <GuidancePanel />
     </>

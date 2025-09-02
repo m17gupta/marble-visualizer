@@ -31,7 +31,7 @@ const GenAiRequestImage = ({requestData,keytitle ,onDelete }: props) => {
     <HoverCard key={`${keytitle}-${requestData.id}`}>
                 {/* Replace PopoverTrigger with HoverCardTrigger */}
                 <HoverCardTrigger asChild key={requestData.id}>
-                  <div className="ps-2 pe-8 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[#25f474] bg-white px-2 py-1 shadow-sm transition-transform duration-200 hover:scale-105">
+                  <div className="ps-2 pe-8 inline-flex cursor-pointer items-center gap-2 rounded-md border border-[#25f474] bg-white px-2 py-1 shadow-sm transition-transform duration-200 hover:scale-105">
                     <img
                       src={requestData.url}
                       alt="user-input"
