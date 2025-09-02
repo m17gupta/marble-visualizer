@@ -113,17 +113,20 @@ const CommentList = () => {
 // --- Main Exported Component ---
 export function CommentsTabs() {
   const { currentTab, handleTabChange } = useInspirationTab("all");
-  const tabTriggerStyle = "rounded-lg text-gray-700 shadow-none border border-gray-300 data-[state=active]:bg-white data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 data-[state=active]:shadow-md focus-ring-0 focus:ring-blue-500 focus:outline-none";
+  const tabTriggerStyle = "rounded-lg px-6 text-gray-700 shadow-none border border-gray-300 data-[state=active]:bg-white data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 data-[state=active]:shadow-sm focus-ring-0 focus:ring-blue-500 focus:outline-none";
 
   
   return (
     <div className="flex w-full flex-col gap-6">
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         <TabsList className="w-full py-2">
-          <TabsTrigger value="all" className={tabTriggerStyle}><AllCommentIcon className="pe-2" />All </TabsTrigger>
-          <TabsTrigger value="pending" className={tabTriggerStyle}><CommentIcon className="pe-1" />Pending</TabsTrigger>
-          <TabsTrigger value="resolved" className={tabTriggerStyle}><ResolvedCommentIcon className="pe-1" />Resolved</TabsTrigger>
+          <TabsTrigger value="all" className={tabTriggerStyle}>All </TabsTrigger>
+          <TabsTrigger value="pending" className={tabTriggerStyle}>Pending</TabsTrigger>
+          <TabsTrigger value="resolved" className={tabTriggerStyle}>Resolved</TabsTrigger>
         </TabsList>
+        {/* <ResolvedCommentIcon className="pe-1" />
+        <CommentIcon className="pe-1" />
+        <AllCommentIcon className="pe-2" /> */}
 
         <TabsContent value="all" className="p-3"><CommentList/></TabsContent>
         <TabsContent value="pending" className="p-3"><CommentLists /></TabsContent>
