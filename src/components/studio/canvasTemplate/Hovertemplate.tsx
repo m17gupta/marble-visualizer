@@ -47,7 +47,7 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
       <>
       <CompareHoverHeader 
         containerRef={sliderRef}   // fullscreen target
-      onBack={() => { /* TODO: implement back action */ }}
+     
       onClose={() => { /* TODO: implement close action */ }}
       />
         <CompareGenAiHome  />

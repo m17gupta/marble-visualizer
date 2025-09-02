@@ -5,13 +5,17 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { BiLike, BiSolidLike } from "react-icons/bi";
 import { FaCompress, FaDownload, FaExpand } from "react-icons/fa";
 import { MdClose, MdOutlineFileDownload } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { RiFullscreenFill } from "react-icons/ri";
 import { IoArrowBackSharp } from "react-icons/io5";
+import { setCurrentTabContent } from "@/redux/slices/studioSlice";
+import { resetRequest, setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import { setIsGenerated } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { updateIsCompare } from "@/redux/slices/canvasSlice";
 
 type CompareHoverHeaderProps = {
-  onBack?: () => void;
+  
   onClose?: () => void;
   /** Element to toggle fullscreen on (pass the same ref you use in CompareSlider) */
   containerRef?: React.RefObject<HTMLElement>;
@@ -21,7 +25,7 @@ type CompareHoverHeaderProps = {
 };
 
 const CompareHoverHeader: React.FC<CompareHoverHeaderProps> = ({
-  onBack,
+ 
   onClose,
   containerRef,
   likedProp,
@@ -31,7 +35,8 @@ const CompareHoverHeader: React.FC<CompareHoverHeaderProps> = ({
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const [likedLocal, setLikedLocal] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
+  
+  const dispatch = useDispatch();
   const liked = likedProp ?? likedLocal;
 
   const setLiked = (val: boolean) => {
@@ -41,7 +46,11 @@ const CompareHoverHeader: React.FC<CompareHoverHeaderProps> = ({
 
   const handleBack = () => {
     setActiveAction("back");
-    onBack?.();
+     dispatch(setCurrentTabContent("home"));
+        dispatch(setCurrentGenAiImage(null));
+        dispatch(setIsGenerated(false));
+        dispatch(resetRequest());
+        dispatch(updateIsCompare(false));
   };
 
   const handleLikeToggle = () => {

@@ -921,6 +921,7 @@ export function CanvasEditor({
       console.log("Screenshot taken successfully:", dataURL);
       dispatch(updateScreenShotUrl(dataURL));
       dispatch(setIsCanvasModalOpen(false));
+      dispatch(setCanvasType("hover"));
     } catch (error) {
       console.error("Error taking screenshot:", error);
       toast.error("Failed to take screenshot. Please try again.");

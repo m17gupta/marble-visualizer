@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/tooltip";
 import Toggleheader from "../canvasheader/Toggleheader";
 import DrawHeader from "../canvasheader/DrawHeader";
+import { Loader } from "@/pages/projectPage/ProjectsPage";
 const HoverHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [canvasMode, setCanvasMode] = useState("");
@@ -128,6 +129,7 @@ const HoverHeader = () => {
             <ZoomHeader resetCanvas={handleResetZoom} />
           </div>
         </CardContent>
+       
       </Card>
     </>
   );

@@ -13,6 +13,7 @@ import GenAiRequestImage from '../genAiRequestsImage/GenAiRequestImage';
 import { RequestPaletteModel } from '@/models/genAiModel/GenAiModel';
 import { addPrompt, addUpdateRequestPalette, resetInspirationImage, resetPaletteImage } from '@/redux/slices/visualizerSlice/genAiSlice';
 import { url } from 'inspector';
+import MaskImage from '@/components/studio/studioMainTabs/chat/MaskImage';
 
 const RequestgenAitemplate = () => {
    const dispatch = useDispatch();
@@ -68,6 +69,7 @@ const RequestgenAitemplate = () => {
       <div className="flex flex-grow gap-2 overflow-x-auto scroll-thin p-2 "
       key="pallet"
       >
+          <MaskImage/>
           {/* request pallet */}
            {requestPalletList &&
         requestPalletList.length > 0 &&
@@ -79,6 +81,9 @@ const RequestgenAitemplate = () => {
             
           />
         ))}
+
+        {/* request for mask image */}
+     
 
        {/* request for inspiration image  */}
        {requestInspirationImage &&

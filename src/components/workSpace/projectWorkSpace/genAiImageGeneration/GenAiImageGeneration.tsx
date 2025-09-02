@@ -10,6 +10,7 @@ import { addHouseImage, addPaletteImage, insertGenAiChatData, resetRequest, setC
 import { setIsGenerated, updateIsGenLoading } from '@/redux/slices/visualizerSlice/workspaceSlice';
 import { toast } from 'sonner';
 import { setCurrentTabContent } from '@/redux/slices/studioSlice';
+import { updateIsCompare } from '@/redux/slices/canvasSlice';
 
 const GenAiImageGeneration = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -82,7 +83,8 @@ const GenAiImageGeneration = () => {
             if (result.meta.requestStatus === "fulfilled") {
                 // dispatch(resetRequest());
                 dispatch(updateIsGenLoading(false));
-                dispatch(setCurrentTabContent("compare"))
+                // dispatch(setCurrentTabContent("compare"))
+                dispatch(updateIsCompare(true));
                 dispatch(setIsGenerated(true));
             }
         } catch (error) {
