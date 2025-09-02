@@ -1,99 +1,56 @@
-import { AppDispatch, RootState } from '@/redux/store';
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { updateScreenShotUrl } from '@/redux/slices/canvasSlice';
-import { resetMaskIntoRequest } from '@/redux/slices/visualizerSlice/genAiSlice';
+import React from 'react';
 import {
-  MorphingDialog,
-  MorphingDialogTrigger,
-  MorphingDialogContent,
-  MorphingDialogTitle,
-  MorphingDialogImage,
-  MorphingDialogClose,
-} from '@/components/ui/morphing-dialog';
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { updateScreenShotUrl } from '@/redux/slices/canvasSlice';
+import { RootState } from '@/redux/store';
 
+// Props: requestData (object with id, url), keytitle (string), allSeg (string), onDelete (function)
 const MaskImage = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { screenShotUrl } = useSelector((state: RootState) => state.canvas);
-
-    // Check if screenShotUrl is a valid base64 string
-    const isValidBase64Image = screenShotUrl && (
-        screenShotUrl.startsWith('data:image/') || 
-        screenShotUrl.startsWith('http')
-    );
-
-    if (!isValidBase64Image) {
-        return null;
-    }
-
-
-    const handleRemoveMaskImage = () => {
-        dispatch(resetMaskIntoRequest()); // Reset the mask into request
-    dispatch(updateScreenShotUrl(null)); // Clear the screenshot URL
-    }
-    return (
-        <>
-        {screenShotUrl &&
-        screenShotUrl !== null &&
-        <MorphingDialog>
-            <MorphingDialogTrigger asChild>
-                <div className="relative w-14 h-14 rounded overflow-hidden border cursor-pointer hover:opacity-80 transition-opacity">
-                    <MorphingDialogImage
-                        src={screenShotUrl}
-                        alt="Canvas Screenshot"
-                        className="object-cover w-full h-full"
-                        style={{
-                            borderRadius: '4px',
-                        }}
-                    />
-                    <button 
-                        className="absolute pt-3 pb-3 px-3 w-4 h-5 top-0 right-0 bg-white border border-gray-300 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors z-10"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveMaskImage();
-                        }}
-                        aria-label="Remove screenshot"
-                    >
-                        <span className="text-ms leading-3 text-red-500 font-bold items-center flex">×</span>
-                    </button>
-                </div>
-            </MorphingDialogTrigger>
-            
-            <MorphingDialogContent
-                style={{
-                    borderRadius: '12px',
-                }}
-                className='relative h-auto w-[800px] max-w-[90vw] border border-gray-100 bg-white'
-                transition={{
-                    type: 'spring',
-                    stiffness: 200,
-                    damping: 24,
-                }}
-            >
-                <div className='relative p-6'>
-                    <div className='flex justify-center py-10'>
-                        <MorphingDialogImage
-                            src={screenShotUrl}
-                            alt="Canvas Screenshot"
-                            className='h-auto w-full max-w-[600px] object-contain'
-                        />
-                    </div>
-                    <div className=''>
-                        <MorphingDialogTitle className='text-black'>
-                            Canvas Screenshot
-                        </MorphingDialogTitle>
-                        <div className='mt-4 text-sm text-gray-700'>
-                            <p>
-                                This is your canvas screenshot that can be used for mask operations and AI processing.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <MorphingDialogClose className='text-zinc-500' />
-            </MorphingDialogContent>
-        </MorphingDialog>}
-        </>
-    );
+  const keytitle = "mask";
+  const dispatch = useDispatch();
+  const { screenShotUrl } = useSelector((state: RootState) => state.canvas);
+  const handleClearImage = (e: React.MouseEvent) => {
+    dispatch(updateScreenShotUrl(null));
+  };
+  if (!screenShotUrl) return null;
+  return (
+    <HoverCard key={`${keytitle}-${screenShotUrl}`}>
+      <HoverCardTrigger asChild key={screenShotUrl}>
+        <div className="ps-2 pe-8 inline-flex cursor-pointer items-center gap-2 rounded-md border border-[#25f474] bg-white px-2 py-1 shadow-sm transition-transform duration-200 hover:scale-105 relative">
+          {typeof screenShotUrl === 'string' && (
+            <>
+              <img
+                src={screenShotUrl}
+                alt="user-input"
+                className="h-20 w-15 rounded-md object-cover"
+              />
+              <button
+                className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center bg-white border border-gray-300 rounded-full shadow hover:bg-gray-100 z-10"
+                onClick={handleClearImage}
+                aria-label="Clear image"
+              >
+                <span className="text-lg text-red-500">&times;</span>
+              </button>
+            </>
+          )}
+        </div>
+      </HoverCardTrigger>
+      <HoverCardContent
+        className="w-[240px] rounded-xl p-3 shadow-lg"
+        sideOffset={8}
+      >
+        <h6 className="mb-2 text-md font-semibold">Mask</h6>
+        {typeof screenShotUrl === 'string' && (
+          <img src={screenShotUrl} alt="seg-img" className="rounded-md" />
+        )}
+      </HoverCardContent>
+    </HoverCard>
+  );
 };
 
 export default MaskImage;

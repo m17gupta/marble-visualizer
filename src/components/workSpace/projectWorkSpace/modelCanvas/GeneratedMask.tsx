@@ -39,9 +39,8 @@ const GeneratedMask = () => {
       });
     }
     dispatch(updateMaskIntoRequest(allAnnotations));
-    // dispatch(updateIsGenerateMask(true))
-    //  dispatch(setIsCanvasModalOpen(false));
-     dispatch(updateIsScreenShotTaken(true)); // Reset screenshot taken flag
+    // dispatch(setCanvasType("hover"));
+    dispatch(updateIsScreenShotTaken(true)); // Reset screenshot taken flag
   }
 
   const handleCancel = () => {

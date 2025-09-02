@@ -57,6 +57,7 @@ import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { Loader } from "./projectPage/ProjectsPage";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -89,6 +90,8 @@ export function StudioPage() {
  
     const { masterArray } = useSelector((state: RootState) => state.masterArray);
     const isFirst = useRef<boolean>(true);
+
+    const {isGenLoading} = useSelector((state: RootState) => state.workspace);
     // update master Array
    
     useEffect(() => {
@@ -235,11 +238,13 @@ export function StudioPage() {
             </Button>
             {/* </Link> */}
           </div>
+          {/* loading indicator */}
+          {isGenLoading && <Loader />}
 
           <StudioMainTabs />
         </div>
 
-        {/* Main Canvas */}
+        {/* Main Canvas */} 
 
         {/* {activeTabFromStore === "inspiration" ? (
           <WorkSpaceHome />

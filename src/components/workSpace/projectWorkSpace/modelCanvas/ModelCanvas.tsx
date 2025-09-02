@@ -19,7 +19,7 @@ const ModelCanvas = ({ isCanvasModalOpen, onClose }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const closeModal = () => {
-    dispatch(setCanvasType("draw"));
+    dispatch(setCanvasType("hover"));
     dispatch(resetCanvas());
     onClose();
   };
@@ -40,16 +40,7 @@ const ModelCanvas = ({ isCanvasModalOpen, onClose }: Props) => {
       {isCanvasModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl w-full h-full max-w-7xl max-h-[95vh] mx-4 my-4 transform transition-all flex flex-col">
-            {/* Modal Header */}
-            {/* <div className="flex items-center justify-between py-2 px-4 border-b border-gray-200 flex-shrink-0">
-                          
-                            <button
-                                onClick={closeModal}
-                                className="text-gray-400 hover:text-gray-600 transition-colors bg-transparent border border-gray-600 rounded-full px-2 py-2"
-                            >
-                                <X size={24} className='text-black'/>
-                            </button>
-                        </div> */}
+
 
             {/* Modal Body - Two Column Layout */}
             <div className="flex-1 overflow-auto flex">

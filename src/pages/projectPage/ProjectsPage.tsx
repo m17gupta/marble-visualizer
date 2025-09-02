@@ -428,11 +428,7 @@ export function ProjectsPage() {
 
       {/* delete project */}
       {isDeleteModalOpen && (
-        // <DeleteModal
-        //   isOpen={isDeleteModalOpen}
-        //   onCancel={handleCancelProjectDelete}
-        //   onConfirm={(data) => handleDeleteProject(data)}
-        // />
+   
         <DeleteModal
           isOpen={isDeleteModalOpen}
           onCancel={handleCancelProjectDelete}
