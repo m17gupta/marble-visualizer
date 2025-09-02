@@ -4,13 +4,21 @@ export interface AnnotationValue {
   [key: string]: number[];
 }
 
+export interface newPalletRequest{
+  title:string
+  segments: number[][];
+  palletUrl: string;
+}
+
 export interface GenAiRequest {
   houseUrl?: string[];
   paletteUrl?: string[];
+  palletRequest?: newPalletRequest[];
   referenceImageUrl?: string[];
   prompt?: string[];
   imageQuality?: ImageQuality;
   annotationValue?: AnnotationValue;
+  maskRequest?:newPalletRequest[]
   externalUserId?: "dzinly-prod";
   jobId?: string;
 }
@@ -116,5 +124,5 @@ export interface RequestPaletteModel {
   id: number;
   url: string;
   groupName: string;
-  segments: string[];
+  segments?: string[];
 }

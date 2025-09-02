@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel, Keyboard, FreeMode } from "swiper/modules";
@@ -53,6 +53,16 @@ const StudioTabs = () => {
 
   // ✅ Per-group Swiper refs (map)
   const segSwiperMapRef = useRef<Record<string, SwiperType | null>>({});
+  // ✅ Group Swiper ref
+  const groupSwiperRef = useRef<SwiperType | null>(null);
+  // Programmatically slide group Swiper to a specific group index
+  const slideToGroupTab = useCallback((groupName: string) => {
+    if (!groupSwiperRef.current || !masterArray) return;
+    const idx = masterArray.allSegments.findIndex((g) => g.groupName === groupName);
+    if (idx >= 0) {
+      groupSwiperRef.current.slideTo(idx, 300);
+    }
+  }, [masterArray]);
 
   // ✅ Hover auto-scroll helpers
   const hoverTimerRef = useRef<number | null>(null);
@@ -167,7 +177,7 @@ const StudioTabs = () => {
     stopAutoHover();
   }, [activeTab]);
 
-  // Auto-scroll active chips into view
+  // Auto-scroll active chips into view and group Swiper
   useEffect(() => {
     tabRefs.current[innerTabValue]?.scrollIntoView({
       behavior: "smooth",
@@ -179,12 +189,17 @@ const StudioTabs = () => {
       inline: "center",
       block: "nearest",
     });
-  }, [activeTab, innerTabValue]);
+    // Slide group Swiper to activeTab
+    if (activeTab) {
+      slideToGroupTab(activeTab);
+    }
+  }, [activeTab, innerTabValue, slideToGroupTab]);
 
   // Auto-swipe Swiper to first active chip when 'active' changes
   useEffect(() => {
-    if (!currentSelectedGroupSegment) return;
-
+    if (!currentSelectedGroupSegment || !segSwiperMapRef.current) return;
+    // Get sorted segments as in render
+     setActiveTab(currentSelectedGroupSegment.groupName);
     const sortedSegments = currentSelectedGroupSegment.segments
       .slice()
       .filter((tab) => tab.short_title)
@@ -261,6 +276,7 @@ const StudioTabs = () => {
               freeMode={{ enabled: true, momentum: true, momentumRatio: 0.5 }}
               mousewheel={{ forceToAxis: true, sensitivity: 0.6 }}
               className="max-w-full"
+              onSwiper={(sw) => (groupSwiperRef.current = sw)}
             >
               {masterArray.allSegments.map((tab) => (
                 <SwiperSlide key={tab.groupName} className="!w-auto">

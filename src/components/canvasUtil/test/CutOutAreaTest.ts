@@ -4,6 +4,7 @@ import * as fabric from "fabric";
 ;
 import * as martinez from "martinez-polygon-clipping";
 import { DeletePolygonFromCanvas } from "./DeletePolygonFromCanvasTest";
+import { DeletePolygonFromNewCanvas } from "../DeletePolygonFronCanvas";
 
 type NamedFabricObject = fabric.Object & {
   name?: string;
@@ -135,7 +136,7 @@ export const getCutOutArea = (
       backgroundColor: "rgba(0, 0, 0, 0.5)",
       fontSize: 18,
       fill: "#fff",
-      selectable: true,
+      selectable: false,
       visible: false,
       name: "text",
     });
@@ -151,7 +152,7 @@ export const getCutOutArea = (
       opacity: 0.4
     });
     const group = new fabric.Group([cutoutPath, text], {
-      selectable: true,
+      selectable: false,
       lockMovementX: true,
       lockMovementY: true,
       hasBorders: false,
@@ -175,7 +176,7 @@ export const getCutOutArea = (
   canvas?.add(maskGroup);
   canvas?.setActiveObject(maskGroup);
   canvas?.renderAll();
-  DeletePolygonFromCanvas(canvasRef, segName);
+  DeletePolygonFromNewCanvas(canvasRef, segName);
   // Calculate total area of all resulting rings
   let totalArea = 0;
 

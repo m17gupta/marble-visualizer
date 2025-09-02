@@ -111,7 +111,7 @@ export const makePolygon =async (
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         fontSize: 18,
         fill: "#fff",
-        selectable: true,
+        selectable: false,
         visible: isFillPolygon,
       });
       (text as NamedFabricObject).name = polyName;
@@ -125,6 +125,7 @@ export const makePolygon =async (
         stroke: color,
         strokeWidth: 2,
         opacity: 0.4,
+        selectable: false,
         visible: isFillPolygon,
         lockMovementX: true,
         lockMovementY: true,
@@ -133,7 +134,7 @@ export const makePolygon =async (
       (polygon as NamedFabricObject).subGroupName = groupName;
 
       const group = new fabric.Group([polygon, text], {
-        selectable: true,
+        selectable: false,
         lockMovementX: true,
         lockMovementY: true,
         hasBorders: false,
@@ -152,13 +153,13 @@ export const makePolygon =async (
     const hoverGroup = createGroup("hover");
     const outlineGroup = createGroup("outline");
     const maskGroup = createGroup("mask");
-   const iconGroup = await getIconGroup(canvasRef, coordinate, polyName);
+  // const iconGroup = await getIconGroup(canvasRef, coordinate, polyName);
     fabricCanvas.add(hoverGroup);
     fabricCanvas.add(outlineGroup);
     fabricCanvas.add(maskGroup);
-    if (iconGroup) {
-      fabricCanvas.add(iconGroup);
-    }
+    // if (iconGroup) {
+    //   fabricCanvas.add(iconGroup);
+    // }
     fabricCanvas.setActiveObject(maskGroup); // Optionally set one as active
     fabricCanvas.requestRenderAll();
   }

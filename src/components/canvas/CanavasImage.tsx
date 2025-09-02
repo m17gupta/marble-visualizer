@@ -445,6 +445,7 @@ const CanavasImage = forwardRef(
                   (seg: MasterGroupModel) =>
                     seg.groupName === foundSegment.group_label_system
                 );
+                console.log("Found group segment:", groupSeg);
                 if (groupSeg) {
                   dispatch(updatedSelectedGroupSegment(groupSeg));
                   dispatch(updateActiveTab("design-hub"));
