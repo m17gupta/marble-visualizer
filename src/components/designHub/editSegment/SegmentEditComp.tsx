@@ -235,6 +235,9 @@ export const SegmentEditComp = ({
      if(selectedSegments&& selectedSegments.length>0){
            dispatch(updateIsDeleteSegModal(true));
        }
+       else if (selectedSegments && selectedSegments.length === 0) {
+         toast.error("Please select a segment to delete");
+       }
   }
   return (
     <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[70vh] sm:max-h-[70vh]">
@@ -336,7 +339,7 @@ export const SegmentEditComp = ({
             className="bg-black text-white hover:bg-gray-800"
             onClick={handleSave}
           >
-            Submit
+            Edit
           </Button>
         )}
 
@@ -352,7 +355,7 @@ export const SegmentEditComp = ({
 
         {/* delete segment   */}
 
-        {optionEdit === "delete-segment" && (
+        {optionEdit === "edit-segment" && (
           <Button
             className="bg-black text-white hover:bg-gray-800"
              onClick={handleDelete}

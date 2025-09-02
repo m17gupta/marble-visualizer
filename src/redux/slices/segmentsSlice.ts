@@ -112,7 +112,7 @@ const initialState: SegmentsState = {
   allSegments: [],
   addSegMessage: "",
   isSegmentLoaded: false,
-  activeOption: null,
+  activeOption: "pallet",
   isDeleteSegModal: false,
 };
 

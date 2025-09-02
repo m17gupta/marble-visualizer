@@ -225,6 +225,19 @@ const masterArraySlice = createSlice({
           }
         }
       }
+      // delete from selcted GroupSegmnet
+      if (state.selectedGroupSegment &&
+        state.selectedGroupSegment.segments &&
+        state.selectedGroupSegment.segments.length > 0
+      ){
+       // find index and delete it
+       const index = state.selectedGroupSegment.segments.findIndex(
+         (seg) => seg.id === segmentId
+       );
+       if (index !== -1) {
+         state.selectedGroupSegment.segments.splice(index, 1);
+       }
+      }
     },
     changeGroupSelectedSegment: (state, action) => {
       const { master, updatedSegment } = action.payload;
