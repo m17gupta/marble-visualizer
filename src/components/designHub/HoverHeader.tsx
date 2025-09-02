@@ -34,6 +34,7 @@ import {
 import Toggleheader from "../canvasheader/Toggleheader";
 import DrawHeader from "../canvasheader/DrawHeader";
 import { Loader } from "@/pages/projectPage/ProjectsPage";
+import { BreadcrumbHeader } from "../canvasheader/BreadcrumbHeader";
 const HoverHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [canvasMode, setCanvasMode] = useState("");
@@ -122,6 +123,7 @@ const HoverHeader = () => {
     <>
       <Card>
         <CardContent className="py-2 pt-1.5 px-4 flex items-center">
+          {/* <BreadcrumbHeader/> */}
           <DrawHeader />
           <div className="flex-1" />
           <div className="flex gap-4 items-center">
