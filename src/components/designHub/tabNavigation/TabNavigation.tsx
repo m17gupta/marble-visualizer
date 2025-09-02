@@ -23,6 +23,9 @@ import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { toast } from "sonner";
 import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
 import { RiHome8Line, RiHomeOfficeLine } from "react-icons/ri";
+import { PiWallLight, PiWallThin } from "react-icons/pi";
+import { LuBrickWall } from "react-icons/lu";
+
 
 type Props = {
   title?: string;
@@ -40,7 +43,11 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
       tooltip: "Pallet",
       icon: (
     
-        <RiHomeOfficeLine fontSize={"20px"} color="#000"/>
+        // <RiHomeOfficeLine fontSize={"20px"} color="#000"/>
+        // <GiBrickWall fontSize={"20px"} color="#000" />
+        <LuBrickWall  fontSize={"20px"} color="#000"/>
+
+
       ),
     },
 
@@ -177,8 +184,8 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
                       ? "bg-blue-100 text-white border-blue-800"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
                   }`}
-                >
-                  {btn.icon}
+                > 
+                {btn.icon}
                 </button>
               </TooltipTrigger>
               <TooltipContent>
