@@ -259,7 +259,9 @@ const GuidancePanel: React.FC = () => {
           }}
         />
 
-        <div className="mb-4">
+   
+
+          <div className="relative flex gap-2 mb-4 flex-wrap">
           {/* Prompt Tag */}
           {requests.prompt && requests.prompt.length > 0 && (
             <UserInputPopOver
@@ -300,12 +302,10 @@ const GuidancePanel: React.FC = () => {
               />
             )}
 
+         </div>
 
 
-
-          <div className={`flex gap-3 md-gap-0 md:flex justify-between items-between
-           
-          `}>
+          <div className={`flex gap-3 md-gap-0 md:flex justify-between items-between`}>
             <div className="flex items-center">
               <ProjectHistory />
 
@@ -399,7 +399,7 @@ const GuidancePanel: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
+ 
 
         {/* Only render Call_task_id when there's an active task */}
         {/* {taskId && taskId !== "" && isTask && (

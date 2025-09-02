@@ -134,13 +134,7 @@ const DesignProject = () => {
             return (
               <div
                 key={index}
-                className={`flex items-center border rounded-md shadow-sm text-sm flex-shrink-0 focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200
-                  ${
-                    isActive
-                      ? "bg-blue-100 border-blue-500"
-                      : "bg-white border-gray-300"
-                  }
-                  `}>
+                className={`flex items-center border rounded-md shadow-sm text-sm flex-shrink-0 focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200${isActive? "bg-blue-100 border-blue-500": "bg-white border-gray-300"}`}>
                 <button
                   onClick={() => handleImageSwitch(label)}
                   className={`px-2 py-1 bg-transparent hover:border-transparent rounded-l-md focus-ring-0 focus:ring-blue-500 focus:outline-none transition-colors duration-200 ${

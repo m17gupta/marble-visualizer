@@ -35,13 +35,10 @@ const CompareGenAiHome: React.FC = () => {
 
   useEffect(() => {
     if (allGenAiImages && allGenAiImages.length > 0 && !isAuthenticated) {
-      // dispatch(updateGeneratedImage(allGenAiImages[0].output_image));
-      // dispatch(updateOriginalHouseImage(allGenAiImages[0].master_image_path));
       dispatch(setCurrentGenAiImage(allGenAiImages[0]));
     }
   }, [allGenAiImages, isAuthenticated]);
 
-  // Handle close compare view
   const handleCloseCompare = () => {
     // setShowCompareView(false);
     dispatch(setCurrentTabContent("home"));
@@ -50,25 +47,8 @@ const CompareGenAiHome: React.FC = () => {
     dispatch(resetRequest());
     dispatch(updateIsCompare(false));
   };
-
-  // const [viewMode, setViewMode] = useState<"slider" | "side-by-side">("slider");
-
-  // Toggle view mode between side-by-side and slider
-  // const handleToggleViewMode = (mode: "slider" | "side-by-side") => {
-  //   setViewMode(mode);
-  // };
-
-  // const handleInspirationSection = () => {
-  //   dispatch(setCurrentTabContent("home"));
-  //   dispatch(setIsGenerated(false));
-  //   dispatch(resetRequest());
-  // };
-
   return (
-    <div className="flex flex-col  md:h-full w-full p-2 pb-0 md:pb-2 bg-gray-50">
-
-
-      {/* Conditional rendering of compare view or image gallery */}
+    <div className="flex flex-col  md:h-full w-full p-2 pb-0 md:pb-2 bg-gray-50 px-4">
       {showCompareView &&
         currentGenAiImage &&
         currentGenAiImage.master_image_path &&
@@ -76,7 +56,6 @@ const CompareGenAiHome: React.FC = () => {
         <div className="h-[23vh] mb-2 md:mb-6 md:h-[80vh]">
           {currentGenAiImage.master_image_path &&
             currentGenAiImage.output_image &&
-
             <CompareSlider
               onClose={handleCloseCompare}
             />
@@ -95,11 +74,6 @@ const CompareGenAiHome: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Generated images gallery */}
-      {/* <AllGenAiImages
-   
-      /> */}
     </div>
   );
 };
