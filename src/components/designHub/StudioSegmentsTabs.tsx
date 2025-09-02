@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel, Keyboard, FreeMode } from "swiper/modules";
@@ -18,7 +18,7 @@ import {
   updateUserSelectedSegment,
 } from "@/redux/slices/MasterArraySlice";
 import TabNavigation from "./tabNavigation/TabNavigation";
-import type { Swiper as SwiperType } from "swiper"; // add this
+import type { Swiper as SwiperType } from "swiper";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
@@ -45,10 +45,59 @@ const StudioTabs = () => {
   const { userSelectedSegment } = useSelector(
     (state: RootState) => state.masterArray
   );
+
   const handleEditOption = (data: boolean, option: string) => {
     setEdit(data);
     setOptionEdit(option);
   };
+
+  // ✅ Per-group Swiper refs (map)
+  const segSwiperMapRef = useRef<Record<string, SwiperType | null>>({});
+
+  // ✅ Hover auto-scroll helpers
+  const hoverTimerRef = useRef<number | null>(null);
+  const hoverDirRef = useRef<0 | 1 | -1>(0);
+
+  const stopAutoHover = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    hoverDirRef.current = 0;
+  };
+
+  const startAutoHover = (dir: 1 | -1) => {
+    stopAutoHover();
+    hoverDirRef.current = dir;
+
+    const step = () => {
+      const sw = segSwiperMapRef.current[activeTab];
+      if (!sw) return;
+      if (dir === 1) sw.slideNext(250);
+      else sw.slidePrev(250);
+      hoverTimerRef.current = window.setTimeout(step, 140); // 120–180ms = smooth
+    };
+
+    step();
+  };
+
+  const onHoverMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const EDGE = 40; // px
+    if (x < EDGE && hoverDirRef.current !== -1) startAutoHover(-1);
+    else if (x > rect.width - EDGE && hoverDirRef.current !== 1) startAutoHover(1);
+    else if (x >= EDGE && x <= rect.width - EDGE && hoverDirRef.current !== 0)
+      stopAutoHover();
+  };
+
+  const onHoverLeave = () => stopAutoHover();
+
+  useEffect(() => {
+    // cleanup on unmount
+    return () => stopAutoHover();
+  }, []);
 
   // ids of selected/active segments
   const [active, setActive] = useState<number[]>([]);
@@ -57,14 +106,11 @@ const StudioTabs = () => {
     (state: RootState) => state.masterArray
   );
 
-  const segSwiperRef = useRef<SwiperType | null>(null); // swiper instance
-  const lastSegIdxRef = useRef<number>(0);
-
   // update optionaction
   useEffect(() => {
     if (activeOption) {
       setOptionEdit(activeOption);
-    }else if( activeOption===null){
+    } else if (activeOption === null) {
       setOptionEdit("pallet");
       setEdit(false);
     }
@@ -116,6 +162,11 @@ const StudioTabs = () => {
     }
   }, [userSelectedSegment]);
 
+  // Stop hover scroll when switching groups
+  useEffect(() => {
+    stopAutoHover();
+  }, [activeTab]);
+
   // Auto-scroll active chips into view
   useEffect(() => {
     tabRefs.current[innerTabValue]?.scrollIntoView({
@@ -132,25 +183,24 @@ const StudioTabs = () => {
 
   // Auto-swipe Swiper to first active chip when 'active' changes
   useEffect(() => {
-    if (!currentSelectedGroupSegment || !segSwiperRef.current) return;
-    // Get sorted segments as in render
+    if (!currentSelectedGroupSegment) return;
+
     const sortedSegments = currentSelectedGroupSegment.segments
       .slice()
       .filter((tab) => tab.short_title)
       .sort((a, b) => (a.short_title ?? "").localeCompare(b.short_title ?? ""));
-    // Find index of first active segment
+
     const idx = sortedSegments.findIndex((tab) => active.includes(tab.id!));
     if (idx >= 0) {
-      segSwiperRef.current.slideTo(idx, 300);
+      segSwiperMapRef.current[activeTab]?.slideTo(idx, 300);
     }
-  }, [active, currentSelectedGroupSegment]);
+  }, [active, currentSelectedGroupSegment, activeTab]);
 
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
     setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
     dispatch(addUserSelectedSegment(group.segments));
 
-    // reset inner selection state to this group
     const ids = group.segments.map((d) => d.id!);
     setActive(ids);
     setInnerTabValue(group.segments[0]?.short_title ?? "");
@@ -202,12 +252,16 @@ const StudioTabs = () => {
         className="box-border overflow-y-auto border-2"
       >
         {/* Top: Group tabs row */}
-        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-1 py-0  ">
+        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-1 py-0">
           <TabsList className="whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent w-full">
             <Swiper
+              modules={[FreeMode, Mousewheel]}
               spaceBetween={8}
               slidesPerView="auto"
-              className="max-w-full">
+              freeMode={{ enabled: true, momentum: true, momentumRatio: 0.5 }}
+              mousewheel={{ forceToAxis: true, sensitivity: 0.6 }}
+              className="max-w-full"
+            >
               {masterArray.allSegments.map((tab) => (
                 <SwiperSlide key={tab.groupName} className="!w-auto">
                   <TabsTrigger
@@ -216,7 +270,8 @@ const StudioTabs = () => {
                     onMouseEnter={() => handleGroupHover(tab)}
                     onMouseLeave={handleLeaveGroupHover}
                     value={tab.groupName}
-                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black">
+                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black"
+                  >
                     {tab.groupName}
                   </TabsTrigger>
                 </SwiperSlide>
@@ -228,28 +283,40 @@ const StudioTabs = () => {
         {/* Per-group content */}
         {masterArray.allSegments.map((wall) => (
           <TabsContent className="" value={wall.groupName} key={wall.groupName}>
-            <Tabs
-              value={innerTabValue}
-              className="w-full px-4 overflow-x-auto  thin-scrollbar"
-            >
+            <Tabs value={innerTabValue} className="w-full px-4 overflow-x-auto thin-scrollbar">
               {/* Inner: Segment chips row with Swiper */}
-
-              <div className="whitespace-nowrap py-1 bg-white pb-2">
+              <div
+                className="whitespace-nowrap py-1 bg-white pb-2"
+                onMouseMove={onHoverMove}
+                onMouseLeave={onHoverLeave}
+              >
                 <Swiper
+                  modules={[FreeMode, Mousewheel, Keyboard]}
                   spaceBetween={10}
                   slidesPerView="auto"
-                  onSwiper={(sw) => (segSwiperRef.current = sw)}
+                  onSwiper={(sw) => (segSwiperMapRef.current[wall.groupName] = sw)}
                   centeredSlides={false}
                   centerInsufficientSlides={false}
                   slidesOffsetBefore={0}
                   slidesOffsetAfter={0}
-                  watchOverflow={true}
-                  className="w-ful"
-                  freeMode={true}
-                  mousewheel={true}
-                  // mousewheel={{ forceToAxis: true, sensitivity: 1 }}
+                  watchOverflow
+                  className="w-full seg-swiper"
+                  freeMode={{
+                    enabled: true,
+                    momentum: true,
+                    momentumRatio: 0.45,
+                    momentumBounce: false,
+                    sticky: false,
+                  }}
+                  mousewheel={{
+                    forceToAxis: true,
+                    sensitivity: 0.6,
+                    releaseOnEdges: true,
+                    eventsTarget: ".seg-swiper",
+                  }}
                   keyboard={{ enabled: true }}
                   touchStartPreventDefault={false}
+                  grabCursor
                 >
                   {wall.segments
                     .slice()
@@ -260,28 +327,21 @@ const StudioTabs = () => {
                     .map((tab, idx) => {
                       const isPresent = active.includes(tab.id!);
                       return (
-                        <SwiperSlide
-                          key={tab.short_title}
-                          style={{ width: "auto" }}
-                        >
+                        <SwiperSlide key={tab.short_title} style={{ width: "auto" }}>
                           <Button
-                            ref={(el) =>
-                              (tabRefs.current[tab.short_title ?? ""] = el)
-                            }
+                            ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
                             onClick={() => {
                               handleInnerTabClick(tab);
-                              segSwiperRef.current?.slideTo(idx, 300);
+                              segSwiperMapRef.current[activeTab]?.slideTo(idx, 500);
                             }}
-                            onMouseEnter={() =>
-                              handleEachSegmentHover(tab.short_title ?? "")
-                            }
+                            onMouseEnter={() => handleEachSegmentHover(tab.short_title ?? "")}
                             onMouseLeave={handleLeaveGroupHover}
-                            className={`cursor-pointer uppercase border border-purple-500 hover:bg-white-200 text-sm font-semibold px-3 py-1 focus:ring-transparent transition-colors focus:outline-none duration-200
-                            ${
-                              isPresent
-                                ? "bg-purple-100 border border-purple-500 border-b-2 text-black rounded-md shadow-sm cursor-pointer"
-                                : "bg-white border-b-1 border-gray-300 text-gray-700 hover:bg-blue-100 shadow-none bg-white"
-                            }`}
+                            className={`cursor-pointer uppercase hover:bg-blue-50 border text-sm font-semibold px-3 py-1 focus:ring-transparent transition-colors focus:outline-none duration-200
+                              ${
+                                isPresent
+                                  ? "bg-purple-100 border-purple-500 border-b-2 text-black rounded-md shadow-sm"
+                                  : "bg-white border-gray-300 text-gray-700 hover:bg-blue-100"
+                              }`}
                           >
                             {tab.short_title}
                           </Button>
@@ -296,12 +356,8 @@ const StudioTabs = () => {
 
         <TabNavigation handleEditOption={handleEditOption} />
 
-        {!edit &&
-          
-            <SwatchRecommendations />
-          }
+        {!edit && <SwatchRecommendations />}
 
-          
         {edit &&
           activeOption !== "pallet" &&
           activeOption !== "add-segment" && (
