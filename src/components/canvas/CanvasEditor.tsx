@@ -126,6 +126,8 @@ export function CanvasEditor({
     (state: RootState) => state.segments
   );
 
+  const {markingMode} = useSelector((state: RootState) => state.canvas);
+
   const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
   const { selectedMasterArray } = useSelector(
     (state: RootState) => state.masterArray
@@ -449,13 +451,6 @@ export function CanvasEditor({
     canvas.renderAll();
   }, [activeTool, isCanvasReady, setIsAutoPanning]);
 
-  // Control whether zoom is centered on mouse position or canvas center
-  // const getIsCenterZooms = useRef(zoomMode === "center");
-
-  // Update zoom mode ref when zoomMode changes
-  // useEffect(() => {
-  //   getIsCenterZooms.current = zoomMode === "center";
-  // }, [zoomMode]);
 
   const handleMouseWheel = (event: fabric.TEvent) => {
     // Cast the event to WheelEvent to access deltaY
@@ -804,7 +799,7 @@ export function CanvasEditor({
         const previewPoly = new fabric.Polygon(outlinePoints, {
           fill: "#FFFAFA", // no fill, just outline
           stroke: "rgb(7 239 253)",
-          opacity: 0.6,
+          opacity: 0.3,
           strokeWidth: adjustedStrokeWidth,
           strokeDashArray: adjustedDashArray,
           selectable: false,

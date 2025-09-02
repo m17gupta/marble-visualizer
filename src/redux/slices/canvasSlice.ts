@@ -58,6 +58,7 @@ interface CanvasState {
   aiTrainImageHeight: number;
   isCompare: boolean;
   isSwitchCanvas: boolean;
+  markingMode:string
 }
 
 // Initial state
@@ -82,7 +83,8 @@ const initialState: CanvasState = {
   aiTrainImageWidth: 800,
   aiTrainImageHeight: 600,
   isCompare: false,
-  isSwitchCanvas: false
+  isSwitchCanvas: false,
+  markingMode:"polygon"
 };
 
 // Create the canvas slice
@@ -177,6 +179,9 @@ const canvasSlice = createSlice({
     updateSwitchCanvas: (state, action) => {
       state.isSwitchCanvas = action.payload;
     },
+    updateMarkingMode: (state, action: PayloadAction<string>) => {
+      state.markingMode = action.payload;
+    },
     // Reset canvas state to initial values
     resetCanvas(state) {
       state.currentZoom = 1;
@@ -188,7 +193,8 @@ const canvasSlice = createSlice({
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       state.activeCanvas = "hideSegments";
-      state.isCompare= false
+      state.isCompare= false,
+      state.markingMode = "polygon";
     },
    setIsResetZoom: (state, action: PayloadAction<boolean>) => {
       state.isResetZoom = action.payload; // Update the reset zoom flag 
@@ -218,7 +224,8 @@ export const {
   updateScreenShotUrl,
   setIsResetZoom,setActiveTab,
   updateIsCompare,
-  updateSwitchCanvas
+  updateSwitchCanvas,
+  updateMarkingMode
 } = canvasSlice.actions;
 
 // Export reducer
