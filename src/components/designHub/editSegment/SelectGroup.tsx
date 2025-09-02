@@ -3,33 +3,39 @@ import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const SelectGroup = () => {
+type Prop={
+  segType: string;
+  onChange: (value: string) => void;
+}
+const SelectGroup = ({ segType, onChange }: Prop) => {
   const dispatch = useDispatch();
   const [groupArray, setGroupArray] = React.useState<string[]>([]);
   const [groupName, setGroupName] = useState("");
 
-  const { selectedMasterArray, selectedGroupSegment } = useSelector(
+  const { masterArray } = useSelector(
     (state: RootState) => state.masterArray
   );
-  const totalGroups = selectedMasterArray?.allSegments.map(
-    (d: MasterGroupModel) => d.groupName
-  );
+ 
 
   useEffect(() => {
-    if (totalGroups && totalGroups.length > 0) {
-      setGroupArray(totalGroups);
+    if (masterArray && masterArray.length > 0 && segType) {
+      const groupmaster= masterArray.find(item=>item.name===segType)
+      if (groupmaster) {
+        const totalGroups = groupmaster.allSegments.map((seg) => seg.groupName);
+        setGroupArray(totalGroups);
+      }
     } else {
       setGroupArray([]);
     }
-  }, [totalGroups]);
+  }, [masterArray,segType]);
 
-  // update selected group
-  useEffect(() => {
-    if (selectedGroupSegment) {
-      setGroupName(selectedGroupSegment.groupName);
-    }
-  }, [selectedGroupSegment]);
 
+
+
+  const handleGroup = (value: string) => {
+    setGroupName(value);
+    onChange(value);
+  };
   return (
     <>
       <div className="pt-2">
@@ -45,7 +51,7 @@ const SelectGroup = () => {
         <div className="relative w-full">
           <select
             value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
+            onChange={(e) => handleGroup(e.target.value)}
             className="w-full appearance-none rounded-md border border-1 border-gray-300 px-4 py-1.5 text-sm bg-gray-100 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>

@@ -71,33 +71,19 @@ export const SegmentEditComp = ({
 
   const [selSeg, setSelSeg] = useState("");
 
-  const { selectedSegment, masterArray } = useSelector(
-    (state: RootState) => state.masterArray
-  );
 
   const [isUpdated, setIsUpdated] = useState(false);
 
-
-
-  //   useEffect(() => {
-  //     if (
-  //       selectedSegment &&
-  //       selectedSegment.segment_type &&
-  //       selectedSegment.group_label_system &&
-  //       selectedSegment.short_title &&
-  //       selectedSegment.title
-  //     ) {
-  //       // setSegType(selectedSegment.segment_type);
-  //       setSegType(currentSelectedGroupSegment.segments[0].segment_type);
-  //       setGroupName(currentSelectedGroupSegment.segments[0].group_label_system);
-  //       setShortName(currentSelectedGroupSegment.segments[0].short_title);
-  //       const categories = segments.find(
-  //         (d) => d.name == currentSelectedGroupSegment.segments[0].segment_type
-  //       )?.categories;
-  //       setAllCategories(categories!);
-  //       // handleSegmetName();
-  //     }
-  //   }, [currentSelectedGroupSegment]);
+// update the seg Type
+useEffect(() => {
+  if (selectedSegments && selectedSegments.length > 0) {
+    const segment = selectedSegments[0];
+    if (segment.segment_type) {
+      setSegType(segment.segment_type);
+    }
+    // handleSegmetName();
+  }
+}, [selectedSegments]);
 
   const handleSegGroupName = (
     masterArray: MasterModel[],
@@ -148,6 +134,9 @@ export const SegmentEditComp = ({
   //     }
   //   }
   // }, [segments, segType, masterArray, isUpdated]);
+   const handleSelectGroup = (value: string) => {
+     setSegType(value);
+   };
 
   const handleAddGroup = () => {
     setIsUpdated(true);
@@ -169,42 +158,42 @@ export const SegmentEditComp = ({
     console.log("segType", segType);
     console.log("groupName", groupName);
     console.log("shortName", shortName);
-    console.log("selectedSegment", selectedSegment);
+
     console.log("new_master", new_master);
 
-    if (
-      !segType ||
-      !groupName ||
-      !shortName ||
-      !selectedSegment ||
-      !new_master
-    ) {
-      toast.error("Please fill all fields");
-      return;
-    }
+    // if (
+    //   !segType ||
+    //   !groupName ||
+    //   !shortName ||
+    //   !selectedSegment ||
+    //   !new_master
+    // ) {
+    //   toast.error("Please fill all fields");
+    //   return;
+    // }
 
-    const newSegment = {
-      id: selectedSegment.id,
-      job_id: selectedSegment.job_id,
-      title: selectedCatogory,
-      segment_type: segType,
-      group_label_system: groupName,
-      short_title: shortName,
-      group_name_user: groupName,
-      annotation_type: selectedSegment.annotation_type,
-      segment_bb_float: selectedSegment.segment_bb_float,
-      annotation_points_float: selectedSegment.annotation_points_float,
-      seg_perimeter: selectedSegment.seg_perimeter,
-      seg_area_sqmt: selectedSegment.seg_area_sqmt,
-      seg_skewx: selectedSegment.seg_skewx,
-      seg_skewy: selectedSegment.seg_skewy,
-      created_at: selectedSegment.created_at,
-      updated_at: new Date().toISOString(),
-      group_desc: selectedSegment.group_desc,
-    } as SegmentModal;
+    // const newSegment = {
+    //   id: selectedSegment.id,
+    //   job_id: selectedSegment.job_id,
+    //   title: selectedCatogory,
+    //   segment_type: segType,
+    //   group_label_system: groupName,
+    //   short_title: shortName,
+    //   group_name_user: groupName,
+    //   annotation_type: selectedSegment.annotation_type,
+    //   segment_bb_float: selectedSegment.segment_bb_float,
+    //   annotation_points_float: selectedSegment.annotation_points_float,
+    //   seg_perimeter: selectedSegment.seg_perimeter,
+    //   seg_area_sqmt: selectedSegment.seg_area_sqmt,
+    //   seg_skewx: selectedSegment.seg_skewx,
+    //   seg_skewy: selectedSegment.seg_skewy,
+    //   created_at: selectedSegment.created_at,
+    //   updated_at: new Date().toISOString(),
+    //   group_desc: selectedSegment.group_desc,
+    // } as SegmentModal;
 
-    dispatch(updateAddSegMessage(" Updating segment details..."));
-    // onSave(newSegment, new_master);
+    // dispatch(updateAddSegMessage(" Updating segment details..."));
+    // // onSave(newSegment, new_master);
 
     setGroupArray([]);
     setShortName("");
@@ -274,12 +263,8 @@ export const SegmentEditComp = ({
       </div>
 
       <div className="px-3">
-        {/* Select Group */}
-        {optionEdit === "edit-segment" && (
-            <SelectGroup/>
-        )}
 
-        {/* Select segment type */}
+           {/* Select segment type */}
         {optionEdit === "edit-segment" && (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-2">
@@ -288,7 +273,7 @@ export const SegmentEditComp = ({
             <div className="relative w-full">
               <select
                 value={segType}
-                onChange={(e) => setSegType(e.target.value)}
+                onChange={(e) => handleSelectGroup(e.target.value)}
                 className="w-full appearance-none rounded-md border border-1  border-gray-300 bg-gray-100 px-4 py-1.5 text-sm pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
               >
                 <option value="" disabled>
@@ -324,6 +309,15 @@ export const SegmentEditComp = ({
             </div>
           </div>
         )}
+        {/* Select Group */}
+        {optionEdit === "edit-segment" && (
+            <SelectGroup
+              segType={segType}
+              onChange={(value) => {setGroupName(value)}}
+            />
+        )}
+
+     
 
         {/* Categories */}
         {optionEdit === "edit-segment" && (
