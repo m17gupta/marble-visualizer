@@ -36,16 +36,11 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const buttons = [
 
     {
-      id: "add",
+      id: "pallet",
       tooltip: "Pallet",
       icon: (
-        // <img
-        //   src="/assets/image/solar--home-line-duotone 1 (1).svg"
-        //   alt="Add Segment"
-        //   className="h-5 w-5"
-        // />
+    
         <RiHomeOfficeLine fontSize={"20px"} color="#000"/>
-
       ),
     },
 
@@ -84,17 +79,6 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
         />
       ),
     },
-    // {
-    //   id: "delete-segment",
-    //   tooltip: "Delete Segment",
-    //   icon: (
-    //     <img
-    //       src="/assets/image/line-md--trash.svg"
-    //       alt="Delete Segment"
-    //       className="h-5 w-5"
-    //     />
-    //   ),
-    // },
     {
       id: "information",
       tooltip: "Information",
@@ -158,19 +142,20 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   // update Active option
   useEffect(() => {
     if (activeOption == null) {
-      setActive(null);
+      setActive("pallet");
     } else if (activeOption) {
       setActive(activeOption);
     }
   }, [activeOption]);
 
   const handleOptionSelect = (val: string) => {
-    dispatch(setActiveOption(val));
-    if (val === "add-segment") {
-      dispatch(setCanvasType("draw"));
+    dispatch(setActiveOption( val));
+    if (val === "add-segment"|| val === "pallet") {
+      dispatch(setCanvasType(val==="add-segment" ? "draw" : "hover"));
       handleEditOption(false, val);
       // setActive(val);
-    }  else {
+    }
+     else {
       dispatch(setCanvasType("hover"));
       handleEditOption(true, val);
       // setActive(val);

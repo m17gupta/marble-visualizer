@@ -21,10 +21,7 @@ import TabNavigation from "./tabNavigation/TabNavigation";
 import type { Swiper as SwiperType } from "swiper"; // add this
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import {
-  updateAddSegMessage,
-  updateIsNewMasterArray,
-} from "@/redux/slices/segmentsSlice";
+
 import NoSegment from "./NoSegment";
 import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
 import { updateSegmentIntoRequestPallet } from "@/redux/slices/visualizerSlice/genAiSlice";
@@ -45,23 +42,33 @@ const StudioTabs = () => {
   const [edit, setEdit] = useState(false);
   const [optionEdit, setOptionEdit] = useState<string | null>(null);
 
-   const {userSelectedSegment}  = useSelector((state: RootState) => state.masterArray);
+  const { userSelectedSegment } = useSelector(
+    (state: RootState) => state.masterArray
+  );
   const handleEditOption = (data: boolean, option: string) => {
     setEdit(data);
     setOptionEdit(option);
-   
   };
 
   // ids of selected/active segments
   const [active, setActive] = useState<number[]>([]);
-
+  const { activeOption } = useSelector((state: RootState) => state.segments);
   const { selectedMasterArray, selectedGroupSegment } = useSelector(
     (state: RootState) => state.masterArray
   );
 
-
   const segSwiperRef = useRef<SwiperType | null>(null); // swiper instance
   const lastSegIdxRef = useRef<number>(0);
+
+  // update optionaction
+  useEffect(() => {
+    if (activeOption) {
+      setOptionEdit(activeOption);
+    }else if( activeOption===null){
+      setOptionEdit("pallet");
+      setEdit(false);
+    }
+  }, [activeOption]);
 
   // Initialize from selectedMasterArray
   useEffect(() => {
@@ -101,7 +108,6 @@ const StudioTabs = () => {
       setCurrentSelectedGroupSegment(null);
     }
   }, [selectedGroupSegment]);
-
 
   // update on Click event
   useEffect(() => {
@@ -187,21 +193,22 @@ const StudioTabs = () => {
   if (!masterArray || masterArray.allSegments.length === 0) {
     return <NoSegment />;
   }
-  
 
   return (
     <>
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="box-border overflow-y-auto border-2">
+        className="box-border overflow-y-auto border-2"
+      >
         {/* Top: Group tabs row */}
         <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-2 py-0  ">
           <TabsList className="whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent w-full">
-             <Swiper
+            <Swiper
               spaceBetween={8}
               slidesPerView="auto"
-              className="max-w-full">
+              className="max-w-full"
+            >
               {masterArray.allSegments.map((tab) => (
                 <SwiperSlide key={tab.groupName} className="!w-auto">
                   <TabsTrigger
@@ -210,24 +217,23 @@ const StudioTabs = () => {
                     onMouseEnter={() => handleGroupHover(tab)}
                     onMouseLeave={handleLeaveGroupHover}
                     value={tab.groupName}
-                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black">
+                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black"
+                  >
                     {tab.groupName}
                   </TabsTrigger>
                 </SwiperSlide>
               ))}
             </Swiper>
           </TabsList>
-
-          
         </div>
 
         {/* Per-group content */}
         {masterArray.allSegments.map((wall) => (
-          <TabsContent
-            className=""
-            value={wall.groupName}
-            key={wall.groupName}>
-            <Tabs value={innerTabValue} className="w-full px-4 overflow-x-auto  thin-scrollbar">
+          <TabsContent className="" value={wall.groupName} key={wall.groupName}>
+            <Tabs
+              value={innerTabValue}
+              className="w-full px-4 overflow-x-auto  thin-scrollbar"
+            >
               {/* Inner: Segment chips row with Swiper */}
 
               <div className="whitespace-nowrap py-1 bg-white pb-2">
@@ -258,7 +264,8 @@ const StudioTabs = () => {
                       return (
                         <SwiperSlide
                           key={tab.short_title}
-                          style={{ width: "auto", }}>
+                          style={{ width: "auto" }}
+                        >
                           <Button
                             ref={(el) =>
                               (tabRefs.current[tab.short_title ?? ""] = el)
@@ -276,7 +283,8 @@ const StudioTabs = () => {
                               isPresent
                                 ? "bg-purple-100 border border-purple-500 border-b-2 text-black rounded-md shadow-sm cursor-pointer"
                                 : "bg-white border-b-1 border-gray-300 text-gray-700 hover:bg-blue-100 shadow-none bg-white"
-                            }`}>
+                            }`}
+                          >
                             {tab.short_title}
                           </Button>
                         </SwiperSlide>
@@ -288,19 +296,25 @@ const StudioTabs = () => {
           </TabsContent>
         ))}
 
-        <TabNavigation
-         handleEditOption={handleEditOption} />
+        <TabNavigation handleEditOption={handleEditOption} />
 
-        {edit && optionEdit && (
-          <SegmentEditComp
-            optionEdit={optionEdit}
-            onCancel={handleCancelEdit}
-          />
-        )}
-        {!edit && <SwatchRecommendations />}
+        {!edit &&
+          
+            <SwatchRecommendations />
+          }
+
+          
+        {edit &&
+          activeOption !== "pallet" &&
+          activeOption !== "add-segment" && (
+            <SegmentEditComp
+              optionEdit={optionEdit ?? ""}
+              onCancel={handleCancelEdit}
+            />
+          )}
       </Tabs>
 
-      <DeleteSegModal/>
+      <DeleteSegModal />
     </>
   );
 };

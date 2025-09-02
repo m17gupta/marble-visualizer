@@ -84,6 +84,12 @@ const SelectSegment = () => {
                           : "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200"
                       }
                     `}
+                     onMouseEnter={() => {
+                  handleMouseEnter(opt.short_title??"");
+                }}
+                onMouseLeave={() => {
+                  handleMouseLeave();
+                }}
             >
               <input
                 type="checkbox"
@@ -92,12 +98,7 @@ const SelectSegment = () => {
                   if (typeof opt.id !== "number") return;
                   handleSelectSegment(opt, opt.id);
                 }}
-                onMouseEnter={() => {
-                  handleMouseEnter(opt.short_title??"");
-                }}
-                onMouseLeave={() => {
-                  handleMouseLeave();
-                }}
+               
                 className="accent-purple-600 w-4 h-4"
               />
               {opt.short_title}

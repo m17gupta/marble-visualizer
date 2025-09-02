@@ -22,7 +22,7 @@ const DeleteSegModal = () => {
       .map(seg => seg.id)
       .filter((id): id is number => typeof id === 'number');
     if (allSelected.length === 0) return;
-    console.log("Deleting segments with IDs:", allSelected);
+   // console.log("Deleting segments with IDs:", allSelected);
     try {
       const response = await dispatch(deleteSegmentById(allSelected)).unwrap();
       if (response && response.success) {
