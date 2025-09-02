@@ -34,6 +34,7 @@ const initialState: GenAiState = {
   requests: {
     houseUrl: [],
     paletteUrl: [],
+    palletRequest: [],
     referenceImageUrl: [],
     prompt: [],
     imageQuality: "medium", // Assuming 'medium' is a valid default value
@@ -228,26 +229,48 @@ const genAiSlice = createSlice({
         state.currentRequestPalette.push(action.payload);
       }
     },
+    updateNewPalletRequest:(state, action)=>{
+      const newPallet = action.payload;
+      if(!state.requests.palletRequest) {
+        state.requests.palletRequest = [];
+      }
+      if(state.requests.palletRequest.length==0) {
+        state.requests.palletRequest.push(newPallet);
+      }else{
+      // check pallet url is exist or not
+      const existingPallet = state.requests.palletRequest.find((p) => p.palletUrl === newPallet.palletUrl);
+      if(existingPallet) {
+        // exist then delete the it
+        state.requests.palletRequest = state.requests.palletRequest.filter((p) => p.palletUrl !== newPallet.palletUrl);
+      } else {
+        state.requests.palletRequest.push(newPallet);
+      }
+    }
+    },
     updateSegmentIntoRequestPallet:(state,action)=>{
        const segData = action.payload;
-         debugger
        const existingPalette = state.currentRequestPalette.find((p) => p.groupName === segData.group_label_system);
-      if (existingPalette) {
-          const allSegName = existingPalette.segments
-          //check segData.short_title if found then deklete else add
-          if (allSegName.includes(segData.short_title)) {
-            existingPalette.segments = allSegName.filter((name) => name !== segData.short_title);
-          } else {
-            existingPalette.segments.push(segData.short_title);
-          }
-      }
+       if (existingPalette) {
+         const allSegName = existingPalette.segments;
+         // Check segData.short_title if found then delete else add
+         if (allSegName && allSegName.includes(segData.short_title)) {
+           existingPalette.segments = allSegName.filter((name) => name !== segData.short_title);
+         } else {
+           if (!existingPalette.segments) {
+             existingPalette.segments = [];
+           }
+           existingPalette.segments.push(segData.short_title);
+         }
+       }
     },
 
     resetRequest: (state) => {
       state.requests = {
         houseUrl: state.requests.houseUrl,
         paletteUrl: [],
+        palletRequest: [],
         referenceImageUrl: [],
+        maskRequest: [],
         prompt: [],
         imageQuality: "medium",
         annotationValue: {},
@@ -415,6 +438,7 @@ export const {
   resetMaskIntoRequest,
   addUpdateRequestPalette,
   updateSegmentIntoRequestPallet,
+  updateNewPalletRequest
 
 } = genAiSlice.actions;
 

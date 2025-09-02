@@ -12,9 +12,11 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import {
   addPaletteImage,
   addUpdateRequestPalette,
+  updateNewPalletRequest,
 } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
+import { newPalletRequest } from "@/models/genAiModel/GenAiModel";
 
 export function SwatchRecommendations() {
   const dispatch = useDispatch();
@@ -130,15 +132,24 @@ export function SwatchRecommendations() {
     if (userSelectedSegmentState && userSelectedSegmentState.length > 0) {
       const allSegName = userSelectedSegmentState.map((seg) => seg.short_title);
       const groupName = userSelectedSegmentState[0]?.group_label_system;
+      const allSegments = userSelectedSegmentState.map((seg) => seg.annotation_points_float);
+      console.log("All Segments:", allSegments);
+      // dispatch(
+      //   addUpdateRequestPalette({
+      //     id: swatch.id,
+      //     segments: allSegName,
+      //     groupName,
+      //     url: url || "",
+      //   })
+      // );
 
-      dispatch(
-        addUpdateRequestPalette({
-          id: swatch.id,
-          segments: allSegName,
-          groupName,
-          url: url || "",
-        })
-      );
+      const data:newPalletRequest = {
+        title: groupName??"",
+        segments: (allSegments?.filter(Boolean) as number[][]) || [],
+        palletUrl: url || "",
+      };
+      console.log("Pallet Data:", data);
+      dispatch(updateNewPalletRequest(data));
     }
   };
 

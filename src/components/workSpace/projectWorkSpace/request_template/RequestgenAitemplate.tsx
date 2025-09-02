@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import GenAiRequestImage from '../genAiRequestsImage/GenAiRequestImage';
-import { RequestPaletteModel } from '@/models/genAiModel/GenAiModel';
-import { addPrompt, addUpdateRequestPalette, resetInspirationImage, resetPaletteImage } from '@/redux/slices/visualizerSlice/genAiSlice';
+import { newPalletRequest, RequestPaletteModel } from '@/models/genAiModel/GenAiModel';
+import { addPrompt, addUpdateRequestPalette, resetInspirationImage, resetPaletteImage, updateNewPalletRequest } from '@/redux/slices/visualizerSlice/genAiSlice';
 import { url } from 'inspector';
 import MaskImage from '@/components/studio/studioMainTabs/chat/MaskImage';
+import GenAiPalletRequest from '../genAiRequestsImage/GenAiPalletRequest';
 
 const RequestgenAitemplate = () => {
    const dispatch = useDispatch();
@@ -64,14 +65,30 @@ const RequestgenAitemplate = () => {
   const handleDeletePrompt=()=>{
     dispatch(addPrompt(""));
   }
+
+  const handleDeletePalletRequest=(data: newPalletRequest)=>{
+    dispatch(updateNewPalletRequest(data));
+  }
   return (
     <div className="flex items-baseline gap-4 rounded-md border border-gray-200 bg-white px-2  mb-4 mx-4">
       <div className="flex flex-grow gap-2 overflow-x-auto scroll-thin p-2 "
       key="pallet"
       >
-          <MaskImage/>
+        {/* request for mask image */}
+        <MaskImage />
+
           {/* request pallet */}
-           {requestPalletList &&
+
+          {requests && requests.palletRequest &&
+          requests.palletRequest.length > 0 &&
+          requests.palletRequest.map((item, index) => (
+            <GenAiPalletRequest
+              requestData={item}
+              keytitle={"pallet"}
+              onDelete={handleDeletePalletRequest}
+            />
+          ))}
+           {/* {requestPalletList &&
         requestPalletList.length > 0 &&
         requestPalletList.map((item, index) => (
           <GenAiRequestImage
@@ -80,7 +97,7 @@ const RequestgenAitemplate = () => {
             onDelete={handleDeletePallet}
             
           />
-        ))}
+        ))} */}
 
         {/* request for mask image */}
      
