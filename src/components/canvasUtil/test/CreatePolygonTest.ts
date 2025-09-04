@@ -148,7 +148,8 @@ export const makePolygon =async (
       return group;
     };
         // Use await to get the icon group after the SVG has been loaded and parsed
-  
+  // create an empty group and add to canvas as testPolygon
+
     // Create and add each group
     const hoverGroup = createGroup("hover");
     const outlineGroup = createGroup("outline");
@@ -157,6 +158,7 @@ export const makePolygon =async (
     fabricCanvas.add(hoverGroup);
     fabricCanvas.add(outlineGroup);
     fabricCanvas.add(maskGroup);
+  
     // if (iconGroup) {
     //   fabricCanvas.add(iconGroup);
     // }

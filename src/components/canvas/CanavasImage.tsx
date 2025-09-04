@@ -48,7 +48,10 @@ import {
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import DoubleClickHtml from "./DoubleClickHtml";
-type NamedFabricObject = fabric.Object & { name?: string };
+type NamedFabricObject = fabric.Object & {
+  name?: string;
+  groupName?: string;
+};
 
 interface CanvasHoverLayerProps {
   imageUrl?: string;
@@ -118,6 +121,8 @@ const CanavasImage = forwardRef(
       (event: fabric.TEvent) => {
         const currentCanvasActive = canvasActiveRef.current;
         const fabricCanvas = fabricCanvasRef.current;
+        console.log("canavvsss----", fabricCanvas);
+        console.log("canvas", fabricCanvas?.getObjects());
         if (!fabricCanvas) return;
         const fabricRef = { current: fabricCanvas };
         const pointer = fabricCanvas.getPointer(event.e);
@@ -212,6 +217,15 @@ const CanavasImage = forwardRef(
         backgroundColor: "#282828",
       });
 
+      //  add group testPolygon
+      const testPolygon = new fabric.Group([], {
+        selectable: false,
+        hasControls: false,
+        hasBorders: false,
+      });
+      (testPolygon as NamedFabricObject).groupName = "testPoly";
+      canvas.add(testPolygon);
+      
       fabricCanvasRef.current = canvas;
 
       // Store the original viewport transform

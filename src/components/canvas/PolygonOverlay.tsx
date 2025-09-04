@@ -1,11 +1,21 @@
 import { AppDispatch, RootState } from "@/redux/store";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { collectPoints } from "@/components/canvasUtil/test/CreatePolygonTest";
-import { HideAll, ShowIcon, ShowOutline } from "@/components/canvasUtil/HoverSegment";
+import {
+  HideAll,
+  ShowIcon,
+  ShowOutline,
+} from "@/components/canvasUtil/HoverSegment";
 import { getContainedPolygonNamesByBoundingBox } from "@/components/canvasUtil/test/DetectPolygonUnderTargetTest";
 import { getCutOutArea } from "@/components/canvasUtil/test/CutOutAreaTest";
 import { HideAllSegments } from "@/components/canvasUtil/test/HoverSegmentTest";
@@ -30,7 +40,7 @@ const PolygonOverlay = ({
   className,
 }: CanvasHoverLayerProps) => {
   const dispatch = useDispatch<AppDispatch>();
-
+  const isUpdatePoly = useRef<boolean>(true);
   const { allSegments: allSegmentArray } = useSelector(
     (state: RootState) => state.segments
   );
@@ -57,13 +67,16 @@ const PolygonOverlay = ({
   const { canvasType, isSwitchCanvas } = useSelector(
     (state: RootState) => state.canvas
   );
-    const activeCanvas = useSelector(
-      (state: RootState) => state.canvas.activeCanvas
-    );  
+  const activeCanvas = useSelector(
+    (state: RootState) => state.canvas.activeCanvas
+  );
 
   const [canvasMode, setCanvasMode] = useState<string>("hover");
-  const isPolygonUpdate= useRef<boolean>(false)
+  const isPolygonUpdate = useRef<boolean>(false);
 
+useEffect(() => {
+  isUpdatePoly.current = true;
+}, []);
   // update canvas Mode
   useEffect(() => {
     setCanvasMode(canvasType);
@@ -109,8 +122,10 @@ const PolygonOverlay = ({
       segments.length > 0 &&
       height &&
       width &&
-      canvas
+      canvas &&
+      isUpdatePoly.current
     ) {
+     console.log("allSegArray calling ");
       allSegArray.forEach((seg, idx) => {
         const {
           segment_type,
@@ -132,7 +147,7 @@ const PolygonOverlay = ({
         if (!segment_type) return;
         if (!segColor) return;
         if (!canvas.current) return;
-
+        isUpdatePoly.current = false;
         // Pass a unique subGroupName for overlays
         collectPoints(
           annotation_points_float,
@@ -170,23 +185,22 @@ const PolygonOverlay = ({
     aiTrainImageWidth,
     aiTrainImageHeight,
     canvas,
+    isUpdatePoly.current,
   ]);
 
   // hover on group segment
 
   // when canvas switch to outLine
   useEffect(() => {
-
     // Get the fabric canvas from CanavasImage
     const fabricCanvas = canvas.current?.getFabricCanvas();
     if (!fabricCanvas) return;
     if (canvasType === "hover" && activeCanvas === "outline") {
       HideAllSegments(fabricCanvas);
       // make visible all segments
-      ShowOutline(canvas,"outline");
+      ShowOutline(canvas, "outline");
     } else if (canvasType === "hover" && activeCanvas === "mask") {
-    
-       ShowOutline(canvas,"mask");
+      ShowOutline(canvas, "mask");
     } else if (canvasType === "hover" && activeCanvas === "showSegments") {
       // show Icon
       console.log(" show icon called");
@@ -195,60 +209,59 @@ const PolygonOverlay = ({
       //hide all segments
       HideAll(canvas);
     }
-  }, [canvasType,activeCanvas, canvas]);
+  }, [canvasType, activeCanvas, canvas]);
 
   // cut out section
-    useEffect(() => {
-         const fabricCanvas = canvas.current?.getFabricCanvas();
+  useEffect(() => {
+    const fabricCanvas = canvas.current?.getFabricCanvas();
     if (!fabricCanvas) return;
-  
-     
-      const objects = fabricCanvas.getObjects();
-      const scalex = fabricCanvas.width / aiTrainImageWidth;
-      const scaley = fabricCanvas.height / aiTrainImageHeight;
-      if (isPolygonUpdate.current && allSegArray && allSegArray.length > 0) {
-        const getWallSegment = allSegArray.filter(
-          (seg) => seg.segment_type === "Wall"
-        );
-        if (getWallSegment.length > 0) {
-          // Do something with wall segments
-          getWallSegment.map((item) => {
-            const getAllPolyName = getContainedPolygonNamesByBoundingBox(
-              canvas,
-              item?.short_title ?? ""
+
+    const objects = fabricCanvas.getObjects();
+    const scalex = fabricCanvas.width / aiTrainImageWidth;
+    const scaley = fabricCanvas.height / aiTrainImageHeight;
+    if (isPolygonUpdate.current && allSegArray && allSegArray.length > 0) {
+      const getWallSegment = allSegArray.filter(
+        (seg) => seg.segment_type === "Wall"
+      );
+      if (getWallSegment.length > 0) {
+        // Do something with wall segments
+        getWallSegment.map((item) => {
+          const getAllPolyName = getContainedPolygonNamesByBoundingBox(
+            canvas,
+            item?.short_title ?? ""
+          );
+
+          if (getAllPolyName.length > 0) {
+            const allTrimPoly = getAllPolyName.filter(
+              (polyName) =>
+                polyName.startsWith("WI") || polyName.startsWith("TR")
             );
-           
-            if (getAllPolyName.length > 0) {
-              const allTrimPoly = getAllPolyName.filter(
-                (polyName) =>
-                  polyName.startsWith("WI") || polyName.startsWith("TR")
+            const color =
+              segments.find(
+                (s: { name: string; color_code: string }) =>
+                  s.name === item.segment_type
+              )?.color_code || "#FE0056";
+            if (allTrimPoly.length > 0) {
+              getCutOutArea(
+                canvas,
+                item.annotation_points_float || [],
+                item.short_title || "",
+                item.short_title || "",
+                item.segment_type || "",
+                item.group_label_system || "",
+                item.segment_bb_float || [],
+                color,
+                scalex,
+                scaley,
+                allTrimPoly,
+                allSegArray
               );
-              const color = segments.find(
-                  (s: { name: string; color_code: string }) =>
-                    s.name === item.segment_type
-                )?.color_code || "#FE0056";
-              if (allTrimPoly.length > 0) {
-                getCutOutArea(
-                  canvas,
-                  item.annotation_points_float || [],
-                  item.short_title || "",
-                  item.short_title || "",
-                  item.segment_type || "",
-                  item.group_label_system || "",
-                  item.segment_bb_float || [],
-                  color,
-                  scalex,
-                  scaley,
-                  allTrimPoly,
-                  allSegArray
-                );
-              }
             }
-          });
-        }
+          }
+        });
       }
-    }, [allSegArray, isPolygonUpdate, canvas]);
-  
+    }
+  }, [allSegArray, isPolygonUpdate, canvas]);
 
   return <></>;
 };

@@ -17,7 +17,7 @@ import LayerContent from "./tabContent/LayerContent";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
-import { setCanvasReady, setCanvasType } from "@/redux/slices/canvasSlice";
+import { setCanvasReady, setCanvasType, updateIsCompare } from "@/redux/slices/canvasSlice";
 import StudioStyleTabs from "./StudioStyleTabs";
 
 const StudioMainTabs = () => {
@@ -31,7 +31,7 @@ const StudioMainTabs = () => {
   };
 
   const handleDesignHubClick = () => {
-   
+     dispatch(updateIsCompare(false))
   dispatch(setCanvasType("hover"))
     dispatch(updateActiveTab("design-hub"));
     dispatch(setCurrentTabContent("home"));
@@ -53,9 +53,9 @@ const StudioMainTabs = () => {
   };
 
   const handleLayersClick = () => {
-     dispatch(setCanvasReady(false))
+    
     dispatch(updateActiveTab("layers"));
-    dispatch(setCanvasType("test-canvas")); // Set canvas type to test-canvas when Layers tab is clicked
+    // dispatch(setCanvasType("test-canvas")); // Set canvas type to test-canvas when Layers tab is clicked
   };
 
   const handleCommentsClick = () => {
