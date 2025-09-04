@@ -23,7 +23,7 @@ import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import CanavasImage from "../canvas/CanavasImage";
 import React from "react";
-import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
+// import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
 
 interface StudioMainCanvasProps {
   // currentCanvasImage: string;
@@ -190,7 +190,7 @@ export function StudioMainCanvas({
               />
             )}
 
-            {canvasMode == "test-canvas" && (
+            {/* {canvasMode == "test-canvas" && (
               <>
                 <LayerCanvas
                   key={`canvas-test-${canvasImage}`}
@@ -201,7 +201,7 @@ export function StudioMainCanvas({
                   onImageLoad={handleImageLoad}
                 />
               </>
-            )}
+            )} */}
             {/* {canvasMode == "hover-default" && (
               <>
 

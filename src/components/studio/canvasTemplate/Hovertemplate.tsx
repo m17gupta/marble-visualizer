@@ -1,3 +1,4 @@
+import LayerCanvas from "@/components/canvas/layerCanvas/LayerCanvas";
 import PolygonOverlay from "@/components/canvas/PolygonOverlay";
 import CompareHoverHeader from "@/components/designHub/CompareHoverHeader";
 import HoverHeader from "@/components/designHub/HoverHeader";
@@ -36,6 +37,12 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
           className="mb-6"
         />
 
+        <LayerCanvas
+          canvas={canvas}
+          width={width}
+          height={height}
+        />
+
       {requests &&
       ( ( requests.paletteUrl && requests.paletteUrl.length > 0 )||
        ( requests.referenceImageUrl && requests.referenceImageUrl.length > 0 )||
@@ -45,11 +52,7 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
       </>
       ) : (
       <>
-      {/* <CompareHoverHeader 
-        containerRef={sliderRef}  
-      onBack={() => {  }}
-      onClose={() => { }}
-      /> */}
+    
         <CompareGenAiHome  />
         
       </>
