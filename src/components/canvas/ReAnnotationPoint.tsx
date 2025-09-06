@@ -60,7 +60,7 @@ const ReAnnotationPoint = () => {
              if(response.success ) {
               
                 // update segments Array
-                dispatch(changeGroupSegment(data))
+                dispatch(changeGroupSegment([data]))
                 // update master array
                  dispatch(addNewSegmentToMasterArray(data));
 

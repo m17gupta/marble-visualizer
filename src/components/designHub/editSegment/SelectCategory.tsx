@@ -2,12 +2,30 @@ import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const SelectCategory = () => {
+type Props = {
+  okCategory: (cat: string) => void;
+};
+const SelectCategory = ({ okCategory }: Props) => {
+  const [allcatogories, setAllCategories] = useState<string[]>([]);
+  const [selectedCatogory, setSelectedCategory] = useState<string>("");
   const { selectedMasterArray } = useSelector(
     (state: RootState) => state.masterArray
   );
-  const [allcatogories, setAllCategories] = useState<string[]>([]);
-  const [selectedCatogory, setSelectedCategory] = useState<string>("");
+  const { selectedSegments } = useSelector(
+    (state: RootState) => state.segments
+  );
+
+  /// set selected category if selectedSegments changes
+  useEffect(() => {
+    if (selectedSegments && selectedSegments.length > 0) {
+      const firstSegment = selectedSegments[0];
+      setSelectedCategory(firstSegment.title || "");
+      okCategory(firstSegment.title || "");
+    } else {
+      setSelectedCategory("");
+    }
+  }, [selectedSegments]);
+
   useEffect(() => {
     if (selectedMasterArray && selectedMasterArray.categories) {
       const categories = selectedMasterArray.categories || [];
@@ -17,6 +35,10 @@ const SelectCategory = () => {
     }
   }, [selectedMasterArray]);
 
+  const handleSelectCategory = (cat: string) => {
+    setSelectedCategory(cat);
+    okCategory(cat);
+  }
   return (
     <>
       <div className="pt-2">
@@ -24,7 +46,7 @@ const SelectCategory = () => {
         <div className="relative w-full">
           <select
             value={selectedCatogory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => handleSelectCategory(e.target.value)}
             className="w-full appearance-none rounded-md border-2 border-black bg-white px-4 py-2 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
           >
             <option value="" disabled>

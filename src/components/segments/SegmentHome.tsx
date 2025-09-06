@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import SegmentEditModal from "./SegmentEditModal";
+//import SegmentEditModal from "./SegmentEditModal";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -62,7 +62,7 @@ const SegmentHome = () => {
     }
     //  setIsUpdated(false);
     // update all Segments Array
-    dispatch(changeGroupSegment(data));
+    // dispatch(changeGroupSegment(data));
     // update master array
     dispatch(
       changeGroupSelectedSegment({
@@ -79,11 +79,11 @@ const SegmentHome = () => {
 
   return (
     <>
-      <SegmentEditModal
+      {/* <SegmentEditModal
         open={isOpen}
         onClose={handleCloseEditModal}
         onSave={handleSaveSegment}
-      />
+      /> */}
     </>
   );
 };

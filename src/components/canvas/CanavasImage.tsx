@@ -102,7 +102,8 @@ const CanavasImage = forwardRef(
     const [canvasMode, setCanvasMode] = useState<string>("hover");
 
     const canvasActiveRef = useRef<string>("");
-    const { allSegments } = useSelector((state: RootState) => state.segments);
+    const activeOptionRef = useRef<string>("");
+    const { allSegments, activeOption } = useSelector((state: RootState) => state.segments);
     const { masterArray } = useSelector(
       (state: RootState) => state.masterArray
     );
@@ -117,23 +118,33 @@ const CanavasImage = forwardRef(
       }
     }, [activeCanvas]);
 
+    // Update activeOption ref when Redux state changes
+    useEffect(() => {
+      activeOptionRef.current = activeOption || "";
+    }, [activeOption]);
+
+
     const handleMouseMove = useCallback(
       (event: fabric.TEvent) => {
         const currentCanvasActive = canvasActiveRef.current;
+        const currentActiveOption = activeOptionRef.current;
         const fabricCanvas = fabricCanvasRef.current;
-        console.log("canavvsss----", fabricCanvas);
-        console.log("canvas", fabricCanvas?.getObjects());
+
         if (!fabricCanvas) return;
         const fabricRef = { current: fabricCanvas };
         const pointer = fabricCanvas.getPointer(event.e);
 
+        if (!pointer) return; // Early return if pointer is null/undefined
+
         const fabricPoint = new fabric.Point(pointer.x, pointer.y);
+
 
         if (
           canvasMode === "hover" &&
           currentCanvasActive === "hideSegments" &&
-          fabricPoint
+          currentActiveOption !== "edit-segment"
         ) {
+         
           dispatch(
             setMousePosition({
               x: Math.round(fabricPoint.x),
@@ -145,9 +156,9 @@ const CanavasImage = forwardRef(
           //  }
         } else if (
           canvasMode === "hover" &&
-          currentCanvasActive === "mask" &&
-          fabricPoint
+          currentCanvasActive === "mask"
         ) {
+           
           const showOutlineRef = {
             current: {
               getFabricCanvas: () => fabricCanvasRef.current,
@@ -166,10 +177,9 @@ const CanavasImage = forwardRef(
           }
         } else if (
           canvasMode === "hover" &&
-          currentCanvasActive === "outline" &&
-          fabricPoint
+          currentCanvasActive === "outline"
         ) {
-          // apply concept
+         
           hoverOutline(fabricRef, fabricPoint);
         }
       },
@@ -223,9 +233,16 @@ const CanavasImage = forwardRef(
         hasControls: false,
         hasBorders: false,
       });
+      const editPolygon = new fabric.Group([], {
+        selectable: false,
+        hasControls: false,
+        hasBorders: false,
+      });
       (testPolygon as NamedFabricObject).groupName = "testPoly";
+      (editPolygon as NamedFabricObject).groupName = "EditPoly";
       canvas.add(testPolygon);
-      
+      canvas.add(editPolygon);
+
       fabricCanvasRef.current = canvas;
 
       // Store the original viewport transform

@@ -3,23 +3,31 @@ import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-type Prop={
+type Prop = {
   segType: string;
   onChange: (value: string) => void;
-}
+};
 const SelectGroup = ({ segType, onChange }: Prop) => {
   const dispatch = useDispatch();
   const [groupArray, setGroupArray] = React.useState<string[]>([]);
   const [groupName, setGroupName] = useState("");
-
-  const { masterArray } = useSelector(
-    (state: RootState) => state.masterArray
+  const { selectedSegments } = useSelector(
+    (state: RootState) => state.segments
   );
- 
+  const { masterArray } = useSelector((state: RootState) => state.masterArray);
+
+  // update selected group if selectedSegments changes
+  useEffect(() => {
+    if (selectedSegments && selectedSegments.length > 0) {
+      const firstSegment = selectedSegments[0];
+      setGroupName(firstSegment.group_label_system || "");
+      onChange(firstSegment.group_label_system || "");
+    }
+  }, [selectedSegments]);
 
   useEffect(() => {
     if (masterArray && masterArray.length > 0 && segType) {
-      const groupmaster= masterArray.find(item=>item.name===segType)
+      const groupmaster = masterArray.find((item) => item.name === segType);
       if (groupmaster) {
         const totalGroups = groupmaster.allSegments.map((seg) => seg.groupName);
         setGroupArray(totalGroups);
@@ -27,10 +35,7 @@ const SelectGroup = ({ segType, onChange }: Prop) => {
     } else {
       setGroupArray([]);
     }
-  }, [masterArray,segType]);
-
-
-
+  }, [masterArray, segType]);
 
   const handleGroup = (value: string) => {
     setGroupName(value);

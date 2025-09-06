@@ -31,18 +31,14 @@ const SelectSegment = () => {
       if (segmentIds && segmentIds.length > 0) {
         setSelectedSeg(segmentIds);
       }
-    } else {
+    } else if (selectedSegments && selectedSegments.length === 0) {
       setSelectedSeg([]);
+      // setUserSelectedSegment([]);
     }
   }, [selectedSegments]);
 
   const handleSelectSegment = (opt: SegmentModal, seg_id: number) => {
-    //  console.log("selected segment id", seg_id, opt);
-    // if (selectedSeg.includes(seg_id)) {
-    //   setSelectedSeg(selectedSeg.filter(id => id !== seg_id));
-    // } else {
-    //   setSelectedSeg([...selectedSeg, seg_id]);
-    // }
+    console.log("Selected Segment ID:",opt);
     dispatch(editSelectedSegment(opt));
   };
   useEffect(() => {
