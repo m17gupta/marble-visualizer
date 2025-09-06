@@ -16,7 +16,7 @@ type Props = {
 }
 const UserInputPopOver: React.FC<Props> = ({ inputKey,name, value, open, setOpen, deleteData }) => {
 
-    console.log("UserInputPopOver", inputKey, value, open);
+   // console.log("UserInputPopOver", inputKey, value, open);
     const handleDelete = (data:string ) => {
         deleteData(data);
     }

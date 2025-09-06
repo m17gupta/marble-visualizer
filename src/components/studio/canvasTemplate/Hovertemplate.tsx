@@ -1,3 +1,4 @@
+import CanvasEdit from "@/components/canvas/canvasEdit/CanvasEdit";
 import LayerCanvas from "@/components/canvas/layerCanvas/LayerCanvas";
 import PolygonOverlay from "@/components/canvas/PolygonOverlay";
 import CompareHoverHeader from "@/components/designHub/CompareHoverHeader";
@@ -41,6 +42,13 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
           canvas={canvas}
           width={width}
           height={height}
+        />
+
+        <CanvasEdit
+           fabricCanvasRef={canvas}
+          width={width}
+          height={height}
+          className="mb-6"
         />
 
       {requests &&

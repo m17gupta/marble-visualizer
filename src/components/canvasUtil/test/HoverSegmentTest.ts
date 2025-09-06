@@ -84,9 +84,10 @@ export const HideAllSegments = (canvas: React.RefObject<fabric.Canvas>) => {
   if (!canvas.current) return;
   console.log("HideAllSegments called");
   const allObjects = canvas.current.getObjects();
-  allObjects.forEach((obj) => {
+  allObjects.forEach((obj:NamedFabricObject) => {
     if (
       obj.type === "group" &&
+      obj.groupName === "hover" &&
       typeof (obj as fabric.Group).getObjects === "function"
     ) {
       const allGroupObjects = (obj as fabric.Group).getObjects();

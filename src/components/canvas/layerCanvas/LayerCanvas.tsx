@@ -1,11 +1,5 @@
 import * as fabric from "fabric";
-import {
-  AddImageToCanvas,
-  LoadImageWithCORS,
-  LoadImageWithFetch,
-  setBackgroundImage,
-} from "@/components/canvasUtil/canvasImageUtils";
-import { setCanvasReady, setZoom } from "@/redux/slices/canvasSlice";
+
 import { AppDispatch, RootState } from "@/redux/store";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,11 +8,7 @@ import {
   handlePolygonVisibilityOnMouseMove,
   HideAllSegments,
 } from "@/components/canvasUtil/HoverSegment";
-import { toast } from "sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { AnimatePresence, motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { PointModel } from "../canvasEdit/CanvasEdit";
 
 type NamedFabricObject = fabric.Object & {
@@ -78,12 +68,12 @@ const LayerCanvas = ({
   useEffect(() => {
        const fabricCanvas = canvas.current?.getFabricCanvas();
         if (!fabricCanvas) return;
-        console.log("fabricCanvas", fabricCanvas);
+        
     if (fabricCanvas && allPolygon.length > 0) {
       
   
       allPolygon.forEach((polygon, index) => {
-         console.log("polygon calling ",index );
+        
         createPolygon(polygon.annotation, polygon.box, index, canvas);
       });
      
@@ -96,7 +86,7 @@ const LayerCanvas = ({
       (obj:fabric.Group) => (obj as NamedFabricObject).groupName === "testPoly"
     ) as fabric.Group | undefined;
       if (existingTestGroup) {
-        console.log("Removing existing polygons from testPoly group",existingTestGroup);
+       
        // only remove the object present in the group
         existingTestGroup.getObjects().forEach((obj) => {
           console.log("Removing object", obj.type);
@@ -123,14 +113,11 @@ const LayerCanvas = ({
       (obj:fabric.Group) => (obj as NamedFabricObject).groupName === "testPoly"
     ) as fabric.Group | undefined;
 
-    console.log("existingTestGroup", existingTestGroup, width, height);
-    // add polygon to existingTestGroup if exists else create new group
     if (existingTestGroup) {
-          console.log("polygon function calling ", index);
+
     const canvas = fabricCanvas.current;
     const bgImg = backgroundImageRef.current;
-    const scaleX = bgImg?.scaleX ?? 1;
-    const scaleY = bgImg?.scaleY ?? 1;
+  
     const left = bgImg?.left ?? 0;
     const top = bgImg?.top ?? 0;
     const ratioWidth = width / 800;
@@ -143,7 +130,7 @@ const LayerCanvas = ({
       point.push({ x, y });
     }
 
-      console.log("point");
+     // console.log("point");
     const polygon = new fabric.Polygon(point, {
       fill: "green",
       originX: box[0] + left,

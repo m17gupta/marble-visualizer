@@ -168,7 +168,7 @@ export function StudioMainCanvas({
               </>
             )}
 
-            {canvasMode == "edit" && (
+            {/* {canvasMode == "edit" && (
               <CanvasEdit
                 key={`canvas-editor-${canvasImage}`}
                 imageUrl={canvasImage}
@@ -177,7 +177,7 @@ export function StudioMainCanvas({
                 className="mb-6"
                 onImageLoad={handleImageLoad}
               />
-            )}
+            )} */}
 
             {canvasMode == "comment" && (
               <CommentCanvas

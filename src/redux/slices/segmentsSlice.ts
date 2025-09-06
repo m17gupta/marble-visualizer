@@ -73,6 +73,7 @@ interface SegmentsState {
   isLoadingManualAnnotation: boolean;
   manualAnnotationResult: unknown | null;
   manualAnnotationError: string | null;
+  clearUpdateCanvas: boolean;
 }
 
 const initialState: SegmentsState = {
@@ -114,6 +115,8 @@ const initialState: SegmentsState = {
   isSegmentLoaded: false,
   activeOption: "pallet",
   isDeleteSegModal: false,
+   clearUpdateCanvas: false,
+  
 };
 
 // Create segment service instance
@@ -180,6 +183,20 @@ export const updateSegmentById = createAsyncThunk(
   async (segmentData: SegmentModal, { rejectWithValue }) => {
     try {
       return await segmentService.updateSegmentById(segmentData);
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to update segment");
+    }
+  }
+);
+// update mutiple segment based on id
+export const updateMultipleSegment = createAsyncThunk(
+  "segments/updateMultipleSegment",
+  async (segmentData: SegmentModal[], { rejectWithValue }) => {
+    try {
+      return await segmentService.updateMultipleSegment(segmentData);
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -274,6 +291,18 @@ const segmentsSlice = createSlice({
         state.selectedSegments.splice(index, 1);
       }
     },
+    updateEditSelectedSegment: (state, action) => {
+      const updatedSegment = action.payload;
+      if (!state.selectedSegments) return;
+      const index = state.selectedSegments.findIndex((s) => s.id === updatedSegment.id);
+      if (index !== -1 && updatedSegment.annotation && updatedSegment.bb) {
+        state.selectedSegments[index].annotation_points_float= updatedSegment.annotation??[];
+        state.selectedSegments[index].segment_bb_float = updatedSegment.bb;
+      }
+    },
+    resetSelectedSegment: (state) => {
+      state.selectedSegments = [];
+    },
     resetEditSegment: (state) => {
       state.selectedSegments = [];
       state.activeOption = null;
@@ -313,18 +342,21 @@ const segmentsSlice = createSlice({
     updateAreaInToSegment: (state, action) => {
       state.allSegments = action.payload;
     },
-    changeGroupSegment: (state, action: PayloadAction<SegmentModal>) => {
+    changeGroupSegment: (state, action: PayloadAction<SegmentModal[]>) => {
       const updatedSegment = action.payload;
-      const index = state.allSegments.findIndex(
-        (seg) => seg.id === updatedSegment.id
+      updatedSegment.map(item=>{
+     const index = state.allSegments.findIndex(
+        (seg) => seg.id === item.id
       );
       if (index !== -1) {
         // remove existed and add new segment
         const segArray = state.allSegments.filter(
-          (seg) => seg.id !== updatedSegment.id
+          (seg) => seg.id !== item.id
         );
-        state.allSegments = [...segArray, updatedSegment];
+        state.allSegments = [...segArray, item];
       }
+      })
+ 
     },
     updateIsSegmentEdit: (state, action) => {
       state.isSegmentEdit = action.payload;
@@ -352,6 +384,10 @@ const segmentsSlice = createSlice({
       state.error = null;
     },
 
+
+    updateClearEditCanvas: (state, action: PayloadAction<boolean>) => {
+      state.clearUpdateCanvas = action.payload;
+    },
     // Manual annotation actions
     clearManualAnnotationError: (state) => {
       state.manualAnnotationError = null;
@@ -473,6 +509,9 @@ export const {
   resetEditSegment,
   setActiveOption,
   updateIsDeleteSegModal,
+  resetSelectedSegment,
+  updateEditSelectedSegment,
+  updateClearEditCanvas
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

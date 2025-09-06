@@ -1,14 +1,14 @@
 import { MasterModel } from "@/models/jobModel/JobModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
-import { updateAddSegMessage, updateIsDeleteSegModal } from "@/redux/slices/segmentsSlice";
+import { changeGroupSegment, resetEditSegment, updateAddSegMessage, updateClearEditCanvas, updateIsDeleteSegModal, updateMultipleSegment } from "@/redux/slices/segmentsSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Button } from "../../ui/button";
-import { updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
+import { updateMasterArrayonEditSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";
 import { on } from "events";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,11 @@ export const SegmentEditComp = ({
   const [new_master, setNewMaster] = useState<MaterialSegmentModel | null>(
     null
   );
+    const [selSeg, setSelSeg] = useState("");
+
+
+  const [isUpdated, setIsUpdated] = useState(false);
+
   const [userSelectedSegment, setUserSelectedSegment] = useState<
     SegmentModal[]
   >([]);
@@ -50,6 +55,9 @@ export const SegmentEditComp = ({
          (state: RootState) => state.segments
        );
  
+  const { segments } = useSelector(
+    (state: RootState) => state.materialSegments
+  );
 
   // update currentSelectedGroupSegment
   useEffect(() => {
@@ -61,18 +69,6 @@ export const SegmentEditComp = ({
       setUserSelectedSegment(selectedGroupSegment.segments);
     }
   }, [selectedGroupSegment]);
-  const { segments } = useSelector(
-    (state: RootState) => state.materialSegments
-  );
-
-  //   const finalSegments = currentSelectedGroupSegment.segments.map(
-  //     (d: any) => d.short_title
-  //   );
-
-  const [selSeg, setSelSeg] = useState("");
-
-
-  const [isUpdated, setIsUpdated] = useState(false);
 
 // update the seg Type
 useEffect(() => {
@@ -84,7 +80,7 @@ useEffect(() => {
     // handleSegmetName();
   }
 }, [selectedSegments]);
-
+ 
   const handleSegGroupName = (
     masterArray: MasterModel[],
     segType: string,
@@ -153,25 +149,32 @@ useEffect(() => {
     setEditSeg(segment);
   };
 
-  const handleSave = async () => {
+  const handleSave =  () => {
     console.log("Saving segment with details:");
     console.log("segType", segType);
     console.log("groupName", groupName);
     console.log("shortName", shortName);
+    console.log("selectedSegment", selectedSegments);
 
-    console.log("new_master", new_master);
+    // console.log("new_master", new_master);
 
-    // if (
-    //   !segType ||
-    //   !groupName ||
-    //   !shortName ||
-    //   !selectedSegment ||
-    //   !new_master
-    // ) {
-    //   toast.error("Please fill all fields");
-    //   return;
-    // }
+    if (
+      !segType ||
+      !groupName 
+    ) {
+      toast.error("Please fill all fields");
+      return;
+    }
 
+    if(selectedSegments&& selectedSegments.length>0 ){
+      const firstSegment = selectedSegments[0];
+      const groupname=firstSegment?.group_label_system??"";
+      const segtype=firstSegment?.segment_type??"";
+      if(groupname===groupName && segtype===segtype){
+        console.log("No changes detected in group name or segment type.");
+        handleUpdateSegment(selectedSegments);
+      }
+    }
     // const newSegment = {
     //   id: selectedSegment.id,
     //   job_id: selectedSegment.job_id,
@@ -195,13 +198,31 @@ useEffect(() => {
     // dispatch(updateAddSegMessage(" Updating segment details..."));
     // // onSave(newSegment, new_master);
 
-    setGroupArray([]);
-    setShortName("");
-    setGroupName("");
-    setNewMaster(null);
-    setIsUpdated(false);
+    // setGroupArray([]);
+    // setShortName("");
+    // setGroupName("");
+    // setNewMaster(null);
+    // setIsUpdated(false);
   };
 
+  const handleUpdateSegment = async(segment: SegmentModal[]) => {
+ 
+    try{
+      const response= await  dispatch(updateMultipleSegment(segment)).unwrap();
+      console.log("Update segment response:", response);
+      if(response && response.success){
+        dispatch(updateClearEditCanvas(true));
+        toast.success("Segment updated successfully");
+        dispatch(changeGroupSegment(segment));
+        dispatch(updateMasterArrayonEditSegment(segment));
+        dispatch(resetEditSegment());
+        onCancel();
+      }
+    }catch(error){  
+      console.error("Error updating segment:", error);
+      toast.error("Failed to update segment. Please try again.");
+    }
+  }
   const handleReAnnotation = () => {
       if(selectedSegments&& selectedSegments.length>1 ){
         toast.error("Please select only one segment to re-annotate");
@@ -321,7 +342,11 @@ useEffect(() => {
 
         {/* Categories */}
         {optionEdit === "edit-segment" && (
-          <SelectCategory />
+          <SelectCategory
+            okCategory={(cat) => {
+              setSelectedCategory(cat);
+            }}
+          />
         )}
       </div>
 
@@ -375,3 +400,4 @@ useEffect(() => {
     </div>
   );
 };
+

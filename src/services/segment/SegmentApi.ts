@@ -115,6 +115,43 @@ async createSegment(segmentData: SegmentModal): Promise<SegmentApiResponse> {
     }
   }
 
+  // update multiple jobSegments
+  async updateMultipleSegments(segmentsData: SegmentModal[]): Promise<{ success: boolean; data?: SegmentModal[]; error?: string }> {
+    if (!segmentsData || segmentsData.length === 0) {
+      throw new Error('No segments data provided');
+    }
+
+    try {
+      const updatePromises = segmentsData.map(async (segmentData) => {
+        const { data, error } = await supabase
+          .from('job_segments')
+          .update(segmentData)
+          .eq('id', segmentData.id)
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        return data;
+      });
+
+      const updatedSegments = await Promise.all(updatePromises);
+
+      return {
+        success: true,
+        data: updatedSegments,
+      };
+    } catch (error) {
+      console.error('Error updating multiple segments:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      };
+    }
+  }
+
 
   // delete jobSegments based on id
   async deleteSegmentById(segmentId: number[]): Promise<DeleteSegmentResponse> {

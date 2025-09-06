@@ -149,6 +149,29 @@ const masterArraySlice = createSlice({
         }
       }
     },
+    updateMasterArrayonEditSegment: (state, action) => {
+      const updatedSegment = action.payload;
+      updatedSegment.map((item: SegmentModal) => {
+        const index = state.masterArray.findIndex(
+          (seg) => seg.name === item.segment_type
+        );
+        if (index !== -1) {
+          const segArrayIndex = state.masterArray[index].allSegments.findIndex(
+            (group) => group.groupName === updatedSegment.group_label_system
+          );
+          if (segArrayIndex !== -1) {
+            const segmentIndex = state.masterArray[index].allSegments[
+              segArrayIndex
+            ].segments.findIndex((seg) => seg.id === updatedSegment.id);
+            if (segmentIndex !== -1) {
+              state.masterArray[index].allSegments[segArrayIndex].segments[
+                segmentIndex
+              ] = item;
+            }
+          }
+        }
+      });
+    },
     deletedChangeGroupSegment: (state, action) => {
       const updatedSegment = action.payload;
       const oldSeg = state.selectedSegment;
@@ -226,17 +249,18 @@ const masterArraySlice = createSlice({
         }
       }
       // delete from selcted GroupSegmnet
-      if (state.selectedGroupSegment &&
+      if (
+        state.selectedGroupSegment &&
         state.selectedGroupSegment.segments &&
         state.selectedGroupSegment.segments.length > 0
-      ){
-       // find index and delete it
-       const index = state.selectedGroupSegment.segments.findIndex(
-         (seg) => seg.id === segmentId
-       );
-       if (index !== -1) {
-         state.selectedGroupSegment.segments.splice(index, 1);
-       }
+      ) {
+        // find index and delete it
+        const index = state.selectedGroupSegment.segments.findIndex(
+          (seg) => seg.id === segmentId
+        );
+        if (index !== -1) {
+          state.selectedGroupSegment.segments.splice(index, 1);
+        }
       }
     },
     changeGroupSelectedSegment: (state, action) => {
@@ -286,13 +310,12 @@ const masterArraySlice = createSlice({
       const segment = action.payload;
       state.selectedSegment = segment;
 
-     if (!state.userSelectedSegment) {
+      if (!state.userSelectedSegment) {
         state.userSelectedSegment = [];
       }
       state.userSelectedSegment.push(segment);
     },
     addUserSelectedSegment: (state, action) => {
-      
       if (!state.userSelectedSegment) {
         state.userSelectedSegment = [];
       }
@@ -300,15 +323,15 @@ const masterArraySlice = createSlice({
     },
     updateUserSelectedSegment: (state, action) => {
       const segment = action.payload;
-     
+
       if (!state.userSelectedSegment) {
         state.userSelectedSegment = [];
       }
-     
+
       const index = state.userSelectedSegment.findIndex(
         (seg) => seg.id === segment.id
       );
-     
+
       if (index === -1) {
         // If not present, add to array
         state.userSelectedSegment.push(segment);
@@ -363,6 +386,7 @@ export const {
   addUserSelectedSegment,
   updateUserSelectedSegment,
   updateGroupNameSegment,
+  updateMasterArrayonEditSegment
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;

@@ -30,7 +30,7 @@ const CalculateArea = () => {
                        };
                        
                        // Dispatch the update to Redux
-                       dispatch(changeGroupSegment(updatedSegment));
+                       dispatch(changeGroupSegment([updatedSegment]));
                    }
                }
             });

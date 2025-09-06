@@ -12,6 +12,8 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteSegmentById,
+  resetEditSegment,
+  resetSelectedSegment,
   setActiveOption,
   updateIsSegmentEdit,
 } from "@/redux/slices/segmentsSlice";
@@ -26,7 +28,6 @@ import { RiHome8Line, RiHomeOfficeLine } from "react-icons/ri";
 import { PiWallLight, PiWallThin } from "react-icons/pi";
 import { LuBrickWall } from "react-icons/lu";
 
-
 type Props = {
   title?: string;
   segment?: SegmentModal;
@@ -37,18 +38,10 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { activeOption } = useSelector((state: RootState) => state.segments);
   const buttons = [
-
     {
       id: "pallet",
       tooltip: "Pallet",
-      icon: (
-    
-        // <RiHomeOfficeLine fontSize={"20px"} color="#000"/>
-        // <GiBrickWall fontSize={"20px"} color="#000" />
-        <LuBrickWall  fontSize={"20px"} color="#000"/>
-
-
-      ),
+      icon: <LuBrickWall fontSize={"20px"} color="#000" />,
     },
 
     {
@@ -105,7 +98,6 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
     // Implement your re-annotation logic here
   };
 
-
   const handleEditSegment = (segment: SegmentModal) => {
     dispatch(updateSelectedSegment(segment));
     dispatch(updateIsSegmentEdit(true));
@@ -145,7 +137,7 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   const handleOpenDeleteModal = () => {
     setIsDeleteModalOpen(true);
   };
-  
+
   // update Active option
   useEffect(() => {
     if (activeOption == null) {
@@ -156,13 +148,13 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   }, [activeOption]);
 
   const handleOptionSelect = (val: string) => {
-    dispatch(setActiveOption( val));
-    if (val === "add-segment"|| val === "pallet") {
-      dispatch(setCanvasType(val==="add-segment" ? "draw" : "hover"));
+    dispatch(resetSelectedSegment())
+    dispatch(setActiveOption(val));
+    if (val === "add-segment" || val === "pallet") {
+      dispatch(setCanvasType(val === "add-segment" ? "draw" : "hover"));
       handleEditOption(false, val);
       // setActive(val);
-    }
-     else {
+    } else {
       dispatch(setCanvasType("hover"));
       handleEditOption(true, val);
       // setActive(val);
@@ -184,8 +176,8 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
                       ? "bg-blue-100 text-white border-blue-800"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
                   }`}
-                > 
-                {btn.icon}
+                >
+                  {btn.icon}
                 </button>
               </TooltipTrigger>
               <TooltipContent>
