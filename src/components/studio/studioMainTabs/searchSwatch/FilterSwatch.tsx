@@ -62,7 +62,7 @@ const FilterSwatch: React.FC<FilterSwatchProps> = ({
     <>
       <SheetContent
         side="left"
-        className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] overflow-y-auto sheet-scrollbar p-0 ms-[25vw]"
+        className="w-[380px] sm:w-[420px] !left-0 max-w-[100vw] overflow-y-auto sheet-scrollbar p-0 ms-[25vw] bg-white"
       >
         <SheetHeader className="mb-2 border-b py-2 px-3 bg-gray-100">
           <div className="flex items-center justify-between">

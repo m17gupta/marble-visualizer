@@ -150,7 +150,7 @@ const {isAuthenticated} = useSelector((state: RootState) => state.auth);
             {/* <img src */}
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-lg font-bold text-foreground">Visual Studio</span>
+            <span className="text-lg font-bold text-foreground">Dzinly</span>
           )}
 
         </motion.div>

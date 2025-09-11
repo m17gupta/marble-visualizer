@@ -250,7 +250,7 @@ useEffect(() => {
        }
   }
   return (
-    <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[70vh] sm:max-h-[70vh]">
+    <div className="w-full bg-white  rounded-lg shadow  py-2 flex flex-col overflow-y-auto max-h-[70vh] sm:max-h-[70vh] ">
       {/* Header */}
       <div className="pb-3">
         <div className="flex items-center justify-between border-b pb-2 px-4">

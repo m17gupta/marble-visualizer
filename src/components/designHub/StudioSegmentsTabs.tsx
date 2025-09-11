@@ -264,7 +264,7 @@ const StudioTabs = () => {
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="box-border overflow-y-auto border-2"
+        className="box-border overflow-y-auto"
       >
         {/* Top: Group tabs row */}
         <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-1 py-0">
