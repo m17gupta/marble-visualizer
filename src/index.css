@@ -219,6 +219,10 @@ button:focus-visible {
 
 }
 
+.bg-background{
+  background-color: var(--background) !important;
+}
+
 .swiper {
   width: 100%;
 }
