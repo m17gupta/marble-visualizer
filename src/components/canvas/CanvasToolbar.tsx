@@ -73,19 +73,22 @@ export default function CanvasToolbar({
             
          <DrawHeader/>
 
-               <Tooltip>
+               
+          <div className="flex gap-4 items-center">
+
+            <Tooltip>
             <TooltipTrigger asChild>
                <Button
                   variant="ghost"
-                  className="py-0 px-3 "
+                  className="py-0 px-3 h-8 border-gray-300 bg-blue-100 text-blue-600"
                   onClick={handleCancelDrawing}
                 >
-                  <span className="text-xs font-bold ">Cancel Draw</span>
+                  <span className="text-xs font-semibold ">Close Draw </span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Cancel Marking</TooltipContent>
             </Tooltip>
-          <div className="flex gap-4">
+
             <Toggleheader />
 
             <ZoomHeader resetCanvas={handleResetZoom} />

@@ -103,10 +103,10 @@ const DoubleClickHtml = ({ doubleClickPoint, onClose }: Props) => {
                   <TooltipTrigger asChild>
                     <button
                       // onClick={() => handleOptionSelect(btn.id)}
-                      className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
+                      className={`px-3 py-1 rounded-md border 1 transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
                       ${
                         active === btn.id
-                          ? "bg-blue-100 text-white border-blue-800"
+                          ? "bg-blue-50 text-white border-blue-50"
                           : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
                       }`}
                     >

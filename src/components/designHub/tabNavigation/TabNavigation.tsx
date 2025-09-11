@@ -173,8 +173,8 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
                   className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
                   ${
                     active === btn.id
-                      ? "bg-blue-100 text-white border-blue-800"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"
+                      ? "bg-white text-white border-gray-400"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
                   }`}
                 >
                   {btn.icon}
