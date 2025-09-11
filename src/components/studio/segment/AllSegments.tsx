@@ -125,7 +125,7 @@ const AllSegments = () => {
               <div key={segment.id || index} className="relative pb-[10px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
+                    <button
                       variant={isActive ? "default" : "outline"}
                       size="icon"
                       className={cn(
@@ -135,7 +135,7 @@ const AllSegments = () => {
                         // scale-105
                       )}
                       style={{
-                    borderColor: `${segment.color_code}60`,
+                        borderColor: `${segment.color_code}60`,
                         backgroundColor: isActive
                           ? `${segment.color_code}50`
                           : isHovered
@@ -177,7 +177,7 @@ const AllSegments = () => {
                           </div>
                         )}
                       </span>
-                    </Button>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="right">
                     <p>{segment.name}</p>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import RequestMasterImage from "./RequestMasterImage";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,23 +19,24 @@ import MaskImage from "./MaskImage";
 import ChatPallet from "./ChatPallet";
 import ImagePalletInspirational from "./ImagePalletInspirational";
 import { TbBulb, TbBulbFilled } from "react-icons/tb";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, FreeMode, Keyboard, Mousewheel } from "swiper/modules";
+import { FreeMode, Keyboard, Mousewheel } from "swiper/modules";
 
-/** Swiper CSS */
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/mousewheel";
 
 type Pack = { id: number; title: string; credits: number; price: string };
 
-/* ---------------- Reusable HoverCard + Swiper (autoplay on open) ---------------- */
-function HoverCardWithSwiper({
+/* ---------- Popover that opens on HOVER (stable + arrow) ---------- */
+function PopoverWithSwiperHover({
   triggerLabel = "Buy More Credits",
   items,
 }: {
@@ -43,48 +44,77 @@ function HoverCardWithSwiper({
   items: Pack[];
 }) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const overTrigger = useRef(false);
+  const overContent = useRef(false);
+  const closeTimer = useRef<number | null>(null);
+
+  const enter = (who: "trigger" | "content") => {
+    if (closeTimer.current) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    if (who === "trigger") overTrigger.current = true;
+    if (who === "content") overContent.current = true;
+    setOpen(true);
+  };
+
+  const leave = (who: "trigger" | "content") => {
+    if (who === "trigger") overTrigger.current = false;
+    if (who === "content") overContent.current = false;
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    // Close only when BOTH are left, with a small delay
+    closeTimer.current = window.setTimeout(() => {
+      if (!overTrigger.current && !overContent.current) setOpen(false);
+    }, 140);
+  };
 
   return (
-    <HoverCard open={open} onOpenChange={setOpen} openDelay={80} closeDelay={80}>
-      <HoverCardTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <button
-          className="pointer-events-auto px-3 py-1 border border-gray-300 bg-white text-black text-xs font-semibold rounded-full hover:bg-gray-50"
+          ref={triggerRef}
+          className="noswipe swiper-no-swiping pointer-events-auto px-3 py-1 border border-gray-300 bg-white text-black text-xs font-semibold rounded-full hover:bg-gray-50"
+          onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          onMouseEnter={() => enter("trigger")}
+          onFocus={() => enter("trigger")}
+          onMouseLeave={() => leave("trigger")}
+          onBlur={() => leave("trigger")}
         >
           {triggerLabel}
         </button>
-      </HoverCardTrigger>
+      </PopoverTrigger>
 
-      {/* Open upward + high z-index so it's visible above sticky bars */}
-      <HoverCardContent
+      <PopoverContent
         side="top"
         align="start"
-        className="z-[1000] w-[420px] p-3"
+        sideOffset={12}
+        avoidCollisions={false}
+        className="z-[1100] w-[220px] p-3 rounded-xl border-b-0 bg-white shadow-md"
+        onMouseEnter={() => enter("content")}
+        onMouseLeave={() => leave("content")}
       >
-        {open && (
-          <Swiper
-            modules={[FreeMode, Mousewheel, Keyboard, Autoplay]}
-            slidesPerView="auto"
-            spaceBetween={12}
-            freeMode={{ enabled: true, momentum: true }}
-            mousewheel={{ forceToAxis: true, releaseOnEdges: true, sensitivity: 0.7 }}
-            keyboard={{ enabled: true }}
-            grabCursor
-            autoplay={{ delay: 1600, disableOnInteraction: false, pauseOnMouseEnter: true }}
-            className="!px-1"
-          >
-            {items.map((p) => (
-              <SwiperSlide key={p.id} className="!w-[180px]">
-                <div className="w-full rounded-2xl border border-gray-200 p-3 text-left hover:shadow-md transition bg-white">
-                  <div className="text-[10px] uppercase tracking-wide text-gray-500">{p.title}</div>
-                  <div className="mt-1 text-lg font-semibold">{p.credits} credits</div>
-                  <div className="mt-2 text-sm">{p.price}</div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        )}
-      </HoverCardContent>
-    </HoverCard>
+        {/* Arrow */}
+        <PopoverPrimitive.Arrow
+          className="fill-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]"
+          width={16}
+          height={8}
+        />
+
+        <div className="space-y-2 text-sm">
+          {items.map((pack) => (
+            <div
+              key={pack.id}
+              className="rounded-lg px-2 py-1 text-gray-800"
+            >
+              {pack.title}
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -98,18 +128,11 @@ const ChatHome: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showActionButtons, setShowActionButton] = useState<boolean>(false);
 
-  // update loading
-  useEffect(() => {
-    setIsLoading(!!isGenLoading);
-  }, [isGenLoading]);
+  useEffect(() => { setIsLoading(!!isGenLoading); }, [isGenLoading]);
 
-  // sync prompt from store
   useEffect(() => {
-    if (genAiRequests?.prompt?.[0]) {
-      setInputPrompt(genAiRequests.prompt[0]);
-    } else {
-      setInputPrompt("");
-    }
+    if (genAiRequests?.prompt?.[0]) setInputPrompt(genAiRequests.prompt[0]);
+    else setInputPrompt("");
   }, [genAiRequests]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -123,11 +146,8 @@ const ChatHome: React.FC = () => {
       return toast.error("Please provide prompt before generating AI image.");
     }
     dispatch(updateIsGenLoading(true));
-    try {
-      dispatch(submitGenAiRequest(genAiRequests));
-    } catch (error) {
-      toast.error("Error generating AI image: " + (error as Error).message);
-    }
+    try { dispatch(submitGenAiRequest(genAiRequests)); }
+    catch (error) { toast.error("Error generating AI image: " + (error as Error).message); }
   };
 
   const handleDeletePalletImage = (imageName?: string) => {
@@ -137,7 +157,6 @@ const ChatHome: React.FC = () => {
     if (imageName === "inspiration") dispatch(resetInspirationImage());
   };
 
-  // gradient border styles
   const animationStyles = `
     @keyframes swing-gradient {
       from { background-position: 0% 50%; }
@@ -151,26 +170,16 @@ const ChatHome: React.FC = () => {
     }
   `;
 
-  // credit packs
   const packsA: Pack[] = [
-    { id: 1, title: "Starter", credits: 100, price: "$5" },
-    { id: 2, title: "Basic", credits: 250, price: "$10" },
-    { id: 3, title: "Pro", credits: 600, price: "$20" },
-    { id: 4, title: "Studio", credits: 1200, price: "$35" },
-    { id: 5, title: "Agency", credits: 3000, price: "$80" },
+    { id: 1, title: "Experiment with bold trim colors to highlight architectural features.", credits: 100, price: "$5" },
   ];
   const packsB: Pack[] = [
-    { id: 1, title: "Lite", credits: 50, price: "$3" },
-    { id: 2, title: "Plus", credits: 400, price: "$25" },
-    { id: 3, title: "Max", credits: 2000, price: "$120" },
+    { id: 1, title: "Experiment with bold trim colors to highlight architectural features.", credits: 50, price: "$3" },
   ];
   const packsC: Pack[] = [
-    { id: 1, title: "Trial", credits: 30, price: "$1" },
-    { id: 2, title: "Growth", credits: 800, price: "$45" },
-    { id: 3, title: "Scale", credits: 5000, price: "$199" },
+    { id: 1, title: "Experiment with bold trim colors to highlight architectural features.", credits: 30, price: "$1" },
   ];
 
-  // RED-BOX pill slider content
   const creditOptions: { label: string; items: Pack[] }[] = [
     { label: "Buy More Credits", items: packsA },
     { label: "Buy More Credits", items: packsB },
@@ -180,12 +189,11 @@ const ChatHome: React.FC = () => {
   return (
     <>
       <div className="min-h-screen flex flex-col bg-white overflow-y-auto max-h-[65vh] sm:max-h-[68vh]">
-        {/* ===== Top Content ===== */}
         <div className="flex-1">
           <div className="flex flex-col gap-4 max-w-md mx-auto bg-white">
             <div className="flex items-center justify-between text-sm text-gray-600 border-b border-gray-100 pb-2 p-4">
               <span>187/250 Designs Left</span>
-              <button className="px-3 py-1 bg-purple-700 text-white rounded hover:bg-purple-800 text-xs font-semibold">
+              <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold">
                 Buy More Credits
               </button>
             </div>
@@ -193,7 +201,6 @@ const ChatHome: React.FC = () => {
             <div className="p-4 mb-10">
               <div className="flex gap-3">
                 <div className="grid gap-2">
-                  {/* palette image */}
                   {genAiRequests?.paletteUrl?.length ? (
                     <ImagePalletInspirational
                       url={genAiRequests.paletteUrl[0]}
@@ -202,7 +209,6 @@ const ChatHome: React.FC = () => {
                     />
                   ) : null}
 
-                  {/* inspiration image */}
                   {genAiRequests?.referenceImageUrl?.length ? (
                     <ImagePalletInspirational
                       url={genAiRequests.referenceImageUrl[0]}
@@ -241,7 +247,6 @@ const ChatHome: React.FC = () => {
           <div className="max-w-md mx-auto p-3">
             <style>{animationStyles}</style>
 
-            {/* RED BOX: bulb + pill swiper */}
             <div className="flex items-center gap-2 mb-2 min-w-0">
               <button
                 className="text-sm border border-gray-300 rounded-full bg-transparent flex items-center justify-center gap-1 px-1 py-1 focus:outline-none focus:ring-0 shrink-0"
@@ -263,16 +268,16 @@ const ChatHome: React.FC = () => {
                   mousewheel={{ forceToAxis: true, releaseOnEdges: true, sensitivity: 0.7 }}
                   keyboard={{ enabled: true }}
                   grabCursor
-                  // prevent Swiper from blocking simple hovers
-                  // (usually not needed, but helps in some setups)
-                  // @ts-ignore
                   touchStartPreventDefault={false}
+                  simulateTouch={false}
+                  noSwiping
+                  noSwipingClass="noswipe"
                   className="!px-1"
                 >
                   {creditOptions.map((opt, idx) => (
                     <SwiperSlide key={idx} className="!w-auto">
                       <div className="inline-block">
-                        <HoverCardWithSwiper triggerLabel={opt.label} items={opt.items} />
+                        <PopoverWithSwiperHover triggerLabel={opt.label} items={opt.items} />
                       </div>
                     </SwiperSlide>
                   ))}
@@ -282,7 +287,6 @@ const ChatHome: React.FC = () => {
 
             <div className="gemini-input-wrapper">
               <div className="w-full rounded-xl border border-gray-200 shadow-sm bg-white overflow-hidden">
-                {/* Textarea */}
                 <div className="px-4 pt-3">
                   <textarea
                     rows={2}
@@ -294,7 +298,6 @@ const ChatHome: React.FC = () => {
                   />
                 </div>
 
-                {/* Bottom Bar */}
                 <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-t border-gray-200">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <ChatPallet />

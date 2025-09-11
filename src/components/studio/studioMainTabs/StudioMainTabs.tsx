@@ -78,7 +78,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="inspiration"
                   onClick={handleInspirationClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'inspiration' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white  ${activeTabFromStore === 'inspiration' ? ' text-blue-700  shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +104,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="design-hub"
                   onClick={handleDesignHubClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'design-hub' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'design-hub' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +135,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="measurement"
                   onClick={handleMeasurementClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'measurement' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'measurement' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +169,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="layers"
                   onClick={handleLayersClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'layers' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
+                 className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'layers' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +196,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="comments"
                   onClick={handleCommentsClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none ${activeTabFromStore === 'comments' ? 'bg-blue-200 text-blue-700 shadow font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-700'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'comments' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg"
                     width="18"

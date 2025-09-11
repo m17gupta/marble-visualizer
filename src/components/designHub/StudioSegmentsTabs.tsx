@@ -267,8 +267,8 @@ const StudioTabs = () => {
         className="box-border overflow-y-auto"
       >
         {/* Top: Group tabs row */}
-        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-1 py-0">
-          <TabsList className="whitespace-nowrap pb-2 no-scrollbar flex items-center gap-1 bg-transparent w-full">
+        <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-0 py-0">
+          <TabsList className="whitespace-nowrap p-0 no-scrollbar flex items-center gap-1 bg-transparent w-full h-auto">
             <Swiper
               modules={[FreeMode, Mousewheel]}
               spaceBetween={8}
@@ -279,14 +279,14 @@ const StudioTabs = () => {
               onSwiper={(sw) => (groupSwiperRef.current = sw)}
             >
               {masterArray.allSegments.map((tab) => (
-                <SwiperSlide key={tab.groupName} className="!w-auto">
+                <SwiperSlide key={tab.groupName} className="!w-auto seg-group-tabs">
                   <TabsTrigger
                     ref={(el) => (SegTypeRefs.current[tab.groupName] = el)}
                     onClick={() => handleGroupSegmentClick(tab)}
                     onMouseEnter={() => handleGroupHover(tab)}
                     onMouseLeave={handleLeaveGroupHover}
                     value={tab.groupName}
-                    className="px-4 py-2 text-sm rounded-t-md bg-transparent text-gray-600 data-[state=active]:bg-cyan-200 data-[state=active]:text-black"
+                    className="px-4 py-2 text-sm  text-gray-700 focus:outline-none focus:ring-0 focus:ring-blue-1 border-none rounded-none bg-transparen  data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:bg-blue-200   data-[state=active]:text-black"
                   >
                     {tab.groupName}
                   </TabsTrigger>
@@ -355,8 +355,8 @@ const StudioTabs = () => {
                             className={`cursor-pointer uppercase hover:bg-blue-50 border text-sm font-semibold px-3 py-1 focus:ring-transparent transition-colors focus:outline-none duration-200
                               ${
                                 isPresent
-                                  ? "bg-purple-100 border-purple-500 border-b-2 text-black rounded-md shadow-sm"
-                                  : "bg-white border-gray-300 text-gray-700 hover:bg-blue-100"
+                                  ? "bg-white  border-blue-500 bg text-gray-600 rounded-md shadow-sm"
+                                  : "bg-white border-gray-300 text-gray-700 hover:bg-blue-50"
                               }`}
                           >
                             {tab.short_title}
