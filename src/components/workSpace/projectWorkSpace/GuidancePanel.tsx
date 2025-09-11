@@ -261,8 +261,8 @@ const GuidancePanel: React.FC = () => {
 
    
 
-          <div className="relative flex gap-2 mb-4 flex-wrap">
-          {/* Prompt Tag */}
+          {/* <div className="relative flex gap-2 mb-4 flex-wrap">
+
           {requests.prompt && requests.prompt.length > 0 && (
             <UserInputPopOver
               inputKey="user-prompt"
@@ -270,13 +270,13 @@ const GuidancePanel: React.FC = () => {
               value={requests.prompt[0]}
               open={isPromptPopoverOpen}
               setOpen={setIsPromptPopoverOpen}
-              deleteData={handleDelete} // Clear prompt on delete
+              deleteData={handleDelete} 
             />
           )}
 
           
 
-          {/* pallet image */}
+        
           {
             requests.paletteUrl && requests.paletteUrl.length > 0 && requests.paletteUrl[0] !== "" && (
               <UserInputPopOver
@@ -288,7 +288,7 @@ const GuidancePanel: React.FC = () => {
                 deleteData={handleDelete}
               />
             )}
-          {/* inspiration Image Y  */}
+        
           {requests.referenceImageUrl &&
             requests.referenceImageUrl.length > 0 &&
             requests.referenceImageUrl[0] !== "" && (
@@ -302,7 +302,7 @@ const GuidancePanel: React.FC = () => {
               />
             )}
 
-         </div>
+         </div> */}
 
 
           <div className={`flex gap-3 md-gap-0 md:flex justify-between items-between`}>

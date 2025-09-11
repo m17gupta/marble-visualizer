@@ -16,6 +16,7 @@ import { jsonData } from "../../../../components/canvas/layerCanvas/JsonData";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LayerSegTab from "./LayerSegTab";
+import Structure from "./Structure";
 
 const LayerContent = () => {
   const [inputValue, setInputValue] = useState("");
@@ -115,7 +116,9 @@ const AllCommentIcon = (props: React.SVGProps<SVGSVGElement>) => ( <svg xmlns="h
           <LayerSegTab/>
         </TabsContent>
         
-        <TabsContent value="pending" className="p-3">dd</TabsContent>
+        <TabsContent value="pending" className="p-3">
+          <Structure/>
+        </TabsContent>
         <TabsContent value="resolved" className="p-0">
         <div className="p-6 space-y-6">
             <CanvasSizeSlider />

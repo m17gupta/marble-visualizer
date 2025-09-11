@@ -137,8 +137,8 @@ const MeasurementTab: React.FC<MeasurementTabProps> = ({
 
   const getTabStyle = (tabName: string): string => {
     return activeTab === tabName
-      ? "border-b-2 border-b-purple-500 border-purple-500 hover:border-purple-600 text-purple-600 bg-white hover:bg-purple-50 focus:ring-0 focus:outline-none"
-      : "border-b-2 border-b-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50";
+      ? "border-b-2 border-b-purple-500 border-purple-500 hover:border-purple-600 text-purple-600 bg-white hover:bg-purple-50 focus:ring-none focus:outline-none"
+      : " text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:ring-none focus:outline-none";
   };
 
   // const data = getActiveTabData();

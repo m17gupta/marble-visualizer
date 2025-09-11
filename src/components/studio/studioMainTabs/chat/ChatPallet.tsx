@@ -23,7 +23,7 @@ const ChatPallet: React.FC = () => {
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="text-base hover:text-purple-600 transition p-0 inline-flex items-center px-1 py-1"
+                className="text-base hover:text-white transition p-0 inline-flex items-center px-1 py-1"
                 aria-label="Open Materials"
                 onClick={() => setIsSheetOpen(true)}
               >

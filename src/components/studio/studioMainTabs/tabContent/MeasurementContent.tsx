@@ -79,7 +79,7 @@ const MeasurementContent: React.FC = () => {
   // const masterArray = mockMasterArray;
   const dispatch = useDispatch<AppDispatch>();
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
-  const { list: joblist } = useSelector((state: RootState) => state.jobs);
+  const { list: joblist } = useSelector((state: RootState) => (state.jobs as { list: any[] }));
 
   // console.log("-----Master", masterArray);
 
