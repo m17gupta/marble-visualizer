@@ -125,11 +125,11 @@ const AllSegments = () => {
               <div key={segment.id || index} className="relative pb-[10px]">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button
+                    <Button
                       variant={isActive ? "default" : "outline"}
                       size="icon"
                       className={cn(
-                        "w-12 h-12 border-1 p-1  transition-all duration-200 focus:outline-0",
+                        "w-12 h-12 border-1 p-1  transition-all duration-200 focus:outline-0 bg-transparent",
                         isActive && "ring-0 ring-offset-0",
                         isHovered && "shadow-md"
                         // scale-105
@@ -177,7 +177,7 @@ const AllSegments = () => {
                           </div>
                         )}
                       </span>
-                    </button>
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent side="right">
                     <p>{segment.name}</p>

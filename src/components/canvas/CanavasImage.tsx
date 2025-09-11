@@ -20,6 +20,7 @@ import {
   setIsResetZoom,
   setMousePosition,
   setZoom,
+  
 } from "@/redux/slices/canvasSlice";
 import {
   LoadImageWithCORS,
@@ -48,6 +49,7 @@ import {
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import DoubleClickHtml from "./DoubleClickHtml";
+import UpdateSegmentaOnCanvas from "../designHub/editSegment/UpdateSegmentaOnCanvas";
 type NamedFabricObject = fabric.Object & {
   name?: string;
   groupName?: string;
@@ -444,7 +446,7 @@ const CanavasImage = forwardRef(
 
     const handleCanvasClick = (event: fabric.TEvent) => {
       const fabricCanvas = fabricCanvasRef.current;
-      console.log("Canvas clicked at:");
+     
       if (!fabricCanvas) return;
       const pointer = fabricCanvas.getPointer(event.e);
       if (pointer) {
@@ -469,6 +471,7 @@ const CanavasImage = forwardRef(
               const masterSegment = masterArray.find(
                 (seg: MasterModel) => seg.name === foundSegment.segment_type
               );
+              
               if (masterSegment) {
                 dispatch(addSelectedMasterArray(masterSegment));
                 const allSeg = masterSegment.allSegments;
@@ -476,7 +479,7 @@ const CanavasImage = forwardRef(
                   (seg: MasterGroupModel) =>
                     seg.groupName === foundSegment.group_label_system
                 );
-                console.log("Found group segment:", groupSeg);
+                
                 if (groupSeg) {
                   dispatch(updatedSelectedGroupSegment(groupSeg));
                   dispatch(updateActiveTab("design-hub"));
@@ -512,6 +515,8 @@ const CanavasImage = forwardRef(
       });
     }
   }, [hoverGroup, fabricCanvasRef]);
+
+
     return (
       <>
         {" "}
@@ -564,11 +569,15 @@ const CanavasImage = forwardRef(
                      onClose={() => setDoubleClickPoint(null)}
                     />
                   )}
+
+                  
                 </CardContent>
               </Card>
             </motion.div>
           </div>
         </TooltipProvider>
+
+
       </>
     );
   }

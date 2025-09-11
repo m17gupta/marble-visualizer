@@ -46,6 +46,57 @@ const masterArraySlice = createSlice({
       const groupSegment = action.payload;
       state.selectedGroupSegment = groupSegment;
     },
+    updateSelectedGroupSegmentAfterEdit: (state, action) => {
+      const groupSegments = action.payload;
+      if( state.selectedGroupSegment &&
+         state.selectedGroupSegment.segments && 
+         state.selectedGroupSegment.segments.length >0){
+           // remove the old segment and add the new segments
+           state.selectedGroupSegment.segments = state.selectedGroupSegment.segments.filter(seg => !groupSegments.some((gseg:SegmentModal) => gseg.id === seg.id));
+           state.selectedGroupSegment.segments = [...state.selectedGroupSegment.segments, ...groupSegments];
+         }    
+    },
+    // same segtype but different groupName
+       updateSelectedGroupSegmentAfterEdit2: (state, action) => {
+      const{segment, groupName}= action.payload;
+      const segType= segment[0]?.segment_type;
+      if( state.selectedGroupSegment &&
+         state.selectedGroupSegment.segments && 
+         state.selectedGroupSegment.segments.length >0){
+           // remove the old segment and add the new segments
+           state.selectedGroupSegment.segments = state.selectedGroupSegment.segments.filter(seg => !segment.some((gseg:SegmentModal) => gseg.id === seg.id));
+          
+         }
+         
+         // delete from selectedMasterArray
+          const index = state.selectedMasterArray?.allSegments.findIndex(
+            (group) => group.groupName === groupName
+          );
+          if (index !== -1 && index !== undefined && state.selectedMasterArray?.allSegments[index]) {
+              const selectedSegArray = state.selectedMasterArray?.allSegments[index].segments;
+
+              if(selectedSegArray && selectedSegArray.length >0){
+                // delete the segment from selected master array
+                state.selectedMasterArray!.allSegments[index].segments = selectedSegArray.filter(seg => !segment.some((gseg:SegmentModal) => gseg.id === seg.id));
+             
+              }
+            }
+
+            // update in group
+            segment.map((item: SegmentModal) => {
+              const index = state.selectedMasterArray?.allSegments.findIndex(
+                (seg) => seg.groupName === item.group_label_system
+              );
+              if (index !== -1 && index !== undefined && state.selectedMasterArray?.allSegments[index]) {
+                state.selectedMasterArray.allSegments[index].segments.push(item);
+              }
+
+            });
+    },
+
+    // different segtype and different groupName
+       // same segtype but different groupName
+
     addNewSegmentToMasterArray: (state, action) => {
       const newSegment = action.payload;
       const existingSegment = state.masterArray.find(
@@ -150,19 +201,19 @@ const masterArraySlice = createSlice({
       }
     },
     updateMasterArrayonEditSegment: (state, action) => {
-      const updatedSegment = action.payload;
+      const {updatedSegment,groupName,segType} = action.payload;
       updatedSegment.map((item: SegmentModal) => {
         const index = state.masterArray.findIndex(
-          (seg) => seg.name === item.segment_type
+          (seg) => seg.name === segType
         );
         if (index !== -1) {
           const segArrayIndex = state.masterArray[index].allSegments.findIndex(
-            (group) => group.groupName === updatedSegment.group_label_system
+            (group) => group.groupName === groupName
           );
           if (segArrayIndex !== -1) {
             const segmentIndex = state.masterArray[index].allSegments[
               segArrayIndex
-            ].segments.findIndex((seg) => seg.id === updatedSegment.id);
+            ].segments.findIndex((seg) => seg.id === item.id);
             if (segmentIndex !== -1) {
               state.masterArray[index].allSegments[segArrayIndex].segments[
                 segmentIndex
@@ -172,39 +223,79 @@ const masterArraySlice = createSlice({
         }
       });
     },
-    deletedChangeGroupSegment: (state, action) => {
-      const updatedSegment = action.payload;
-      const oldSeg = state.selectedSegment;
-      if (
-        oldSeg &&
-        oldSeg.segment_type &&
-        oldSeg.group_label_system &&
-        oldSeg.id
-      ) {
+    // update edit segmnet when same segType and different groeuNmae
+    updateMasterArrayonEditSegment2: (state, action) => {
+      const {updatedSegment,groupName,segType} = action.payload;
+      updatedSegment.map((item: SegmentModal) => {
         const index = state.masterArray.findIndex(
-          (seg) => seg.name === oldSeg.segment_type
+          (seg) => seg.name === segType
         );
+        debugger;
         if (index !== -1) {
-          // remove existed segment
+          // remove from old group
+          state.masterArray[index].allSegments = state.masterArray[
+            index
+          ].allSegments.map((group) => {
+            return {  
+              ...group,
+              segments: group.segments.filter((seg) => seg.id !== item.id),
+            };
+          });
+          // add to new group
           const segArrayIndex = state.masterArray[index].allSegments.findIndex(
-            (seg) => seg.groupName === oldSeg.group_label_system
+            (group) => group.groupName === item.group_label_system
           );
           if (segArrayIndex !== -1) {
-            state.masterArray[index].allSegments[segArrayIndex].segments =
-              state.masterArray[index].allSegments[
-                segArrayIndex
-              ].segments.filter((seg) => seg.id !== oldSeg.id);
-            // If no segments left in the group, remove the group
-            if (
-              state.masterArray[index].allSegments[segArrayIndex].segments
-                .length === 0
-            ) {
-              state.masterArray[index].allSegments.splice(segArrayIndex, 1);
-            }
-            state.selectedSegment = updatedSegment;
+            state.masterArray[index].allSegments[segArrayIndex].segments.push(
+              item
+            );
+          } else {
+            console.log("Adding new group in edit segment");
+            state.masterArray[index].allSegments.push({
+              groupName: item.group_label_system??"",
+              segments: [item],
+            });
           }
         }
-      }
+      });
+    },
+    // update edit segmnet when different segType and different groeuNmae
+    updateMasterArrayonEditSegment3: (state, action) => {
+      const {updatedSegment,groupName,segType} = action.payload;
+      updatedSegment.map((item: SegmentModal) => {
+        // remove from old master array
+        state.masterArray = state.masterArray.map((master) => {
+          return {
+            ...master,
+            allSegments: master.allSegments.map((group) => {
+              return {
+                ...group,
+                segments: group.segments.filter((seg) => seg.id !== item.id),
+              };
+            }),
+          }
+          });
+          // add to new master array
+          const index = state.masterArray.findIndex(
+            (seg) => seg.name === item.segment_type
+          );
+          if (index !== -1) {
+            const segArrayIndex = state.masterArray[index].allSegments.findIndex(
+              (group) => group.groupName === item.group_label_system
+            );
+            if (segArrayIndex !== -1) {
+              state.masterArray[index].allSegments[segArrayIndex].segments.push(
+                item
+              );
+            } else {
+              state.masterArray[index].allSegments.push({
+                groupName: item.group_label_system ?? "",
+                segments: [item],
+              });
+            }
+          }
+        });
+
     },
     deleteSegment: (state, action) => {
       const segmentId = action.payload;
@@ -381,12 +472,15 @@ export const {
   updatedSelectedGroupSegment,
   updateSelectedSegment,
   changeGroupSelectedSegment,
-  deletedChangeGroupSegment,
   deleteSegment,
   addUserSelectedSegment,
   updateUserSelectedSegment,
   updateGroupNameSegment,
-  updateMasterArrayonEditSegment
+  updateMasterArrayonEditSegment,
+  updateMasterArrayonEditSegment2,
+  updateMasterArrayonEditSegment3,
+  updateSelectedGroupSegmentAfterEdit,
+  updateSelectedGroupSegmentAfterEdit2
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;

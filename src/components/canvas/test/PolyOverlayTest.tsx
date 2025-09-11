@@ -112,7 +112,7 @@ const PolygonOverlayTest = ({
       canvas
     ) {
       allSegArray.forEach((seg, idx) => {
-        const {
+        const {id,
           segment_type,
           group_label_system,
           short_title,
@@ -132,9 +132,11 @@ const PolygonOverlayTest = ({
         if (!segment_type) return;
         if (!segColor) return;
         if (!canvas.current) return;
+        if(!id) return;
 
         // Pass a unique subGroupName for overlays
         collectPoints(
+          id,
           annotation_points_float,
           short_title,
           segment_bb_float,

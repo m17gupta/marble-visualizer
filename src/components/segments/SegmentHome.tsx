@@ -10,12 +10,6 @@ import {
 } from "@/redux/slices/segmentsSlice";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { toast } from "sonner";
-import {
-  changeGroupSelectedSegment,
-  deletedChangeGroupSegment,
-} from "@/redux/slices/MasterArraySlice";
-import { MasterModel } from "@/models/jobModel/JobModel";
-import { MaterialSegmentModel } from "@/models/materialSegment/MaterialSegmentModel";
 
 const SegmentHome = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -50,32 +44,7 @@ const SegmentHome = () => {
     }
   };
 
-  const handleSaveSegment = async (
-    data: SegmentModal,
-    new_master: MaterialSegmentModel
-  ) => {
-    handleCloseEditModal();
-    const isUpdated = await updateSegmentBasedOnId(data);
 
-    if (!isUpdated) {
-      return;
-    }
-    //  setIsUpdated(false);
-    // update all Segments Array
-    // dispatch(changeGroupSegment(data));
-    // update master array
-    dispatch(
-      changeGroupSelectedSegment({
-        master: new_master,
-        updatedSegment: data,
-      })
-    );
-
-    //delete the selected segment and  from master array
-    dispatch(deletedChangeGroupSegment(data));
-
-    dispatch(updateAddSegMessage(null));
-  };
 
   return (
     <>

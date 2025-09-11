@@ -305,8 +305,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     // --- Mouse events for dragging annotation points ---
     // Store all polygons and pointIdxs that are being dragged
     const handleMouseDown = (opt:  fabric.TPointerEventInfo) => {
-       console.log("handleMouseDown"); 
-       
+
       // Remove hover circle on mouse down
       const existingHoverCircle = canvas.getObjects().find((obj: fabric.Object) => 
         (obj as any).name === 'hover-circle'
