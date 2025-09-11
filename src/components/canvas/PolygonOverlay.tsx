@@ -128,6 +128,7 @@ useEffect(() => {
      console.log("allSegArray calling ");
       allSegArray.forEach((seg, idx) => {
         const {
+          id,
           segment_type,
           group_label_system,
           short_title,
@@ -147,9 +148,11 @@ useEffect(() => {
         if (!segment_type) return;
         if (!segColor) return;
         if (!canvas.current) return;
+        if(!id) return;
         isUpdatePoly.current = false;
         // Pass a unique subGroupName for overlays
         collectPoints(
+          id,
           annotation_points_float,
           short_title,
           segment_bb_float,

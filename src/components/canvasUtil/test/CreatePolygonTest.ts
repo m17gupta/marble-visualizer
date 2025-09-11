@@ -10,17 +10,19 @@ type NamedFabricObject = fabric.Object & {
   name?: string;
   groupName?: string;
   subGroupName?: string;
-  isActived?: boolean;
+  isActived?: boolean;  
+  id?:number
 };
 
 export const collectPoints = async (
+  id:number,
   annotation: number[],
   segName: string,
   coordinates: number[],
   segType: string,
   groupName: string,
   color: string,
-  canvasRef: React.RefObject<any>,
+  canvasRef: React.RefObject<any> ,
   isFillPolygon: boolean,
   canvasHeight: number,
   canvasWidth: number,
@@ -55,6 +57,7 @@ export const collectPoints = async (
 
   if (point && point.length > 0 && coordinates && polyName) {
     await  makePolygon(
+      id,
       point,
       coordinates,
       polyName,
@@ -75,6 +78,7 @@ export const collectPoints = async (
 };
 
 export const makePolygon =async (
+  id:number,
   point: PointModel[],
   coordinate: number[],
   polyName: string,
@@ -145,6 +149,7 @@ export const makePolygon =async (
       (group as NamedFabricObject).subGroupName = subGroupName;
       (group as NamedFabricObject).isActived = true;
       (group as NamedFabricObject).name = polyName;
+      (group as NamedFabricObject).id = id; // Assign a random ID
       return group;
     };
         // Use await to get the icon group after the SVG has been loaded and parsed

@@ -2,6 +2,7 @@ import CanvasEdit from "@/components/canvas/canvasEdit/CanvasEdit";
 import LayerCanvas from "@/components/canvas/layerCanvas/LayerCanvas";
 import PolygonOverlay from "@/components/canvas/PolygonOverlay";
 import CompareHoverHeader from "@/components/designHub/CompareHoverHeader";
+import UpdateSegmentaOnCanvas from "@/components/designHub/editSegment/UpdateSegmentaOnCanvas";
 import HoverHeader from "@/components/designHub/HoverHeader";
 import CompareGenAiHome from "@/components/workSpace/compareGenAiImages/CompareGenAiHome";
 import DesignProject from "@/components/workSpace/projectWorkSpace/DesignProject";
@@ -50,6 +51,10 @@ const Hovertemplate = ({ canvas, width, height  }: Props) => {
           height={height}
           className="mb-6"
         />
+
+                {/* update segment on canvas */}
+        {canvas &&
+        <UpdateSegmentaOnCanvas canvasRef={canvas} />}
 
       {requests &&
       ( ( requests.paletteUrl && requests.paletteUrl.length > 0 )||

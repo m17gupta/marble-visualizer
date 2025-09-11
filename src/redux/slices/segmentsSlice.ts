@@ -300,6 +300,15 @@ const segmentsSlice = createSlice({
         state.selectedSegments[index].segment_bb_float = updatedSegment.bb;
       }
     },
+    updateAndDeleteSelectedSegment: (state, action) => {
+      const {segType, allSegmnets} = action.payload;
+      if (!state.selectedSegments || state.selectedSegments.length === 0) return;
+      const segmentsToUpdate = state.selectedSegments.filter(seg => seg.segment_type === segType);
+     // remove all  segmentsToUpdate
+      const remainingSegments = state.allSegments.filter(seg => !segmentsToUpdate.some(s => s.id === seg.id));
+      state.allSegments = remainingSegments;
+       state.allSegments = [...state.allSegments, ...allSegmnets];   
+    },
     resetSelectedSegment: (state) => {
       state.selectedSegments = [];
     },
@@ -511,7 +520,8 @@ export const {
   updateIsDeleteSegModal,
   resetSelectedSegment,
   updateEditSelectedSegment,
-  updateClearEditCanvas
+  updateClearEditCanvas,
+  updateAndDeleteSelectedSegment
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

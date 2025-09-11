@@ -2,6 +2,7 @@ import { MasterGroupModel } from "@/models/jobModel/JobModel";
 import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 type Prop = {
   segType: string;
@@ -41,6 +42,16 @@ const SelectGroup = ({ segType, onChange }: Prop) => {
     setGroupName(value);
     onChange(value);
   };
+
+   const handleAddGroup = () => {
+     
+      if (groupArray != undefined) {
+        const groupLength = groupArray.length;
+        const newGroupName = `${segType}${groupLength + 1}`;
+        setGroupArray([...groupArray, newGroupName]);
+        toast.success(`Group ${newGroupName} added successfully!`);
+      }
+    };
   return (
     <>
       <div className="pt-2">
@@ -48,7 +59,7 @@ const SelectGroup = ({ segType, onChange }: Prop) => {
           <h4 className="font-medium text-sm">Select Group</h4>
           <button
             className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
-            // onClick={handleAddGroup}
+             onClick={handleAddGroup}
           >
             +
           </button>

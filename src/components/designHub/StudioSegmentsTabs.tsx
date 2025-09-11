@@ -27,6 +27,7 @@ import { SwatchRecommendations } from "../swatch/SwatchRecommendations";
 import { updateSegmentIntoRequestPallet } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { SegmentEditComp } from "./editSegment/SegmentEditComp";
 import DeleteSegModal from "./deleteSegModal/DeleteSegModal";
+import { resetSelectedSegment, updateClearEditCanvas } from "@/redux/slices/segmentsSlice";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -56,13 +57,18 @@ const StudioTabs = () => {
   // ✅ Group Swiper ref
   const groupSwiperRef = useRef<SwiperType | null>(null);
   // Programmatically slide group Swiper to a specific group index
-  const slideToGroupTab = useCallback((groupName: string) => {
-    if (!groupSwiperRef.current || !masterArray) return;
-    const idx = masterArray.allSegments.findIndex((g) => g.groupName === groupName);
-    if (idx >= 0) {
-      groupSwiperRef.current.slideTo(idx, 300);
-    }
-  }, [masterArray]);
+  const slideToGroupTab = useCallback(
+    (groupName: string) => {
+      if (!groupSwiperRef.current || !masterArray) return;
+      const idx = masterArray.allSegments.findIndex(
+        (g) => g.groupName === groupName
+      );
+      if (idx >= 0) {
+        groupSwiperRef.current.slideTo(idx, 300);
+      }
+    },
+    [masterArray]
+  );
 
   // ✅ Hover auto-scroll helpers
   const hoverTimerRef = useRef<number | null>(null);
@@ -97,7 +103,8 @@ const StudioTabs = () => {
     const x = e.clientX - rect.left;
     const EDGE = 40; // px
     if (x < EDGE && hoverDirRef.current !== -1) startAutoHover(-1);
-    else if (x > rect.width - EDGE && hoverDirRef.current !== 1) startAutoHover(1);
+    else if (x > rect.width - EDGE && hoverDirRef.current !== 1)
+      startAutoHover(1);
     else if (x >= EDGE && x <= rect.width - EDGE && hoverDirRef.current !== 0)
       stopAutoHover();
   };
@@ -129,11 +136,19 @@ const StudioTabs = () => {
   // Initialize from selectedMasterArray
   useEffect(() => {
     if (selectedMasterArray && selectedMasterArray.allSegments.length > 0) {
-      setMasterArray(selectedMasterArray);
+      // Sort allSegments by last digit in groupName (increasing order)
+      const sortedSegments = [...selectedMasterArray.allSegments].sort((a, b) => {
+        // Extract full trailing number from groupName (e.g., 'Group12' => 12)
+        const numA = parseInt(a.groupName.match(/(\d+)$/)?.[1] ?? "0", 10);
+        const numB = parseInt(b.groupName.match(/(\d+)$/)?.[1] ?? "0", 10);
+        return numA - numB;
+      });
+      const sortedMasterArray = { ...selectedMasterArray, allSegments: sortedSegments };
+      setMasterArray(sortedMasterArray);
 
-      const firstGroup = selectedMasterArray.allSegments[0];
+      const firstGroup = sortedMasterArray.allSegments[0];
 
-      const firstSegmentSorted = selectedMasterArray.allSegments
+      const firstSegmentSorted = sortedMasterArray.allSegments
         .map((grp) =>
           grp.segments
             .slice()
@@ -195,30 +210,37 @@ const StudioTabs = () => {
     }
   }, [activeTab, innerTabValue, slideToGroupTab]);
 
+
   // Auto-swipe Swiper to first active chip when 'active' changes
   useEffect(() => {
     if (!currentSelectedGroupSegment || !segSwiperMapRef.current) return;
     // Get sorted segments as in render
-     setActiveTab(currentSelectedGroupSegment.groupName);
-    const sortedSegments = currentSelectedGroupSegment.segments
+    // if (onCanvasClick) {
+    
+      const sortedSegments = currentSelectedGroupSegment.segments
       .slice()
       .filter((tab) => tab.short_title)
       .sort((a, b) => (a.short_title ?? "").localeCompare(b.short_title ?? ""));
 
     const idx = sortedSegments.findIndex((tab) => active.includes(tab.id!));
     if (idx >= 0) {
-      segSwiperMapRef.current[activeTab]?.slideTo(idx, 300);
-    }
-  }, [active, currentSelectedGroupSegment, activeTab]);
+     setActiveTab(currentSelectedGroupSegment.groupName);
+    
+      segSwiperMapRef.current[currentSelectedGroupSegment.groupName]?.slideTo(idx, 300);
+    
+  }
+  
+  }, [active,currentSelectedGroupSegment, activeTab]);
 
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
-    setActiveTab(group.groupName);
+   // setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
     dispatch(addUserSelectedSegment(group.segments));
-
+    dispatch(resetSelectedSegment());
+     dispatch(updateClearEditCanvas(true));
     const ids = group.segments.map((d) => d.id!);
-    setActive(ids);
-    setInnerTabValue(group.segments[0]?.short_title ?? "");
+   // setActive(ids);
+   // setInnerTabValue(group.segments[0]?.short_title ?? "");
   };
 
   const handleInnerTabClick = (seg: SegmentModal) => {
@@ -263,7 +285,7 @@ const StudioTabs = () => {
     <>
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+       // onValueChange={setActiveTab}
         className="box-border overflow-y-auto"
       >
         {/* Top: Group tabs row */}
@@ -299,7 +321,10 @@ const StudioTabs = () => {
         {/* Per-group content */}
         {masterArray.allSegments.map((wall) => (
           <TabsContent className="" value={wall.groupName} key={wall.groupName}>
-            <Tabs value={innerTabValue} className="w-full px-4 overflow-x-auto thin-scrollbar">
+            <Tabs
+              value={innerTabValue}
+              className="w-full px-4 overflow-x-auto thin-scrollbar"
+            >
               {/* Inner: Segment chips row with Swiper */}
               <div
                 className="whitespace-nowrap py-1 bg-white pb-2"
@@ -310,7 +335,9 @@ const StudioTabs = () => {
                   modules={[FreeMode, Mousewheel, Keyboard]}
                   spaceBetween={10}
                   slidesPerView="auto"
-                  onSwiper={(sw) => (segSwiperMapRef.current[wall.groupName] = sw)}
+                  onSwiper={(sw) =>
+                    (segSwiperMapRef.current[wall.groupName] = sw)
+                  }
                   centeredSlides={false}
                   centerInsufficientSlides={false}
                   slidesOffsetBefore={0}
@@ -343,14 +370,24 @@ const StudioTabs = () => {
                     .map((tab, idx) => {
                       const isPresent = active.includes(tab.id!);
                       return (
-                        <SwiperSlide key={tab.short_title} style={{ width: "auto" }}>
+                        <SwiperSlide
+                          key={tab.short_title}
+                          style={{ width: "auto" }}
+                        >
                           <Button
-                            ref={(el) => (tabRefs.current[tab.short_title ?? ""] = el)}
+                            ref={(el) =>
+                              (tabRefs.current[tab.short_title ?? ""] = el)
+                            }
                             onClick={() => {
                               handleInnerTabClick(tab);
-                              segSwiperMapRef.current[activeTab]?.slideTo(idx, 500);
+                              segSwiperMapRef.current[activeTab]?.slideTo(
+                                idx,
+                                500
+                              );
                             }}
-                            onMouseEnter={() => handleEachSegmentHover(tab.short_title ?? "")}
+                            onMouseEnter={() =>
+                              handleEachSegmentHover(tab.short_title ?? "")
+                            }
                             onMouseLeave={handleLeaveGroupHover}
                             className={`cursor-pointer uppercase hover:bg-blue-50 border text-sm font-semibold px-3 py-1 focus:ring-transparent transition-colors focus:outline-none duration-200
                               ${

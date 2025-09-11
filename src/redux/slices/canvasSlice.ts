@@ -1,6 +1,8 @@
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
+import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { set } from "date-fns";
+import { resetEditSegment } from "./segmentsSlice";
 
 // Define the types for canvas state
 export type ZoomMode = "mouse";
@@ -23,19 +25,18 @@ export type CanvasMode =
   | "test-canvas"
   | "outline"
   | "zoom"
-  |"showSegments"
+  | "showSegments"
   | "rectangle"
-  | "polygon"
+  | "polygon";
 
-  export type activeCanvasType = 
-    |"hideSegments"
-    |"showSegments"
-    |"outline"
-    |"compare"
-    |"zoom"
+export type activeCanvasType =
+  | "hideSegments"
+  | "showSegments"
+  | "outline"
+  | "compare"
+  | "zoom";
 
-  
-  // Define the state interface
+// Define the state interface
 interface CanvasState {
   currentZoom: number;
   zoomMode: ZoomMode;
@@ -58,7 +59,8 @@ interface CanvasState {
   aiTrainImageHeight: number;
   isCompare: boolean;
   isSwitchCanvas: boolean;
-  markingMode:string
+  markingMode: string;
+  editSegments: SegmentModal[];
 }
 
 // Initial state
@@ -84,7 +86,9 @@ const initialState: CanvasState = {
   aiTrainImageHeight: 600,
   isCompare: false,
   isSwitchCanvas: false,
-  markingMode:"polygon"
+  markingMode: "polygon",
+  editSegments: [],
+
 };
 
 // Create the canvas slice
@@ -171,7 +175,7 @@ const canvasSlice = createSlice({
     setActiveTab(state, action: PayloadAction<string>) {
       state.activeCanvas = action.payload;
     },
-
+   
     // ;start compare
     updateIsCompare: (state, action: PayloadAction<boolean>) => {
       state.isCompare = action.payload;
@@ -193,19 +197,25 @@ const canvasSlice = createSlice({
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       state.activeCanvas = "hideSegments";
-      state.isCompare= false,
-      state.markingMode = "polygon";
+      (state.isCompare = false), (state.markingMode = "polygon");
     },
-   setIsResetZoom: (state, action: PayloadAction<boolean>) => {
-      state.isResetZoom = action.payload; // Update the reset zoom flag 
+    setIsResetZoom: (state, action: PayloadAction<boolean>) => {
+      state.isResetZoom = action.payload; // Update the reset zoom flag
+    },
+    updateEditSegmentsOncanvas: (state, action: PayloadAction<SegmentModal[]>) => {
+      state.editSegments = action.payload;
+    },
+    resetEditSegmentsOnCanvas: (state) => {
+      state.editSegments = [];  
+    }
   }
-}
 });
 
 // Export actions
 export const {
   setCanvasType,
   updateHoverGroup,
+  updateEditSegmentsOncanvas,
   setZoom,
   setZoomMode,
   toggleZoomMode,
@@ -222,10 +232,12 @@ export const {
   updateIsGenerateMask,
   updateIsScreenShotTaken,
   updateScreenShotUrl,
-  setIsResetZoom,setActiveTab,
+  setIsResetZoom,
+  setActiveTab,
   updateIsCompare,
   updateSwitchCanvas,
-  updateMarkingMode
+  updateMarkingMode,
+  
 } = canvasSlice.actions;
 
 // Export reducer
