@@ -26,6 +26,7 @@ import {
 } from "@/redux/slices/MasterArraySlice";
 import {
   setCanvasType,
+  updateChangeSegType,
   updateEditSegmentsOncanvas,
 } from "@/redux/slices/canvasSlice";
 import { on } from "events";
@@ -119,37 +120,47 @@ export const SegmentEditComp = ({
       const firstSegment = selectedSegments[0];
       const groupname = firstSegment?.group_label_system ?? "";
       const segtype = firstSegment?.segment_type ?? "";
+      const prevShortTitleArr = selectedSegments
+        .map((seg) => seg.short_title)
+        .filter((title): title is string => title != null);
+        console.log("prevShortTitleArr:", prevShortTitleArr);
       if (groupname === groupName && segtype === segType) {
-        handleUpdateSegment(selectedSegments, groupName, segType);
+   
+        handleUpdateSegment(selectedSegments, groupName, segType,prevShortTitleArr);
       } else if (groupname !== groupName && segtype === segType) {
         const updatedSegments = selectedSegments.map((seg) => ({
           ...seg,
           group_label_system: groupName,
         }));
 
-        handleUpdateSegment(updatedSegments, groupname, segType);
+        handleUpdateSegment(updatedSegments, groupname, segType,prevShortTitleArr);
       } else if (groupname === groupName && segtype !== segType) {
-        console.log("Segment type changed.");
+       
         const updatedSegments = selectedSegments.map((seg) => ({
           ...seg,
           segment_type: segType,
         }));
 
-        handleUpdateSegment(updatedSegments, groupName, segType);
+        handleUpdateSegment(updatedSegments, groupName, segType,prevShortTitleArr);
       } else if (groupname !== groupName && segtype !== segType) {
+        console.log("Both group and seg type are changed");
         const selectSeg = allSegments.filter(
           (s) => s.segment_type === segType
         );
         const seglength = selectSeg.length;
         const short_T = selectSeg[0]?.short_title?.replace(/\d/g, "") ?? "";
+        console.log("short_T:", short_T, "seglength:", seglength);
+        // all previous short Array
+       
+        // update short title
         const updatedSegments = selectedSegments.map((seg) => ({
           ...seg,
           group_label_system: groupName,
           segment_type: segType,
           short_title: `${short_T}${seglength + 1}`,
         }));
-
-        handleUpdateSegment(updatedSegments, groupname, segtype);
+       console.log("updatedSegments:", updatedSegments);
+        handleUpdateSegment(updatedSegments, groupname, segtype,prevShortTitleArr);
       }
     }
   };
@@ -157,7 +168,8 @@ export const SegmentEditComp = ({
   const handleUpdateSegment = async (
     segment: SegmentModal[],
     groupName: string, // old groupName
-    segType: string // old segType
+    segType: string, // old segType
+    prevShortTitleArr: string[] // previous short title array for the new seg type
   ) => {
     try {
       const segGrpName = segment[0]?.group_label_system;
@@ -172,6 +184,7 @@ export const SegmentEditComp = ({
 
         // edit in master array
         if (groupName === segGrpName && segType === segTypeName) {
+          console.log("No changes in group and seg type master Arrray");
           dispatch(
             updateMasterArrayonEditSegment({
               updatedSegment: segment,
@@ -195,9 +208,12 @@ export const SegmentEditComp = ({
               segType,
             })
           );
+
+          dispatch(updateChangeSegType(prevShortTitleArr)); // update changeSegType in canvas slice
+
         }
 
-        debugger;
+
         // update selected group segment into master Array
         if (groupName === segGrpName && segType === segTypeName) {
           dispatch(updateSelectedGroupSegmentAfterEdit(segment));

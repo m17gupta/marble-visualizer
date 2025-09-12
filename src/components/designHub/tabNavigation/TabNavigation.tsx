@@ -18,7 +18,7 @@ import {
   updateIsSegmentEdit,
 } from "@/redux/slices/segmentsSlice";
 import {
-  deleteSegment,
+  
   updateSelectedSegment,
 } from "@/redux/slices/MasterArraySlice";
 import { setCanvasType } from "@/redux/slices/canvasSlice";

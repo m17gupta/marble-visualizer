@@ -30,6 +30,7 @@ export const collectPoints = async (
   aiTrainImageHeight: number
   // subGroupName?: string
 ) => {
+  console.log("collectPoints called for segment:", segName);
   if (!canvasRef.current.getFabricCanvas()) {
     console.warn(
       `[collectPoints] Canvas not available for segment: ${segName}`
@@ -163,7 +164,7 @@ export const makePolygon =async (
     fabricCanvas.add(hoverGroup);
     fabricCanvas.add(outlineGroup);
     fabricCanvas.add(maskGroup);
-  
+     console.log("groups added to canvas:", { hoverGroup, outlineGroup, maskGroup });
     // if (iconGroup) {
     //   fabricCanvas.add(iconGroup);
     // }

@@ -54,7 +54,20 @@ const masterArraySlice = createSlice({
            // remove the old segment and add the new segments
            state.selectedGroupSegment.segments = state.selectedGroupSegment.segments.filter(seg => !groupSegments.some((gseg:SegmentModal) => gseg.id === seg.id));
            state.selectedGroupSegment.segments = [...state.selectedGroupSegment.segments, ...groupSegments];
-         }    
+         } 
+         
+         if(state.selectedMasterArray &&
+            state.selectedMasterArray.allSegments && 
+            state.selectedMasterArray.allSegments.length >0){
+              const index = state.selectedMasterArray.allSegments.findIndex(
+                (group) => group.groupName === state.selectedGroupSegment?.groupName
+              );
+              if (index !== -1) {
+                // remove old segments and add new segments
+                state.selectedMasterArray.allSegments[index].segments = state.selectedMasterArray.allSegments[index].segments.filter(seg => !groupSegments.some((gseg:SegmentModal) => gseg.id === seg.id));
+                state.selectedMasterArray.allSegments[index].segments = [...state.selectedMasterArray.allSegments[index].segments, ...groupSegments];
+              }
+            }
     },
     // same segtype but different groupName
        updateSelectedGroupSegmentAfterEdit2: (state, action) => {
@@ -297,63 +310,7 @@ const masterArraySlice = createSlice({
         });
 
     },
-    deleteSegment: (state, action) => {
-      const segmentId = action.payload;
-      const index = state.masterArray.findIndex((seg) =>
-        seg.allSegments.some((group) =>
-          group.segments.some((seg) => seg.id === segmentId)
-        )
-      );
-      if (index !== -1) {
-        const segArrayIndex = state.masterArray[index].allSegments.findIndex(
-          (group) => group.segments.some((seg) => seg.id === segmentId)
-        );
-        if (segArrayIndex !== -1) {
-          state.masterArray[index].allSegments[segArrayIndex].segments =
-            state.masterArray[index].allSegments[segArrayIndex].segments.filter(
-              (seg) => seg.id !== segmentId
-            );
-        }
-      }
-      // delete from selected master array if it exists
-      if (state.selectedMasterArray) {
-        const selectedSegArrayIndex =
-          state.selectedMasterArray.allSegments.findIndex((group) =>
-            group.segments.some((seg) => seg.id === segmentId)
-          );
-        if (selectedSegArrayIndex !== -1) {
-          state.selectedMasterArray.allSegments[
-            selectedSegArrayIndex
-          ].segments = state.selectedMasterArray.allSegments[
-            selectedSegArrayIndex
-          ].segments.filter((seg) => seg.id !== segmentId);
-          // If no segments left in the group, remove the group
-          if (
-            state.selectedMasterArray.allSegments[selectedSegArrayIndex]
-              .segments.length === 0
-          ) {
-            state.selectedMasterArray.allSegments.splice(
-              selectedSegArrayIndex,
-              1
-            );
-          }
-        }
-      }
-      // delete from selcted GroupSegmnet
-      if (
-        state.selectedGroupSegment &&
-        state.selectedGroupSegment.segments &&
-        state.selectedGroupSegment.segments.length > 0
-      ) {
-        // find index and delete it
-        const index = state.selectedGroupSegment.segments.findIndex(
-          (seg) => seg.id === segmentId
-        );
-        if (index !== -1) {
-          state.selectedGroupSegment.segments.splice(index, 1);
-        }
-      }
-    },
+   
     changeGroupSelectedSegment: (state, action) => {
       const { master, updatedSegment } = action.payload;
 
@@ -451,6 +408,47 @@ const masterArraySlice = createSlice({
 
       isPresent.allSegments.push(singleSegment);
     },
+    updateselectedMasterArrayAndGroup:(state,action)=>{
+      const {segType,newSegments} = action.payload;
+      
+      // Ensure newSegments is an array
+      if (!Array.isArray(newSegments)) {
+        console.error('newSegments is not an array:', newSegments);
+        return;
+      }
+      
+      //update selectedMasterArray
+      const selectedMaster = state.selectedMasterArray;
+      if(selectedMaster && selectedMaster.allSegments && selectedMaster.allSegments.length > 0){
+        selectedMaster.allSegments = selectedMaster.allSegments.map((group)=>{
+          return {
+            ...group,
+            segments: newSegments.filter((nseg:SegmentModal) => nseg.group_label_system === group.groupName)
+          };
+        });
+      }
+      
+      // update selectedGroupSegment
+      const selectedGroup = state.selectedGroupSegment;
+      if(selectedGroup && selectedGroup.segments && selectedGroup.segments.length > 0){
+        selectedGroup.segments = newSegments.filter((nseg:SegmentModal) => nseg.group_label_system === selectedGroup.groupName);
+      }
+
+      // update masterArray
+      if(state.masterArray && state.masterArray.length > 0){
+        const masterSegType = state.masterArray.find(m => m.name === segType);
+        if(masterSegType && masterSegType.allSegments && masterSegType.allSegments.length > 0){
+          // update each group
+          masterSegType.allSegments = masterSegType.allSegments.map((group)=>{
+            return {
+              ...group,
+              segments: newSegments.filter((nseg:SegmentModal) => nseg.group_label_system === group.groupName)
+            };
+          });
+        }
+      }
+    },
+
     clearMasterArray: (state) => {
       state.masterArray = [];
       state.selectedMasterArray = null;
@@ -472,7 +470,7 @@ export const {
   updatedSelectedGroupSegment,
   updateSelectedSegment,
   changeGroupSelectedSegment,
-  deleteSegment,
+
   addUserSelectedSegment,
   updateUserSelectedSegment,
   updateGroupNameSegment,
@@ -480,7 +478,8 @@ export const {
   updateMasterArrayonEditSegment2,
   updateMasterArrayonEditSegment3,
   updateSelectedGroupSegmentAfterEdit,
-  updateSelectedGroupSegmentAfterEdit2
+  updateSelectedGroupSegmentAfterEdit2,
+  updateselectedMasterArrayAndGroup
 } = masterArraySlice.actions;
 
 export default masterArraySlice.reducer;

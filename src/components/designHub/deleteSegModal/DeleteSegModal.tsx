@@ -4,9 +4,12 @@ import { AppDispatch, RootState } from '@/redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import DeleteModal from '@/pages/projectPage/deleteProject/DeleteModel'
 import { deleteSegmentById, resetEditSegment, updateAndDeleteSelectedSegment, updateIsDeleteSegModal, updateMultipleSegment } from '@/redux/slices/segmentsSlice';
-import { deleteSegment } from '@/redux/slices/MasterArraySlice';
+
 import { toast } from 'sonner';
 import { SegmentModal } from '@/models/jobSegmentsModal/JobSegmentModal';
+import { updateselectedMasterArrayAndGroup } from '@/redux/slices/MasterArraySlice';
+import { updateEditSegmentsOncanvas, updateIsDelete } from '@/redux/slices/canvasSlice';
+import UpdateCanvasAfterDelete from './UpdateCanvasAfterDelete';
 const DeleteSegModal = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { isDeleteSegModal,selectedSegments } = useSelector((state: RootState) => state.segments);
@@ -27,13 +30,7 @@ const DeleteSegModal = () => {
     try {
       const response = await dispatch(deleteSegmentById(allSelected)).unwrap();
       if (response && response.success) {
-        // delete segment from master array
-        // allSelected.forEach(segmentId => {
-        //   dispatch(deleteSegment(segmentId));
-        // });
-        //  toast.success("Segment deleted successfully");
-        //          dispatch(resetEditSegment())
-        console.log("Selected Segments:", selectedSegments);
+    
         if (selectedSegments) {
           afterDeleteSegement(selectedSegments);
         }
@@ -50,7 +47,7 @@ const DeleteSegModal = () => {
     if(!selectedSegments || selectedSegments.length === 0 || allSegments.length === 0) return;
     const allsegAfterDelete = allSegments.filter(seg => !selectedSegments.some(sel => sel.id === seg.id));
      const getSegType= selectedSegments[0].segment_type;
-     console.log("All Segments after delete:", allsegAfterDelete);
+     //console.log("All Segments after delete:", allsegAfterDelete);
      const allSegmentSegType = allsegAfterDelete.filter(seg => seg.segment_type === getSegType);
      //sort it based on name
      const sortedSegments = allSegmentSegType.sort((a, b) => {
@@ -60,7 +57,7 @@ const DeleteSegModal = () => {
        return numA - numB;
      });
 
-     console.log("Sorted Segments:", sortedSegments);
+    
      //rename the segments based on sorted order
      const updatedSegments = sortedSegments.map((seg, index) => {
       const segTitle=seg.short_title??"";
@@ -68,7 +65,7 @@ const DeleteSegModal = () => {
       return { ...seg, short_title: `${prefix}${index + 1}` };
      });
 
-     console.log("Updated Segments with new names:", updatedSegments);
+   
      // Update the allsegAfterDelete array with the renamed segments
      const finalAllSegments = allsegAfterDelete.map(seg => {
        const updatedSeg = updatedSegments.find(updated => updated.id === seg.id);
@@ -76,6 +73,8 @@ const DeleteSegModal = () => {
      });
 
      if(finalAllSegments.length > 0 && getSegType) {
+      dispatch(updateEditSegmentsOncanvas(selectedSegments))
+      dispatch(updateIsDelete(true))
       updateAllSegmentsInDB(getSegType, finalAllSegments);
      }
    
@@ -90,6 +89,7 @@ const DeleteSegModal = () => {
       if (response && response.success) {
         toast.success("All segments updated successfully");
         dispatch(updateAndDeleteSelectedSegment({segType, allSegmnets: allSegments}))
+        dispatch(updateselectedMasterArrayAndGroup({segType, newSegments: allSegments}));
         dispatch(resetEditSegment());
       }
     } catch(error) {
@@ -97,13 +97,17 @@ const DeleteSegModal = () => {
     } 
   }
   return (
+    <>
    <DeleteModal 
      isOpen={isDeleteSegModal}
      onCancel={handleCloseModal}
      type={"segment"}
      onDeleteSegment={handleDeleteSegment}
    />
+ 
+   </>
   )
+
 }
 
 export default DeleteSegModal
