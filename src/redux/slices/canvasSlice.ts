@@ -61,6 +61,8 @@ interface CanvasState {
   isSwitchCanvas: boolean;
   markingMode: string;
   editSegments: SegmentModal[];
+  isDelete: boolean;
+  changeSegType: string[] | null;
 }
 
 // Initial state
@@ -88,6 +90,8 @@ const initialState: CanvasState = {
   isSwitchCanvas: false,
   markingMode: "polygon",
   editSegments: [],
+  isDelete: false,
+  changeSegType: null
 
 };
 
@@ -204,11 +208,19 @@ const canvasSlice = createSlice({
     },
     updateEditSegmentsOncanvas: (state, action: PayloadAction<SegmentModal[]>) => {
       state.editSegments = action.payload;
+     
     },
     resetEditSegmentsOnCanvas: (state) => {
-      state.editSegments = [];  
-    }
-  }
+      state.editSegments = [];
+      
+    }, 
+    updateIsDelete:(state, action: PayloadAction<boolean>) => {
+      state.isDelete = action.payload;
+    },
+    updateChangeSegType:(state, action: PayloadAction<string[] | null>) => {
+      state.changeSegType = action.payload;
+  },
+}
 });
 
 // Export actions
@@ -234,9 +246,12 @@ export const {
   updateScreenShotUrl,
   setIsResetZoom,
   setActiveTab,
+  resetEditSegmentsOnCanvas,
   updateIsCompare,
   updateSwitchCanvas,
   updateMarkingMode,
+  updateIsDelete,
+  updateChangeSegType
   
 } = canvasSlice.actions;
 

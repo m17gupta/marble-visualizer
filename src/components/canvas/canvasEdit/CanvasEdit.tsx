@@ -45,23 +45,34 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     (state: RootState) => state.canvas
   );
 
-  const { selectedSegments,clearUpdateCanvas } = useSelector(
+  const { selectedSegments, clearUpdateCanvas } = useSelector(
     (state: RootState) => state.segments
   );
 
   // For dragging points in multiple polygons
-  const [dragInfo, setDragInfo] = useState<Array<{ poly: fabric.Polygon; pointIdx: number }> | null>(null);
-  
+  const [dragInfo, setDragInfo] = useState<Array<{
+    poly: fabric.Polygon;
+    pointIdx: number;
+  }> | null>(null);
+
   // For hover effect on control points
-  const [hoverPoint, setHoverPoint] = useState<{ poly: fabric.Polygon; pointIdx: number } | null>(null);
-  
+  const [hoverPoint, setHoverPoint] = useState<{
+    poly: fabric.Polygon;
+    pointIdx: number;
+  } | null>(null);
+
   // For tracking acquired targets and keeping canvas active when mouse is nearby
-  const [acquiredTargets, setAcquiredTargets] = useState<Array<{ poly: fabric.Polygon; pointIdx: number; x: number; y: number }>>([]);
-  const [isCanvasActiveNearTarget, setIsCanvasActiveNearTarget] = useState<boolean>(false);
-  
+  const [acquiredTargets, setAcquiredTargets] = useState<
+    Array<{ poly: fabric.Polygon; pointIdx: number; x: number; y: number }>
+  >([]);
+  const [isCanvasActiveNearTarget, setIsCanvasActiveNearTarget] =
+    useState<boolean>(false);
+
   // Track which segments have been modified during the current drag operation
-  const [modifiedSegments, setModifiedSegments] = useState<Set<string>>(new Set());
-  
+  const [modifiedSegments, setModifiedSegments] = useState<Set<string>>(
+    new Set()
+  );
+
   // Distance threshold for "nearby" detection (in pixels)
   const NEARBY_THRESHOLD = 40;
 
@@ -72,7 +83,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       isDragging: dragInfo !== null,
       dragTargetsCount: dragInfo?.length || 0,
       acquiredTargetsCount: acquiredTargets.length,
-      selectedSegmentsCount: selectedSegments?.length || 0
+      selectedSegmentsCount: selectedSegments?.length || 0,
     };
   };
 
@@ -80,21 +91,26 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   useEffect(() => {
     const status = getSegmentModificationStatus();
     if (status.modifiedSegments.length > 0 || status.isDragging) {
-      console.log('Segment Modification Status:', status);
+      console.log("Segment Modification Status:", status);
     }
   }, [modifiedSegments, dragInfo, acquiredTargets, selectedSegments]);
 
- 
   // -- Place these BEFORE your component declaration --
 
   // Helper function to create hover circle
-  const createHoverCircle = (x: number, y: number, isNearbyTarget: boolean = false): fabric.Circle => {
+  const createHoverCircle = (
+    x: number,
+    y: number,
+    isNearbyTarget: boolean = false
+  ): fabric.Circle => {
     return new fabric.Circle({
       left: x - 8,
       top: y - 8,
       radius: 8,
-      fill: isNearbyTarget ? 'rgba(255, 165, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-      stroke: isNearbyTarget ? 'rgb(255, 140, 0)' : 'rgb(7, 239, 253)',
+      fill: isNearbyTarget
+        ? "rgba(255, 165, 0, 0.8)"
+        : "rgba(255, 255, 255, 0.8)",
+      stroke: isNearbyTarget ? "rgb(255, 140, 0)" : "rgb(7, 239, 253)",
       strokeWidth: isNearbyTarget ? 3 : 2,
       selectable: false,
       evented: false,
@@ -103,8 +119,11 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
   };
 
   // Helper function to check if mouse is near any acquired targets
-  const checkMouseNearAcquiredTargets = (mouseX: number, mouseY: number): boolean => {
-    return acquiredTargets.some(target => {
+  const checkMouseNearAcquiredTargets = (
+    mouseX: number,
+    mouseY: number
+  ): boolean => {
+    return acquiredTargets.some((target) => {
       const distance = Math.sqrt(
         Math.pow(mouseX - target.x, 2) + Math.pow(mouseY - target.y, 2)
       );
@@ -114,19 +133,19 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
 
   // Helper function to update acquired target positions
   const updateAcquiredTargetPositions = (canvas: fabric.Canvas) => {
-    setAcquiredTargets(prev => 
-      prev.map(target => {
+    setAcquiredTargets((prev) =>
+      prev.map((target) => {
         const poly = target.poly;
         if (!poly.points || !poly.points[target.pointIdx]) return target;
-        
+
         const pt = poly.points[target.pointIdx];
         const polyX = poly.left! + pt.x * (poly.scaleX || 1);
         const polyY = poly.top! + pt.y * (poly.scaleY || 1);
-        
+
         return {
           ...target,
           x: polyX,
-          y: polyY
+          y: polyY,
         };
       })
     );
@@ -225,108 +244,123 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     return true; // You can set more conditions here if needed
   };
 
-
   // Create the polygon with annotation points
   useEffect(() => {
     const canvas = fabricCanvasRef.current.getFabricCanvas();
     if (!canvas) return;
 
-
     // Remove all polygons before adding new ones
-//  canvas.getObjects("polygon").forEach((obj: fabric.Object) => canvas.remove(obj));
+    //  canvas.getObjects("polygon").forEach((obj: fabric.Object) => canvas.remove(obj));
 
     if (selectedSegments && selectedSegments.length > 0) {
-      selectedSegments.forEach((selectedSegment: SegmentModal, index: number) => {
-        if (
-          selectedSegment &&
-          Array.isArray(selectedSegment.annotation_points_float) &&
-          selectedSegment.annotation_points_float.length > 0 &&
-          Array.isArray(selectedSegment.segment_bb_float) &&
-          selectedSegment.segment_bb_float.length > 0 &&
-          selectedSegment.short_title
-        ) {
-          const { width: canvasWidth, height: canvasHeight } = canvas;
-          const ratioWidth = canvasWidth / aiTrainImageWidth;
-          const ratioHeight = canvasHeight / aiTrainImageHeight;
-          const points: PointModel[] = [];
-          for (let i = 0; i < selectedSegment.annotation_points_float.length; i += 2) {
-            points.push({
-              x: selectedSegment.annotation_points_float[i] * ratioWidth,
-              y: selectedSegment.annotation_points_float[i + 1] * ratioHeight,
-            });
+      selectedSegments.forEach(
+        (selectedSegment: SegmentModal, index: number) => {
+          if (
+            selectedSegment &&
+            Array.isArray(selectedSegment.annotation_points_float) &&
+            selectedSegment.annotation_points_float.length > 0 &&
+            Array.isArray(selectedSegment.segment_bb_float) &&
+            selectedSegment.segment_bb_float.length > 0 &&
+            selectedSegment.short_title
+          ) {
+            const { width: canvasWidth, height: canvasHeight } = canvas;
+            const ratioWidth = canvasWidth / aiTrainImageWidth;
+            const ratioHeight = canvasHeight / aiTrainImageHeight;
+            const points: PointModel[] = [];
+            for (
+              let i = 0;
+              i < selectedSegment.annotation_points_float.length;
+              i += 2
+            ) {
+              points.push({
+                x: selectedSegment.annotation_points_float[i] * ratioWidth,
+                y: selectedSegment.annotation_points_float[i + 1] * ratioHeight,
+              });
+            }
+
+            // check the polygon with same name exists
+            const existingPolygon = canvas
+              .getObjects()
+              .find(
+                (obj: fabric.Object) =>
+                  (obj as NamedFabricObject).name ===
+                  `edit-${selectedSegment.short_title}`
+              );
+            if (!existingPolygon) {
+              const polygon = new fabric.Polygon(points, {
+                left: selectedSegment.segment_bb_float[0] * ratioWidth,
+                top: selectedSegment.segment_bb_float[1] * ratioHeight,
+                fill: "transparent",
+                strokeWidth: 2,
+                stroke: "rgb(7 239 253)",
+                scaleX: 1,
+                scaleY: 1,
+                objectCaching: false,
+                transparentCorners: false,
+                selectable: false,
+                hasControls: true,
+                hasBorders: false,
+                cornerStyle: "circle",
+                cornerColor: "rgb(255 1 154)",
+                cornerSize: 7,
+                cornerStrokeColor: "rgb(7 239 253)",
+                lockMovementX: true,
+                lockMovementY: true,
+              }) as fabric.Polygon;
+
+              // Attach per-point controls
+              polygon.controls =
+                polygon.points?.reduce((acc, _point, index) => {
+                  const controlKey = `p${index}`;
+                  acc[controlKey] = new fabric.Control({
+                    cursorStyle: "pointer",
+                    positionHandler: polygonPositionHandler.bind({
+                      pointIndex: index,
+                    }),
+                    actionHandler: anchorWrapper(
+                      index,
+                      actionHandlers,
+                      canvas
+                    ).bind({ pointIndex: index }),
+                    actionName: "modifyPolygon",
+                  });
+                  return acc;
+                }, {} as { [key: string]: fabric.Control }) ?? {};
+              (
+                polygon as NamedFabricObject
+              ).name = `edit-${selectedSegment.short_title}`;
+
+              canvas.add(polygon);
+              canvas.setActiveObject(polygon);
+            }
           }
-
-          // check the polygon with same name exists
-          const existingPolygon = canvas.getObjects().find((obj: fabric.Object) => 
-            (obj as NamedFabricObject).name === `edit-${selectedSegment.short_title}`
-          );
-          if(!existingPolygon){
-
-          const polygon = new fabric.Polygon(points, {
-            left: selectedSegment.segment_bb_float[0] * ratioWidth,
-            top: selectedSegment.segment_bb_float[1] * ratioHeight,
-            fill: "transparent",
-            strokeWidth: 2,
-            stroke: "rgb(7 239 253)",
-            scaleX: 1,
-            scaleY: 1,
-            objectCaching: false,
-            transparentCorners: false,
-            selectable: false,
-            hasControls: true,
-            hasBorders: false,
-            cornerStyle: "circle",
-            cornerColor: "rgb(255 1 154)",
-            cornerSize: 7,
-            cornerStrokeColor: "rgb(7 239 253)",
-          }) as fabric.Polygon;
-
-          // Attach per-point controls
-          polygon.controls = polygon.points?.reduce((acc, _point, index) => {
-            const controlKey = `p${index}`;
-            acc[controlKey] = new fabric.Control({
-              cursorStyle: "pointer",
-              positionHandler: polygonPositionHandler.bind({ pointIndex: index }),
-              actionHandler: anchorWrapper(index, actionHandlers, canvas).bind({ pointIndex: index }),
-              actionName: "modifyPolygon",
-            });
-            return acc;
-          }, {} as { [key: string]: fabric.Control }) ?? {};
-          (polygon as NamedFabricObject).name = `edit-${selectedSegment.short_title}`;
-
-          canvas.add(polygon);
-          canvas.setActiveObject(polygon);
         }
-        }
-      });
+      );
       canvas.requestRenderAll();
     }
 
     // --- Mouse events for dragging annotation points ---
     // Store all polygons and pointIdxs that are being dragged
-    const handleMouseDown = (opt:  fabric.TPointerEventInfo) => {
-
+    const handleMouseDown = (opt: fabric.TPointerEventInfo) => {
       // Remove hover circle on mouse down
-      const existingHoverCircle = canvas.getObjects().find((obj: fabric.Object) => 
-        (obj as any).name === 'hover-circle'
-      );
+      const existingHoverCircle = canvas
+        .getObjects()
+        .find((obj: fabric.Object) => (obj as any).name === "hover-circle");
       if (existingHoverCircle) {
         canvas.remove(existingHoverCircle);
       }
-       
+
       const pointer = opt.pointer;
-      
-      
+
       const polygons = canvas.getObjects("polygon") as fabric.Polygon[];
-// console.log("canvas name", polygons.map(p => (p as NamedFabricObject).name));
-//       console.log("polygons", polygons);
+      // console.log("canvas name", polygons.map(p => (p as NamedFabricObject).name));
+      //       console.log("polygons", polygons);
       let dragTargets: { poly: fabric.Polygon; pointIdx: number }[] = [];
-      
+
       for (const poly of polygons) {
         if (!poly.visible) continue;
         if (!poly.points) continue;
         for (let i = 0; i < poly.points.length; i++) {
-      
           const pt = poly.points[i];
           const polyX = poly.left! + pt.x * (poly.scaleX || 1);
           const polyY = poly.top! + pt.y * (poly.scaleY || 1);
@@ -335,28 +369,31 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
             Math.abs(pointer.y - polyY) < 10
           ) {
             dragTargets.push({ poly, pointIdx: i });
-            
+
             // Add to acquired targets when a target is successfully grabbed
-            const targetExists = acquiredTargets.some(target => 
-              target.poly === poly && target.pointIdx === i
+            const targetExists = acquiredTargets.some(
+              (target) => target.poly === poly && target.pointIdx === i
             );
-            
+
             if (!targetExists) {
-              setAcquiredTargets(prev => [...prev, {
-                poly,
-                pointIdx: i,
-                x: polyX,
-                y: polyY
-              }]);
+              setAcquiredTargets((prev) => [
+                ...prev,
+                {
+                  poly,
+                  pointIdx: i,
+                  x: polyX,
+                  y: polyY,
+                },
+              ]);
             }
-            
+
             // Set active object to the polygon being dragged
             canvas.setActiveObject(poly);
             // Don't break, allow multiple segments to be selected if points overlap
           }
         }
       }
-     
+
       if (dragTargets.length > 0) {
         console.log("Starting drag on targets", dragTargets);
         setDragInfo(dragTargets);
@@ -376,10 +413,10 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       // Delete/add points for all selected polygons
       for (const poly of polygons) {
         if (!poly.visible || !poly.points) continue;
-        
+
         const polyName = (poly as NamedFabricObject).name;
         let segmentModified = false;
-        
+
         // Check if double-clicking on an existing point (delete point)
         for (let i = 0; i < poly.points.length; i++) {
           const pt = poly.points[i];
@@ -395,12 +432,12 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
               recreatePolygonWithControls(poly, canvas);
               canvas.requestRenderAll();
               segmentModified = true;
-             // console.log(`Deleted point ${i} from segment: ${polyName}`);
+              // console.log(`Deleted point ${i} from segment: ${polyName}`);
             }
             // Don't return, apply to all selected polygons
           }
         }
-        
+
         // Check if double-clicking on polygon edge (add point between two existing points)
         if (!segmentModified) {
           for (let i = 0; i < poly.points.length; i++) {
@@ -432,17 +469,17 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
             }
           }
         }
-        
+
         // Track modified segment
         if (segmentModified && polyName) {
           modifiedInDoubleClick.add(polyName);
         }
       }
-      
+
       // Update modified segments in Redux
       if (modifiedInDoubleClick.size > 0) {
-       // console.log('Double-click operation completed. Modified segments:', Array.from(modifiedInDoubleClick));
-        
+        // console.log('Double-click operation completed. Modified segments:', Array.from(modifiedInDoubleClick));
+
         // Update Redux after double-click modifications
         handleUpdatePolygonInRedux(canvas);
       }
@@ -535,81 +572,92 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       canvas.setActiveObject(newPolygon);
     };
 
-    const handleMouseMove = (opt:any) => {
+    const handleMouseMove = (opt: any) => {
       const canvas = fabricCanvasRef.current.getFabricCanvas();
       if (!canvas) return;
 
       const pointer = opt.pointer;
-  
+
       // Update acquired target positions first
       updateAcquiredTargetPositions(canvas);
-      
+
       // Check if mouse is near any acquired targets
-      const isNearAcquiredTarget = checkMouseNearAcquiredTargets(pointer.x, pointer.y);
+      const isNearAcquiredTarget = checkMouseNearAcquiredTargets(
+        pointer.x,
+        pointer.y
+      );
       setIsCanvasActiveNearTarget(isNearAcquiredTarget);
-      
+
       // If mouse is near an acquired target, keep the canvas active and maintain active object
       if (isNearAcquiredTarget) {
-        const nearbyTarget = acquiredTargets.find(target => {
+        const nearbyTarget = acquiredTargets.find((target) => {
           const distance = Math.sqrt(
-            Math.pow(pointer.x - target.x, 2) + Math.pow(pointer.y - target.y, 2)
+            Math.pow(pointer.x - target.x, 2) +
+              Math.pow(pointer.y - target.y, 2)
           );
           return distance <= NEARBY_THRESHOLD;
         });
-        
+
         if (nearbyTarget) {
           canvas.setActiveObject(nearbyTarget.poly);
-          
+
           // Show special indicator for nearby acquired target
-          const nearbyIndicator = createHoverCircle(nearbyTarget.x, nearbyTarget.y, true);
-          (nearbyIndicator as any).name = 'nearby-target-indicator';
+          const nearbyIndicator = createHoverCircle(
+            nearbyTarget.x,
+            nearbyTarget.y,
+            true
+          );
+          (nearbyIndicator as any).name = "nearby-target-indicator";
           canvas.add(nearbyIndicator);
           canvas.bringToFront(nearbyIndicator);
-          
         }
       } else {
         // Remove nearby target indicator if mouse is not near any acquired targets
-        const existingNearbyIndicator = canvas.getObjects().find((obj: fabric.Object) => 
-          (obj as any).name === 'nearby-target-indicator'
-        );
+        const existingNearbyIndicator = canvas
+          .getObjects()
+          .find(
+            (obj: fabric.Object) =>
+              (obj as any).name === "nearby-target-indicator"
+          );
         if (existingNearbyIndicator) {
           canvas.remove(existingNearbyIndicator);
         }
       }
-     
-      if(opt.target && !isNearAcquiredTarget){
-    
+
+      if (opt.target && !isNearAcquiredTarget) {
         canvas.setActiveObject(opt.target);
       }
-      
+
       // Remove existing hover circles and indicators
-      const existingHoverCircle = canvas.getObjects().find((obj: fabric.Object) => 
-        (obj as any).name === 'hover-circle'
-      );
+      const existingHoverCircle = canvas
+        .getObjects()
+        .find((obj: fabric.Object) => (obj as any).name === "hover-circle");
       if (existingHoverCircle) {
         canvas.remove(existingHoverCircle);
       }
 
       // If dragging, continue drag logic
       if (dragInfo && dragInfo.length > 0) {
-        (dragInfo as Array<{ poly: fabric.Polygon; pointIdx: number }>).forEach(({ poly, pointIdx }) => {
-          const px = (pointer.x - poly.left!) / (poly.scaleX || 1);
-          const py = (pointer.y - poly.top!) / (poly.scaleY || 1);
-          poly.points![pointIdx] = new fabric.Point(px, py);
-          poly.setCoords();
-          
-          // Track which segment was modified
-          const polyName = (poly as NamedFabricObject).name;
-          if (polyName) {
-            setModifiedSegments(prev => new Set(prev).add(polyName));
-            // console.log(`Modified segment: ${polyName}, point index: ${pointIdx}`);
+        (dragInfo as Array<{ poly: fabric.Polygon; pointIdx: number }>).forEach(
+          ({ poly, pointIdx }) => {
+            const px = (pointer.x - poly.left!) / (poly.scaleX || 1);
+            const py = (pointer.y - poly.top!) / (poly.scaleY || 1);
+            poly.points![pointIdx] = new fabric.Point(px, py);
+            poly.setCoords();
+
+            // Track which segment was modified
+            const polyName = (poly as NamedFabricObject).name;
+            if (polyName) {
+              setModifiedSegments((prev) => new Set(prev).add(polyName));
+              // console.log(`Modified segment: ${polyName}, point index: ${pointIdx}`);
+            }
           }
-        });
+        );
         canvas.requestRenderAll();
-        
+
         // Update acquired target positions after dragging
         updateAcquiredTargetPositions(canvas);
-        
+
         return;
       }
 
@@ -619,22 +667,22 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
 
       for (const poly of polygons) {
         if (!poly.visible || !poly.points) continue;
-        
+
         for (let i = 0; i < poly.points.length; i++) {
           const pt = poly.points[i];
           const polyX = poly.left! + pt.x * (poly.scaleX || 1);
           const polyY = poly.top! + pt.y * (poly.scaleY || 1);
-          
+
           if (
             Math.abs(pointer.x - polyX) < 10 &&
             Math.abs(pointer.y - polyY) < 10
           ) {
             // Create hover circle
             const hoverCircle = createHoverCircle(polyX, polyY);
-            (hoverCircle as any).name = 'hover-circle';
+            (hoverCircle as any).name = "hover-circle";
             canvas.add(hoverCircle);
             canvas.bringToFront(hoverCircle);
-            
+
             setHoverPoint({ poly, pointIdx: i });
             foundHoverPoint = true;
             break;
@@ -649,48 +697,57 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
 
       canvas.requestRenderAll();
     };
-    
+
     const handleMouseUp = () => {
       // Remove hover circle on mouse up
-       console.log('Drag operation completed. Modified segments:')
+      console.log("Drag operation completed. Modified segments:");
       handleUpdatePolygonInRedux(canvas);
-   
+
       // Remove nearby target indicator on mouse up
-      const existingNearbyIndicator = canvas.getObjects().find((obj: fabric.Object) => 
-        (obj as any).name === 'nearby-target-indicator'
-      );
+      const existingNearbyIndicator = canvas
+        .getObjects()
+        .find(
+          (obj: fabric.Object) =>
+            (obj as any).name === "nearby-target-indicator"
+        );
       if (existingNearbyIndicator) {
         canvas.remove(existingNearbyIndicator);
       }
-      
+
       // Process modified segments before clearing drag info
-      if (dragInfo ) {
-       console.log('Drag operation completed. Modified segments:')
-        
+      if (dragInfo) {
+        console.log("Drag operation completed. Modified segments:");
+
         // Update each modified segment in Redux when drag is complete
         handleUpdatePolygonInRedux(canvas);
-        
+
         // Clear modified segments tracking
         setModifiedSegments(new Set());
       }
-      
+
       setDragInfo(null);
       canvas.requestRenderAll();
     };
 
     const handleMouseLeave = () => {
       // Clean up all indicators when mouse leaves canvas
-      const indicatorsToRemove = canvas.getObjects().filter((obj: fabric.Object) => 
-        (obj as any).name === 'hover-circle' || (obj as any).name === 'nearby-target-indicator'
+      const indicatorsToRemove = canvas
+        .getObjects()
+        .filter(
+          (obj: fabric.Object) =>
+            (obj as any).name === "hover-circle" ||
+            (obj as any).name === "nearby-target-indicator"
+        );
+
+      indicatorsToRemove.forEach((indicator: fabric.Object) =>
+        canvas.remove(indicator)
       );
-      
-      indicatorsToRemove.forEach((indicator: fabric.Object) => canvas.remove(indicator));
-      
+
       setIsCanvasActiveNearTarget(false);
       setHoverPoint(null);
       canvas.requestRenderAll();
     };
-  // ...existing code...
+    // ...existing code...
 
     canvas.on("mouse:down", handleMouseDown);
     canvas.on("mouse:move", handleMouseMove);
@@ -705,89 +762,95 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
       canvas.off("mouse:dblclick", handleDoubleClick);
       canvas.off("mouse:out", handleMouseLeave);
     };
-  }, [fabricCanvasRef, selectedSegments, anchorWrapper, dragInfo, acquiredTargets, modifiedSegments]);
+  }, [
+    fabricCanvasRef,
+    selectedSegments,
+    anchorWrapper,
+    dragInfo,
+    acquiredTargets,
+    modifiedSegments,
+  ]);
 
   // handle update polygon point into redux
   const handleUpdatePolygonInRedux = (canvas: fabric.Canvas) => {
-    const pol = canvas.getActiveObject() as (fabric.Polygon & NamedFabricObject) | null;
+    const pol = canvas.getActiveObject() as
+      | (fabric.Polygon & NamedFabricObject)
+      | null;
     const canvasWidth = canvas.width || 1;
     const canvasHeight = canvas.height || 1;
     if (pol && pol.points) {
       const ratioWidth = aiTrainImageWidth / canvasWidth;
       const ratioHeight = aiTrainImageHeight / canvasHeight;
-      
+
       // Calculate absolute coordinates of polygon points
       const updatedPoints = pol.points.map((pt) => ({
-        x: ((pt.x * ratioWidth)),
-        y: ((pt.y * ratioHeight)),
+        x: pt.x * ratioWidth,
+        y: pt.y * ratioHeight,
       }));
-      
+
       const polygonNumberArray = updatedPoints.flatMap((point) => [
         Number(point.x.toFixed(2)),
         Number(point.y.toFixed(2)),
       ]);
 
-       const getMinMax = getMinMaxBBPoint(polygonNumberArray);
-       const segmentTitle = pol?.name?.replace('edit-', '') || '';
-       const segmentId = selectedSegments?.find(seg => seg.short_title === segmentTitle)?.id;
-        if (!segmentId) {
-      console.warn(`Segment not found for title: ${segmentTitle}`);
-      return;
+      const getMinMax = getMinMaxBBPoint(polygonNumberArray);
+      const segmentTitle = pol?.name?.replace("edit-", "") || "";
+      const segmentId = selectedSegments?.find(
+        (seg) => seg.short_title === segmentTitle
+      )?.id;
+      if (!segmentId) {
+        console.warn(`Segment not found for title: ${segmentTitle}`);
+        return;
+      }
+      const data = {
+        id: segmentId,
+        annotation: polygonNumberArray,
+        bb: getMinMax,
+      };
+      dispatch(updateEditSelectedSegment(data));
+      //console.log("Updating segment in Redux with data:", data);
     }
-    const data={
-      id: segmentId,
-      annotation: polygonNumberArray,
-      bb: getMinMax
-    }
-    dispatch(updateEditSelectedSegment(data));
-    console.log("Updating segment in Redux with data:", data);
-
-    }
-
   };
 
-    const getMinMaxBBPoint = (points: number[]): number[] => {
-      const xValues = points.filter((_, index) => index % 2 === 0);
-      const yValues = points.filter((_, index) => index % 2 === 1);
-      return [
-        Math.min(...xValues), // min x
-        Math.min(...yValues), // min y
-        Math.max(...xValues), // max x
-        Math.max(...yValues), // max y
-      ];
-    };
+  const getMinMaxBBPoint = (points: number[]): number[] => {
+    const xValues = points.filter((_, index) => index % 2 === 0);
+    const yValues = points.filter((_, index) => index % 2 === 1);
+    return [
+      Math.min(...xValues), // min x
+      Math.min(...yValues), // min y
+      Math.max(...xValues), // max x
+      Math.max(...yValues), // max y
+    ];
+  };
 
   const handleResetCanvas = () => {
-  const canvas = fabricCanvasRef.current.getFabricCanvas();
+    const canvas = fabricCanvasRef.current.getFabricCanvas();
     if (!canvas) return;
 
     // Clear acquired targets when canvas is reset
     setAcquiredTargets([]);
     setIsCanvasActiveNearTarget(false);
-    
+
     // Clear modified segments tracking
     setModifiedSegments(new Set());
 
     // clear edit group
-        
-            canvas.getObjects().forEach((obj: fabric.Object) => {
-              if ((obj as NamedFabricObject).name?.startsWith('edit-')) {
-                canvas.remove(obj);
-              }
-            });
-              canvas.requestRenderAll();
-          
-        }
+
+    canvas.getObjects().forEach((obj: fabric.Object) => {
+      if ((obj as NamedFabricObject).name?.startsWith("edit-")) {
+        canvas.remove(obj);
+      }
+    });
+    canvas.requestRenderAll();
+  };
 
   // clear the canvas
   useEffect(() => {
     if (clearUpdateCanvas && fabricCanvasRef.current) {
-       dispatch(updateClearEditCanvas(false));
+      dispatch(updateClearEditCanvas(false));
       handleResetCanvas();
-
     }
   }, [clearUpdateCanvas, fabricCanvasRef]);
-
 
   // const handleSaveAnnotation = () => {
   //   const canvas = fabricCanvasRef.current;
@@ -836,7 +899,7 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
         dispatch(updateAddSegMessage(null));
         handleResetCanvas();
         // update all Segments Array
-        
+
         // update master array
         dispatch(addNewSegmentToMasterArray(segData));
         dispatch(updateAddSegMessage(null));
@@ -852,7 +915,6 @@ const CanvasEdit: React.FC<CanvasEditProps> = ({
     dispatch(setCanvasType("hover"));
   };
   return null;
-  
 };
 
 export default CanvasEdit;

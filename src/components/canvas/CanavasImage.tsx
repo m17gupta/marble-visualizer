@@ -49,7 +49,6 @@ import {
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import DoubleClickHtml from "./DoubleClickHtml";
-import UpdateSegmentaOnCanvas from "../designHub/editSegment/UpdateSegmentaOnCanvas";
 type NamedFabricObject = fabric.Object & {
   name?: string;
   groupName?: string;
@@ -131,7 +130,7 @@ const CanavasImage = forwardRef(
         const currentCanvasActive = canvasActiveRef.current;
         const currentActiveOption = activeOptionRef.current;
         const fabricCanvas = fabricCanvasRef.current;
-
+        console.log("mouse move event", fabricCanvas?.getObjects());
         if (!fabricCanvas) return;
         const fabricRef = { current: fabricCanvas };
         const pointer = fabricCanvas.getPointer(event.e);
