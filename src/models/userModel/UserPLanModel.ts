@@ -1,5 +1,5 @@
 
-    export interface PlanFeature {
+    export interface PlanFeatureModel {
   id: number;
   uuid: string;
   title: string;
@@ -11,8 +11,11 @@
   price_type: string;
   name: string;
   is_active: boolean;
-  // Number of credits associated with the plan feature
+  credits?: number; // Number of credits associated with the plan feature
 }
+
+// Export alias for backward compatibility
+export type PlanFeature = PlanFeatureModel;
 
 
 export interface UserPlan {
@@ -23,7 +26,7 @@ export interface UserPlan {
   status?: string;             // e.g., "active", "expired"
   payment_id?: string;         // Payment reference or transaction ID
   created_at?: string;         // ISO timestamp
-  plan_features?: PlanFeature|null;      // UUID referring to PlanFeature
+  plan_features?: PlanFeatureModel|null;      // UUID referring to PlanFeature
   credits?: number; 
   plan_feature_id?: string; // UUID of the plan feature
 }

@@ -32,6 +32,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/mousewheel";
+import SuggestedPrompt from "./SuggestedPrompt";
 
 type Pack = { id: number; title: string; credits: number; price: string };
 
@@ -180,11 +181,6 @@ const ChatHome: React.FC = () => {
     { id: 1, title: "Experiment with bold trim colors to highlight architectural features.", credits: 30, price: "$1" },
   ];
 
-  const creditOptions: { label: string; items: Pack[] }[] = [
-    { label: "Buy More Credits", items: packsA },
-    { label: "Buy More Credits", items: packsB },
-    { label: "Buy More Credits", items: packsC },
-  ];
 
   return (
     <>
@@ -259,30 +255,7 @@ const ChatHome: React.FC = () => {
                 )}
               </button>
 
-              <div className="flex-1 min-w-0">
-                <Swiper
-                  modules={[FreeMode, Mousewheel, Keyboard]}
-                  slidesPerView="auto"
-                  spaceBetween={8}
-                  freeMode={{ enabled: true, momentum: true, momentumVelocityRatio: 0.9 }}
-                  mousewheel={{ forceToAxis: true, releaseOnEdges: true, sensitivity: 0.7 }}
-                  keyboard={{ enabled: true }}
-                  grabCursor
-                  touchStartPreventDefault={false}
-                  simulateTouch={false}
-                  noSwiping
-                  noSwipingClass="noswipe"
-                  className="!px-1"
-                >
-                  {creditOptions.map((opt, idx) => (
-                    <SwiperSlide key={idx} className="!w-auto">
-                      <div className="inline-block">
-                        <PopoverWithSwiperHover triggerLabel={opt.label} items={opt.items} />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              </div>
+             <SuggestedPrompt />
             </div>
 
             <div className="gemini-input-wrapper">

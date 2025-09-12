@@ -12,6 +12,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 import SidebarContent from "@/components/sideBar/SideBarContent";
+import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
 
 // const navigation = [
 //   {
@@ -44,6 +45,9 @@ export function MainLayout() {
  
 
   return (
+    <>
+ 
+
     <div className="min-h-screen bg-background">
       {/* Mobile Top Bar */}
       <div className="a lg:hidden sticky top-0 z-40 bg-background border-b border-border flex items-center justify-between px-4 h-14">
@@ -112,5 +116,6 @@ export function MainLayout() {
         onClose={() => setSettingsModalOpen(false)}
       />
     </div>
+    </>
   );
 }

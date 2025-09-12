@@ -29,6 +29,7 @@ import jobCommentsSlice from "./slices/comments/JobComments"; // New job comment
 import FilterSwatchSlice from './slices/swatch/FilterSwatchSlice';
 import TestCanvasSlices from './slices/TestCanvasSlices'; // New TestCanvas slice
 import FabricCanvasSlice from './slices/FabricCanvasSlice';
+import PlanFeatureSlice from './slices/planFeatureSlice/PlanFeatureSlice';
 export const store = configureStore({
   reducer: {
     auth: authSlice,
@@ -58,6 +59,7 @@ export const store = configureStore({
     projectAnalyse: projectAnalyseSlice,
     testCanvas: TestCanvasSlices, // New TestCanvas slice
     fabricCanvas: FabricCanvasSlice,
+    planFeature: PlanFeatureSlice, // Plan feature slice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
