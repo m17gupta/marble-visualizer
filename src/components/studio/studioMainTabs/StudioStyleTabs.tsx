@@ -6,6 +6,10 @@ import ChatHistory from "./genAiHistory/ChatHistory";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { updateCurrentInspirationTab } from "@/redux/slices/studioSlice";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { IoMdTime } from "react-icons/io";
+import { RiEdit2Line } from "react-icons/ri";
+import { MdOutlineAccessTime } from "react-icons/md";
 
 export function StudioStyleTabs() {
   const dispatch = useDispatch();
@@ -16,19 +20,19 @@ export function StudioStyleTabs() {
     {
       value: "chat",
       label: "Chat",
-      icon: "/assets/image/line-md--chat-round-dots.svg",
+      icon: <IoChatboxEllipsesOutline className="h-5 w-5 me-1"/>,
       content: <ChatHome />
     },
     {
       value: "renovation", 
       label: "Play",
-      icon: "/assets/image/line-md--edit-twotone.svg",
+      icon:  <RiEdit2Line  className="h-5 w-5 me-1"/>,
       content: <InspirationContent />
     },
     {
       value: "history",
       label: "History", 
-      icon: "/assets/image/svgviewer-output.svg",
+      icon:  <MdOutlineAccessTime  className="h-5 w-5 me-1"/>,
       content: <ChatHistory />
     }
   ];
@@ -47,16 +51,17 @@ export function StudioStyleTabs() {
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className={`shadow border border-gray-600 data-[state=active]:bg-white data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 ${
+              className={` shadow-none  border border-gray-300 data-[state=active]:bg-white rounded-lg data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 py-1.5 px-6 text-gray-600 focus:outline-none focus:ring-0 ${
                 isTabActive(tab.value) ? 'bg-white border-blue-500 text-blue-600' : ''
               }`}
             >
-              <img
+              {/* <img
                 src={tab.icon}
                 alt={`${tab.label} Icon`}
                 className="h-5 w-5 mr-2 500"
-              />
-              {tab.label}
+              /> */}
+               {tab.icon}
+              <span>{tab.label}</span>
             </TabsTrigger>
           ))}
         </TabsList>

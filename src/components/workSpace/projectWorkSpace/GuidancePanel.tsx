@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CiImageOn } from "react-icons/ci";
 
 import AddInspiration from "./AddInspiration";
@@ -207,6 +207,30 @@ const GuidancePanel: React.FC = () => {
   };
 
 
+  const taRef = useRef<HTMLTextAreaElement | null>(null);
+
+// helper: grow/shrink to fit content
+const autosize = (el: HTMLTextAreaElement, opts?: { minRows?: number; maxRows?: number }) => {
+  const { minRows, maxRows } = opts || {};
+  const cs = window.getComputedStyle(el);
+  const lineHeight = parseFloat(cs.lineHeight || "20");
+
+  // optional caps
+  const minH = minRows ? minRows * lineHeight : 0;
+  const maxH = maxRows ? maxRows * lineHeight : Infinity;
+
+  el.style.height = "auto";
+  const h = Math.max(minH, Math.min(el.scrollHeight, maxH));
+  el.style.height = `${h}px`;
+  el.style.overflowY = el.scrollHeight > h ? "auto" : "hidden";
+};
+
+// run on mount and whenever value changes
+useEffect(() => {
+  if (taRef.current) autosize(taRef.current, { minRows: 2, maxRows: 12 });
+}, [requests.prompt]);
+
+
   return (
     <>
       {
@@ -249,15 +273,19 @@ const GuidancePanel: React.FC = () => {
           </TooltipProvider>
           {/* provide mic icon  */}
         </div>
-        <textarea
-          className="w-full p-2 ps-0 pt-0 border-0 focus:outline-none focus:ring-0 rounded mb-1 resize-none"
-          placeholder="Enter guidance..."
-          rows={2}
-          value={requests.prompt}
-          onChange={(e) => {
-            handleAddPrompt((e.currentTarget as HTMLTextAreaElement).value);
-          }}
-        />
+       <textarea
+  ref={taRef}
+  className="w-full p-2 ps-0 pt-0 border-0 focus:outline-none focus:ring-0 rounded mb-1 resize-none overflow-hidden"
+  placeholder="Enter guidance..."
+  rows={2}                       // initial min rows
+  value={requests.prompt}
+  onChange={(e) => {
+    handleAddPrompt(e.currentTarget.value);
+    if (taRef.current) autosize(taRef.current, { minRows: 2, maxRows: 12 }); // instant resize
+  }}
+  // (optional) hard caps too:
+  style={{ maxHeight: "24rem" }} // ~12 rows if line-height ~32px; tweak as you like
+/>
 
    
 

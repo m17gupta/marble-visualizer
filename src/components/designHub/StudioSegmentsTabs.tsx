@@ -308,7 +308,7 @@ const StudioTabs = () => {
                     onMouseEnter={() => handleGroupHover(tab)}
                     onMouseLeave={handleLeaveGroupHover}
                     value={tab.groupName}
-                    className="px-4 py-2 text-sm  text-gray-700 focus:outline-none focus:ring-0 focus:ring-blue-1 border-none rounded-none bg-transparen  data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:bg-blue-200   data-[state=active]:text-black"
+                    className="px-4 py-3 text-sm  text-gray-700 focus:outline-none focus:ring-0 focus:ring-blue-1 border-none rounded-none bg-transparen  data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:bg-blue-200   data-[state=active]:text-black"
                   >
                     {tab.groupName}
                   </TabsTrigger>
@@ -327,7 +327,7 @@ const StudioTabs = () => {
             >
               {/* Inner: Segment chips row with Swiper */}
               <div
-                className="whitespace-nowrap py-1 bg-white pb-2"
+                className="whitespace-nowrap py-2 bg-white"
                 onMouseMove={onHoverMove}
                 onMouseLeave={onHoverLeave}
               >
