@@ -55,11 +55,7 @@ export function StudioStyleTabs() {
                 isTabActive(tab.value) ? 'bg-white border-blue-500 text-blue-600' : ''
               }`}
             >
-              {/* <img
-                src={tab.icon}
-                alt={`${tab.label} Icon`}
-                className="h-5 w-5 mr-2 500"
-              /> */}
+             
                {tab.icon}
               <span>{tab.label}</span>
             </TabsTrigger>

@@ -212,9 +212,11 @@ export function StudioPage() {
   return (
     <>
       <RefreshHandler />
+
       {loadingMessage && loadingMessage != null && (
         <LoadingOverlay message={loadingMessage} />
       )}
+      
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
         {/* <Breadcrumb /> */}
         <div className="w-full md:w-1/4 border-r overflow-hidden hidden md:block">

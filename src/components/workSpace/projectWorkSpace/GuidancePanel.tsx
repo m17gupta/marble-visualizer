@@ -389,13 +389,7 @@ useEffect(() => {
                 {isGenLoading ? "Processing..." : "Visualize"}
               </button>
 
-              {/* Test button for comparison modal */}
-              {/* <button
-              className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
-              onClick={handleShowComparison}
-            >
-              Compare
-            </button> */}
+          
             </div>
           </div>
 

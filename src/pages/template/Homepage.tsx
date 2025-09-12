@@ -8,6 +8,7 @@ import PricingSection from '@/components/homepage/PricingSection';
 import CTASection from '@/components/homepage/CTASection';
 import Footer from '@/components/homepage/Footer';
 import MaterialData from '@/components/swatchBookData/materialData/MaterialData';
+import GetPlanFeatures from '@/components/planfeatures/GetPlanFeatures';
 
 
 const Homepage = () => {
@@ -18,10 +19,11 @@ const Homepage = () => {
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
-      <PricingSection />c
+      <PricingSection />
       <CTASection />
       <Footer />
       <MaterialData />
+         <GetPlanFeatures />
 
     </div>
   );

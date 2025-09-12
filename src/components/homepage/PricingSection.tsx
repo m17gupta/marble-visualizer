@@ -2,6 +2,8 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 const PricingSection = () => {
   const pricingPlans = [
@@ -51,6 +53,7 @@ const PricingSection = () => {
       popular: false
     }
   ];
+    const { planFeatures } = useSelector((state: RootState) => state.planFeature);
 
   return (
     <section id="pricing" className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
@@ -65,9 +68,11 @@ const PricingSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {pricingPlans.map((plan, index) => (
-            <Card key={index} className={`relative shadow-xl border-0 ${plan.popular ? 'ring-2 ring-blue-500 scale-105' : ''}`}>
-              {plan.popular && (
+          {planFeatures&&
+          planFeatures.length > 0 &&
+          planFeatures.map((plan, index) => (
+            <Card key={index} className={`relative shadow-xl border-0 ${plan.name==="Business" ? 'ring-2 ring-blue-500 scale-105' : ''}`}>
+              {plan.name==="Business" && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
                     Most Popular
@@ -80,9 +85,9 @@ const PricingSection = () => {
                 </CardTitle>
                 <div className="text-4xl font-bold text-gray-900 mb-2">
                   ${plan.price}
-                  <span className="text-lg text-gray-600 font-normal">/{plan.period}</span>
+                  <span className="text-lg text-gray-600 font-normal">/{plan.price_type}</span>
                 </div>
-                <p className="text-gray-600">{plan.credits} Credits / month</p>
+                <p className="text-gray-600">{plan?.credits ?? 20} Credits / month</p>
               </CardHeader>
               <CardContent className="pt-0">
                 <ul className="space-y-4 mb-8">
@@ -95,7 +100,7 @@ const PricingSection = () => {
                 </ul>
                 <Button 
                   className={`w-full py-3 text-lg font-semibold ${
-                    plan.popular 
+                    plan.name==="Business" 
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
                       : 'bg-gray-900 hover:bg-gray-800'
                   }`}
