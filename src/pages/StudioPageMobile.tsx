@@ -40,7 +40,7 @@ const StudioPageMobile = () => {
 </div>
 
       {/* Drawer Content */}
-      <div className="px-4 pb-6 overflow-y-auto max-h-[calc(80vh-56px)]">
+      <div className="px-0 pb-6 overflow-y-auto max-h-[calc(80vh-56px)]">
          {/* <LeftPage /> */}
          <StudioMainTabs/>
       </div>

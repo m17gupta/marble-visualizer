@@ -187,7 +187,7 @@ export function SwatchRecommendations() {
 
       <CardContent className="space-y-4 p-1 overflow-y-auto max-h-[60vh] sm:max-h-[70vh] pb-40 pt-4">
         {cards.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2">
             <AnimatePresence>
               {cards.map(({ swatch, url, hideImage }) =>
                 hideImage ? null : (
