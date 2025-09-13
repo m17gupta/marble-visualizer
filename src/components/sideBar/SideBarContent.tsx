@@ -38,59 +38,6 @@ interface SidebarItem {
   isAction?: boolean;
 }
 
-const {profile} = useSelector((state: RootState) => state.userProfile);
-
-// Base workspace items without admin panel
-const baseWorkspaceItems = [
-  { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true, href: '/app/projects' },
-  { id: 'assets', label: 'Assets', icon: Package, href: '/app/assets' },
-  { id: 'boards', label: 'Boards', icon: Layout, href: '/app/boards' },
-];
-
-// Add admin panel if user role is admin
-const workspaceItems = profile?.role === "admin" 
-  ? [
-      {id:"admin-panel", label: 'Admin Panel', icon: User, href: '/admin/dashboard' },
-      ...baseWorkspaceItems
-    ]
-  : baseWorkspaceItems;
-
-const sidebarSections: {
-  title: string;
-  items: SidebarItem[];
-}[] = [
-    {
-      title: 'ORGANIZATIONS',
-      items: [
-        { id: 'personal', label: 'Personal', icon: User, badge: 'Free Plan', href: '/app/personal' },
-        { id: 'add-org', label: 'Add Organization', icon: Plus, isAction: true },
-      ],
-    },
-    {
-      title: 'WORKSPACE',
-      items: workspaceItems,
-    },
-    {
-      title:'MATERIALS LIBRARY',
-      items: [ { id:"materials", label: 'Materials Library', icon: Palette, href: '/app/swatchbook' },]
-    },
-    {
-      title: 'TOOLS & FEATURES',
-      items: [
-        { id: 'design-tools', label: 'Design Tools', icon: Palette, href: '/app/studio' },
-        { id: 'share-project', label: 'Share Project', icon: Share2, isAction: true }
-      ],
-    },
-    {
-      title: 'COMMUNITY',
-      items: [
-        { id: 'blogs', label: 'Blogs', icon: BookOpen, href: '/app/blogs' },
-        { id: 'affiliate', label: 'Affiliate Program', icon: Users, href: '/app/affiliate' },
-      ],
-    },
-  ];
-
-
 type Props = {
   sidebarCollapsed: boolean;
   mobile?: boolean;
@@ -102,11 +49,60 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
 
   const location = useLocation();
   const navigate = useNavigate();
-    const dispatch = useDispatch<AppDispatch>();
-  // const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // const [shareModalOpen, setShareModalOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-const {isAuthenticated} = useSelector((state: RootState) => state.auth);
+  const {isAuthenticated} = useSelector((state: RootState) => state.auth);
+  const {profile} = useSelector((state: RootState) => state.userProfile);
+
+  // Base workspace items without admin panel
+  const baseWorkspaceItems = [
+    { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true, href: '/app/projects' },
+    { id: 'assets', label: 'Assets', icon: Package, href: '/app/assets' },
+    { id: 'boards', label: 'Boards', icon: Layout, href: '/app/boards' },
+  ];
+
+  // Add admin panel if user role is admin
+  const workspaceItems = profile?.role === "admin" 
+    ? [
+        {id:"admin-panel", label: 'Admin Panel', icon: User, href: '/admin/dashboard' },
+        ...baseWorkspaceItems
+      ]
+    : baseWorkspaceItems;
+
+  const sidebarSections: {
+    title: string;
+    items: SidebarItem[];
+  }[] = [
+      {
+        title: 'ORGANIZATIONS',
+        items: [
+          { id: 'personal', label: 'Personal', icon: User, badge: 'Free Plan', href: '/app/personal' },
+          { id: 'add-org', label: 'Add Organization', icon: Plus, isAction: true },
+        ],
+      },
+      {
+        title: 'WORKSPACE',
+        items: workspaceItems,
+      },
+      {
+        title:'MATERIALS LIBRARY',
+        items: [ { id:"materials", label: 'Materials Library', icon: Palette, href: '/app/swatchbook' },]
+      },
+      {
+        title: 'TOOLS & FEATURES',
+        items: [
+          { id: 'design-tools', label: 'Design Tools', icon: Palette, href: '/app/studio' },
+          { id: 'share-project', label: 'Share Project', icon: Share2, isAction: true }
+        ],
+      },
+      {
+        title: 'COMMUNITY',
+        items: [
+          { id: 'blogs', label: 'Blogs', icon: BookOpen, href: '/app/blogs' },
+          { id: 'affiliate', label: 'Affiliate Program', icon: Users, href: '/app/affiliate' },
+        ],
+      },
+    ];
   useEffect(() => {
     // Auto-close mobile menu on route change
     if (mobile && setMobileMenuOpen) {
