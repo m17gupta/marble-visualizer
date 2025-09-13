@@ -1,6 +1,6 @@
 import { UserProfile } from '@/models/userModel/UserModel'
 import { fetchProjects } from '@/redux/slices/projectSlice'
-import { createUserProfile, getUserProfileBySessionId } from '@/redux/slices/userProfileSlice'
+import { createUserProfile, getUserProfileBySessionId } from '@/redux/slices/user/userProfileSlice'
 import { AppDispatch, RootState } from '@/redux/store'
 import { generateSessionId } from '@/utils/GenerateSessionId'
 import { useEffect, useCallback } from 'react'

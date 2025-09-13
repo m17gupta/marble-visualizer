@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import authSlice from './slices/authSlice';
-import userProfileSlice from './slices/userProfileSlice';
+import authSlice from './slices/user/authSlice';
+import userProfileSlice from './slices/user/userProfileSlice';
 import projectSlice from './slices/projectSlice';
 import studioSlice from './slices/studioSlice';
 import segmentsSlice from './slices/segmentsSlice';
@@ -20,7 +20,7 @@ import inspirationalColorSlice from './slices/InspirationalSlice/inspirationalCo
 import inspirationalImageSlice from './slices/InspirationalSlice/inspirationalImageSlice'; // New inspirational image slice
 import inspirationTabSlice from './slices/InspirationalSlice/InspirationTabSlice'; // New inspiration tab slice
 import { authMiddleware, errorMiddleware } from '@/middlewares/authMiddleware';
-import subscriptionPlanSlice from './slices/subscriptionPlanSlice'; // 
+import subscriptionPlanSlice from './slices/user/subscriptionPlanSlice'; // 
 import workspaceSlice from './slices/visualizerSlice/workspaceSlice';
 import tabControlSlice from './slices/TabControlSlice'; // New tab control slice
 import masterArraySlice from './slices/MasterArraySlice'; // New master array slice

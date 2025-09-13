@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import { initializeAuth } from "@/redux/slices/authSlice";
+import { initializeAuth } from "@/redux/slices/user/authSlice";
 import { Loader2 } from "lucide-react";
 import { UserRole } from "@/types/auth";
 // import { fetchProjects } from "@/redux/slices/projectSlice";

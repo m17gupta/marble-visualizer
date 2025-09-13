@@ -23,7 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "@/redux/slices/authSlice";
+import { logoutUser } from "@/redux/slices/user/authSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import Setting from "@/layouts/Setting";
 
@@ -38,6 +38,23 @@ interface SidebarItem {
   isAction?: boolean;
 }
 
+const {profile} = useSelector((state: RootState) => state.userProfile);
+
+// Base workspace items without admin panel
+const baseWorkspaceItems = [
+  { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true, href: '/app/projects' },
+  { id: 'assets', label: 'Assets', icon: Package, href: '/app/assets' },
+  { id: 'boards', label: 'Boards', icon: Layout, href: '/app/boards' },
+];
+
+// Add admin panel if user role is admin
+const workspaceItems = profile?.role === "admin" 
+  ? [
+      {id:"admin-panel", label: 'Admin Panel', icon: User, href: '/admin/dashboard' },
+      ...baseWorkspaceItems
+    ]
+  : baseWorkspaceItems;
+
 const sidebarSections: {
   title: string;
   items: SidebarItem[];
@@ -51,11 +68,7 @@ const sidebarSections: {
     },
     {
       title: 'WORKSPACE',
-      items: [
-        { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true, href: '/app/projects' },
-        { id: 'assets', label: 'Assets', icon: Package, href: '/app/assets' },
-        { id: 'boards', label: 'Boards', icon: Layout, href: '/app/boards' },
-      ],
+      items: workspaceItems,
     },
     {
       title:'MATERIALS LIBRARY',

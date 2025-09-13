@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AppDispatch, RootState } from "@/redux/store";
-import { signUpUser, clearError } from "@/redux/slices/authSlice";
+import { signUpUser, clearError } from "@/redux/slices/user/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -44,7 +44,7 @@ import {
   Phone,
 
 } from "lucide-react";
-import { setProfile } from "@/redux/slices/userProfileSlice";
+import { setProfile } from "@/redux/slices/user/userProfileSlice";
 
 // Form validation schema
 const signUpSchema = z

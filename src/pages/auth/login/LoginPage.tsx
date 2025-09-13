@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AppDispatch, RootState } from "@/redux/store";
-import { loginUser, clearError } from "@/redux/slices/authSlice";
+import { loginUser, clearError } from "@/redux/slices/user/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

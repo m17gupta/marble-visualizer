@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { LoginPage } from "@/pages/LoginPage";
+import { LoginPage } from "@/pages/auth/login/LoginPage";
 import { SignUpPage } from "@/pages/SignUpPage";
 import { ProjectsPage } from "@/pages/projectPage/ProjectsPage";
 // import { StudioPage } from "@/routes/StudioPage";
@@ -22,6 +22,7 @@ import Homepage from "@/pages/template/Homepage";
 import ProjectPdf from "@/pages/ProjectPdf";
 import SwatchAddPage from "@/components/swatchBook/SwatchAddPage";
 import ProjectHome from "@/pages/projectPage/template/ProjectHome";
+import AdminRoutes from "@/routes/AdminRoutes";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -84,6 +85,16 @@ export function AppRouter() {
         <Route path="swatchbook/:id" element={<SwatchDetailsPage />} />
         <Route path="addSwatch/:id" element={<SwatchAddPage />} />
       </Route>
+
+      {/* Admin route - requires admin role */}
+      <Route
+        path="/admin/*"
+        element={
+          <PrivateRoute requiredRole="admin">
+            <AdminRoutes />
+          </PrivateRoute>
+        }
+      />
 
       {/* Catch all route */}
       <Route

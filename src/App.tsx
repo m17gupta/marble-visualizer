@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { ThemeProvider } from "next-themes";
 import { store } from "./redux/store";
-import { initializeAuth } from "./redux/slices/authSlice";
+import { initializeAuth } from "./redux/slices/user/authSlice";
 import { AppRouter } from "./routes/AppRouter";
 // import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { Toaster } from "@/components/ui/sonner";

@@ -1,4 +1,4 @@
-import { getUserData } from "@/redux/slices/authSlice";
+import { getUserData } from "@/redux/slices/user/authSlice";
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import GetUserProfile from "./GetUserProfile";

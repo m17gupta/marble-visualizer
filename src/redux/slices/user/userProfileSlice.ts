@@ -5,6 +5,7 @@ import { AuthService } from "@/services/authService/authService";
 
 interface UserProfileState {
   profile: UserProfile | null;
+  allUserProfiles?: UserProfile[]; // Optional: to store multiple profiles if needed
   isLoading: boolean;
   error: string | null;
   isUpdating: boolean;
@@ -13,6 +14,7 @@ interface UserProfileState {
 
 const initialState: UserProfileState = {
   profile: null,
+  allUserProfiles: [],
   isLoading: false,
   error: null,
   isUpdating: false,
@@ -43,36 +45,8 @@ export const getUserProfile = createAsyncThunk(
         return rejectWithValue("User ID is required");
       }
 
-      let profile = await AuthService.getUserProfileByUserId(userId);
-  console.log("Redux getUserProfile - Fetched profile:", profile);
-      // If no profile found, try to get user info and create a profile
-      if (!profile) {
-        try {
-          // Get current user from auth to get email
-          const currentUser = await AuthAPI.getCurrentUser();
-          if (currentUser && currentUser.user.id === userId) {
-            // Try to ensure profile exists
-            profile = await AuthAPI.ensureUserProfile(
-              userId,
-              currentUser.user.email,
-              currentUser.user.email?.split("@")[0]
-            );
-          }
-        } catch (createError) {
-          console.error(
-            "Redux getUserProfile - Failed to create profile:",
-            createError
-          );
-        }
-
-        // If still no profile, return error
-        if (!profile) {
-          return rejectWithValue(
-            "User profile not found and could not be created"
-          );
-        }
-      }
-
+      const  profile = await AuthService.getUserProfileByUserId(userId);
+        console.log("Redux getUserProfile - Fetched profile:", profile);
       return profile;
     } catch (error) {
       console.error(
@@ -87,24 +61,7 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
-// Async thunk to update user profile
-// export const updateUserProfile = createAsyncThunk(
-//   "userProfile/updateUserProfile",
-//   async (
-//     { userId, updates }: { userId: string; updates: Partial<UserProfile> },
-//     { rejectWithValue }
-//   ) => {
-//     try {
-//       const updatedProfile = await AuthAPI.updateUserProfile(userId, updates);
-//       return updatedProfile;
-//     } catch (error) {
-//       if (error instanceof AuthError) {
-//         return rejectWithValue(error.message);
-//       }
-//       return rejectWithValue("Failed to update user profile");
-//     }
-//   }
-// );
+
 
 export const updateUserProfile = createAsyncThunk(
   "userProfile/updateUserProfile",
@@ -184,6 +141,24 @@ export const getUserProfileBySessionId = createAsyncThunk(
   }
 );
 
+
+// getAllUserFileProfiles
+export const getAllUserFileProfiles = createAsyncThunk(
+  "userProfile/getAllUserFileProfiles",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await AuthService.getAllUserProfiles();
+      if (response.error) {
+        return rejectWithValue(response.error);
+      }
+      return response.profiles;
+    }
+    catch (error) {
+      console.error("Error fetching all user profiles:", error);
+      return rejectWithValue("Failed to fetch all user profiles");
+    }
+  }
+);
 const userProfileSlice = createSlice({
   name: "userProfile",
   initialState,
@@ -220,7 +195,7 @@ const userProfileSlice = createSlice({
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.profile = (action.payload as UserProfile) || {};
-        state.error = null;
+        state.error = null
       })
       .addCase(getUserProfile.rejected, (state, action) => {
         state.isLoading = false;
@@ -293,6 +268,23 @@ const userProfileSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserProfileBySessionId.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+
+      // get all user profiles
+      builder
+      .addCase(getAllUserFileProfiles.pending, (state) => { 
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllUserFileProfiles.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.allUserProfiles = action.payload as UserProfile[];
+        state.error = null;
+      })
+      .addCase(getAllUserFileProfiles.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

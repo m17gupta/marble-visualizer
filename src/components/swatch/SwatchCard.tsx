@@ -38,7 +38,7 @@ import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import { updateUserProfile } from "@/redux/slices/userProfileSlice";
+import { updateUserProfile } from "@/redux/slices/user/userProfileSlice";
 
 interface SwatchCardProps {
   swatch: MaterialModel;
