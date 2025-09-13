@@ -118,7 +118,7 @@ const LayerSegTab: React.FC = () => {
   );
 
   return (
-    <div className="w-full mx-auto border border-gray-200 font-sans rounded-md overflow-hidden">
+    <div className="w-full mx-auto border-0 border-gray-200 font-sans rounded-md overflow-hidden">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
