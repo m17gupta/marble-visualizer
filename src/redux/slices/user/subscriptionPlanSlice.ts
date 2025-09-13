@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { SubscriptionPlanModel } from "@/models/subscriptionPlan/SubscriptionPlanModel";
-import { SubscriptionPlanService, SubscriptionPlanFilters } from "@/services/subscriptionPlan";
+import { SubscriptionPlanService } from "@/services/subscriptionPlan";
 import { userSubscriptionPlanRespone } from "@/services/subscriptionPlan/SubscriptionPlanApi";
 
 interface SubscriptionPlanState {

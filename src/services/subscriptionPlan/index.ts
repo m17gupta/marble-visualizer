@@ -1,2 +1,2 @@
-export { SubscriptionPlanApi, type SubscriptionPlanFilters } from './SubscriptionPlanApi';
+export { SubscriptionPlanApi} from './SubscriptionPlanApi';
 export { SubscriptionPlanService } from './SubscriptionPlanService';

@@ -18,7 +18,7 @@ import {
   Users,
 } from 'lucide-react';
 // import SideBar from '@/components/userProfile/SideBar';
-import SubscriptionPlan from '@/components/userProfile/SubscriptionPlanData';
+// import SubscriptionPlan from '@/components/userProfile/SubscriptionPlanData';
 
 
 
@@ -36,8 +36,8 @@ export function ProfilePage() {
     joinDate: 'June 2024',
   };
 
-  const { subscriptionalPlans } = useSelector((state: RootState) => state.subscriptionPlan);
-   console.log('subscriptionalPlans', subscriptionalPlans);
+ 
+  
   const planFeatures = {
     free: [
       'Up to 3 projects',
@@ -240,12 +240,12 @@ export function ProfilePage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
-                {subscriptionalPlans && subscriptionalPlans.length>0 &&
+                {/* {subscriptionalPlans && subscriptionalPlans.length>0 &&
                 subscriptionalPlans.map((plan) => (
                   <SubscriptionPlan
                    plan={plan}
                   />
-                ))}
+                ))} */}
                 
               </div>
 
