@@ -3,6 +3,7 @@ import LeftPage from "./mobilePage/LeftPage";
 
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
+import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
 
 const styles = [
   "Modern",
@@ -40,7 +41,8 @@ const StudioPageMobile = () => {
 
       {/* Drawer Content */}
       <div className="px-4 pb-6 overflow-y-auto max-h-[calc(80vh-56px)]">
-         <LeftPage />
+         {/* <LeftPage /> */}
+         <StudioMainTabs/>
       </div>
     </div>
   );
