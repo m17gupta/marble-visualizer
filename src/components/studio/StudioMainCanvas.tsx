@@ -23,6 +23,7 @@ import LayerCanvas from "../canvas/layerCanvas/LayerCanvas";
 import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import CanavasImage from "../canvas/CanavasImage";
 import React from "react";
+import WorkSpaceHome from "../workSpace/WorkSpaceHome";
 // import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
 
 interface StudioMainCanvasProps {
@@ -320,6 +321,10 @@ export function StudioMainCanvas({
               className="hidden"
             />
           )} */}
+
+    <div className="md:hidden block">
+          <WorkSpaceHome />
+          </div>
     </div>
   );
 }
