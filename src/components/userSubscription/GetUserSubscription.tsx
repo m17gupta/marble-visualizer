@@ -1,4 +1,4 @@
-import { getUserSubscriptionPlan } from '@/redux/slices/authSlice';
+import { getUserSubscriptionPlan } from '@/redux/slices/user/authSlice';
 import { AppDispatch, RootState } from '@/redux/store'
 import  { useEffect, useRef, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'

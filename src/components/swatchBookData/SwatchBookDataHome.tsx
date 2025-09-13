@@ -7,7 +7,6 @@ import { fetchMaterials } from "@/redux/slices/materialSlices/materialsSlice";
 import { fetchStyles } from "@/redux/slices/materialSlices/StyleSlice";
 import GetAllMaterialSegment from "./GetMaterialSegments";
 import GetAllInspirational from "./GetAllInsiprational";
-import GetAllSubscriptionPlan from "./GetAllScriptionPlan";
 
 const SwatchBookDataHome = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -107,7 +106,6 @@ const SwatchBookDataHome = () => {
 
       <GetAllInspirational />
 
-      <GetAllSubscriptionPlan />
     </>
   );
 };

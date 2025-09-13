@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
-import { getUserProfile } from '@/redux/slices/userProfileSlice';
+import { getUserProfile } from '@/redux/slices/user/userProfileSlice';
 import { AppDispatch } from '@/redux/store';
 import { useDispatch } from 'react-redux';
 

@@ -8,6 +8,7 @@ export interface User {
   last_login?: string;
   created_at: string;
   modified_at: string;
+  role?:string;
   name?: string; // Optional field for display name
   // UUID reference to session
 } 

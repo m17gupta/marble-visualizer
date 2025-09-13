@@ -1,12 +1,12 @@
 export interface SubscriptionPlanModel {
   id: string; // uuid
-  title: string;
-  description: string;
-  features: string[]; // text[]
-  sort_order: number;
-  created_at: string; // ISO timestamp string
-  price: number; // smallint
-  price_type: string;
-  name: string;
-  is_active: boolean;
+  user_id: string;
+  started_at: Date | null; // ISO timestamp string
+  expires_at: Date | null; // ISO timestamp string
+  status: string;
+  payment_id: string; // ISO timestamp string
+  created_at: Date | null; // smallint
+  plan_feature_id: string;
+  credits: string;
+  modified_at: string;
 }

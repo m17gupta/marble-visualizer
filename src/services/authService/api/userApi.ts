@@ -2,6 +2,12 @@ import { supabase } from '@/lib/supabase';
 import { User, UserProfile, UpdateUserProfileRequest, AuthError } from '@/models';
 import { UserPlan } from '@/models/userModel/UserPLanModel';
 
+
+export interface UserAllProfileResponse {
+  profiles: UserProfile[];
+  success?: boolean;
+  error?: string;
+}
 export class UserAPI {
   /**
    * Get user by ID
@@ -139,6 +145,34 @@ export class UserAPI {
       });
     }
   }
+
+  // get All useProfile based 
+  static async getAllUserProfiles(): Promise<UserAllProfileResponse> {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        throw new AuthError({
+          message: error.message,
+          status: 400,
+          code: 'PROFILES_FETCH_ERROR'
+        });
+      }
+      return { profiles: data || [], success: true };
+    } catch (error) {
+      if (error instanceof AuthError) {
+        throw error;
+      }
+      throw new AuthError({
+        message: 'Failed to fetch user profiles',
+        status: 500,
+        code: 'PROFILES_FETCH_FAILED'
+      });
+    }
+  }
+
   /**
    * Update user status
    */

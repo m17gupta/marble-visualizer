@@ -73,6 +73,12 @@ export class AuthService {
     return await UserAPI.updateUserCredits(userId, credits);
   }
 
+
+  // get all user profile
+  static async getAllUserProfiles(): Promise<{ profiles: UserProfile[]; success?: boolean; error?: string }> {
+    return await UserAPI.getAllUserProfiles();
+  } 
+
   /**
    * Get userProfile based on session Id
    */

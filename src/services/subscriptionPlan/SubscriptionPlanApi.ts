@@ -1,47 +1,31 @@
 import { supabase } from '@/lib/supabase';
 import { SubscriptionPlanModel } from '@/models/subscriptionPlan/SubscriptionPlanModel';
 
-export interface SubscriptionPlanFilters {
-  is_active?: boolean;
-  sort_by?: 'sort_order' | 'price' | 'created_at';
-  sort_direction?: 'asc' | 'desc';
+export interface userSubscriptionPlanRespone{
+  success?:boolean;
+  data:SubscriptionPlanModel[] | null;
+  error?:string | null;
 }
 
 export class SubscriptionPlanApi {
   /**
-   * Get all subscription plans
+   * Get user subscription plans
    */
-  static async getAllPlans(filters?: SubscriptionPlanFilters): Promise<SubscriptionPlanModel[]> {
+  static async getUserSubscriptionPlans(userId: string): Promise<userSubscriptionPlanRespone> {
     try {
-      let query = supabase
-        .from('plan_features')
-        .select('*');
-
-      // Apply filters
-      if (filters?.is_active !== undefined) {
-        query = query.eq('is_active', filters.is_active);
-      }
-
-      // Apply sorting
-      const sortBy = filters?.sort_by || 'sort_order';
-      const sortDirection = filters?.sort_direction || 'asc';
-      query = query.order(sortBy, { ascending: sortDirection === 'asc' });
-
-      const { data, error } = await query;
-
+      const { data, error } = await supabase
+        .from('user_subscriptions')
+        .select('*')
+        .eq('user_id', userId);
       if (error) {
-        console.error('Error fetching subscription plans:', error);
-        throw new Error(`Failed to fetch subscription plans: ${error.message}`);
+        throw error;
       }
-
-      return data || [];
+      return { success: true, data, error: null };
     } catch (error) {
-      console.error('Error in getAllPlans:', error);
-      throw error;
+      console.error("SubscriptionPlanApi getUserSubscriptionPlans - Error:", error);
+      return { success: false, data: null, error: error instanceof Error ? error.message : "Unknown error" };
     }
   }
-
-
-
-
 }
+
+

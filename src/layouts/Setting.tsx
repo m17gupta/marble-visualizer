@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '@/redux/store';
-import { logoutUser } from '@/redux/slices/authSlice';
+import { logoutUser } from '@/redux/slices/user/authSlice';
 import { clearCurrentImage } from '@/redux/slices/studioSlice';
 import { clearCurrentJob } from '@/redux/slices/jobSlice';
 import { clearBreadcrumbs } from '@/redux/slices/visualizerSlice/workspaceSlice';

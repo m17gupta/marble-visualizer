@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DirectS3UploadService, UploadProgress, UploadResult } from '@/services/uploadImageService/directS3UploadService';
 import { useSelector } from 'react-redux';
-import { selectProfile } from '@/redux/slices/userProfileSlice';
+import { selectProfile } from '@/redux/slices/user/userProfileSlice';
 import { convertImageFileToWebp } from './ConvertImageFileToWebp';
 
 interface UploadImageProps {
