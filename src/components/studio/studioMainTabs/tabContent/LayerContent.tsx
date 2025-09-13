@@ -112,7 +112,7 @@ const AllCommentIcon = (props: React.SVGProps<SVGSVGElement>) => ( <svg xmlns="h
           <TabsTrigger value="resolved" className={tabTriggerStyle}> Canvas JSON</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="p-0">
+        <TabsContent value="all" className="p-0 px-3 lg:px-3">
           <LayerSegTab/>
         </TabsContent>
         

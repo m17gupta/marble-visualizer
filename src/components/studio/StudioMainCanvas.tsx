@@ -24,6 +24,7 @@ import Hovertemplate from "./canvasTemplate/Hovertemplate";
 import CanavasImage from "../canvas/CanavasImage";
 import React from "react";
 import WorkSpaceHome from "../workSpace/WorkSpaceHome";
+import StudioPageMobile from "@/pages/StudioPageMobile";
 // import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
 
 interface StudioMainCanvasProps {
@@ -322,7 +323,10 @@ export function StudioMainCanvas({
             />
           )} */}
 
-    <div className="md:hidden block">
+<div className="md:hidden block">
+    <StudioPageMobile />
+    </div>
+    <div className="md:hidden hidden">
           <WorkSpaceHome />
           </div>
     </div>
