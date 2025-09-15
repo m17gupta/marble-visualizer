@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {  Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,19 @@ export function MainLayout() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const isStudioPage = location.pathname.startsWith("/app/studio");
 
- 
+       const [isMobile, setIsMobile] = useState(false);
+    const path=location.pathname;
+  
+    // Debug studio URL and mobile detection
+    useEffect(() => {
+        if(path.startsWith("/app/studio")) {
+           
+            setIsMobile(false);
+        }else{
+          setIsMobile(true)
+        }
+    }, [path]);
+    
 
   return (
     <>
@@ -50,14 +62,15 @@ export function MainLayout() {
 
     <div className="min-h-screen bg-background">
       {/* Mobile Top Bar */}
-      <div className="a lg:hidden sticky top-0 z-40 bg-background border-b border-border flex items-center justify-between px-4 h-14">
+   { isMobile &&
+     <div className="a lg:hidden sticky top-0 z-40 bg-background border-b border-border flex items-center justify-between px-4 h-14">
         <Button variant="ghost" onClick={() => setMobileMenuOpen(true)}>
-          {/* <Menu className="h-5 w-5" /> */}
+         
           <AiOutlineMenuUnfold className="text-2xl" />
 
         </Button>
         <img src={dzinlylogo} alt="Dzinly" className="h-8" />
-      </div>
+      </div>}
 
       {/* Desktop Sidebar */}
       {!isStudioPage && (
