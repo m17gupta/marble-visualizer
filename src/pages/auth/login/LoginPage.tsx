@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Loader2, Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import italian from "../../../../public/assets/marble/italian-marble.jpg";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -96,7 +97,7 @@ export function LoginPage() {
       {/* Left: Image */}
      <div className="hidden lg:block h-full w-full">
         <LazyLoadImage
-          src="https://www.dzinly.org/img/login-img.jpg"
+          src={italian}
           alt="Login visual"
           className="object-cover h-full w-full"
         />

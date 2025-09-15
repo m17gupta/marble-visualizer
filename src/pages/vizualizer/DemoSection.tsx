@@ -7,10 +7,13 @@ import curtainsImage from "../../../public/assets/marble/category-curtains.jpg";
 import floorImage from "../../../public/assets/marble/category-floor.jpg";
 import furnitureImage from "../../../public/assets/marble/category-furniture.jpg";
 import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useNavigate } from "react-router-dom";
 
 const DemoSection = () => {
   const [activeCategory, setActiveCategory] = useState("wall");
-
+  const navigate = useNavigate();
   const categories = [
     { id: "wall", name: "Wall", image: wallImage },
     { id: "curtains", name: "Curtains", image: curtainsImage },
@@ -18,6 +21,20 @@ const DemoSection = () => {
     { id: "furniture", name: "Furniture", image: furnitureImage }
   ];
 
+
+  const {user, isAuthenticated} = useSelector((state:RootState) => state.auth);
+
+  const handleUpload = (categoryId: string) => {
+
+    setActiveCategory(categoryId);
+    if(!isAuthenticated){
+      navigate("/login");
+      return;
+    }else{
+       console.log("User is authenticated:", user);
+    }
+    // Logic to update the demo room visualization based on selected category
+  }
   return (
     <section className="py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,7 +63,7 @@ const DemoSection = () => {
                       ? "category-active"
                       : "category-inactive"
                   }`}
-                  onClick={() => setActiveCategory(category.id)}
+                  onClick={() => handleUpload(category.id)}
                 >
                   <CardContent className="p-4 flex items-center space-x-4">
                     <div className="w-16 h-16 rounded-lg overflow-hidden">
