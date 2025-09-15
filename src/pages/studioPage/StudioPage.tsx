@@ -35,7 +35,7 @@ import { resetCanvas, setIsCanvasModalOpen } from "@/redux/slices/canvasSlice";
 import ModelCanvas from "@/components/workSpace/projectWorkSpace/modelCanvas/ModelCanvas";
 
 import CreateMaterArrays from "@/components/studio/segment/CreateMaterArrays";
-import dzinlylogo from "../../public/assets/image/dzinly-logo.svg";
+import dzinlylogo from "../../../public/assets/image/dzinly-logo.svg";
 import { Button } from "@/components/ui/button";
 import CanvasAdddNewSegmentHome from "@/components/canvas/canvasAddNewSegment/CanvasAdddNewSegmentHome";
 
@@ -57,7 +57,7 @@ import { resetJobCommentsState } from "@/redux/slices/comments/JobComments";
 import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
-import { Loader } from "./projectPage/ProjectsPage";
+import { Loader } from "../projectPage/ProjectsPage";
 
 export function StudioPage() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -246,13 +246,7 @@ export function StudioPage() {
           <StudioMainTabs />
         </div>
 
-        {/* Main Canvas */} 
-
-        {/* {activeTabFromStore === "inspiration" ? (
-          <WorkSpaceHome />
-        ) : ( */}
-        <>
-          {/* other thaninspiration tab content */}
+       
           <StudioMainCanvas
             // currentCanvasImage={currentCanvasImage}
             isUploading={true}
@@ -261,8 +255,8 @@ export function StudioPage() {
             onFileUpload={handleFileUpload}
             onClearImage={() => dispatch(clearCurrentImage())}
           />
-        </>
-        {/* )} */}
+      
+       
 
         <SwatchBookDataHome />
 
@@ -294,8 +288,7 @@ export function StudioPage() {
 
       <MarkingDimensionHome />
 
-      {/* <CalculateArea/> */}
-
+    
       <GetAllJobComments />
 
       <MaterialData />
