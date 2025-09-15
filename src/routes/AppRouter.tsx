@@ -16,7 +16,7 @@ import { PublicProjectPage } from "@/pages/PublicProjectPage";
 import { MainLayout } from "@/layouts/MainLayout";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { SwatchBookPage } from "@/pages/SwatchBookPage";
-import MainLandingPage from "@/pages/MainLandingPage";
+// import MainLandingPage from "@/pages/MainLandingPage";
 import WorkspaceProjectPage from "@/pages/WorkspaceProjectPage";
 import Homepage from "@/pages/template/Homepage";
 import ProjectPdf from "@/pages/ProjectPdf";
@@ -24,6 +24,7 @@ import SwatchAddPage from "@/components/swatchBook/SwatchAddPage";
 import ProjectHome from "@/pages/projectPage/template/ProjectHome";
 import AdminRoutes from "@/routes/AdminRoutes";
 import StudioTemplate from "@/pages/studioPage/StudioTemplate";
+import VizualizerTemplate from "@/pages/vizualizer/VizualizerTemplate";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -56,7 +57,7 @@ export function AppRouter() {
       <Route path="/project/public/:slug" element={<PublicProjectPage />} />
 
       {/* Public landing page - no authentication required */}
-      <Route path="/workspace" element={<MainLandingPage />} />
+      <Route path="/vizualizer" element={<VizualizerTemplate />} />
 
       <Route path="/pdf" element={<ProjectPdf />} />
 

@@ -1,17 +1,17 @@
-import React from "react";
-import { DashboardLandingSection } from "@/components/DashboardLandingSection";
+// import React from "react";
+// // import { DashboardLandingSection } from "@/components/landingpage/DashboardLandingSection";
 
 
-const MainLandingPage = () => {
-  return (
-    <>
-      {/* <ProfilePage /> */}
+// const MainLandingPage = () => {
+//   return (
+//     <>
+//       {/* <ProfilePage /> */}
 
-      <div className="min-h-screen bg-gray-50">
-        <DashboardLandingSection />
-      </div>
-    </>
-  );
-};
+//       <div className="min-h-screen bg-gray-50">
+//         {/* <DashboardLandingSection /> */}
+//       </div>
+//     </>
+//   );
+// };
 
-export default MainLandingPage;
+// export default MainLandingPage;
