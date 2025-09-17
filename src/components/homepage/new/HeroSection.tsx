@@ -10,8 +10,8 @@ const HeroSection = () => {
     navigator("/vizualizer")
   }
   return (
-    <section className="bg-gradient-to-br from-yellow-100 via-white to-yellow-400 py-20 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 bg-[url('/assets/marble/marble-after.jpg')] bg-cover bg-center pointer-events-none" />
+    <section className=" py-20 relative overflow-hidden h-[90vh] flex items-center">
+      <div className="absolute inset-0 opacity-20 bg-[url('/assets/marble/hero-images.png')] bg-cover bg-center pointer-events-none" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-marble-charcoal mb-6 leading-tight">

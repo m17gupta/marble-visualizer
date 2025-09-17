@@ -24,8 +24,8 @@ const Services = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-yellow-200 via-white to-yellow-500 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 bg-[url('/assets/marble/service-polishing.jpg')] bg-cover bg-center pointer-events-none" />
+    <section className="py-20  relative overflow-hidden">
+      <div className="absolute  bg-cover bg-center pointer-events-none" />
       <div className="relative z-10">
   <div className="container mx-auto px-6">
         <div className="text-center mb-16">
