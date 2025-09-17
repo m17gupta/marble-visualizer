@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import bgImage from "../../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -98,10 +99,10 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 const roleOptions = [
   { value: "user", label: "User", description: "Basic user access" },
-  { value: "designer", label: "Designer", description: "Design and create projects" },
-  { value: "viewer", label: "Viewer", description: "View-only access" },
-  { value: "vendor", label: "Vendor", description: "Material supplier" },
-  { value: "admin", label: "Admin", description: "Administrative access" },
+  // { value: "designer", label: "Designer", description: "Design and create projects" },
+  // { value: "viewer", label: "Viewer", description: "View-only access" },
+  // { value: "vendor", label: "Vendor", description: "Material supplier" },
+  // { value: "admin", label: "Admin", description: "Administrative access" },
 ];
 
 export function SignUpPage() {
@@ -151,7 +152,7 @@ export function SignUpPage() {
     };
 
     const result = await dispatch(signUpUser(signUpData));
-
+      console.log("Sign up result:", result);
     if (signUpUser.fulfilled.match(result)) {
       if (result.payload.profile) {
         // Handle error from signUpUser
@@ -163,14 +164,25 @@ export function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4">
-      <motion.div
+    <div
+      className="min-h-screen flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Overlay for readability */}
+      <div className="absolute inset-0 bg-black/40 z-0" />
+      <div className="relative z-10 w-full flex items-center justify-center">
+        <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-lg"
       >
-        <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm">
+  <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm">
           <CardHeader className="space-y-4 pb-8">
             <motion.div
               initial={{ scale: 0 }}
@@ -502,7 +514,8 @@ export function SignUpPage() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

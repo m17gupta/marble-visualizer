@@ -1,7 +1,22 @@
 import { Button } from "@/components/ui/button";
 import heroImage from "../../../public/assets/marble/hero-living-room.jpg";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+   const {user, isAuthenticated} = useSelector((state:RootState) => state.auth);
+  
+  const handleVisualizerClick = () => {
+   
+     if(!isAuthenticated){
+      navigate("/login");
+      return;
+    }else{
+       console.log("User is authenticated:", user);
+    }
+  }
   return (
     <section className="hero-gradient min-h-screen flex items-center justify-center pt-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,7 +38,9 @@ const HeroSection = () => {
               <Button className="btn-hero text-lg px-8 py-4">
                 Book a Demo
               </Button>
-              <Button variant="outline" className="btn-ghost-hero text-lg px-8 py-4">
+              <Button variant="outline" className="btn-ghost-hero text-lg px-8 py-4"
+              onClick={handleVisualizerClick}
+              >
                 Try Visualizer
               </Button>
             </div>

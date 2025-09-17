@@ -8,7 +8,7 @@ import {
 } from "@/models";
 import { UserPlan } from "@/models/userModel/UserPLanModel";
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   userPlan: UserPlan | null;
   isLoading: boolean;

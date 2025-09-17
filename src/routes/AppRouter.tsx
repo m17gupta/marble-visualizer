@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { LoginPage } from "@/pages/auth/login/LoginPage";
-import { SignUpPage } from "@/pages/SignUpPage";
+import { SignUpPage } from "@/pages/auth/signUp/SignUpPage";
 import { ProjectsPage } from "@/pages/projectPage/ProjectsPage";
 // import { StudioPage } from "@/routes/StudioPage";
 import { StudioPage } from "@/pages/studioPage/StudioPage";

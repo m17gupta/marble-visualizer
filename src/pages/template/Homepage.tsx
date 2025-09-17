@@ -15,14 +15,7 @@ import Template from "@/components/homepage/Template";
 const Homepage = () => {
   return (
     <div className="min-h-screen bg-white">
-      {/* <Navigation />
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <CTASection />
-      <Footer /> */}
+  
       <Template />
       <MaterialData />
       <GetPlanFeatures />
