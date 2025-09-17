@@ -44,7 +44,7 @@ import {
   updateSidebarHeaderCollapse,
 } from "@/redux/slices/jobSlice";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
-import MaterialData from "@/components/swatchBookData/materialData/MaterialData";
+
 import ProjectHeader from "./ProjectHeader";
 import ProjectStaticCard from "./ProjectStaticCard";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";

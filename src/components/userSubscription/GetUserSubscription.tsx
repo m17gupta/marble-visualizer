@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 const GetUserSubscription = () => {
      const dispatch = useDispatch<AppDispatch>();
-    const { userPlan, user, isSubscriptionLoading } = useSelector((state: RootState) => state.auth)
+    const { userPlan, user, isSubscriptionLoading , isRegistered} = useSelector((state: RootState) => state.auth)
 
 const isApiCalled = useRef(false);
 
@@ -21,11 +21,11 @@ const getSubscriptionPlan = useCallback(async (userId: string) => {
 
 useEffect(() => {
    
-    if (user && !userPlan && !isSubscriptionLoading && !isApiCalled.current) {
+    if (user && !userPlan && !isSubscriptionLoading && !isApiCalled.current && !isRegistered) {
         isApiCalled.current = true;
         getSubscriptionPlan(user.id);
-    }   
-}, [user, userPlan, isSubscriptionLoading, getSubscriptionPlan]);
+    }
+}, [user, userPlan, isSubscriptionLoading, isRegistered, getSubscriptionPlan]);
   return (
     null
   )

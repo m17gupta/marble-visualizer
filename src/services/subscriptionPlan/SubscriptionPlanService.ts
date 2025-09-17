@@ -1,4 +1,5 @@
-import { SubscriptionPlanApi, userSubscriptionPlanRespone} from './SubscriptionPlanApi';
+import { RequestUserPlan } from '@/models/userModel/UserPLanModel';
+import { ResponseuserPlan, SubscriptionPlanApi, userSubscriptionPlanRespone} from './SubscriptionPlanApi';
 import { SubscriptionPlanModel } from '@/models/subscriptionPlan/SubscriptionPlanModel';
 
 export class SubscriptionPlanService {
@@ -9,6 +10,12 @@ export class SubscriptionPlanService {
     return await SubscriptionPlanApi.getUserSubscriptionPlans(userId);
     
   }
+
+    // create user subscription
+    static async createUserSubscription(userPlan: RequestUserPlan): Promise<ResponseuserPlan> {
+      return await SubscriptionPlanApi.createUserSubscription(userPlan);
+    }
+  
 
 
 

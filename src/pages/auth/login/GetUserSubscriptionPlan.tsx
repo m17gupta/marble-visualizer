@@ -12,7 +12,7 @@ const GetUserSubscriptionPlan = () => {
   );
   const isApi = useRef<boolean>(true);
 
-  const { user, isAuthenticated } = useSelector(
+  const { user, isAuthenticated, isRegistered } = useSelector(
     (state: RootState) => state.auth
   );
   useEffect(() => {
@@ -21,7 +21,8 @@ const GetUserSubscriptionPlan = () => {
       user &&
       user.id &&
       isAuthenticated &&
-      userSubscriptionPlan === null
+      userSubscriptionPlan === null &&
+      !isRegistered
     ) {
       isApi.current = false;
       GetuserPlan(user.id);

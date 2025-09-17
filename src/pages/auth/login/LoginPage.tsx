@@ -28,6 +28,7 @@ import {
 import { Loader2, Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import italian from "../../../../public/assets/marble/italian-marble.jpg";
+import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -93,6 +94,9 @@ const { isLoading, isAuthenticated, error } = useSelector(
   };
 
   return (
+    <>
+
+      <GetPlanFeatures/>
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[60%_40%] bg-muted/20">
       {/* Left: Image */}
      <div className="hidden lg:block h-full w-full">
@@ -253,5 +257,6 @@ const { isLoading, isAuthenticated, error } = useSelector(
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

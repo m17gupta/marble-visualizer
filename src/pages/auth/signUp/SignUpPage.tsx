@@ -46,6 +46,7 @@ import {
 
 } from "lucide-react";
 import { setProfile } from "@/redux/slices/user/userProfileSlice";
+import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
 
 // Form validation schema
 const signUpSchema = z
@@ -164,6 +165,10 @@ export function SignUpPage() {
   };
 
   return (
+    <>
+
+    <GetPlanFeatures/>
+    
     <div
       className="min-h-screen flex items-center justify-center p-4 relative"
       style={{
@@ -517,5 +522,6 @@ export function SignUpPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

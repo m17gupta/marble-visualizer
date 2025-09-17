@@ -7,23 +7,31 @@ import ProjectAnalyseSegmentApiCall from "../analyseProjectImage/ProjectAnalyseS
 import GetHouseSegments from "../analyseProjectImage/GetHouseSegments";
 import GetuserProfile from "@/pages/auth/login/GetuserProfile";
 import GetUserSubscriptionPlan from "@/pages/auth/login/GetUserSubscriptionPlan";
+import CreateUserSubscription from "@/pages/auth/signUp/CreateUserSubscription";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 // import FetchuserProfile from '../FetchuserProfile'
 
 const ProjectHome = () => {
+
+  const {isRegistered, isAuthenticated} = useSelector((state: RootState) => state.auth);
   return (
     <>
       <ProjectsPage />
-      <GetUserSubscription />
+      {(!isRegistered && isAuthenticated) ? (<GetUserSubscription />) : ( <CreateUserSubscription/>)}
 
-      <SwatchBookDataHome />
-
-      <MaterialData />
+      {/* <SwatchBookDataHome /> */}
+{/* 
+      <MaterialData /> */}
 
       <ProjectAnalyseSegmentApiCall />
 
-      <GetHouseSegments />
+      {/* <GetHouseSegments /> */}
       <GetuserProfile />
       <GetUserSubscriptionPlan />
+
+
+     
     </>
   );
 };

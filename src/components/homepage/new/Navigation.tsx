@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 import dzinlylogo from "../../../../public/assets/marble/image.jpg";
 
 const Navigation = () => {
@@ -18,14 +18,35 @@ const Navigation = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</Link>
-            <Link to="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
-            <Link to="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">Reviews</Link>
+            <Link
+              to="#features"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              to="#pricing"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link
+              to="#testimonials"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Reviews
+            </Link>
             <Button variant="outline" className="mr-2">
               <Link to="/login">Sign In</Link>
             </Button>
+
+            <Button variant="outline" className="mr-1">
+              <Link to="/signup">Sign Up</Link>
+            </Button>
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-              <Link to="/workspace" className='text-white'>Get Started</Link>
+              <Link to="/workspace" className="text-white">
+                Get Started
+              </Link>
             </Button>
           </div>
 
@@ -39,17 +60,17 @@ const Navigation = () => {
               <div className="w-6 h-6 relative">
                 <span
                   className={`block absolute h-0.5 w-6 bg-gray-800 transform transition duration-300 ease-in-out ${
-                    mobileMenuOpen ? 'rotate-45 top-2.5' : 'top-1'
+                    mobileMenuOpen ? "rotate-45 top-2.5" : "top-1"
                   }`}
                 />
                 <span
                   className={`block absolute h-0.5 w-6 bg-gray-800 transition-all duration-300 ease-in-out ${
-                    mobileMenuOpen ? 'opacity-0' : 'top-2.5'
+                    mobileMenuOpen ? "opacity-0" : "top-2.5"
                   }`}
                 />
                 <span
                   className={`block absolute h-0.5 w-6 bg-gray-800 transform transition duration-300 ease-in-out ${
-                    mobileMenuOpen ? '-rotate-45 top-2.5' : 'top-4'
+                    mobileMenuOpen ? "-rotate-45 top-2.5" : "top-4"
                   }`}
                 />
               </div>
@@ -60,10 +81,30 @@ const Navigation = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden mt-2 space-y-4 pb-4">
-            <Link to="#features" className="block text-gray-600 hover:text-gray-900">Features</Link>
-            <Link to="#pricing" className="block text-gray-600 hover:text-gray-900">Pricing</Link>
-            <Link to="#testimonials" className="block text-gray-600 hover:text-gray-900">Reviews</Link>
-            <Link to="/login" className="block text-gray-600 hover:text-gray-900">Sign In</Link>
+            <Link
+              to="#features"
+              className="block text-gray-600 hover:text-gray-900"
+            >
+              Features
+            </Link>
+            <Link
+              to="#pricing"
+              className="block text-gray-600 hover:text-gray-900"
+            >
+              Pricing
+            </Link>
+            <Link
+              to="#testimonials"
+              className="block text-gray-600 hover:text-gray-900"
+            >
+              Reviews
+            </Link>
+            <Link
+              to="/login"
+              className="block text-gray-600 hover:text-gray-900"
+            >
+              Sign In
+            </Link>
             <Link
               to="/workspace"
               className="block text-center text-white px-4 py-2 rounded bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-colors"

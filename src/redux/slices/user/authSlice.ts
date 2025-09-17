@@ -18,6 +18,7 @@ export interface AuthState {
   isInitialized: boolean;
   accessToken: string | null;
   refreshToken: string | null;
+  isRegistered?: boolean;
 }
 
 const initialState: AuthState = {
@@ -30,6 +31,7 @@ const initialState: AuthState = {
   accessToken: null,
   refreshToken: null,
   isSubscriptionLoading: false,
+  isRegistered: false,
 };
 
 // Async thunk for login
@@ -204,6 +206,7 @@ const authSlice = createSlice({
       state.error = null;
       state.accessToken = null;
       state.refreshToken = null;
+      state.isRegistered = false; 
     },
   },
   extraReducers: (builder) => {
@@ -268,6 +271,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.accessToken = action.payload.session.access_token;
         state.refreshToken = action.payload.session.refresh_token;
+         state.isRegistered = true;
       })
       .addCase(signUpUser.rejected, (state, action) => {
         state.isLoading = false;

@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { SubscriptionPlanModel } from "@/models/subscriptionPlan/SubscriptionPlanModel";
 import { SubscriptionPlanService } from "@/services/subscriptionPlan";
 import { userSubscriptionPlanRespone } from "@/services/subscriptionPlan/SubscriptionPlanApi";
+import { RequestUserPlan } from "@/models/userModel/UserPLanModel";
 
 interface SubscriptionPlanState {
   userSubscriptionPlan: SubscriptionPlanModel | null;
@@ -30,6 +31,28 @@ export const fetchUserSubscriptionPlans = createAsyncThunk<
     console.error("Redux fetchUserSubscriptionPlans - Error:", error);
     const errorMessage = error instanceof Error ? error.message : "Failed to fetch user subscription plans";
     return rejectWithValue(errorMessage);
+  }
+});
+
+export const createUserSubscriptionPlan = createAsyncThunk<
+  userSubscriptionPlanRespone,
+  RequestUserPlan,
+  { rejectValue: string }
+>("subscriptionPlan/createUserPlan", async (userPlan, { rejectWithValue }) => {
+  try {
+    console.log("Creating user subscription plan with data:", userPlan);
+    const response = await SubscriptionPlanService.createUserSubscription(
+      userPlan
+    );
+     console.log("User subscription plan created successfully:", response);
+    return { data: response } as userSubscriptionPlanRespone;
+  } catch (error) {
+    //console.error("Redux createUserSubscriptionPlan - Error:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to create user subscription plan";
+    return rejectWithValue(errorMessage) as never;
   }
 });
 
@@ -65,6 +88,27 @@ const subscriptionPlanSlice = createSlice({
         state.lastFetched = Date.now();
       })
       .addCase(fetchUserSubscriptionPlans.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "An unknown error occurred";
+        state.userSubscriptionPlan = null;
+        state.lastFetched = null;
+      });
+
+      // Create user subscription plan
+    builder 
+      
+      .addCase(createUserSubscriptionPlan.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(createUserSubscriptionPlan.fulfilled, (state, action) => {   
+        state.isLoading = false;
+        state.error = null;
+        // Assuming the response contains the created subscription plan data
+        state.userSubscriptionPlan = action.payload.data || action.payload as any;
+        state.lastFetched = Date.now();
+      })
+      .addCase(createUserSubscriptionPlan.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || "An unknown error occurred";
         state.userSubscriptionPlan = null;

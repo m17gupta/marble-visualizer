@@ -97,7 +97,9 @@ export class AuthAPI {
 
       // First create the Supabase auth user
       const { data, error } = await supabase.auth.signUp(finalUser);
-
+     
+     
+      console.log("Sign up error:", error);
       if (error) {
         throw new AuthError({
           message: error.message,
@@ -106,6 +108,7 @@ export class AuthAPI {
         });
       }
 
+       console.log("Sign up data:", data);
       if (!data.user || !data.session) {
         throw new AuthError({
           message: "Registration failed",

@@ -34,7 +34,10 @@ export const store = configureStore({
   reducer: {
     auth: authSlice,
     userProfile: userProfileSlice,
+    planFeature: PlanFeatureSlice, // Plan feature slice
+    subscriptionPlan: subscriptionPlanSlice,
     projects: projectSlice,
+
     masterArray: masterArraySlice,
     segments: segmentsSlice,
     jobComments: jobCommentsSlice, // New job comments slice
@@ -52,14 +55,14 @@ export const store = configureStore({
     inspirationalColors: inspirationalColorSlice, // New inspirational color slice
     inspirationalImages: inspirationalImageSlice, // New inspirational image slice
     inspirationTab: inspirationTabSlice, // New inspiration tab slice
-    subscriptionPlan: subscriptionPlanSlice,
+    
     workspace: workspaceSlice, // New workspace slice
     studio: studioSlice,
     tabControl: tabControlSlice,
     projectAnalyse: projectAnalyseSlice,
     testCanvas: TestCanvasSlices, // New TestCanvas slice
     fabricCanvas: FabricCanvasSlice,
-    planFeature: PlanFeatureSlice, // Plan feature slice
+    
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
