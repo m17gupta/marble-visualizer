@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import dzinlylogo from "../../../../public/assets/marble/image.jpg";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Link, useNavigate } from 'react-router-dom';
+import dzinlylogo from "../../../../public/assets/marble/marbe-logo.png";
 
 const Navigation = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,7 +13,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <img className="w-44 h-16" src={dzinlylogo} alt="dzinly logo" />
+            <img className="w-44 " src={dzinlylogo} alt="dzinly logo" />
           </div>
 
           {/* Desktop Menu */}
@@ -107,7 +107,7 @@ const Navigation = () => {
             </Link>
             <Link
               to="/workspace"
-              className="block text-center text-white px-4 py-2 rounded bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-colors"
+              className="block text-center text-white px-4 py-2 rounded bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-colors"
             >
               Get Started
             </Link>
