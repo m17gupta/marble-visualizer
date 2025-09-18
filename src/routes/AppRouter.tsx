@@ -5,7 +5,7 @@ import { LoginPage } from "@/pages/auth/login/LoginPage";
 import { SignUpPage } from "@/pages/auth/signUp/SignUpPage";
 import { ProjectsPage } from "@/pages/projectPage/ProjectsPage";
 // import { StudioPage } from "@/routes/StudioPage";
-import { StudioPage } from "@/pages/studioPage/StudioPage";
+// import { StudioPage } from "@/pages/studioPage/StudioPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 // import { MaterialsPage } from '@/pages/MaterialsPage';
 
@@ -16,15 +16,16 @@ import { PublicProjectPage } from "@/pages/PublicProjectPage";
 import { MainLayout } from "@/layouts/MainLayout";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { SwatchBookPage } from "@/pages/SwatchBookPage";
-// import MainLandingPage from "@/pages/MainLandingPage";
+
 import WorkspaceProjectPage from "@/pages/WorkspaceProjectPage";
 import Homepage from "@/pages/template/Homepage";
 import ProjectPdf from "@/pages/ProjectPdf";
 import SwatchAddPage from "@/components/swatchBook/SwatchAddPage";
 import ProjectHome from "@/pages/projectPage/template/ProjectHome";
 import AdminRoutes from "@/routes/AdminRoutes";
-import StudioTemplate from "@/pages/studioPage/StudioTemplate";
+// import StudioTemplate from "@/pages/studioPage/StudioTemplate";
 import VizualizerTemplate from "@/pages/vizualizer/VizualizerTemplate";
+import WorkSpace from "@/pages/workSpace/WorkSpace";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -65,7 +66,7 @@ export function AppRouter() {
         path="/workspace/project/:projectId"
         element={<WorkspaceProjectPage />}
       />
-      <Route path="/design-hub/project/:id" element={<StudioPage />} />
+      {/* <Route path="/design-hub/project/:id" element={<StudioPage />} /> */}
 
       {/* Protected routes - TEMPORARY: No role restrictions, just authentication */}
       <Route
@@ -79,8 +80,9 @@ export function AppRouter() {
         <Route index element={<Navigate to="/app/projects" replace />} />
         <Route path="projects" element={<ProjectHome />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="workspace" element={<WorkSpace />} />
         {/* <Route path="studio" element={<StudioPage />} /> */}
-        <Route path="studio/:id" element={<StudioTemplate />} />
+        {/* <Route path="studio/:id" element={<StudioTemplate />} /> */}
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
         <Route path="addSwatch" element={<SwatchAddPage />} />

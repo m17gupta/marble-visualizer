@@ -55,6 +55,7 @@ import ProjectAnalyseSegmentApiCall from "./analyseProjectImage/ProjectAnalyseSe
 import ProjectAction from "./ProjectAction";
 import GetHouseSegments from "./analyseProjectImage/GetHouseSegments";
 import DeleteModal from "./deleteProject/DeleteModel";
+import CreateProjectHome from "./createProject/CreateProjectHome";
 
 export function ProjectsPage() {
   // const [user_id, setUser_id] = useState<string | null>(null);
@@ -123,11 +124,6 @@ export function ProjectsPage() {
     }
   }, [user?.id, projects.length, isLoading]);
 
-  // useEffect(() => {
-  //   // Set breadcrumb to "Projects" when component mounts
-  //   dispatch(updateBreadCrumbs("Projects"));
-  // }, [dispatch]);
-
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -150,8 +146,7 @@ export function ProjectsPage() {
         dispatch(addHouseImage(projectImage));
         dispatch(updateSidebarHeaderCollapse(false));
         setSelectedProjectId(project.id);
-        // dispatch(updateRequestJobId(jobId?.toString()));
-        // dispatch(resetGenAiState());
+
         dispatch(setCurrentProject(project));
         navigate(`/app/studio/${project.id}`);
       }
@@ -281,6 +276,7 @@ export function ProjectsPage() {
               onClose={handleClose}
             />
           )}
+
           <ProjectHeader createProject={handleCreateProject} />
 
           {/* Stats Section */}
@@ -422,13 +418,13 @@ export function ProjectsPage() {
         </motion.div>
       )}
 
-      {isCreateDialogOpen && (
-        <VisualToolHome resetProjectCreated={handleResetProjectCreated} />
-      )}
+      <CreateProjectHome
+        isCreateDialogOpen={isCreateDialogOpen}
+        handleResetProjectCreated={handleResetProjectCreated}
+      />
 
       {/* delete project */}
       {isDeleteModalOpen && (
-   
         <DeleteModal
           isOpen={isDeleteModalOpen}
           onCancel={handleCancelProjectDelete}
