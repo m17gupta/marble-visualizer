@@ -112,7 +112,7 @@ export function MainLayout() {
           isStudioPage && "lg:pl-0"
         )}
       >
-        <main className="overflow-y-auto min-h-[calc(100vh-56px)]">
+        <div className="overflow-y-auto min-h-[calc(100vh-56px)]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ export function MainLayout() {
           >
             <Outlet />
           </motion.div>
-        </main>
+        </div>
       </div>
 
       {/* Settings Modal */}

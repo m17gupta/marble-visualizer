@@ -2,6 +2,7 @@ import DashboardLandingSection from '@/components/landingpage/DashboardLandingSe
 import SidebarContent from '@/components/sideBar/SideBarContent'
 import React, { useState } from 'react'
 import { motion } from "framer-motion";
+import ProdcutCardSection from '@/components/landingpage/ProdcutCardSection';
 const WorkSpace = () => {
  
   return (
@@ -9,7 +10,7 @@ const WorkSpace = () => {
       
 
             <DashboardLandingSection  />
-       
+     
          
     </>
     

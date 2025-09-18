@@ -7,7 +7,7 @@ interface LoadingProps {
 
 const Loading = ({ backgroundImage }: LoadingProps) => {
   // Use the dzinly logo image on the rotating cubes
-  const logoImage = "/assets/image/dzinlylogo-icon.svg";
+  const logoImage = "/assets/marble/main-favicons.png";
   
   const boxStyle = {
     backgroundImage: `url(${backgroundImage || logoImage})`,

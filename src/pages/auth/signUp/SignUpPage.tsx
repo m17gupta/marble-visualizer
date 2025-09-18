@@ -10,6 +10,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { signUpUser, clearError } from "@/redux/slices/user/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import marbleLogo from "../../../../public/assets/marble/main-favicons.png";
 import {
   Card,
   CardContent,
@@ -47,6 +48,8 @@ import {
 } from "lucide-react";
 import { setProfile } from "@/redux/slices/user/userProfileSlice";
 import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import Navigation from "@/components/homepage/new/Navigation";
 
 // Form validation schema
 const signUpSchema = z
@@ -167,72 +170,63 @@ export function SignUpPage() {
   return (
     <>
 
+<Navigation/>
+
     <GetPlanFeatures/>
     
-    <div
-      className="min-h-screen flex items-center justify-center p-4 relative"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      {/* Overlay for readability */}
-      <div className="absolute inset-0 bg-black/40 z-0" />
-      <div className="relative z-10 w-full flex items-center justify-center">
-        <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-lg"
-      >
-  <Card className="shadow-2xl border-0 bg-card/50 backdrop-blur-sm">
-          <CardHeader className="space-y-4 pb-8">
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[60%_40%] bg-muted/20">
+          {/* Left: Image */}
+          <div className="hidden lg:block h-full w-full">
+            <LazyLoadImage
+              src={bgImage}
+              alt="Login visual"
+              className="object-cover h-full w-full"
+            />
+          </div>
+
+          {/* Right: Login Card */}
+          <div className="flex items-center justify-center px-6 py-10">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center"
-            >
-              <UserPlus className="h-6 w-6 text-primary-foreground" />
-            </motion.div>
-            <div className="text-center space-y-2">
-              <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Join us and start creating amazing projects
-              </CardDescription>
-            </div>
-          </CardHeader>
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-full max-w-md">
+              <Card className="border-0 bg-card/50 shadow-none backdrop-blur-sm">
+                <CardHeader className="space-y-4 pb-6 pt-6">
+                  <div
+                    className="w-12 flex items-center justify-center m-auto cursor-pointer"
+                    // onClick={handleHomeClick}
+                    >
+                    <img
+                      src={marbleLogo}
+                      title="https://betadzinly.s3.us-east-2.amazonaws.com/assets/images/logo-icon.svg"
+                      alt="Dzinly Logo"></img>
+                  </div>
+                  {/* </motion.div> */}
+                  <div className="text-center space-y-2">
+                    <CardTitle className="text-2xl font-bold">Create Account </CardTitle>
 
-          <CardContent className="space-y-6">
-            {/* Back to Login Link */}
-            <div className="flex items-center justify-center">
-              <Link
-                to="/login"
-                className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Sign In
-              </Link>
-            </div>
+                  </div>
+                </CardHeader>
 
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Alert
-                  variant="destructive"
-                  className="border-destructive/50 bg-destructive/5"
-                >
-                  <AlertDescription className="text-sm">
-                    {error}
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
+                <CardContent className="space-y-6">
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}>
+                      <Alert variant="destructive">
+                        <AlertDescription className="text-sm">
+                          {error}
+                        </AlertDescription>
+                      </Alert>
+                    </motion.div>
+                  )}
+
+
+
+
+            
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -390,7 +384,7 @@ export function SignUpPage() {
                 />
 
                 {/* Advanced Options Toggle */}
-                <div className="pt-2">
+                <div>
                   <Button
                     type="button"
                     variant="ghost"
@@ -469,7 +463,7 @@ export function SignUpPage() {
                 <motion.div
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="pt-4"
+                  className="pt-0"
                 >
                   <Button
                     type="submit"
@@ -485,6 +479,7 @@ export function SignUpPage() {
                       <>
                         <UserPlus className="mr-2 h-4 w-4" />
                         Create Account
+
                       </>
                     )}
                   </Button>
@@ -493,7 +488,7 @@ export function SignUpPage() {
             </Form>
 
             {/* Terms and Privacy */}
-            <div className="text-center text-xs text-muted-foreground">
+            {/* <div className="text-center text-xs text-muted-foreground">
               <p>
                 By creating an account, you agree to our{" "}
                 <Link to="/terms" className="text-primary hover:underline">
@@ -505,10 +500,10 @@ export function SignUpPage() {
                 </Link>
                 .
               </p>
-            </div>
+            </div> */}
 
             {/* Already have account */}
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-muted-foreground m-0 p-0">
               Already have an account?{" "}
               <Link
                 to="/login"
