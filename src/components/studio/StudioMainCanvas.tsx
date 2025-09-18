@@ -32,6 +32,9 @@ interface StudioMainCanvasProps {
   isUploading: boolean;
   canEdit: boolean;
   isJobRunning: boolean;
+  canvasWidth?: number;
+  canvasHeight?: number;
+  //
   onFileUpload: (file: File) => void;
   onClearImage: () => void;
 }
@@ -40,6 +43,9 @@ export function StudioMainCanvas({
   // currentCanvasImage,
   isUploading,
   canEdit,
+  isJobRunning,
+  canvasWidth,
+  canvasHeight,
   onFileUpload,
 }: StudioMainCanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,9 +57,9 @@ export function StudioMainCanvas({
   const [canvasMode, setCanvasMode] = useState("");
   const { currentTabContent } = useSelector((state: RootState) => state.studio);
   const { canvasType } = useSelector((state: RootState) => state.canvas);
-
-  const [canvasWidth, setCanvasWidth] = useState(1023);
-  const [canvasHeight, setCanvasHeight] = useState(592);
+  
+  // const [canvasWidth, setCanvasWidth] = useState(1023);
+  // const [canvasHeight, setCanvasHeight] = useState(592);
   const { isCompare } = useSelector((state: RootState) => state.canvas);
   // // update the canvas image
   useEffect(() => {
@@ -121,8 +127,8 @@ export function StudioMainCanvas({
                     <HoverHeader />
                     <CanavasImage
                       imageUrl={canvasImage}
-                      width={canvasWidth}
-                      height={canvasHeight}
+                      width={canvasWidth ?? 1024}
+                      height={canvasHeight ?? 768}
                       onImageLoad={handleImageLoad}
                       ref={canavasImageRef}
                       onMouseMove={handleMouseMove}
@@ -130,9 +136,9 @@ export function StudioMainCanvas({
                   </>
                 )}
                 <Hovertemplate
-                    canvas={canavasImageRef}
-                  width={canvasWidth}
-                  height={canvasHeight}
+                  canvas={canavasImageRef}
+                  width={canvasWidth ?? 1024}
+                  height={canvasHeight ?? 768}
                 />
 
                 {/* <Hovertesttemplate
@@ -164,8 +170,8 @@ export function StudioMainCanvas({
                 <CanvasEditor
                   key={`canvas-editor-${canvasImage}`}
                   imageUrl={canvasImage}
-                  width={canvasWidth}
-                  height={canvasHeight}
+                  width={canvasWidth ?? 1024}
+                  height={canvasHeight ?? 768}
                 />
               </>
             )}
@@ -185,8 +191,8 @@ export function StudioMainCanvas({
               <CommentCanvas
                 key={`canvas-comment-${canvasImage}`}
                 imageUrl={canvasImage}
-                width={canvasWidth}
-                height={canvasHeight}
+                width={canvasWidth ?? 1024}
+                height={canvasHeight ?? 768}
                 className="mb-6"
                 onImageLoad={handleImageLoad}
               />

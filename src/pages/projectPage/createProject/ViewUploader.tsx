@@ -98,35 +98,12 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      // onFileUpload(e.target.files[0], viewType);
-      // const data: any = await convertToWebP(e.target.files[0]);
-
+   
       onFileUpload(e.target.files[0], viewType);
     }
   };
 
-  // const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (e.target.files && e.target.files[0]) {
-  //     console.log("...-----jpg", e.target.files[0].size);
 
-  //     // Convert to WebP
-  //     const data: File = await convertToWebP(e.target.files[0]);
-  //     console.log("----webpsize", data.size);
-
-  //     // Upload
-  //     onFileUpload(data, viewType);
-
-  //     // Download after upload
-  //     const url = URL.createObjectURL(data);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = data.name; // ensures filename ends with .webp
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //     URL.revokeObjectURL(url);
-  //   }
-  // };
 
   const openFileSelector = () => {
     if (!disabled) {

@@ -5,7 +5,7 @@ import { LoginPage } from "@/pages/auth/login/LoginPage";
 import { SignUpPage } from "@/pages/auth/signUp/SignUpPage";
 import { ProjectsPage } from "@/pages/projectPage/ProjectsPage";
 // import { StudioPage } from "@/routes/StudioPage";
-// import { StudioPage } from "@/pages/studioPage/StudioPage";
+import { StudioRoutes } from "@/routes/StudioRoutes";
 import { ProfilePage } from "@/pages/ProfilePage";
 // import { MaterialsPage } from '@/pages/MaterialsPage';
 
@@ -82,8 +82,7 @@ export function AppRouter() {
         <Route path="projects" element={<ProjectHome />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="workspace" element={<WorkSpace />} />
-        {/* <Route path="studio" element={<StudioPage />} /> */}
-        {/* <Route path="studio/:id" element={<StudioTemplate />} /> */}
+  <StudioRoutes />
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
         <Route path="addSwatch" element={<SwatchAddPage />} />
