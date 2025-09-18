@@ -1,4 +1,5 @@
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome';
+import UploadImageModel from './UploadImageModel';
 
 type Props = {
     isCreateDialogOpen: boolean;
@@ -10,7 +11,9 @@ const CreateProjectHome = ({ isCreateDialogOpen, handleResetProjectCreated }: Pr
     <>
           {/* open  model */}
          {isCreateDialogOpen && (
-        <VisualToolHome resetProjectCreated={handleResetProjectCreated} />
+        <UploadImageModel 
+          resetProjectCreated={handleResetProjectCreated}
+        />
       )}
     </>
   )

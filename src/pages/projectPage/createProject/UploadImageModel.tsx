@@ -18,7 +18,11 @@ import {
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import { CreateJob, CreateJobParams } from "@/utils/CreateJob";
 import { setIsAnalyseImage, setJobUrl, setProjectId } from "@/redux/slices/projectAnalyseSlice";
-const UploadImageModel = () => {
+
+type props={
+  resetProjectCreated: () => void;
+}
+const UploadImageModel = ({ resetProjectCreated }: props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
@@ -161,19 +165,7 @@ const UploadImageModel = () => {
               resetForm: () => {
                 setIsCreatingJob(false);
     
-                // Navigate to the project page or workspace after job creation
-                // if (workspace_type === "renovate") {
-                //   if (isAuthenticated) {
-                //     resetProjectCreated();
-                //     // navigate(`/app/studio/project/${createdProjectId.current}`);
-                //   } else {
-                //     dispatch(setCurrentImageUrl(result?.fileUrl ?? ""));
-                //     navigate(`/workspace/project/${createdProjectId.current}`);
-                //   }
-                // } else if (workspace_type === "design-hub") {
-                //   dispatch(setCurrentImageUrl(result?.fileUrl ?? ""));
-                //   navigate(`/design-hub/project/${createdProjectId.current}`);
-                // }
+                 resetProjectCreated();
               },
               clearProjectId: () => {
                 createdProjectId.current = null;
@@ -327,7 +319,7 @@ const UploadImageModel = () => {
               {!projectName.trim()
                 ? "Please enter a project name"
                 : hasAnyFiles
-                ? `Continue )`
+                ? `Continue`
                 : "Upload at least one view to continue"}
             </button>
           </div>
