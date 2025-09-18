@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { LoginPage } from "@/pages/auth/login/LoginPage";
@@ -82,7 +82,10 @@ export function AppRouter() {
         <Route path="projects" element={<ProjectHome />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="workspace" element={<WorkSpace />} />
-  <StudioRoutes />
+  {/* Studio routes must be nested under a parent Route */}
+  <Route path="studio/*" element={<Outlet />}>
+    <Route path="*" element={<StudioRoutes />} />
+  </Route>
         {/* <Route path="materials" element={<MaterialsPage />} /> */}
         <Route path="swatchbook" element={<SwatchBookPage />} />
         <Route path="addSwatch" element={<SwatchAddPage />} />
