@@ -236,7 +236,7 @@ useEffect(() => {
       {
         isGenLoading || renameGenAiLoading &&
         <Loading
-          backgroundImage='/assets/image/dzinlylogo-icon.svg' // Use the correct path to your logo image
+          backgroundImage='/assets/marble/main-favicons.png' // Use the correct path to your logo image
         />}
       {showGuide && <AiGuideance onClose={() => setShowGuide(false)} />}
 

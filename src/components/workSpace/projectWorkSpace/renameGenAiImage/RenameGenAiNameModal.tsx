@@ -57,7 +57,7 @@ const RenameGenAiNameModal = ({
           
           <div className="flex flex-col items-center text-center pt-2">
             <img
-              src="/assets/image/dzinlylogo-icon.svg"
+              src="/assets/marble/main-favicons.png"
               alt="Dzinly"
               className="w-11 h-11 mx-auto"
             />
