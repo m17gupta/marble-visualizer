@@ -81,7 +81,7 @@ export function AppRouter() {
         <Route index element={<Navigate to="/app/projects" replace />} />
         <Route path="projects" element={<ProjectHome />} />
         <Route path="profile" element={<ProfilePage />} />
-
+        <Route path="workspace" element={<WorkSpace />} />
         {/* <Route path="studio" element={<StudioPage />} /> */}
         {/* <Route path="studio/:id" element={<StudioTemplate />} /> */}
         {/* <Route path="materials" element={<MaterialsPage />} /> */}

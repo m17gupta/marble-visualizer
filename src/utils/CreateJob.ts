@@ -48,6 +48,7 @@ export const CreateJob = async (
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
+    console.log("Creating job with data:", jobData);
    
     // Dispatch the create job action
     const jobResponse = await dispatch(createJob(jobData));

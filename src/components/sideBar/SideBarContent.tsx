@@ -59,6 +59,7 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
     { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true, href: '/app/projects' },
     { id: 'assets', label: 'Assets', icon: Package, href: '/app/assets' },
     { id: 'boards', label: 'Boards', icon: Layout, href: '/app/boards' },
+    { id: 'workspace', label: 'Workspace', icon: Layout, href: '/app/workspace' },
   ];
 
   // Add admin panel if user role is admin

@@ -158,7 +158,7 @@ const UploadImageModel = ({ resetProjectCreated }: props) => {
     
             dispatch(setJobUrl(result.fileUrl));
             dispatch(setProjectId(createdProjectId.current ?? 0));
-            dispatch(setIsAnalyseImage(true));
+            //dispatch(setIsAnalyseImage(true));
             // console.log('Creating job with data:', jobData);
             setIsCreatingJob(true);
             CreateJob(jobData, {
@@ -194,12 +194,12 @@ const UploadImageModel = ({ resetProjectCreated }: props) => {
   return (
     <>
       {/* Upload Progress Overlay */}
-      {/* <UploadingProgress
+      <UploadingProgress
         fileName={uploadedFile?.name || null}
         progress={uploadProgress}
         isCreatingProject={isCreatingProject}
         isCreatingJob={isCreatingJob}
-      /> */}
+      />
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className=" border-b border-gray-200 py-6 pt-6 bg-white shadow-sm">

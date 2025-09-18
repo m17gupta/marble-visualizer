@@ -46,12 +46,14 @@ export class JobApi {
         updated_at: new Date().toISOString(),
       };
 
+      console.log("New Job Data to insert:", newJob);
       const { data, error } = await supabase
         .from("job")
         .insert( newJob )
         .select()
         .single();
 
+        console.log("Supabase insert response:", { data, error });  
       if (error) {
         console.error('Error creating job:', error);
         return {
