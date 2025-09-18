@@ -3,7 +3,7 @@ import {  Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Setting from "./Setting";
-import dzinlylogo from "../../public/assets/marble/image.jpg";
+import dzinlylogo from "../../public/assets/marble/marbe-logo.png";
 import { AiOutlineMenuUnfold } from "react-icons/ai";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";

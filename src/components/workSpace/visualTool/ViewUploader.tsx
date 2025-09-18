@@ -136,12 +136,10 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
 
   return (
     <div className="relative">
-      <h3 className="text-md font-medium text-gray-700 mb-3 text-center ">
-        {viewType}
-      </h3>
+ 
 
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 h-32 transition-all duration-300 cursor-pointer overflow-hidden ${
+        className={`relative border-2 border-dashed h-96 rounded-lg p-6  transition-all duration-300 cursor-pointer overflow-hidden ${
           disabled
             ? "border-gray-200 bg-gray-50 cursor-not-allowed"
             : dragActive
@@ -159,7 +157,7 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
         {/* Background Image */}
         {!uploadedFile && (
           <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
             style={{
               backgroundImage: `url(${getBackgroundImage(viewType)})`,
             }}
@@ -209,15 +207,21 @@ const ViewUploader: React.FC<ViewUploaderProps> = ({
           </div>
         ) : (
           <div className="absolute inset-0 flex flex-col justify-center items-center z-10">
-            <div className="w-8 h-8 mx-auto bg-white bg-opacity-80 rounded-full flex items-center justify-center mb-2 shadow-sm">
-              <Upload className="h-4 w-4 text-gray-600" />
+            <div className="w-12 h-12 mx-auto bg-white rounded-full flex items-center justify-center mb-2 shadow-sm">
+              <Upload className="h-6 w-6   text-blue-600" />
             </div>
-            <p className="text-xs font-medium text-gray-700 bg-white bg-opacity-80 rounded px-2 py-1">
-              {disabled ? "Only one image allowed" : "Select"}
+         
+            <p className="text-lg font-medium text-black   rounded px-2 py-1 mt-1">
+              {disabled ? "" : "Drag & drop your image"}
             </p>
-            <p className="text-xs text-gray-500 bg-white bg-opacity-80 rounded px-2 py-1 mt-1">
-              {disabled ? "" : "JPG, PNG"}
+            <p className="text-xs text-gray-600 rounded px-2 py-1 mt-1">
+              {disabled ? "" : "or click to browsee"}
             </p>
+
+               <span className="text-xs font-medium text-white bg-black  rounded-full px-4 py-2 mt-4">
+              {disabled ? "Only one image allowed" : "Uplaod Select"}
+            </span>
+            
           </div>
         )}
       </div>

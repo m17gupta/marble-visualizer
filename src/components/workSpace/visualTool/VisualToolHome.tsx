@@ -137,10 +137,8 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
 
   // Define view types and their display names
   const viewTypes: { key: ViewType; label: string }[] = [
-    { key: "front", label: "Front View" },
-    { key: "rear", label: "Rear View" },
-    { key: "left", label: "Left View" },
-    { key: "right", label: "Right View" },
+    { key: "front", label: "" },
+   
   ];
 
   const handleUpload = async () => {
@@ -241,143 +239,44 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
         isCreatingProject={isCreatingProject}
         isCreatingJob={isCreatingJob}
       />
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className=" border-b border-gray-200 py-6 pt-10 md:pt-0">
-          <div className="max-w-6xl mx-auto px-2 md:px-6">
+        <div className=" border-b border-gray-200 py-6 pt-6 bg-white shadow-sm">
+          <div className="mx-auto px-3">
             <div className="text-center relative flex items-center justify-center ">
               {/* Back button positioned absolutely in header */}
               <Button
                 onClick={handleGoBack}
                 variant="outline"
-                className="text-lg absolute left-0 top-0 md:top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-600 hover:text-gray-900 bg-transparent border-0 shadow-none"
+                className="text-md border-0 absolute left-0 top-0 md:top-1/2 transform -translate-y-1/2 flex items-center space-x-2 text-gray-700 hover:text-gray-900 bg-transparent  shadow-none "
               >
-                <ArrowLeft className="h-6 w-6 md:w-4" />
+                <ArrowLeft className="h-6 w-6 md:w-4 " />
                 <span>Back</span>
               </Button>
 
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-8 md:mt-10">
-                  Work Space View
-                </h1>
-
-                <p className="text-lg text-gray-600 mb-2">
-                  Select the initial view you want to work on
-                </p>
-                <p className="text-sm text-gray-500">
-                  (Additional views available after delivery of initial project)
-                </p>
-              </div>
+             
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          {/* <div className="mb-8">
-            <label
-              htmlFor="projectName"
-              className="block text-sm font-medium text-gray-900 mb-2">
-              Project Name
-            </label>
-            <input
-              type="text"
-              id="projectName"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              placeholder="Enter your project name"
-            />
-          </div> */}
-
-          {/* Instructions Section */}
+        <div className="max-w-6xl mx-auto px-6 py-10 bg-white border mt-3 rounded-md shadow">
+         
+       
           <div className="grid md:grid-cols-2 gap-12 mb-12">
-            {/* Photo Instructions */}
-
+          
             <div>
               <div className="flex items-center mb-6">
                 <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
                   1
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Photo Instruction
+                <h2 className="text-xl font-medium text-gray-900">
+                  Upload Image
                 </h2>
               </div>
 
-              <div className="bg-white rounded-xl p-8 shadow-sm border">
-                <div className="space-y-6">
-                  {/* Time Recommendation */}
-                  <div className="flex items-center space-x-3">
-                    <div className="w-16 h-16  rounded-full flex items-center justify-center">
-                      <Clock className="h-10 w-10 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        For the best results, we recommend taking your photo
-                        between 10am and 4pm.{" "}
-                        <span className="font-semibold">
-                          Overcast conditions are best.
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Device Recommendation */}
-                  <div className="flex items-center space-x-3">
-                    <div className="w-16 h-16  rounded-full flex items-center justify-center">
-                      {/* <div className="w-10 h-8 bg-gray-800 rounded border-2 border-gray-600 relative"> */}
-                      {/* <div className="w-4 h-3 bg-gray-300 rounded-sm absolute top-1 left-2"></div> */}
-                      {/* </div> */}
-                      {/* <img src={Camera} alt="Camera Icon" className="h-18 w-32 object-contain" /> */}
-                      <LuImageUp className="h-10 w-10 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        Project images need to be a min. of 1MB in landscape
-                        orientation.
-                        <span className="font-semibold">
-                          We can only render what is visible in image.
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Quality Guidelines */}
-                  <div className="flex items-center space-x-3">
-                    <div className="w-16 h-16  rounded-full flex items-center justify-center">
-                      {/* <Home className="h-8 w-8 text-gray-600" /> */}
-                      {/* <img src={Homeimage} alt="Home Icon" className="h-18 w-36 object-contain" /> */}
-                      {/* <LuImageUp className="text-2xl text-gray-700 mt-1"/> */}
-                      <PiImagesDuotone className="h-10 w-10 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        Be sure to avoid pictures that are blurry, far-away or
-                        obstructed by objects.
-                      </p>
-                    </div>
-                  </div>
-
-                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-1">
-                    See Example
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Photo Upload Grid */}
-            <div>
-              <div className="flex items-center mb-6">
-                <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
-                  2
-                </div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Photo Upload
-                </h2>
-              </div>
-
-              <div className="bg-white rounded-xl p-8 shadow-sm border">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl shadow-sm border-none">
+          
                   {viewTypes.map((viewType) => (
                     <ViewUploader
                       key={viewType.key}
@@ -390,9 +289,8 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
                       disabled={hasAnyFiles && !viewFiles[viewType.key]}
                     />
                   ))}
-                </div>
-
-                {/* Upload Summary */}
+          
+{/* 
                 {hasAnyFiles && (
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
@@ -405,19 +303,56 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
                       )}
                     </p>
                   </div>
-                )}
+                )} */}
               </div>
+            </div>
+
+            {/* Photo Upload Grid */}
+            <div>
+              <div className="flex items-center mb-6 border-b pb-3">
+                <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold mr-3">
+                  2
+                </div>
+                <h2 className="text-xl font-medium text-gray-900 ">
+                  Previous Uploads
+                </h2>
+              </div>
+
+              <div>
+                <div className="grid grid-cols-4 gap-3 ">
+                  <div className="relative cursor-pointer overflow-hidden rounded-md border-2 transition-all border-transparent hover:border-gray-300 ">
+                      <img src="https://images.renovateai.app/ren/resize:fit:1366:768:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00" alt="uploaded_image" className="aspect-square w-full object-cover" />
+                   </div>
+
+                   <div className="relative cursor-pointer overflow-hidden rounded-md border-2 transition-all border-transparent hover:border-gray-300 ">
+                      <img src="https://images.renovateai.app/ren/resize:fit:1366:768:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00" alt="uploaded_image" className="aspect-square w-full object-cover" />
+                   </div>
+
+                   <div className="relative cursor-pointer overflow-hidden rounded-md border-2 transition-all border-transparent hover:border-gray-300 ">
+                      <img src="https://images.renovateai.app/ren/resize:fit:1366:768:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00" alt="uploaded_image" className="aspect-square w-full object-cover" />
+                   </div>
+
+                   <div className="relative cursor-pointer overflow-hidden rounded-md border-2 transition-all border-transparent hover:border-gray-300 ">
+                      <img src="https://images.renovateai.app/ren/resize:fit:1366:768:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00" alt="uploaded_image" className="aspect-square w-full object-cover" />
+                   </div>
+                   <div className="relative cursor-pointer overflow-hidden rounded-md border-2 transition-all border-transparent hover:border-gray-300 ">
+                      <img src="https://images.renovateai.app/ren/resize:fit:1366:768:0/watermark:0:re/plain/s3://renovate-ai/1966ab9b-93ad-4e06-a379-f63b38ba6f00" alt="uploaded_image" className="aspect-square w-full object-cover" />
+                   </div>
+                </div>
+              </div>
+
+           
             </div>
           </div>
 
           {/* Action Button */}
           <div className="text-center">
-            <Button
+            <button
               onClick={handleContinue}
               disabled={!hasAnyFiles || !projectName.trim()}
-              className={`py-4 text-sm font-semibold rounded-lg transition-all ${
+              className={` text-sm font-semibold rounded-lg transition-all ${
                 hasAnyFiles && projectName.trim()
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  ? "mx-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm font-medium"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
@@ -426,7 +361,10 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
                 : hasAnyFiles
                 ? `Continue with (${typeView} view)`
                 : "Upload at least one view to continue"}
-            </Button>
+            </button>
+
+        
+
           </div>
 
           {/* Additional Info */}

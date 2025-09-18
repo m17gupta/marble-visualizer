@@ -18,7 +18,7 @@ import {
 
 } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
-import dzinlylogo from "../../../public/assets/image/dzinlylogo-icon.svg";
+import dzinlylogo from "../../../public/assets/marble/main-favicons.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -156,10 +156,11 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
           <div className="w-8 h-8  rounded-lg flex items-center justify-center">
             <Home className="h-5 w-5 text-primary-foreground" />
             <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
+            
             {/* <img src */}
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-lg font-bold text-foreground">Dzinly</span>
+            <span className="text-lg font-bold text-foreground">Marble</span>
           )}
 
         </motion.div>
