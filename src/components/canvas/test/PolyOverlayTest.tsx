@@ -133,7 +133,7 @@ const PolygonOverlayTest = ({
         if (!segColor) return;
         if (!canvas.current) return;
         if(!id) return;
-
+        const isDemoCanvas= false;
         // Pass a unique subGroupName for overlays
         collectPoints(
           id,
@@ -148,7 +148,8 @@ const PolygonOverlayTest = ({
           height,
           width,
           aiTrainImageWidth,
-          aiTrainImageHeight
+          aiTrainImageHeight,
+          isDemoCanvas
           //'hover-overlay' // extra arg for subGroupName
         );
       });
@@ -188,7 +189,7 @@ const PolygonOverlayTest = ({
       ShowOutline(canvas,"outline");
     } else if (canvasType === "hover" && activeCanvas === "mask") {
      
-       console.log("mask mode");
+       //console.log("mask mode");
        ShowOutline(canvas,"mask");
     } else {
       //hide all segments
@@ -216,7 +217,7 @@ const PolygonOverlayTest = ({
               canvas,
               item?.short_title ?? ""
             );
-            console.log("getAllPolyName", getAllPolyName);
+            //console.log("getAllPolyName", getAllPolyName);
             if (getAllPolyName.length > 0) {
               const allTrimPoly = getAllPolyName.filter(
                 (polyName) =>

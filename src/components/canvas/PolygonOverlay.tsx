@@ -19,6 +19,7 @@ import {
 import { getContainedPolygonNamesByBoundingBox } from "@/components/canvasUtil/test/DetectPolygonUnderTargetTest";
 import { getCutOutArea } from "@/components/canvasUtil/test/CutOutAreaTest";
 import { HideAllSegments } from "@/components/canvasUtil/test/HoverSegmentTest";
+// import UpdateIconOnCanvas from "./updateCentriod/UpdateIconOnCanvas";
 
 type NamedFabricObject = fabric.Object & {
   name?: string;
@@ -91,9 +92,6 @@ useEffect(() => {
     }
   }, [allSegmentArray]);
 
-  // Removed resizeCanvas and containerRef logic as it's not used after refactor
-
-  // Removed handleResize effect as fabricCanvasRef is not used locally
 
   // Update selected segment
   useEffect(() => {
@@ -125,7 +123,7 @@ useEffect(() => {
       canvas &&
       isUpdatePoly.current
     ) {
-     console.log("allSegArray calling ");
+    //  console.log("allSegArray calling ");
       allSegArray.forEach((seg, idx) => {
         const {
           id,
@@ -151,6 +149,7 @@ useEffect(() => {
         if(!id) return;
         isUpdatePoly.current = false;
         // Pass a unique subGroupName for overlays
+        const isDemoCanvas= false
         collectPoints(
           id,
           annotation_points_float,
@@ -164,7 +163,8 @@ useEffect(() => {
           height,
           width,
           aiTrainImageWidth,
-          aiTrainImageHeight
+          aiTrainImageHeight,
+          isDemoCanvas
           //'hover-overlay' // extra arg for subGroupName
         );
       });
@@ -172,14 +172,6 @@ useEffect(() => {
       isPolygonUpdate.current = true;
     }
 
-    // Cleanup function: This will remove all overlays when the component unmounts
-    // return () => {
-    //   const unmountOverlays = fabricCanvas
-    //     .getObjects()
-    //     .filter((obj: any) => obj.subGroupName === "hover-overlay");
-    //   unmountOverlays.forEach((obj: any) => fabricCanvas.remove(obj));
-    //   fabricCanvas.renderAll();
-    // };
   }, [
     allSegArray,
     segments,
@@ -206,7 +198,7 @@ useEffect(() => {
       ShowOutline(canvas, "mask");
     } else if (canvasType === "hover" && activeCanvas === "showSegments") {
       // show Icon
-      console.log(" show icon called");
+      //console.log(" show icon called");
       ShowIcon(canvas);
     } else {
       //hide all segments
@@ -266,7 +258,12 @@ useEffect(() => {
     }
   }, [allSegArray, isPolygonUpdate, canvas]);
 
-  return <></>;
+  return <>
+    {/* <UpdateIconOnCanvas
+      canvas={canvas}
+    /> */}
+  </>;
 };
+
 
 export default PolygonOverlay;

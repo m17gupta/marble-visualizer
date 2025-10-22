@@ -63,6 +63,7 @@ interface CanvasState {
   editSegments: SegmentModal[];
   isDelete: boolean;
   changeSegType: string[] | null;
+  isCanvasIcon: boolean;
 }
 
 // Initial state
@@ -91,7 +92,8 @@ const initialState: CanvasState = {
   markingMode: "polygon",
   editSegments: [],
   isDelete: false,
-  changeSegType: null
+  changeSegType: null,
+  isCanvasIcon: false,
 
 };
 

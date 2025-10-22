@@ -169,6 +169,7 @@ const UpdateSegmentsOnCanvas = ({ canvasRef }: UpdateSegmentsOnCanvasProps) => {
         (s: { name: string; color_code: string }) => s.name === segment_type
       )?.color_code || "#FF1493";
 
+      const isDemoCanvas = false;
       const isFill = false;
       collectPoints(
         id!,
@@ -183,7 +184,8 @@ const UpdateSegmentsOnCanvas = ({ canvasRef }: UpdateSegmentsOnCanvasProps) => {
         height,
         width,
         aiTrainImageWidth,
-        aiTrainImageHeight
+        aiTrainImageHeight,
+        isDemoCanvas
       );
     } catch (error) {
       console.error("Error creating new group:", error);

@@ -16,7 +16,7 @@ interface ProjectState {
   list: ProjectModel[];
   currentProject: ProjectModel | null;
   currentUserRole: "admin" | "editor" | "viewer" | null;
-  houseSegments?: HouseSegmentResponse|null;
+  houseSegments?: HouseSegmentResponse | null;
   projectAccess: ProjectAccess[];
   isLoading: boolean;
   isCreating: boolean;
@@ -25,6 +25,7 @@ interface ProjectState {
   error: string | null;
   isCreateDialogOpen: boolean;
   isDeleteModalOpen: boolean;
+  demoUserId?: string;
 }
 
 const initialState: ProjectState = {
@@ -40,6 +41,7 @@ const initialState: ProjectState = {
   error: null,
   isCreateDialogOpen: false,
   isDeleteModalOpen: false,
+   demoUserId: "b5eabada-f749-489d-9221-62f125298d6b",
 };
 
 // Async thunk to fetch projects
@@ -128,7 +130,7 @@ export const updateProjectAnalysis = createAsyncThunk(
     try {
       const data = await ProjectAPI.analyseandupdateproject(url);
       const response = await ProjectAPI.save_analysed_data(id, data);
-      
+
       return response;
     } catch (error: unknown) {
       return rejectWithValue(
@@ -143,8 +145,8 @@ export const fetchHouseSegments = createAsyncThunk(
   "projects/fetchHouseSegments",
   async (houseSegData: HouseSegmentModel, { rejectWithValue }) => {
     try {
-     await ProjectService.getHouseSegment(houseSegData);
-     
+      await ProjectService.getHouseSegment(houseSegData);
+
     } catch (error: unknown) {
       return rejectWithValue(
         (error as Error)?.message || "Failed to fetch house segments"
@@ -237,7 +239,7 @@ const projectSlice = createSlice({
     updateIsCreateDialog: (state, action: PayloadAction<boolean>) => {
       state.isCreateDialogOpen = action.payload;
     },
-    
+
     updateNewProjectCreated: (state, action) => {
       // const newProject = state.currentProject;
       // const newJob = action.payload as JobModel;
@@ -249,13 +251,13 @@ const projectSlice = createSlice({
       // state.currentProject = {};
       const newJob = action.payload as JobModel;
       const projectIndex = state.list.findIndex((p) => p.id === newJob.project_id);
-      if( projectIndex !== -1) {
+      if (projectIndex !== -1) {
         state.list[projectIndex].jobData = [...(state.list[projectIndex].jobData || []), newJob];
       }
     },
     setIsDeleteModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isDeleteModalOpen = action.payload;
-    }  
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -346,7 +348,7 @@ const projectSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchHouseSegments.fulfilled, (state, action) => {
-        
+
         state.isLoading = false;
         state.houseSegments = action.payload;
       })

@@ -12,7 +12,8 @@ type NamedFabricObject = fabric.Object & {
 export const handlePolygonVisibilityTest = (
   canvas: React.RefObject<fabric.Canvas>,
   // name: string,
-  pointer: fabric.Point
+  pointer: fabric.Point,
+  isShowSegmentName: boolean
 ) => {
   HideAllSegments(canvas);
 
@@ -54,7 +55,7 @@ export const handlePolygonVisibilityTest = (
               visible: true,
               opacity: 0.4,
             });
-          if (textObj) (textObj as fabric.Object).set({ visible: true });
+          if (textObj && isShowSegmentName) (textObj as fabric.Object).set({ visible: true });
         }
       }
       // Check path
@@ -71,7 +72,7 @@ export const handlePolygonVisibilityTest = (
           if (textObj) (textObj as fabric.Object).set({ visible: true });
         }
       } else {
-        console.log("No polygon or path found in group:", obj);
+       // console.log("No polygon or path found in group:", obj);
         HideAllSegments(canvas);
       }
     }
@@ -143,12 +144,13 @@ export const handlePolygonVisibilityOnMouseMove = (
 
 export const ShowOutline = (
   canvasRef: React.RefObject<any>,
-  activeType: string
+  activeType: string,
+  isDemo: boolean
 ) => {
   // Get the fabric canvas from CanavasImage
-  const fabricCanvas = canvasRef.current?.getFabricCanvas();
+  const fabricCanvas = isDemo?canvasRef.current:canvasRef.current?.getFabricCanvas();
   if (!fabricCanvas) return;
-  HideAll(canvasRef);
+  HideAll(canvasRef, isDemo);
   const allObjects = fabricCanvas.getObjects();
   allObjects.forEach((obj: NamedFabricObject) => {
     if (
@@ -183,8 +185,8 @@ export const ShowOutline = (
   fabricCanvas.renderAll();
 };
 
-export const HideAll = (canvasRef: React.RefObject<any>) => {
-  const fabricCanvas = canvasRef.current?.getFabricCanvas();
+export const HideAll = (canvasRef: React.RefObject<any>, isDemo: boolean) => {
+  const fabricCanvas = isDemo ? canvasRef.current : canvasRef.current?.getFabricCanvas();
   if (!fabricCanvas) return;
   const allObjects = fabricCanvas.getObjects();
   allObjects.forEach((obj: any) => {

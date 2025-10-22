@@ -27,16 +27,22 @@ export const collectPoints = async (
   canvasHeight: number,
   canvasWidth: number,
   aiTrainImageWidth: number,
-  aiTrainImageHeight: number
+  aiTrainImageHeight: number,     
+  isDemoCanvas:boolean
   // subGroupName?: string
 ) => {
-  console.log("collectPoints called for segment:", segName);
-  if (!canvasRef.current.getFabricCanvas()) {
-    console.warn(
-      `[collectPoints] Canvas not available for segment: ${segName}`
-    );
+ // console.log("collectPoints called for segment:", segName);
+  if (isDemoCanvas) {
+  if (!canvasRef.current) {
+    console.warn(`[collectPoints] Canvas not available for segment: ${segName}`);
     return;
   }
+} else {
+  if (!canvasRef.current?.getFabricCanvas()) {
+    console.warn(`[collectPoints] Fabric canvas not available for segment: ${segName}`);
+    return;
+  }
+}
 
   if (!annotation || annotation.length === 0) {
     console.warn(
@@ -68,7 +74,8 @@ export const collectPoints = async (
       canvasRef,
       isFillPolygon,
       ratioWidth,
-      ratioHeight
+      ratioHeight,
+      isDemoCanvas
       // subGroupName
     );
   } else {
@@ -90,8 +97,10 @@ export const makePolygon =async (
   isFillPolygon: boolean,
   ratioWidth: number,
   ratioHeight: number,
-  overlaySubGroupName?: string
+  isDemoCanvas?: boolean
 ) => {
+
+ // console.log(`[makePolygon] Creating polygon: ${polyName}`, { point, coordinate, color, isFillPolygon, canvasRef });
   if (
     point &&
     point.length > 0 &&
@@ -99,7 +108,7 @@ export const makePolygon =async (
     polyName &&
     canvasRef.current
   ) {
-    const fabricCanvas = canvasRef.current?.getFabricCanvas();
+    const fabricCanvas = isDemoCanvas?canvasRef.current:canvasRef.current?.getFabricCanvas();
     if (!fabricCanvas) {
       console.warn(
         `[makePolygon] Fabric canvas not available for polygon: ${polyName}`
@@ -116,8 +125,9 @@ export const makePolygon =async (
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         fontSize: 18,
         fill: "#fff",
-        selectable: false,
+        selectable: true,
         visible: isFillPolygon,
+        name: polyName,
       });
       (text as NamedFabricObject).name = polyName;
 
@@ -130,8 +140,9 @@ export const makePolygon =async (
         stroke: color,
         strokeWidth: 2,
         opacity: 0.4,
-        selectable: false,
-        visible: isFillPolygon,
+        selectable: true,
+        evented: true,
+        visible: false,
         lockMovementX: true,
         lockMovementY: true,
       });
@@ -139,7 +150,7 @@ export const makePolygon =async (
       (polygon as NamedFabricObject).subGroupName = groupName;
 
       const group = new fabric.Group([polygon, text], {
-        selectable: false,
+        selectable: true,
         lockMovementX: true,
         lockMovementY: true,
         hasBorders: false,
@@ -164,56 +175,9 @@ export const makePolygon =async (
     fabricCanvas.add(hoverGroup);
     fabricCanvas.add(outlineGroup);
     fabricCanvas.add(maskGroup);
-     console.log("groups added to canvas:", { hoverGroup, outlineGroup, maskGroup });
-    // if (iconGroup) {
-    //   fabricCanvas.add(iconGroup);
-    // }
+ 
     fabricCanvas.setActiveObject(maskGroup); // Optionally set one as active
     fabricCanvas.requestRenderAll();
   }
 };
 
-
-
-const getIconGroup = (
-  canvasRef: React.RefObject<any>,
-  coordinate: number[],
-  polyName: string
-): Promise<fabric.Object | null> => {
-  return new Promise((resolve) => {
-    const fabricCanvas = canvasRef.current?.getFabricCanvas();
-    if (!fabricCanvas) {
-      resolve(null);
-      return;
-    }
-   const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="10" fill="red"/></svg>`;
-    fabric.loadSVGFromString(svgString, (objects, options) => {
-  console.log('SVG load result:', objects);
-  const objArray = (Array.isArray(objects) ? objects : [objects]) as fabric.Object[];
-      if (!objArray || objArray.length === 0) {
-        resolve(null);
-        return;
-      }
-      let iconGroup: fabric.Object;
-      if (objArray.length === 1) {
-        iconGroup = objArray[0];
-      } else {
-        iconGroup = new fabric.Group(objArray, options);
-      }
-      if (typeof (iconGroup as any).set === 'function') {
-        iconGroup.set({
-          left: coordinate[0] + 10,
-          top: coordinate[1] + 10,
-          selectable: false,
-          evented: false,
-          name: `${polyName}-icon`,
-          visible:false
-        });
-        resolve(iconGroup);
-      } else {
-        console.warn('iconGroup is not a Fabric object:', iconGroup);
-        resolve(null);
-      }
-    });
-  });
-};

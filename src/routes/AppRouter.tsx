@@ -26,12 +26,19 @@ import AdminRoutes from "@/routes/AdminRoutes";
 // import StudioTemplate from "@/pages/studioPage/StudioTemplate";
 import VizualizerTemplate from "@/pages/vizualizer/VizualizerTemplate";
 import WorkSpace from "@/pages/workSpace/WorkSpace";
+import TryVisualizerPage from "@/pages/tryVizualizer/TryVisualizerPage";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   return (
     <Routes>
+
+            {/* <Route path="/share/:id" element={<SharePageTemplate />} />
+      <Route path="/share" element={<ShareProPage />} /> */}
+      <Route path="/try-visualizer" element={<TryVisualizerPage />} />
+      {/* <Route path="/try-visualizer/project/:id" element={<MainSamplePage />} />
+      <Route path="/try-visualizer/sample" element={<MainSamplePage />} /> */}
       {/* Public routes */}
       <Route
         path="/"

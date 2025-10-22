@@ -11,8 +11,8 @@ import React, {
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { motion, AnimatePresence } from "framer-motion";
-import { collectPoints } from "../canvasUtil/CreatePolygon";
+import { motion } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "../ui/card";
 import {
@@ -20,7 +20,6 @@ import {
   setIsResetZoom,
   setMousePosition,
   setZoom,
-  
 } from "@/redux/slices/canvasSlice";
 import {
   LoadImageWithCORS,
@@ -49,6 +48,8 @@ import {
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import DoubleClickHtml from "./DoubleClickHtml";
+import StudioLayout from "../studio/studioMainTabs/StudioLayout";
+
 type NamedFabricObject = fabric.Object & {
   name?: string;
   groupName?: string;
@@ -89,6 +90,7 @@ const CanavasImage = forwardRef(
     const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
     const backgroundImageRef = useRef<fabric.Image | null>(null);
     const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
+    const isEditAnnotation = useRef<boolean>(false);
     const { segments } = useSelector(
       (state: RootState) => state.materialSegments
     );
@@ -98,19 +100,24 @@ const CanavasImage = forwardRef(
       (state: RootState) => state.masterArray
     );
     const { isResetZoom } = useSelector((state: RootState) => state.canvas);
-    const { canvasType } = useSelector((state: RootState) => state.canvas);
-
+    // const { canvasType ,eachSegTab} = useSelector((state: RootState) => state.canvas);
+   
     const [canvasMode, setCanvasMode] = useState<string>("hover");
 
     const canvasActiveRef = useRef<string>("");
     const activeOptionRef = useRef<string>("");
-    const { allSegments, activeOption } = useSelector((state: RootState) => state.segments);
+    const { allSegments, activeOption } = useSelector(
+      (state: RootState) => state.segments
+    );
     const { masterArray } = useSelector(
       (state: RootState) => state.masterArray
     );
+
+    const { activeCanvas,isCanvasIcon } = useSelector((state: RootState) => state.canvas);
+
+    
     // update canvas Mode
 
-    const { activeCanvas } = useSelector((state: RootState) => state.canvas);
     useEffect(() => {
       if (activeCanvas) {
         canvasActiveRef.current = activeCanvas;
@@ -121,17 +128,31 @@ const CanavasImage = forwardRef(
 
     // Update activeOption ref when Redux state changes
     useEffect(() => {
-      activeOptionRef.current = activeOption || "";
+      if(activeOption){
+          activeOptionRef.current = activeOption || "";
+          if(activeOption==="edit-annotation"){
+            isEditAnnotation.current = true; 
+          }else{
+            isEditAnnotation.current= false
+          }
+      }
+    
     }, [activeOption]);
-
 
     const handleMouseMove = useCallback(
       (event: fabric.TEvent) => {
         const currentCanvasActive = canvasActiveRef.current;
         const currentActiveOption = activeOptionRef.current;
         const fabricCanvas = fabricCanvasRef.current;
-        console.log("mouse move event", fabricCanvas?.getObjects());
-        if (!fabricCanvas) return;
+       
+        // console.log("mouse move event", fabricCanvas?.getObjects());
+       // if (!fabricCanvas ||isEditAnnotation.current ) {
+        if (!fabricCanvas ) {
+         // console.log("in edit annotation mode or fabricCanvas not ready", isEditAnnotation.current);
+          return;
+        }
+      
+       
         const fabricRef = { current: fabricCanvas };
         const pointer = fabricCanvas.getPointer(event.e);
 
@@ -139,27 +160,22 @@ const CanavasImage = forwardRef(
 
         const fabricPoint = new fabric.Point(pointer.x, pointer.y);
 
-
         if (
           canvasMode === "hover" &&
           currentCanvasActive === "hideSegments" &&
-          currentActiveOption !== "edit-segment"
+          currentActiveOption !== "edit-segment" 
         ) {
-         
           dispatch(
             setMousePosition({
               x: Math.round(fabricPoint.x),
               y: Math.round(fabricPoint.y),
             })
           );
-          handlePolygonVisibilityTest(fabricRef, fabricPoint);
+          //console.log("handleMouseMove - hideSegments mode");
+          handlePolygonVisibilityTest(fabricRef, fabricPoint, true);
 
           //  }
-        } else if (
-          canvasMode === "hover" &&
-          currentCanvasActive === "mask"
-        ) {
-           
+        } else if (canvasMode === "hover" && currentCanvasActive === "mask") {
           const showOutlineRef = {
             current: {
               getFabricCanvas: () => fabricCanvasRef.current,
@@ -180,11 +196,10 @@ const CanavasImage = forwardRef(
           canvasMode === "hover" &&
           currentCanvasActive === "outline"
         ) {
-         
           hoverOutline(fabricRef, fabricPoint);
         }
       },
-      [canvasMode, fabricCanvasRef, dispatch]
+      [canvasMode, fabricCanvasRef, dispatch, activeOption]
     );
 
     const handleMouseWheel = (event: fabric.TEvent) => {
@@ -226,6 +241,7 @@ const CanavasImage = forwardRef(
         selection: true,
         preserveObjectStacking: true,
         backgroundColor: "#282828",
+        
       });
 
       //  add group testPolygon
@@ -251,72 +267,60 @@ const CanavasImage = forwardRef(
         ? ([...canvas.viewportTransform] as fabric.TMat2D)
         : null;
 
-      // resizeCanvas(canvas);
-      // Canvas event handlers
+
+      // Canvas event handlers (desktop)
       canvas.on("mouse:down", (event) => handleCanvasClick(event));
       canvas.on("mouse:move", (event) => {
         handleMouseMove(event);
       });
-
       canvas.on("mouse:dblclick", (event) => handleDoubleClick(event));
-
-      // canvas.on("selection:cleared", () => {
-
-      // });
-
       canvas.on("mouse:wheel", (event) => {
         handleMouseWheel(event);
         dispatch(setZoom(canvas.getZoom()));
       });
 
-      // Keyboard shortcuts
-      // const handleKeyDown = (e: KeyboardEvent) => {
-      //     if (e.ctrlKey || e.metaKey) {
-      //         switch (
-      //         e.key.toLowerCase() // Use toLowerCase to handle both uppercase and lowercase keys
-      //         ) {
-      //             case "c":
-      //                 e.preventDefault();
-      //                 if (activeSegment) {
-      //                    // dispatch(copySegment(activeSegmentId));
-      //                    // toast.success('Segment copied');
-      //                 }
-      //                 break;
-      //             case "v":
-      //                 e.preventDefault();
-      //                 // if (copiedSegment) {
-      //                 //   // dispatch(pasteSegment());
-      //                 //   // toast.success('Segment pasted');
-      //                 // }
-      //                 break;
-      //             case "z":
-      //                 e.preventDefault();
-      //                 if (e.shiftKey) {
-      //                     handleRedo();
-      //                 } else {
-      //                     handleUndo();
-      //                 }
-      //                 break;
-      //         }
-      //     } else {
-      //         switch (e.key) {
-      //             case "Delete":
-      //             case "Backspace":
-      //                 if (activeSegment) {
-      //                     handleDeleteSelected();
-      //                 }
-      //                 break;
-      //             case "Escape":
-      //                 if (isPolygonMode.current) {
-      //                     // Fixed: Use isPolygonMode.current instead of isPolygonMode
-      //                     handleCancelDrawing();
-      //                 }
-      //                 break;
-      //         }
-      //     }
-      // };
+      // Canvas event handlers (mobile/touch)
+      // Fabric.js emits 'touch:gesture', 'touch:drag', 'touch:longpress' events
+      // We'll map touch:drag to mouse:move, touch:tap to mouse:down, and touch:longpress to mouse:dblclick
+      (canvas.on as any)("touch:drag", (event: any) => {
+        // Fabric.js touch events may not have .e, so we create a compatible event
+        const pointer = event && event.self && event.self.x != null && event.self.y != null
+          ? { x: event.self.x, y: event.self.y }
+          : null;
+        const fakeEvent = {
+          ...event,
+          e: pointer
+            ? { clientX: pointer.x, clientY: pointer.y, ...event.e }
+            : event.e || {},
+        };
+        handleMouseMove(fakeEvent);
+      });
+      (canvas.on as any)("touch:tap", (event: any) => {
+        const pointer = event && event.self && event.self.x != null && event.self.y != null
+          ? { x: event.self.x, y: event.self.y }
+          : null;
+        const fakeEvent = {
+          ...event,
+          e: pointer
+            ? { clientX: pointer.x, clientY: pointer.y, ...event.e }
+            : event.e || {},
+        };
+        handleCanvasClick(fakeEvent);
+      });
+      (canvas.on as any)("touch:longpress", (event: any) => {
+        const pointer = event && event.self && event.self.x != null && event.self.y != null
+          ? { x: event.self.x, y: event.self.y }
+          : null;
+        const fakeEvent = {
+          ...event,
+          e: pointer
+            ? { clientX: pointer.x, clientY: pointer.y, ...event.e }
+            : event.e || {},
+        };
+        handleDoubleClick(fakeEvent);
+      });
 
-      //document.addEventListener("keydown", handleKeyDown);
+      
 
       dispatch(setCanvasReady(true));
 
@@ -328,6 +332,15 @@ const CanavasImage = forwardRef(
 
         // Remove canvas click event
         canvas.off("mouse:down", handleCanvasClick);
+        canvas.off("mouse:move", handleMouseMove);
+        canvas.off("mouse:dblclick", handleDoubleClick);
+        canvas.off("mouse:wheel", handleMouseWheel);
+        // Remove touch events (bypass TS)
+        if ((canvas.off as any)) {
+          (canvas.off as any)("touch:drag");
+          (canvas.off as any)("touch:tap");
+          (canvas.off as any)("touch:longpress");
+        }
 
         canvas.dispose();
         fabricCanvasRef.current = null;
@@ -444,8 +457,12 @@ const CanavasImage = forwardRef(
     };
 
     const handleCanvasClick = (event: fabric.TEvent) => {
+      if (isEditAnnotation.current ) {
+        if (event.e && event.e.preventDefault) event.e.preventDefault();
+        if (event.e && event.e.stopPropagation) event.e.stopPropagation();
+        return;
+      }
       const fabricCanvas = fabricCanvasRef.current;
-     
       if (!fabricCanvas) return;
       const pointer = fabricCanvas.getPointer(event.e);
       if (pointer) {
@@ -470,7 +487,7 @@ const CanavasImage = forwardRef(
               const masterSegment = masterArray.find(
                 (seg: MasterModel) => seg.name === foundSegment.segment_type
               );
-              
+
               if (masterSegment) {
                 dispatch(addSelectedMasterArray(masterSegment));
                 const allSeg = masterSegment.allSegments;
@@ -478,7 +495,7 @@ const CanavasImage = forwardRef(
                   (seg: MasterGroupModel) =>
                     seg.groupName === foundSegment.group_label_system
                 );
-                
+
                 if (groupSeg) {
                   dispatch(updatedSelectedGroupSegment(groupSeg));
                   dispatch(updateActiveTab("design-hub"));
@@ -490,59 +507,69 @@ const CanavasImage = forwardRef(
       }
     };
 
-      const [doubleClickPoint, setDoubleClickPoint] = useState<modelPoint | null>(null);
-       // Double click event handler
-      const handleDoubleClick = (event: fabric.TEvent) => {
-        const fabricCanvas = fabricCanvasRef.current;
-        if (!fabricCanvas) return;
-        const pointer = fabricCanvas.getPointer(event.e);
-        if (pointer) {
-          setDoubleClickPoint({ x: pointer.x, y: pointer.y });
-        }
-      };
+    const [doubleClickPoint, setDoubleClickPoint] = useState<modelPoint | null>(
+      null
+    );
+    // Double click event handler
+    const handleDoubleClick = (event: fabric.TEvent) => {
+      if (isEditAnnotation.current ) {
+        if (event.e && event.e.preventDefault) event.e.preventDefault();
+        if (event.e && event.e.stopPropagation) event.e.stopPropagation();
+        return;
+      }
+      const fabricCanvas = fabricCanvasRef.current;
+      if (!fabricCanvas) return;
+      const pointer = fabricCanvas.getPointer(event.e);
+      if (pointer) {
+        setDoubleClickPoint({ x: pointer.x, y: pointer.y });
+      }
+    };
 
-      //   // hover on group segment
-  const { hoverGroup } = useSelector((state: RootState) => state.canvas);
-  useEffect(() => {
-    if (!fabricCanvasRef.current) return;
-    if (hoverGroup == null) {
-      HideAllSegments(fabricCanvasRef);
-    } else if (hoverGroup.length > 0) {
-      hoverGroup.forEach((groupName) => {
-        
-        handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
-      });
-    }
-  }, [hoverGroup, fabricCanvasRef]);
-
+    //   // hover on group segment
+    const { hoverGroup } = useSelector((state: RootState) => state.canvas);
+    useEffect(() => {
+      if (!fabricCanvasRef.current) return;
+      if (hoverGroup == null) {
+        HideAllSegments(fabricCanvasRef);
+      } else if (hoverGroup.length > 0) {
+        hoverGroup.forEach((groupName) => {
+          handlePolygonVisibilityOnMouseMove(fabricCanvasRef, groupName);
+        });
+      }
+    }, [hoverGroup, fabricCanvasRef]);
 
     return (
       <>
         {" "}
         <TooltipProvider>
-          <div className={cn("flex flex-col space-y-4 mt-4 px-4 mb-3", className)}>
+          <div
+            className={cn(
+              "w-full h-full flex flex-col mb-3 transition-all duration-300 ease-in-out",
+              className
+            )}
+          >
             {/* Canvas Container */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="relative"
+              className="relative w-full h-full"
               ref={containerRef}
             >
-              <Card className="overflow-hidden border rounded-md shadow-sm bg-white">
-                <CardContent className="p-0 mx-auto flex items-center justify-center">
-                  {/* <div className="relative flex items-center justify-center">                */}
+              {/* <Card className="overflow-hidden bg-white border rounded-md shadow-sm"> */}
+                {/* <CardContent className="flex items-center justify-center p-0 mx-auto"> */}
+                  <div className="w-full h-full flex items-center justify-center">               
                   <canvas
                     ref={canvasRef}
-                    className="border-0 block mx-auto w-full h-full"
-                    style={{ width: "100%", height: "100%", display: "block" }}
+                    className="block max-w-full max-h-full mx-auto border-0"
+                    style={{ width: `${width}px`, height: `${height}px`, display: "block" }}
                   />
 
                   {/* Image Loading Overlay */}
                   {isImageLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80 z-10">
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-100/80">
                       <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                        <div className="w-8 h-8 mx-auto mb-2 border-b-2 rounded-full animate-spin border-primary"></div>
                         <p className="text-sm text-muted-foreground">
                           Loading background image...
                         </p>
@@ -554,7 +581,7 @@ const CanavasImage = forwardRef(
                   {!isCanvasReady && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
                       <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                        <div className="w-8 h-8 mx-auto mb-2 border-b-2 rounded-full animate-spin border-primary"></div>
                         <p className="text-sm text-muted-foreground">
                           Initializing canvas...
                         </p>
@@ -564,18 +591,24 @@ const CanavasImage = forwardRef(
                   {doubleClickPoint && (
                     <DoubleClickHtml
                       doubleClickPoint={doubleClickPoint}
-                      
-                     onClose={() => setDoubleClickPoint(null)}
+                      onClose={() => setDoubleClickPoint(null)}
                     />
                   )}
-
-                  
-                </CardContent>
-              </Card>
+                  </div>
+                {/* </CardContent>
+              </Card> */}
+              
             </motion.div>
+          
+
           </div>
+
+
+         { isCanvasIcon && <StudioLayout/> }
+          
         </TooltipProvider>
 
+         
 
       </>
     );

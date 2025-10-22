@@ -2,12 +2,14 @@ import React from 'react';
 import { Play, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const HeroSection = () => {
 
   const navigator = useNavigate()
-  const handleMoveWorkSpace = () => {
-    navigator("/vizualizer")
+    const dispatch = useDispatch();
+  const handleTryVisualizer = () => {
+    navigator("/try-visualizer")
   }
   return (
     <section className=" py-20 relative overflow-hidden h-[90vh] flex items-center">
@@ -27,9 +29,9 @@ const HeroSection = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button size="lg" className="bg-gradient-to-r from-yellow-700 to-yellow-400 hover:from-yellow-800 hover:to-yellow-500 text-lg px-8 py-4"
-              onClick={handleMoveWorkSpace}
+                 onClick={handleTryVisualizer}
             >
-              Start Designing Now
+               Try Visualizer
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-yellow-700 text-yellow-700 hover:bg-yellow-700 hover:text-white">

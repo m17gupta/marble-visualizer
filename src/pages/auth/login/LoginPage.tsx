@@ -170,7 +170,7 @@ const { isLoading, isAuthenticated, error } = useSelector(
                                 <Input
                                   {...field}
                                   type="email"
-                                  placeholder="carlos@dzinly.com"
+                                  placeholder="abc@example.com"
                                   className="pl-10 h-11"
                                   disabled={isLoading}
                                 />

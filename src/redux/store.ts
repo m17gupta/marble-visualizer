@@ -30,8 +30,12 @@ import FilterSwatchSlice from './slices/swatch/FilterSwatchSlice';
 import TestCanvasSlices from './slices/TestCanvasSlices'; // New TestCanvas slice
 import FabricCanvasSlice from './slices/FabricCanvasSlice';
 import PlanFeatureSlice from './slices/planFeatureSlice/PlanFeatureSlice';
+import demoCanvasSlice from './slices/demoProjectSlice/DemoCanvasSlice';
+import demoMasterArraySlice from './slices/demoProjectSlice/DemoMasterArraySlice';
 export const store = configureStore({
   reducer: {
+     demoCanvas: demoCanvasSlice,
+    demoMasterArray: demoMasterArraySlice,
     auth: authSlice,
     userProfile: userProfileSlice,
     planFeature: PlanFeatureSlice, // Plan feature slice
