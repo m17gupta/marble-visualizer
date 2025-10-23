@@ -33,7 +33,7 @@ export interface MaterialSegmentResponse{
 }
 
 export class MaterialSegmentApi {
-  private static tableName = 'material_segments';
+  private static tableName = 'product_segments';
 
     /**
    * Get material segments by category

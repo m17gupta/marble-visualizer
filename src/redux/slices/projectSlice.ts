@@ -41,7 +41,7 @@ const initialState: ProjectState = {
   error: null,
   isCreateDialogOpen: false,
   isDeleteModalOpen: false,
-   demoUserId: "b5eabada-f749-489d-9221-62f125298d6b",
+   demoUserId: "33eacb82-d1c8-4661-984c-635307b411de",
 };
 
 // Async thunk to fetch projects

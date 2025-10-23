@@ -92,7 +92,7 @@ const { isLoading, isAuthenticated, error } = useSelector(
   };
 
   const handleHomeClick = () => {
-    console.log("Navigating to home");
+    // console.log("Navigating to home");
     navigate("/", { replace: false });
   };
 

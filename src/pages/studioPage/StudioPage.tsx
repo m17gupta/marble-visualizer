@@ -58,7 +58,9 @@ import MaterialData from "@/components/swatchBookData/materialData/MaterialData"
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { Loader } from "../projectPage/ProjectsPage";
-
+//import bgImage from "../../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
+import bgImage from "../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
+import marbleLogo from "../../../public/assets/marble/main-favicons.png";
 export function StudioPage() {
 
     const [canvasWidth, setCanvasWidth] = useState(1023);
@@ -227,11 +229,13 @@ export function StudioPage() {
             <div className="text-start">
               <Link to="/">
                 <img
-                  className="w-44 text-center"
-                  src={dzinlylogo}
+                  className="w-10 h-10 mx-auto"
+                  src={marbleLogo}
                   alt="dzinly logo"
-                ></img>
+                />
+                 <span className="text-lg font-bold text-foreground">Marble</span>
               </Link>
+           
             </div>
             {/* <Link to="/"> */}
             <Button

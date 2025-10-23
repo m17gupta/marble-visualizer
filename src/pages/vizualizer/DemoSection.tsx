@@ -25,14 +25,14 @@ const DemoSection = () => {
   const {user, isAuthenticated} = useSelector((state:RootState) => state.auth);
 
   const handleUpload = (categoryId: string) => {
-
-    setActiveCategory(categoryId);
-    if(!isAuthenticated){
-      navigate("/login");
-      return;
-    }else{
-       console.log("User is authenticated:", user);
-    }
+    navigate("/try-visualizer");
+    // setActiveCategory(categoryId);
+    // if(!isAuthenticated){
+    //   navigate("/login");
+    //   return;
+    // }else{
+    //    console.log("User is authenticated:", user);
+    // }
     // Logic to update the demo room visualization based on selected category
   }
   return (

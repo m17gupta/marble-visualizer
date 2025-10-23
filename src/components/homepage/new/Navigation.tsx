@@ -6,13 +6,17 @@ import dzinlylogo from "../../../../public/assets/marble/marble.png";
 const Navigation = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-
+  const goToHome = () => {
+    navigate("/", { replace: false });
+  };
   return (
     <nav className="bg-white/70 fixed top-0 z-50 py-3 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center"
+          onClick={goToHome}
+          >
             <img className="w-44 h-auto" src={dzinlylogo} alt="dzinly logo" />
           </div>
 

@@ -52,7 +52,8 @@ const DemoProjectHome: React.FC<DemoProjectHomeProps> = ({
   return (
     <>
     {/* get demo project */}
-    {/* <GetDemoProject/> */}
+    <GetDemoProject/>
+    <MaterialData />
      <div className="min-h-screen bg-white">
       {/* page container */}
       <div className="mx-auto w-[90%] px-0 py-0 md:py-14 lg:py-14 sm:px-6 lg:px-8">
@@ -81,7 +82,6 @@ const DemoProjectHome: React.FC<DemoProjectHomeProps> = ({
       />
     </div>
 
-    {/* <MaterialData /> */}
      
     
     </>

@@ -142,10 +142,7 @@ const UploadImageModel = ({ resetProjectCreated }: props) => {
             const res = await DirectS3UploadService.uploadFile(
               uploadWebp!,
               profile.id
-              // (progress: UploadProgress) => {
-              //   // Calculate percentage from the upload progress
-              //   setUploadProgress(progress.percentage || 0);
-              // }
+            
             );
             dispatch(addHouseImage(result.fileUrl));
             // create job with uploaded file
@@ -158,8 +155,7 @@ const UploadImageModel = ({ resetProjectCreated }: props) => {
     
             dispatch(setJobUrl(result.fileUrl));
             dispatch(setProjectId(createdProjectId.current ?? 0));
-            //dispatch(setIsAnalyseImage(true));
-            // console.log('Creating job with data:', jobData);
+         
             setIsCreatingJob(true);
             CreateJob(jobData, {
               resetForm: () => {

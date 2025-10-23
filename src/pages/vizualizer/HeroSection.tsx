@@ -9,13 +9,13 @@ const HeroSection = () => {
    const {user, isAuthenticated} = useSelector((state:RootState) => state.auth);
   
   const handleVisualizerClick = () => {
-   
-     if(!isAuthenticated){
-      navigate("/login");
-      return;
-    }else{
-       console.log("User is authenticated:", user);
-    }
+    navigate("/try-visualizer");
+    //  if(!isAuthenticated){
+    //   navigate("/login");
+    //   return;
+    // }else{
+    //    console.log("User is authenticated:", user);
+    // }
   }
   return (
     <section className="hero-gradient min-h-screen flex items-center justify-center pt-16">
