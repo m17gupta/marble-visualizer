@@ -28,6 +28,7 @@ const GetSegments = () => {
 
 
     const getAllSegments = async (jobId: number) => {
+        console.log("fetch from getSegment component")
         try {
             await dispatch(getSegmentsByJobId(jobId)).unwrap();
         } catch (error) {

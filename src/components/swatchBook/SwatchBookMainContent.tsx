@@ -4,7 +4,15 @@ import { SwatchCard } from "@/components/swatch/SwatchCard";
 import { SwatchFilters } from "@/components/swatch/SwatchFilters";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Heart, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Heart,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  ChevronDown,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setFilters, setPage } from "@/redux/slices/swatchSlice";
@@ -15,6 +23,13 @@ import {
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { FilterDropdown } from "@/AdminPannel/components/products/FilterComp";
+import { ActiveFilter } from "./interfaces";
+import {
+  adminFetchMaterial,
+  handleAddFilters,
+  handleRemoverFilters,
+} from "@/AdminPannel/reduxslices/adminMaterialLibSlice";
 
 type ViewMode = "grid" | "list";
 type LayoutMode = "compact" | "detailed";
@@ -42,23 +57,49 @@ export function SwatchBookMainContent({
   const { isLoading, error, pagination } = useSelector(
     (state: RootState) => state.materials
   );
-  // const { materials, isLoading, error, pagination } = useSelector(
-  //   (state: RootState) => state.materials
-  // );
+  const { materials, loading, filteringData, total } = useSelector(
+    (state: RootState) => state.materialsdetails
+  );
+  const { list: brands } = useSelector((state: RootState) => state.adminBrands);
+  const { list: categories } = useSelector(
+    (state: RootState) => state.adminMaterials
+  );
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
 
-  const [materials, setMaterials] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const removeFilter = (type: "category" | "brand", id: number) => {
+    const newFilters = activeFilters.filter(
+      (f) => !(f.type === type && f.id === id)
+    );
+    setActiveFilters(newFilters);
+    dispatch(handleRemoverFilters({ type, values: newFilters }));
+  };
+
+  const clearAllFilters = () => {
+    setActiveFilters([]);
+    // setSearchQuery("");
+  };
+
   useEffect(() => {
-    const getAllMaterials = async () => {
-      setLoading(true);
-      const { data, error } = await supabase.from("products").select("*");
-      if (!error) {
-        setMaterials(data);
-        setLoading(false);
-      }
-    };
-    getAllMaterials();
-  }, []);
+    if (loading == null) {
+      dispatch(adminFetchMaterial(filteringData));
+    }
+  }, [filteringData]);
+
+  const addFilter = (type: "category" | "brand", id: number, name: string) => {
+    const exists = activeFilters.some((f) => f.type === type && f.id === id);
+    if (!exists) {
+      setActiveFilters([...activeFilters, { type, id, name }]);
+      dispatch(
+        handleAddFilters({
+          type: type,
+          values: [...activeFilters, { type, id, name }],
+        })
+      );
+    }
+    setShowFilterDropdown(false);
+  };
+
   //   const filteredSwatches = showFavoritesOnly
   //     ? swatches.filter(swatch => favorites.includes(swatch._id))
   //     : swatches;
@@ -121,29 +162,81 @@ export function SwatchBookMainContent({
     <div className="flex flex-col gap-6">
       {/* Filters Sidebar */}
       <AnimatePresence>
-        {showFilters && (
-          <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: "100%", opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="hidden lg:block w-full"
+        <motion.aside
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: "100%", opacity: 1 }}
+          exit={{ width: 0, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="lg:block w-full relative"
+        >
+          {activeFilters.length > 0 && (
+            <button
+              onClick={clearAllFilters}
+              className="text-sm text-gray-600 hover:text-gray-900 underline"
+            >
+              Clear all
+            </button>
+          )}
+          <button
+            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 relative"
           >
-            <SwatchFilters />
-          </motion.aside>
-        )}
+            <Filter className="w-4 h-4" />
+            Add filter
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                showFilterDropdown ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          {showFilterDropdown && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowFilterDropdown(false)}
+              />
+              <FilterDropdown
+                categories={categories}
+                brands={brands}
+                activeFilters={activeFilters}
+                onAddFilter={addFilter}
+                onClose={() => setShowFilterDropdown(false)}
+              />
+            </>
+          )}
+
+          <div className="flex gap-1 flex-wrap">
+            {activeFilters.map((filter, idx) => (
+              <div
+                key={`${filter.type}-${filter.id}-${idx}`}
+                className="inline-flex gap-2 items-center px-3 py-1.5 bg-gray-600 text-white text-sm rounded-lg mt-2"
+              >
+                <span className="text-xs opacity-75">
+                  {filter.type === "category" ? "Category" : "Brand"}:
+                </span>
+                <span className="font-medium">{filter.name}</span>
+                <button
+                  onClick={() => removeFilter(filter.type, filter.id)}
+                  className="hover:bg-white/20 rounded-full p-0.5 transition-colors outline-none hover:outline-none"
+                >
+                  <X className={`w-3.5 h-3.5 hover:text-white text-black`} />
+                </button>
+              </div>
+            ))}
+          </div>
+          {/* <SwatchFilters /> */}
+        </motion.aside>
       </AnimatePresence>
 
       {/* Mobile Filters */}
-      {showFilters && (
+      {/* {showFilters && (
         <div className="lg:hidden mb-6">
           <SwatchFilters compact />
         </div>
-      )}
+      )} */}
 
       {/* Results */}
       <div className="flex-1 min-w-0">
-        {/* Results Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="text-sm text-muted-foreground">
             {isLoading ? (
@@ -158,7 +251,6 @@ export function SwatchBookMainContent({
           </div>
         </div>
 
-        {/* Error State */}
         {error && (
           <div className="text-center py-12">
             <p className="text-destructive mb-4">{error}</p>
@@ -166,10 +258,8 @@ export function SwatchBookMainContent({
           </div>
         )}
 
-        {/* Loading State */}
         {isLoading && <LoadingSkeleton />}
 
-        {/* Empty State */}
         {!isLoading && !error && materials.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -209,7 +299,6 @@ export function SwatchBookMainContent({
           </motion.div>
         )}
 
-        {/* Materials Grid/List */}
         {!isLoading && !error && materials.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -250,7 +339,6 @@ export function SwatchBookMainContent({
           </motion.div>
         )}
 
-        {/* Pagination */}
         {!isLoading && !error && pagination.totalPages > 1 && (
           <div className="flex items-center justify-center space-x-2 mt-8">
             <Button

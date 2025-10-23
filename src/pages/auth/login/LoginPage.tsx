@@ -32,6 +32,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import italian from "../../../../public/assets/marble/italian-marble.jpg";
 import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
 import Navigation from "@/components/homepage/new/Navigation";
+import UserProfileHome from "@/components/userProfile/UserProfileHome";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -54,6 +55,8 @@ const { isLoading, isAuthenticated, error } = useSelector(
   (state: { auth: AuthState }) => state.auth
 );
 
+  const {profile} = useSelector((state: RootState) => state.userProfile);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormValues>({
@@ -65,11 +68,26 @@ const { isLoading, isAuthenticated, error } = useSelector(
   });
 
   // Redirect if already authenticated
+   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/projects", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated &&
+       profile &&
+       profile.role=== "user"
+    ) {
+      navigate("/app/projects", { replace: true });
+    }else if(isAuthenticated &&
+      profile &&
+      profile.role === "admin"){
+        console.log("login admin")
+      navigate("/admin/dashboard", { replace: true });
+      }
+      else if(isAuthenticated && 
+        profile &&
+        profile.role === "support"){
+        navigate("/support/dashboard", { replace: true });
+      }
+      
+  }, [isAuthenticated, profile, navigate]);
 
   // Clear error when form values change
   useEffect(() => {
@@ -87,7 +105,7 @@ const { isLoading, isAuthenticated, error } = useSelector(
 
     if (loginUser.fulfilled.match(result)) {
       // dispatch(addbreadcrumb("Projects"));
-      navigate("/projects", { replace: true });
+     // navigate("/projects", { replace: true });
     }
   };
 
@@ -263,6 +281,8 @@ const { isLoading, isAuthenticated, error } = useSelector(
             </motion.div>
           </div>
         </div>
+
+         <UserProfileHome />
     </>
   );
 }

@@ -40,7 +40,13 @@ const navigation = [
   },
 ];
 
-export function SideBar({ sidebarCollapsed, setSidebarCollapsed }: { sidebarCollapsed: boolean, setSidebarCollapsed: (v: boolean) => void }) {
+export function SideBar({
+  sidebarCollapsed,
+  setSidebarCollapsed,
+}: {
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (v: boolean) => void;
+}) {
   const location = useLocation();
   const navigate = useNavigate();
   // const dispatch = useDispatch<AppDispatch>();
@@ -113,7 +119,7 @@ export function SideBar({ sidebarCollapsed, setSidebarCollapsed }: { sidebarColl
         {navigation.map((item) => {
           const Icon = item.icon;
           const active = isActivePath(item.href);
-          
+
           return (
             <motion.button
               key={item.name}

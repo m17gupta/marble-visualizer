@@ -9,6 +9,8 @@ import { SwatchBookControls } from "@/components/swatchBook/SwatchBookControls";
 import { SwatchBookActiveFilters } from "@/components/swatchBook/SwatchBookActiveFilters";
 import { SwatchBookMainContent } from "@/components/swatchBook/SwatchBookMainContent";
 import { setPage } from "@/redux/slices/swatchSlice";
+import { AdminPage, Sidebar } from "@/AdminPannel";
+import { useNavigate } from "react-router-dom";
 
 type ViewMode = "grid" | "list";
 type LayoutMode = "compact" | "detailed";
@@ -77,6 +79,23 @@ export function SwatchBookPage() {
     return count;
   };
 
+  const navigate = useNavigate();
+
+  const getCurrentPageFromUrl = (): AdminPage => {
+    const path = location.pathname.replace("/admin/", "");
+    // Handle root admin path
+    if (path === "" || path === "admin") return "dashboard";
+    return path as AdminPage;
+  };
+
+  const [currentPage, setCurrentPage] = useState<AdminPage>(
+    getCurrentPageFromUrl
+  );
+
+  const handlePageChange = (page: AdminPage) => {
+    navigate(`/admin/${page}`);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -85,7 +104,7 @@ export function SwatchBookPage() {
       className="space-y-6 px-8"
     >
       {/* Header */}
-      <SwatchBookHeader open={open} onOpenChange={handleOpen} edit={edit} />
+      {/* <SwatchBookHeader open={open} onOpenChange={handleOpen} edit={edit} /> */}
 
       {/* Search and Controls */}
       <SwatchBookControls

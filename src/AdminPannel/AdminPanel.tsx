@@ -1,100 +1,237 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import Analytics from './pages/Analytics';
-import Projects from './pages/Projects';
-import Team from './pages/Team';
-import DataLibrary from './pages/DataLibrary';
-import Reports from './pages/Reports';
-import Sidebar from './components/Sidebar';
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
+import Projects from "./pages/Projects";
+import DataLibrary from "./pages/DataLibrary";
+import Reports from "./pages/Reports";
+import Sidebar from "./components/Sidebar";
+import UserProfiles from "./pages/UserProfiles";
+import MaterialBrands from "./pages/MaterialBrand";
+import MaterialBrandStyles from "./pages/MaterialStyles";
+import MaterialCategories from "./pages/MaterialCategories";
+import { MaterialLibrary } from "./components/products/MaterialLibrary";
+import { MaterialDetail } from "./pages/SingleMaterial";
+import MaterialSegment from "./pages/MaterialSegment";
+import MaterialConnections from "./pages/MaterialConnections";
+import MaterialAttributes from "./pages/MaterialAttributes";
+import AddProject from "./pages/AddProject";
+//import ProductAddEditPage from "@/components/swatchBook/MaterialAddPage";
+import DemoProject from "./pages/DemoProject";
+import Role from "./pages/Role";
+import Permission from "./pages/Permission";
 
+export type AdminPage =
+  | "dashboard"
+  | "analytics"
+  | "user"
+  | "user-plan"
+  | "projects"
+  | "materials"
+  | "brand"
+  | "category"
+  | "style"
+  | "material-segment"
+  | "material-connections"
+  | "data-library"
+  | "reports"
+  | "word-assistant"
+  | "addmaterials"
+  | "material"
+  | "addSwatch"
+  | "material-attributes"
+  | "add-project"
+  | "demo_project"
+  | "roles"
+  | "permissions";
 
-export type AdminPage = 'dashboard' | 'analytics' | 'user' | 'user-plan' | 'projects' | 'materials' | 'brand' | 'category' | 'style' | 'material-segment' | 'data-library' | 'reports' | 'word-assistant';
-
-
-
-const AdminPanel= () => {
+const AdminPanel = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Extract current page from URL
+
   const getCurrentPageFromUrl = (): AdminPage => {
-    const path = location.pathname.replace('/admin/', '');
-    // Handle root admin path
-    if (path === '' || path === 'admin') return 'dashboard';
+    const path = location.pathname.replace("/admin/", "");
+    if (path === "" || path === "admin") return "dashboard";
+    if (path.startsWith("addmaterials")) return "addmaterials";
     return path as AdminPage;
   };
 
-  const [currentPage, setCurrentPage] = useState<AdminPage>(getCurrentPageFromUrl);
+  const [currentPage, setCurrentPage] = useState<AdminPage>(
+    getCurrentPageFromUrl
+  );
 
-  // Update current page when URL changes
   useEffect(() => {
     setCurrentPage(getCurrentPageFromUrl());
   }, [location.pathname]);
 
-  // Handle page navigation
   const handlePageChange = (page: AdminPage) => {
     navigate(`/admin/${page}`);
   };
 
+  const getPageTitle = (page: AdminPage): string => {
+    const titles: Record<AdminPage, string> = {
+      dashboard: "Dashboard",
+      analytics: "Analytics",
+      user: "User Profiles",
+      "user-plan": "User Plans",
+      projects: "Projects",
+      demo_project: "Demo Project",
+      materials: "Material Library",
+      brand: "Material Brands",
+      category: "Material Categories",
+      style: "Material Styles",
+      "material-segment": "Material Segments",
+      "material-connections": "Material Connections",
+      "data-library": "Data Library",
+      reports: "Reports",
+      "word-assistant": "Word Assistant",
+      addmaterials: "Add Materials",
+      material: "Material Details",
+      addSwatch: "Add Swatch",
+      "material-attributes": "Manage Attributes",
+      "add-project": "Add Project",
+      "roles": "User Roles",
+      "permissions": "Permissions",
+    };
+    return titles[page] || page;
+  };
+
+  const getPageDescription = (page: AdminPage): string => {
+    const descriptions: Record<AdminPage, string> = {
+      dashboard: "Overview of your admin workspace",
+      analytics: "View insights and analytics data",
+      user: "Manage user profiles and permissions",
+      "user-plan": "Manage user subscription plans",
+      projects: "View and manage all projects",
+      demo_project: "View and manage demo projects",
+      materials: "Browse and manage material library",
+      brand: "Manage material brand information",
+      category: "Organize material categories",
+      style: "Manage material style variants",
+      "material-segment": "Configure material segments",
+      "material-connections": "Connect brands, categories, and segments",
+      "data-library": "Access data library resources",
+      reports: "Generate and view reports",
+      "word-assistant": "AI-powered word assistance",
+      addmaterials: "Add new materials to library",
+      material: "View material details",
+      addSwatch: "Add new swatch",
+      "material-attributes": "Manage Attributes",
+      "add-project": "Create and configure new projects",
+      "roles": "Manage user roles and access levels",
+      "permissions": "Set permissions for different roles",
+    };
+    return descriptions[page] || "";
+  };
+
   const renderContent = () => {
+    const params = useParams<{ id: string }>();
+
     switch (currentPage) {
-      case 'dashboard':
+      case "dashboard":
         return <Dashboard />;
-      case 'analytics':
+      case "analytics":
         return <Analytics />;
-      case 'projects':
+      case "projects":
         return <Projects />;
-      case 'category':
-        return <Team />;
-      case 'data-library':
+      case "add-project":
+        return <AddProject />;
+      case "category":
+        return <MaterialCategories />;
+      case "data-library":
         return <DataLibrary />;
-      case 'reports':
+      case "reports":
         return <Reports />;
-      case 'user':
-        return <div className="p-6"><h1 className="text-2xl font-bold">User Profile</h1><p className="text-gray-600 mt-2">User profile management page</p></div>;
-      case 'user-plan':
-        return <div className="p-6"><h1 className="text-2xl font-bold">User Plan</h1><p className="text-gray-600 mt-2">User subscription plans management</p></div>;
-      case 'materials':
-        return <div className="p-6"><h1 className="text-2xl font-bold">Materials</h1><p className="text-gray-600 mt-2">Materials management page</p></div>;
-      case 'brand':
-        return <div className="p-6"><h1 className="text-2xl font-bold">Material Brand</h1><p className="text-gray-600 mt-2">Material brand management page</p></div>;
-      case 'style':
-        return <div className="p-6"><h1 className="text-2xl font-bold">Material Style</h1><p className="text-gray-600 mt-2">Material style management page</p></div>;
-      case 'material-segment':
-        return <div className="p-6"><h1 className="text-2xl font-bold">Material Segment</h1><p className="text-gray-600 mt-2">Material segment management page</p></div>;
-      case 'word-assistant':
-        return <div className="p-6"><h1 className="text-2xl font-bold">Word Assistant</h1><p className="text-gray-600 mt-2">Word assistant management page</p></div>;
+      case "user":
+        return <UserProfiles />;
+      case "roles":
+        return <Role />;
+      case "permissions":
+        return <Permission/>
+      case "user-plan":
+
+        return (
+          <div className="p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  User Plan Management
+                </h2>
+                <p className="text-gray-600">
+                  User subscription plans management
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      case "demo_project":
+        return <DemoProject />;
+
+      case "materials":
+        return <MaterialLibrary />;
+      // case "addmaterials":
+      //   return <ProductAddEditPage />;
+      case "brand":
+        return <MaterialBrands />;
+      case "style":
+        return <MaterialBrandStyles />;
+      // case "material-segment":
+      //   return <MaterialSegment />;
+      case "material-connections":
+        return <MaterialConnections />;
+      case "material-attributes":
+        return <MaterialAttributes />;
+      case "word-assistant":
+        return (
+          <div className="p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Word Assistant
+                </h2>
+                <p className="text-gray-600">Word assistant management page</p>
+              </div>
+            </div>
+          </div>
+        );
+      case `material/${params.id}`:
+        return <MaterialDetail productId={Number(params.id)} />;
       default:
         return <Dashboard />;
     }
   };
 
   return (
-    <div className={`flex h-screen bg-gray-50 `}>
-      {/* Sidebar */}
-      <Sidebar 
-        currentPage={currentPage} 
-        onPageChange={handlePageChange}
-      />
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900 capitalize">
-              {currentPage.replace('-', ' ')}
-            </h1>
+    <div className="flex h-screen bg-gray-50 overflow-x-hidden">
+      <Sidebar currentPage={currentPage} onPageChange={handlePageChange} />
+
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* Page Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm flex-shrink-0">
+          <div className="flex items-center justify-between max-w-full">
+            <div className="flex-1 min-w-0 pr-4">
+              <h1 className="text-2xl font-bold text-gray-900 truncate">
+                {getPageTitle(currentPage)}
+              </h1>
+              <p className="text-sm text-gray-600 mt-1 truncate">
+                {getPageDescription(currentPage)}
+              </p>
+            </div>
+
+            {/* Breadcrumb indicator */}
+            <div className="flex items-center space-x-2 text-sm text-gray-500 flex-shrink-0">
+              <span className="hidden sm:inline">Admin Panel</span>
+              <span className="hidden sm:inline">/</span>
+              <span className="text-blue-600 font-medium truncate">
+                {getPageTitle(currentPage)}
+              </span>
+            </div>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">
-            Quick Create
-          </button>
         </header>
-        
+
         {/* Content Area */}
         <main className="flex-1 overflow-auto">
-          {renderContent()}
+          <div className="min-h-full w-full">{renderContent()}</div>
         </main>
       </div>
     </div>

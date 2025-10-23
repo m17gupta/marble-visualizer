@@ -1,4 +1,3 @@
-
 import { Button } from "../ui/button";
 import {
   BookOpen,
@@ -15,10 +14,9 @@ import {
   ChevronRight,
   ChevronDown,
   Share2,
-
-} from 'lucide-react';
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import dzinlylogo from "../../../public/assets/marble/main-favicons.png";
+import dzinlylogo from "../../../public/assets/image/dzinlylogo-icon.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -26,6 +24,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "@/redux/slices/user/authSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import Setting from "@/layouts/Setting";
+import RealEstateSideBar from "./roleBaseSideBar/RealEstateSideBar";
+import ManufactruringSideBar from "./roleBaseSideBar/ManufactruringSideBar";
 
 interface SidebarItem {
   id: string;
@@ -41,89 +41,128 @@ interface SidebarItem {
 type Props = {
   sidebarCollapsed: boolean;
   mobile?: boolean;
-   setSidebarCollapsed: (collapsed: boolean) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   setMobileMenuOpen?: (open: boolean) => void;
   setShareModalOpen?: (open: boolean) => void;
-}
-const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobileMenuOpen,setShareModalOpen}: Props) => {
-
+};
+const SidebarContent = ({
+  sidebarCollapsed,
+  mobile,
+  setSidebarCollapsed,
+  setMobileMenuOpen,
+  setShareModalOpen,
+}: Props) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const {isAuthenticated} = useSelector((state: RootState) => state.auth);
-  const {profile} = useSelector((state: RootState) => state.userProfile);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.userProfile);
 
   // Base workspace items without admin panel
   const baseWorkspaceItems = [
-    { id: 'projects', label: 'Projects', icon: FolderOpen, hasChevron: true, href: '/app/projects' },
-    { id: 'assets', label: 'Assets', icon: Package, href: '/app/assets' },
-    { id: 'boards', label: 'Boards', icon: Layout, href: '/app/boards' },
-    { id: 'workspace', label: 'Workspace', icon: Layout, href: '/app/workspace' },
+    {
+      id: "projects",
+      label: "Projects",
+      icon: FolderOpen,
+      hasChevron: true,
+      href: `${profile?.role}` === "support" ? "/support/projects" : "/app/projects",
+    },
+    { id: "assets", label: "Assets", icon: Package, href: `${profile?.role}` === "support" ? "/support/assets" : "/app/assets" },
+    { id: "boards", label: "Boards", icon: Layout, href: `${profile?.role}` === "support" ? "/support/boards" : "/app/boards" },
   ];
 
-  // Add admin panel if user role is admin
-  const workspaceItems = profile?.role === "admin" 
-    ? [
-        {id:"admin-panel", label: 'Admin Panel', icon: User, href: '/admin/dashboard' },
-        ...baseWorkspaceItems
-      ]
-    : baseWorkspaceItems;
+
 
   const sidebarSections: {
     title: string;
     items: SidebarItem[];
   }[] = [
       {
-        title: 'ORGANIZATIONS',
+        title: "ORGANIZATIONS",
         items: [
-          { id: 'personal', label: 'Personal', icon: User, badge: 'Free Plan', href: '/app/personal' },
-          { id: 'add-org', label: 'Add Organization', icon: Plus, isAction: true },
+          {
+            id: "personal",
+            label: "Personal",
+            icon: User,
+            badge: "Free Plan",
+            href: "/app/personal",
+          },
+          {
+            id: "add-org",
+            label: "Add Organization",
+            icon: Plus,
+            isAction: true,
+          },
         ],
       },
       {
-        title: 'WORKSPACE',
-        items: workspaceItems,
+        title: "WORKSPACE",
+        items: baseWorkspaceItems,
       },
       {
-        title:'MATERIALS LIBRARY',
-        items: [ { id:"materials", label: 'Materials Library', icon: Palette, href: '/app/swatchbook' },]
-      },
-      {
-        title: 'TOOLS & FEATURES',
+        title: "MATERIALS LIBRARY",
         items: [
-          { id: 'design-tools', label: 'Design Tools', icon: Palette, href: '/app/studio' },
-          { id: 'share-project', label: 'Share Project', icon: Share2, isAction: true }
+          {
+            id: "materials",
+            label: "Materials Library",
+            icon: Palette,
+            href: `${profile?.role}` === "support" ? "/support/swatchbook" : "/app/swatchbook"
+          },
+
         ],
       },
       {
-        title: 'COMMUNITY',
+        title: "TOOLS & FEATURES",
         items: [
-          { id: 'blogs', label: 'Blogs', icon: BookOpen, href: '/app/blogs' },
-          { id: 'affiliate', label: 'Affiliate Program', icon: Users, href: '/app/affiliate' },
+          {
+            id: "design-tools",
+            label: "Design Tools",
+            icon: Palette,
+            href: "/app/studio",
+          },
+          {
+            id: "share-project",
+            label: "Share Project",
+            icon: Share2,
+            isAction: true,
+          },
+        ],
+      },
+      {
+        title: "COMMUNITY",
+        items: [
+          { id: "blogs", label: "Blogs", icon: BookOpen, href: "/app/blogs" },
+          {
+            id: "affiliate",
+            label: "Affiliate Program",
+            icon: Users,
+            href: "/app/affiliate",
+          },
         ],
       },
     ];
   useEffect(() => {
     // Auto-close mobile menu on route change
     if (mobile && setMobileMenuOpen) {
-     // setMobileMenuOpen(false);
+      // setMobileMenuOpen(false);
     }
   }, [location.pathname]);
 
-  
   const isActivePath = (path: string) => {
     if (!path) return false;
-    return location.pathname === path || location.pathname.startsWith(path + "/");
+    return (
+      location.pathname === path || location.pathname.startsWith(path + "/")
+    );
   };
 
   const handleItemClick = (item: SidebarItem) => {
     if (item.isAction) return;
 
-    if (item.id === 'share-project') {
+    if (item.id === "share-project") {
       //setSelectedProjectId('current-project'); // Replace with real project ID
       if (setShareModalOpen) {
-      setShareModalOpen(true);
+        setShareModalOpen(true);
       }
       return;
     }
@@ -136,15 +175,14 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
     }
   };
 
-
-   const handleLogin = () => {
-      try {
-        dispatch(logoutUser());
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-      navigate('/login');
-    };
+  const handleLogin = () => {
+    try {
+      dispatch(logoutUser());
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    navigate("/login");
+  };
   return (
     <div className="flex flex-col h-full bg-card">
       {/* Header */}
@@ -157,13 +195,11 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
           <div className="w-8 h-8  rounded-lg flex items-center justify-center">
             <Home className="h-5 w-5 text-primary-foreground" />
             <img src={dzinlylogo} alt="Dzinly Logo" className="h-100 w-100" />
-            
             {/* <img src */}
           </div>
           {(!sidebarCollapsed || mobile) && (
-            <span className="text-lg font-bold text-foreground">Marble</span>
+            <span className="text-lg font-bold text-foreground">Dzinly</span>
           )}
-
         </motion.div>
 
         {!mobile && (
@@ -183,8 +219,30 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-6 overflow-y-auto">
-        {sidebarSections.map((section) => (
+      {/* role == "real_estate" */}
+    {profile && profile.role === "real_estate" && (
+      <RealEstateSideBar
+        mobile={false}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        setMobileMenuOpen={setMobileMenuOpen}
+        setShareModalOpen={setShareModalOpen}
+      />
+      )}
+    {profile && profile.role === "manufacturer" && (
+      <ManufactruringSideBar
+        mobile={false}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        setMobileMenuOpen={setMobileMenuOpen}
+        setShareModalOpen={setShareModalOpen}
+      />
+      )}
+
+      {/*  role =="manufacturer" */}
+      {/* <nav className="flex-1 px-4 space-y-6 overflow-y-auto">
+        { profile&&profile.role==="real_estate" &&
+        sidebarSections.map((section) => (
           <div key={section.title} className="space-y-2">
             {(!sidebarCollapsed || mobile) && (
               <div className="px-2">
@@ -207,8 +265,8 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
                       active
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : item.isAction
-                          ? "text-primary hover:bg-primary/10"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "text-primary hover:bg-primary/10"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -245,37 +303,38 @@ const SidebarContent = ({ sidebarCollapsed, mobile, setSidebarCollapsed, setMobi
             </div>
           </div>
         ))}
-      </nav>
+      </nav> */}
 
       {/* Footer */}
       <div className="p-4 border-t border-border">
-      {!isAuthenticated? ( (!sidebarCollapsed || mobile) && (
-          <div className="space-y-2">
-            <Button
-              onClick={handleLogin}
-              variant="ghost"
-              className="w-full justify-start text-muted-foreground hover:text-foreground"
-            >
-              <Settings className="h-4 w-4 mr-3" />
-              Login
-            </Button>
-          </div>
-        )):
-        ( (!sidebarCollapsed || mobile) && (
-          <div className="space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-muted-foreground hover:text-foreground"
-              onClick={() => setSettingsModalOpen(true)}
-            >
-              <Settings className="h-4 w-4 mr-3" />
-              Settings
-            </Button>
-          </div>
-        ))}
+        {!isAuthenticated
+          ? (!sidebarCollapsed || mobile) && (
+            <div className="space-y-2">
+              <Button
+                onClick={handleLogin}
+                variant="ghost"
+                className="w-full justify-start text-muted-foreground hover:text-foreground"
+              >
+                <Settings className="h-4 w-4 mr-3" />
+                Login
+              </Button>
+            </div>
+          )
+          : (!sidebarCollapsed || mobile) && (
+            <div className="space-y-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-muted-foreground hover:text-foreground"
+                onClick={() => setSettingsModalOpen(true)}
+              >
+                <Settings className="h-4 w-4 mr-3" />
+                Settings
+              </Button>
+            </div>
+          )}
       </div>
 
-         <Setting
+      <Setting
         isOpen={settingsModalOpen}
         onClose={() => setSettingsModalOpen(false)}
       />

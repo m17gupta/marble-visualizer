@@ -28,10 +28,10 @@ const GetAllInspirational = () => {
  
       // Fetch initial data
        if(!colorsLoading && inspirational_colors.length === 0) {
-         fetchInspirationalColorsData();
+        // fetchInspirationalColorsData();
        }
        if(!imagesLoading && Inspirational_images.length === 0) {
-         fetchInspirationalImagesData();
+        // fetchInspirationalImagesData();
        }
 
   }, [inspirational_colors,colorsLoading,Inspirational_images,imagesLoading]);

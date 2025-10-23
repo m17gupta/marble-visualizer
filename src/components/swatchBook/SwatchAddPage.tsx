@@ -1,954 +1,476 @@
 import React, { useEffect, useState } from "react";
+import { Plus, Info, Link2, Settings, Eye, Copy, Save } from "lucide-react";
 import {
-  Save,
-  ArrowLeft,
-  ChevronDown,
-  X,
-  Plus,
-  Upload,
-  Trash2,
-} from "lucide-react";
+  ProductModalInterface,
+  ProductVariation,
+  SelectOption,
+  SidebarItemData,
+} from "./NewProductPage/ProductAdd";
+import { Button } from "./NewProductPage/Button";
+import { Card } from "./NewProductPage/Card";
+import { Input } from "./NewProductPage/InputText";
+import { TextArea } from "./NewProductPage/InputArea";
+import { CollapsibleSection } from "./NewProductPage/CollapsibleSection";
+import { Select } from "./NewProductPage/Select";
+import { SidebarItem } from "./NewProductPage/SideBarItem";
 import { supabase } from "@/lib/supabase";
+import { productTypeOptions, sidebarItems } from "./NewProductPage/DefaultData";
+import { VariationsAdd } from "./NewProductPage/VariantionAdd";
+import { AttributesAdd } from "./NewProductPage/AttributesAdd";
+import { AttributeId, ProductAttributeValue, Variant } from "./interfaces";
 import { toast } from "sonner";
-import { useParams } from "react-router-dom";
 
-// Type definitions
-interface AttributeId {
-  id: number;
-  name: string;
-  unit: string | null;
-  data_type: "text" | "number" | "enum" | "boolean";
-  possible_values: string[] | null;
-}
-
-interface Attribute {
-  id: number;
-  attribute_group_id: number;
-  attribute_id: AttributeId;
-  sort_order: number;
-}
-
-interface AttributeGroup {
-  attribute_group_id: number;
-  attributes: Attribute[];
-}
-
-interface Group {
-  id: number;
-  name: string;
-  attribute_set_id: number;
-}
-
-interface AttributeSet {
-  id: number;
-  name: string;
-}
-
-interface AttributeValues {
-  [key: number]:
-    | string
-    | number
-    | readonly string[]
-    | boolean
-    | undefined
-    | null;
-}
-
-interface SearchTerms {
-  [key: number]: string;
-}
-
-interface ShowDropdowns {
-  [key: number]: boolean;
-}
-
-interface ProductData {
-  product_category_id: number | null;
-  brand_id: null | number;
-  description: string;
-  name: string;
-  sku: string;
-  product_attribute_set_id: number | null;
-}
-
-const SwatchAddPage: React.FC = () => {
-  const [attributeSets, setAllAttributeSets] = useState<AttributeSet[]>([]);
-  const [selectedFeatureData, setSelectedFeatureData] =
-    useState<AttributeSet | null>(null);
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [checked, setChecked] = useState<AttributeGroup[]>([]);
-  const [attributeValues, setAttributeValues] = useState<AttributeValues>({});
-  const [searchTerms, setSearchTerms] = useState<SearchTerms>({});
-  const [showDropdowns, setShowDropdowns] = useState<ShowDropdowns>({});
-  const [productImages, setProductImages] = useState<File[]>([]);
-  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
-  const [dragActive, setDragActive] = useState(false);
-  const [productdata, setProductData] = useState<ProductData>({
-    product_category_id: 1,
+const ProductEditPage: React.FC = () => {
+  const [slug, setSlug] = useState<string>("premium-wireless-headphones");
+  const [productype, setProductype] = useState<string>("simple");
+  const [product, setProduct] = useState<ProductModalInterface>({
+    name: "",
+    product_attribute_set_id: null,
+    product_category_id: null,
     brand_id: null,
     description: "",
-    name: "",
-    sku: "",
-    product_attribute_set_id: null,
+    photo: "Behr__Rushing_Stream_MjAzODkw.jpg",
+    bucket_path: "default",
+    new_bucket: 0,
   });
+  const [selected, setSelected] = useState<AttributeId[]>([]);
 
-  const { id } = useParams();
+  const [productsettingsactivetab, setProductSettingActiveTab] = useState<
+    string | null
+  >("Attributes");
+
+  const handleproductsettingsactivetab = (label: string) => {
+    setProductSettingActiveTab(label);
+  };
+
+  const [category, setCategory] = useState<SelectOption[]>([]);
+
+  const [brand, setBrands] = useState<SelectOption[]>([]);
+
+  const [varaintwithvariations, setVariantWithVariations] = useState<any[]>([]);
+
+  const [saveloading, setSaveLoading] = useState(false);
+
+  const handleSaveVariantWithVariations = (data: any) => {
+    setVariantWithVariations(data);
+  };
 
   useEffect(() => {
-    const getAttributeSets = async (): Promise<void> => {
+    const getBrandAndCategory = async () => {
       try {
-        // Replace with actual Supabase call
-        const { data, error } = await supabase
-          .from("product_attribute_sets")
+        const { data: category, error: err } = await supabase
+          .from("product_categories")
           .select("*");
-        if (!error && data) {
-          setAllAttributeSets(data);
+        const { data: brands, error: branderr } = await supabase
+          .from("product_brand")
+          .select("*");
+
+        if (!err && !branderr) {
+          setCategory(
+            category.map((d: any) => {
+              return {
+                value: d.id,
+                label: d.name,
+              };
+            })
+          );
+          setBrands(
+            brands.map((d: any) => {
+              return {
+                value: d.id,
+                label: d.name,
+              };
+            })
+          );
         }
-      } catch (error) {
-        console.error("Error fetching attribute sets:", error);
-      }
-    };
-    const getProductDetails = async (id: number) => {
-      try {
-        const { data, error } = await supabase
-          .from("products")
-          .select(`*, product_attribute_set_id(id,name,category_id)`)
-          .eq("id", id)
-          .single();
-        const copied = { ...productdata };
-        copied.product_category_id = data.product_category_id;
-        copied.brand_id = data.brand_id;
-        copied.description = data.description;
-        copied.sku = data.sku;
-        copied.name = data.name;
-        copied.product_attribute_set_id = data.product_attribute_set_id.id;
-        setProductData(copied);
-        setSelectedFeatureData(data.product_attribute_set_id.id);
-        const { data: attribute_groups, error: err } = await supabase
-          .from("product_attribute_groups")
-          .select()
-          .eq("attribute_set_id", data.product_attribute_set_id.id);
-        if (!error && attribute_groups) {
-          setGroups(attribute_groups);
-        }
-        const { data: product_attribute_values, error: er } = await supabase
-          .from("product_attribute_values")
-          .select("*")
-          .eq("product_id", id);
-        const mappedData = product_attribute_values!.reduce(
-          (acc: any, d: any) => {
-            if (d.value_text !== null) {
-              acc[d.attribute_id] = d.value_text;
-            } else if (d.value_number !== null) {
-              acc[d.attribute_id] = d.value_number;
-            } else if (d.value_boolean !== null) {
-              acc[d.attribute_id] = d.value_boolean;
-            } else if (d.value_multiple !== null) {
-              acc[d.attribute_id] = d.value_multiple;
-            }
-            return acc;
-          },
-          {}
-        );
-        setSelectedFeatureData(data.product_attribute_set_id);
-        setAttributeValues(mappedData);
       } catch (error) {
         console.error(error);
       }
     };
-    if (id !== undefined) {
-      getProductDetails(Number(id));
-    }
-
-    getAttributeSets();
+    getBrandAndCategory();
   }, []);
 
-  const handleFeatureSelect = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ): Promise<void> => {
-    const selectedId = parseInt(e.target.value);
-    const matchedAttributeSet = attributeSets.find((d) => d.id === selectedId);
-    if (matchedAttributeSet) {
-      setSelectedFeatureData(matchedAttributeSet);
-      setProductData((prev) => ({
-        ...prev,
-        product_attribute_set_id: matchedAttributeSet.id,
-      }));
-      try {
-        // Replace with actual Supabase call
-        const { data, error } = await supabase
-          .from("product_attribute_groups")
-          .select()
-          .eq("attribute_set_id", matchedAttributeSet.id);
-        if (!error && data) {
-          setGroups(data);
-        }
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-      }
+  const handleProductChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ): void => {
+    const { name, value, type } = e.target;
+    const key = name as keyof ProductModalInterface;
+    const copied = structuredClone(product);
+    if (type == "text" || type == "textarea") {
+      copied[key] = value as any;
+    } else {
+      copied[key] = Number(value) as any;
     }
+    setProduct(copied);
   };
 
-  const handleInputChangeInProductDetails = (e: any) => {
-    setProductData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleSlugChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
+    setSlug(e.target.value);
   };
 
-  const handleGroupToggle = async (id: number): Promise<void> => {
-    const isAlreadyChecked = checked.some(
-      (group) => group.attribute_group_id === id
+  const [attributeValues, setAttributeValues] =
+    useState<ProductAttributeValue[]>();
+
+  const handleSaveAttributesValues = (selected: AttributeId[]) => {
+    const attributeValues: ProductAttributeValue[] = selected.flatMap(
+      (d: AttributeId) =>
+        (d.selected_values ?? []).map((val: string | number) => ({
+          product_id: null,
+          attribute_id: d.id,
+          value: val,
+          is_variant_value: d.is_variant_value ?? false,
+          visible: d.visible ?? true,
+        }))
     );
-
-    if (isAlreadyChecked) {
-      setChecked((prev) =>
-        prev.filter((group) => group.attribute_group_id !== id)
-      );
-    } else {
-      try {
-        // Replace with actual Supabase call
-        const { data, error } = await supabase
-          .from("product_attribute_group_attributes")
-          .select(`*, attribute_id(id,name,data_type,unit,possible_values)`)
-          .eq("attribute_group_id", id);
-        if (!error && data) {
-          setChecked((prev) => [
-            ...prev,
-            { attribute_group_id: id, attributes: data },
-          ]);
-        }
-      } catch (error) {
-        console.error("Error fetching group attributes:", error);
-      }
-    }
+    setAttributeValues(attributeValues);
   };
 
-  const handleAttributeChange = (
-    attributeId: number,
-    value: string | number | string[] | boolean
-  ): void => {
-    setAttributeValues((prev) => ({
-      ...prev,
-      [attributeId]: value,
-    }));
-  };
-
-  const handleEnumValueToggle = (attributeId: number, value: string): void => {
-    const currentValues = (attributeValues[attributeId] as string[]) || [];
-    const isSelected = currentValues.includes(value);
-
-    if (isSelected) {
-      const newValues = currentValues.filter((v) => v !== value);
-      handleAttributeChange(attributeId, newValues);
-    } else {
-      handleAttributeChange(attributeId, [...currentValues, value]);
-    }
-  };
-
-  const removeEnumValue = (
-    attributeId: number,
-    valueToRemove: string
-  ): void => {
-    const currentValues = (attributeValues[attributeId] as string[]) || [];
-    const newValues = currentValues.filter((v) => v !== valueToRemove);
-    handleAttributeChange(attributeId, newValues);
-  };
-
-  const handleSearchChange = (
-    attributeId: number,
-    searchTerm: string
-  ): void => {
-    setSearchTerms((prev) => ({
-      ...prev,
-      [attributeId]: searchTerm,
-    }));
-  };
-
-  const toggleDropdown = (attributeId: number): void => {
-    setShowDropdowns((prev) => ({
-      ...prev,
-      [attributeId]: !prev[attributeId],
-    }));
-  };
-
-  const addNewOption = async (
-    attributeId: number,
-    newValue: string,
-    attribute: any
-  ) => {
-    if (newValue.trim()) {
-      const currentValues = (attributeValues[attributeId] as string[]) || [];
-      if (!currentValues.includes(newValue.trim())) {
-        handleAttributeChange(attributeId, [...currentValues, newValue.trim()]);
-      }
-      setSearchTerms((prev) => ({ ...prev, [attributeId]: "" }));
-      setShowDropdowns((prev) => ({ ...prev, [attributeId]: false }));
-    }
-    if (!attribute.attribute_id.possible_values.includes(newValue)) {
-      const copied = [...attribute.attribute_id.possible_values];
-      copied.push(newValue);
+  const handleProductSave = async () => {
+    try {
       const { data, error } = await supabase
-        .from("product_attributes")
-        .update({
-          possible_values: copied,
-        })
-        .eq("id", attributeId)
-        .select()
+        .from("products")
+        .insert(product)
+        .select("*")
         .single();
       if (error) {
-        toast.error("Failed to Insert Data in Values");
+        return [null, error.message];
+      } else {
+        return [data.id, null];
       }
+    } catch (error) {
+      throw error;
     }
   };
 
-  const handleImageUpload = (files: FileList | null) => {
-    if (!files) return;
+  const handleSaveAttributesInDatabase = async (
+    id: number
+  ): Promise<[ProductAttributeValue[] | null, string | null]> => {
+    try {
+      const mappedarray = attributeValues?.map((d) => {
+        return {
+          ...d,
+          product_id: id,
+        };
+      });
 
-    const newFiles = Array.from(files).slice(0, 5 - productImages.length);
-    const newUrls: string[] = [];
-
-    newFiles.forEach((file) => {
-      if (file.type.startsWith("image/")) {
-        const url = URL.createObjectURL(file);
-        newUrls.push(url);
+      const { data, error } = await supabase
+        .from("product_attribute_values_duplicate")
+        .insert(mappedarray)
+        .select("*");
+      if (error) {
+        return [null, error.message];
+      } else {
+        return [data, null];
       }
-    });
-
-    setProductImages((prev) => [...prev, ...newFiles]);
-    setImagePreviewUrls((prev) => [...prev, ...newUrls]);
-  };
-
-  const removeImage = (index: number) => {
-    URL.revokeObjectURL(imagePreviewUrls[index]);
-    setProductImages((prev) => prev.filter((_, i) => i !== index));
-    setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
+    } catch (error) {
+      throw error;
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+  const handleVariantSave = async (
+    attrvalues: any[],
+    varaintwithvariations: any[],
+    productid: number
+  ) => {
+    try {
+      let variantArray = [];
+      for (let vary of varaintwithvariations) {
+        let toSaveinDb = {
+          product_id: productid,
+          sku: vary.sku,
+          price: vary.price,
+          stock: vary.stock,
+        };
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleImageUpload(e.dataTransfer.files);
-    }
-  };
+        let variations = Object.entries(vary.variations) as [
+          string,
+          ProductAttributeValue
+        ][];
 
-  const renderAttributeInput = (attribute: Attribute): JSX.Element => {
-    const { attribute_id } = attribute;
-    const { id, name, data_type, unit, possible_values } = attribute_id;
-    const currentValue = attributeValues[id] || "";
-    const searchTerm = searchTerms[id] || "";
-    const showDropdown = showDropdowns[id] || false;
+        const { data, error } = await supabase
+          .from("product_variants")
+          .insert(toSaveinDb)
+          .select("*")
+          .single();
 
-    const inputClasses =
-      "w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm";
-    const labelText = unit ? `${name} (${unit})` : name;
-
-    switch (data_type) {
-      case "text":
-        return (
-          <div key={id} className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {labelText}
-            </label>
-            <input
-              type="text"
-              value={String(currentValue)}
-              onChange={(e) => handleAttributeChange(id, e.target.value)}
-              className={inputClasses}
-              placeholder={`Enter ${name.toLowerCase()}`}
-            />
-          </div>
-        );
-
-      case "number":
-        return (
-          <div key={id} className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {labelText}
-            </label>
-            <input
-              type="number"
-              value={Number(currentValue)}
-              onChange={(e) =>
-                handleAttributeChange(id, parseFloat(e.target.value) || 0)
-              }
-              className={inputClasses}
-              placeholder={`Enter ${name.toLowerCase()}`}
-              step="any"
-            />
-          </div>
-        );
-
-      case "enum":
-        const currentEnumValues = (attributeValues[id] as string[]) || [];
-
-        const filteredOptions =
-          possible_values?.filter((option) =>
-            option.toLowerCase().includes(searchTerm.toLowerCase())
-          ) || [];
-
-        return (
-          <div key={id} className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {labelText}
-            </label>
-            <div className="relative">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(id, e.target.value)}
-                  onFocus={() => toggleDropdown(id)}
-                  className={`${inputClasses} pr-12`}
-                  placeholder={`Search and select ${name.toLowerCase()}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => toggleDropdown(id)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 bg-transparent hover:bg-gray-50 rounded-r-lg transition-colors"
-                >
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                </button>
-              </div>
-
-              {showDropdown && (
-                <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-auto">
-                  {filteredOptions.length > 0 && (
-                    <div className="py-2">
-                      {filteredOptions.map((option, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          onClick={() => {
-                            handleEnumValueToggle(id, option);
-                            setSearchTerms((prev) => ({ ...prev, [id]: "" }));
-                          }}
-                          className={`w-full text-left px-4 py-3 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none flex items-center justify-between transition-colors ${
-                            currentEnumValues.includes(option)
-                              ? "bg-blue-50 text-blue-700 border-l-4 border-blue-500"
-                              : ""
-                          }`}
-                        >
-                          <span className="font-medium">{option}</span>
-                          {currentEnumValues.includes(option) && (
-                            <span className="text-blue-600 font-bold">✓</span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {searchTerm &&
-                    !filteredOptions.includes(searchTerm) &&
-                    !currentEnumValues.includes(searchTerm) && (
-                      <div className="border-t border-gray-200">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            addNewOption(id, searchTerm, attribute)
-                          }
-                          className="w-full text-left px-4 py-3 text-blue-600 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none flex items-center font-medium"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add "{searchTerm}"
-                        </button>
-                      </div>
-                    )}
-
-                  {filteredOptions.length === 0 && !searchTerm && (
-                    <div className="px-4 py-3 text-gray-500 text-sm">
-                      No options available
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Selected Values Display */}
-            {currentEnumValues.length > 0 && (
-              <div className="mt-3">
-                <div className="text-xs font-medium text-gray-500 mb-2">
-                  Selected values:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {currentEnumValues.map((value, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 font-medium shadow-sm"
-                    >
-                      {value}
-                      <button
-                        type="button"
-                        onClick={() => removeEnumValue(id, value)}
-                        className="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-blue-300 focus:outline-none transition-colors"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-
-      case "boolean":
-        return (
-          <div key={id} className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {labelText}
-            </label>
-            <select
-              value={String(currentValue)}
-              onChange={(e) =>
-                handleAttributeChange(id, e.target.value == "true")
-              }
-              className={inputClasses}
-            >
-              <option value="">Select...</option>
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-        );
-
-      default:
-        return (
-          <div key={id} className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {labelText}
-            </label>
-            <input
-              type="text"
-              value={String(currentValue)}
-              onChange={(e) => handleAttributeChange(id, e.target.value)}
-              className={inputClasses}
-              placeholder={`Enter ${name.toLowerCase()}`}
-            />
-          </div>
-        );
-    }
-  };
-
-  // console.log(attributeValues);
-
-  const handleSubmit = async () => {
-    if (!productdata.product_category_id || !productdata.brand_id) {
-      toast.message("Please Enter Product Values");
-      return;
-    }
-    if (id !== undefined) {
-      const { data: products, error } = await supabase
-        .from("products")
-        .update(productdata)
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (!error) {
-        const mappedData = Object.entries(attributeValues).map(
-          ([key, value]) => {
-            return {
-              product_id: products.id,
-              attribute_id: Number(key),
-              value_text: typeof value === "string" ? value : null,
-              value_number: typeof value === "number" ? value : null,
-              value_boolean: typeof value === "boolean" ? value : null,
-              value_multiple:
-                Array.isArray(value) || typeof value == "object" ? value : null,
-            };
-          }
-        );
-
-       
-        let err = null;
-
-        for (const d of mappedData) {
-          const { data: attribute_values, error } = await supabase
-            .from("product_attribute_values")
-            .update(d)
-            .eq("product_id", d.product_id)
-            .eq("attribute_id", d.attribute_id)
-            .select("*")
-            .single();
-
-          if (error?.details == "The result contains 0 rows") {
-            const { data: attribute_values, error } = await supabase
-              .from("product_attribute_values")
-              .insert(d)
-              .select("*")
-              .single();
-            console.log(attribute_values);
-          } else {
-            toast.error("Issue in Database");
-          }
-        }
-        if (err == null) {
-          toast.success("Product Updated Successfully");
-        }
-
-        // const { data: attribute_values, error } = await supabase
-        //   .from("product_attribute_values")
-        //   .insert(mappedData)
-        //   .select();
-
-        // if (!error) {
-        //   // console.log(attribute_values);
-        // } else {
-        //   toast.message("Not Successful");
-        //   const { data, error } = await supabase
-        //     .from("products")
-        //     .delete()
-        //     .eq("id", products.id);
-        // }
-      }
-    } else {
-      const { data: products, error } = await supabase
-        .from("products")
-        .insert(productdata)
-        .select()
-        .single();
-      if (!error) {
-        const mappedData = Object.entries(attributeValues).map(
-          ([key, value]) => {
-            return {
-              product_id: products.id,
-              attribute_id: Number(key),
-              value_text: typeof value === "string" ? value : null,
-              value_number: typeof value === "number" ? value : null,
-              value_boolean: typeof value === "boolean" ? value : null,
-              value_multiple:
-                Array.isArray(value) || typeof value == "object" ? value : null,
-            };
-          }
-        );
-
-        const { data: attribute_values, error } = await supabase
-          .from("product_attribute_values")
-          .insert(mappedData)
-          .select();
-
-        if (!error) {
-          // console.log(attribute_values);
+        if (error) {
+          toast.error(`Error in Saving ${toSaveinDb.sku}`);
         } else {
-          toast.message("Not Successful");
-          const { data, error } = await supabase
-            .from("products")
-            .delete()
-            .eq("id", products.id);
+          for (let variation of variations) {
+            const getData = attrvalues.find(
+              (d) => d.value == variation[1].value
+            );
+
+            if (getData?.attribute_id && getData.value) {
+              variantArray.push({
+                variant_id: data.id,
+                attribute_id: getData.attribute_id,
+                // value: getData.value,
+                value: getData.id,
+              });
+            }
+          }
         }
       }
+      return variantArray;
+    } catch (error) {
+      throw error;
     }
-
-    // Handle form submission
   };
 
-  const handleCancel = (): void => {
-    // Handle cancel action
-  };
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent): void => {
-      const target = event.target as HTMLElement;
-      if (!target.closest(".relative")) {
-        setShowDropdowns({});
+  const handleSubmitFinal = async () => {
+    try {
+      setSaveLoading(true);
+      const [id, err] = await handleProductSave();
+      if (err) {
+        toast.error(err);
+        return;
       }
-    };
+      const [data, attributesaveerror] = await handleSaveAttributesInDatabase(
+        id
+      );
+      if (attributesaveerror) {
+        // use can delete product too but save for now
+        toast.error(attributesaveerror);
+        return;
+      }
+      let variantinDBS;
+      if (data !== null) {
+        variantinDBS = await handleVariantSave(data, varaintwithvariations, id);
+      }
+      const { data: variantsave, error: variantsaveerror } = await supabase
+        .from("variant_attribute_values")
+        .insert(variantinDBS)
+        .select("*");
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+      if (variantsaveerror) {
+        toast.error("Issue in Saving Variant Attribute Values");
+      } else {
+        console.log(variantsave);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSaveLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-6">
-              <button className="flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium">
-                <ArrowLeft className="h-5 w-5 mr-3" />
-                Back to Products
-              </button>
-              <div className="h-8 border-l border-gray-300"></div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Add New Product
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Create a new product with detailed attributes
-                </p>
-              </div>
-            </div>
-            <div className="flex space-x-4">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-transparent rounded-lg hover:from-blue-700 hover:to-blue-800 flex items-center shadow-lg transition-all duration-200"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                Save Product
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8">
-        {/* Basic Info */}
-        <div className="bg-white shadow-xl rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">
-              Basic Information
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Enter the fundamental details of your product
-            </p>
-          </div>
-          <div className="px-8 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Product Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={productdata.name}
-                  placeholder="Enter product name"
-                  className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm"
-                  onChange={handleInputChangeInProductDetails}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  SKU *
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter SKU"
-                  name="sku"
-                  value={productdata.sku}
-                  className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm"
-                  onChange={handleInputChangeInProductDetails}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Brand ID *
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter brand ID"
-                  name="brand_id"
-                  value={productdata.brand_id!}
-                  className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm"
-                  onChange={handleInputChangeInProductDetails}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  placeholder="Enter product description"
-                  rows={3}
-                  value={productdata.description}
-                  className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm resize-none"
-                  onChange={handleInputChangeInProductDetails}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Image Upload */}
-        <div className="bg-white shadow-xl rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-8 py-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Product Images</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Upload up to 5 images for your product
-            </p>
-          </div>
-          <div className="px-8 py-8">
-            <div
-              className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
-                dragActive
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e.target.files)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                disabled={productImages.length >= 5}
-              />
-              <div className="space-y-4">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
-                  <Upload className="h-8 w-8 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-lg font-semibold text-gray-700">
-                    {productImages.length >= 5
-                      ? "Maximum images reached"
-                      : "Drop images here or click to upload"}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    PNG, JPG, GIF up to 10MB each ({productImages.length}/5)
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {imagePreviewUrls.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                  Uploaded Images
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {imagePreviewUrls.map((url, index) => (
-                    <div key={index} className="relative group">
-                      <div className="aspect-square rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm">
-                        <img
-                          src={url}
-                          alt={`Product ${index + 1}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                        />
-                      </div>
-                      <button
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 shadow-lg hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Feature Selection */}
-        <div className="bg-white shadow-xl rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-8 py-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">
-              Product Features
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Select the feature set that best describes your product
-            </p>
-          </div>
-          <div className="px-8 py-8">
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Modern Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
-                Feature Set *
-              </label>
-              <select
-                onChange={handleFeatureSelect}
-                value={selectedFeatureData?.id!}
-                className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white shadow-sm"
+              <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+              <p className="text-gray-600">
+                Manage your product details and settings
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" icon={Eye}>
+                Preview
+              </Button>
+              <Button variant="secondary" icon={Copy}>
+                Duplicate
+              </Button>
+              <Button variant="outline" icon={Plus}>
+                Add New Product
+              </Button>
+              <Button
+                onClick={handleSubmitFinal}
+                variant="success"
+                disabled={saveloading} // prevent multiple clicks
               >
-                <option value="">Select Feature *</option>
-                {attributeSets.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
+                {saveloading ? (
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4 animate-spin text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    Saving...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Save className="w-4 h-4" />
+                    Save Changes
+                  </div>
+                )}
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* Attribute Configuration */}
-        <div className="bg-white shadow-xl rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 px-8 py-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">
-              Attribute Configuration
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Configure detailed attributes for your product
-            </p>
-          </div>
-          <div className="px-8 py-8">
-            {selectedFeatureData && groups.length > 0 && (
-              <div className="space-y-8">
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-800 mb-6">
-                    Select Attribute Groups
+        <div className="flex gap-8">
+          {/* Main Content */}
+          <div className="flex-1 space-y-6">
+            {/* Product Name */}
+            <Card className="p-6">
+              <div className="">
+                <Input
+                  value={product.name!}
+                  name="name"
+                  onChange={(e) => handleProductChange(e)}
+                  label="Product Name"
+                  type="text"
+                  placeholder="Enter product name..."
+                  className="text-2xl font-semibold border-0 focus:ring-0 p-0 bg-transparent"
+                />
+                <div className="flex gap-5">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Brand:
+                    </label>
+                    <Select
+                      value={product.brand_id ? String(product.brand_id) : ""}
+                      onChange={handleProductChange}
+                      options={brand}
+                      name="brand_id"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Category:
+                    </label>
+                    <Select
+                      value={
+                        product.product_category_id
+                          ? String(product.product_category_id)
+                          : ""
+                      }
+                      onChange={handleProductChange}
+                      options={category}
+                      name="product_category_id"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Product Description */}
+            <Card className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Product Description
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {groups.map((group) => (
-                      <label
-                        key={group.id}
-                        className="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked.some(
-                            (d) => d.attribute_group_id === group.id
-                          )}
-                          onChange={() => handleGroupToggle(group.id)}
-                          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-3 text-sm font-semibold text-gray-700">
-                          {group.name}
-                        </span>
-                      </label>
-                    ))}
+                  <Button variant="outline" size="sm" icon={Plus}>
+                    Add Media
+                  </Button>
+                </div>
+                <TextArea
+                  value={
+                    product.description != undefined
+                      ? String(product.description)
+                      : ""
+                  }
+                  onChange={handleProductChange}
+                  placeholder="Describe your product in detail. What makes it special? What are its key features and benefits?"
+                  rows={8}
+                  name="description"
+                  className="text-gray-700"
+                />
+                <div className="flex justify-between text-sm text-gray-500 pt-2 border-t border-gray-100">
+                  <span>Characters: {product?.description?.length}</span>
+                  <span>Last edited: September 27, 2025 at 5:43 AM</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Product Data */}
+            <CollapsibleSection
+              title="Product Configuration"
+              icon={Settings}
+              defaultOpen={true}
+            >
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Product Type
+                    </label>
+                    <Select
+                      value={productype}
+                      onChange={(e) => {
+                        setProductype(e.target.value);
+                      }}
+                      options={productTypeOptions}
+                    />
                   </div>
                 </div>
 
-                {/* Dynamic Attribute Inputs */}
-                {checked.map((checkedGroup) => {
-                  const group = groups.find(
-                    (g) => g.id === checkedGroup.attribute_group_id
-                  );
-                  return (
-                    <div
-                      key={checkedGroup.attribute_group_id}
-                      className="bg-gray-50 rounded-xl p-6 border border-gray-200"
-                    >
-                      <h4 className="text-lg font-bold text-gray-800 mb-6 pb-3 border-b border-gray-300">
-                        {group?.name} Attributes
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {checkedGroup.attributes
-                          .sort((a, b) => a.sort_order - b.sort_order)
-                          .map((attribute) => renderAttributeInput(attribute))}
-                      </div>
+                {/* Product Settings Section */}
+                <div className="flex flex-col md:flex-row gap-2">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Settings size={18} className="text-blue-600" />
+                      Product Settings
+                    </h4>
+                    <div className="space-y-1">
+                      {sidebarItems
+                        .filter((item) => {
+                          if (
+                            item.label.toLowerCase() === "variations" &&
+                            productype === "simple"
+                          ) {
+                            return false;
+                          }
+                          return true;
+                        })
+                        .map((item: SidebarItemData, index: number) => (
+                          <SidebarItem
+                            key={index}
+                            icon={item.icon}
+                            label={item.label}
+                            active={productsettingsactivetab == item.label}
+                            badge={item.badge}
+                            onClick={handleproductsettingsactivetab}
+                          />
+                        ))}
                     </div>
-                  );
-                })}
+                  </div>
+                  {productsettingsactivetab == "Variations" &&
+                    attributeValues != undefined &&
+                    attributeValues?.length > 0 && (
+                      <VariationsAdd
+                        handleSaveVariantWithVariations={
+                          handleSaveVariantWithVariations
+                        }
+                        attributeValues={attributeValues}
+                        variantdetails={varaintwithvariations}
+                      />
+                    )}
+                  {productsettingsactivetab == "Attributes" && (
+                    <AttributesAdd
+                      selected={selected}
+                      setSelected={setSelected}
+                      handleSaveAttributesValues={handleSaveAttributesValues}
+                      productype={productype}
+                    />
+                  )}
+                </div>
               </div>
-            )}
+            </CollapsibleSection>
           </div>
         </div>
       </div>
@@ -956,4 +478,4 @@ const SwatchAddPage: React.FC = () => {
   );
 };
 
-export default SwatchAddPage;
+export default ProductEditPage;

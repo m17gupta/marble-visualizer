@@ -34,14 +34,19 @@ import {
   Edit2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { updateUserProfile } from "@/redux/slices/user/userProfileSlice";
+import { Product } from "../swatchBook/interfaces";
+import { handleCurrentSelectedMaterial } from "@/AdminPannel/reduxslices/adminMaterialLibSlice";
+import {
+  newPath,
+  path,
+} from "@/AdminPannel/components/products/EditMaterialModal";
 
 interface SwatchCardProps {
-  swatch: MaterialModel;
+  swatch: Product;
   variant?: "grid" | "list";
   layoutMode?: "compact" | "detailed";
   showActions?: boolean;
@@ -65,13 +70,11 @@ export function SwatchCard({
     (state: RootState) => state.userProfile
   );
 
-  const isFavorite = profile?.favorite_materials?.includes(swatch.id);
+  const isFavorite = profile?.favorite_materials?.includes(swatch.id!);
 
   const [isHovered, setIsHovered] = useState(false);
   // const [favorites, setFavorites] = useState<number[]>([]);
   // const [imageLoaded, setImageLoaded] = useState(false);
-  const path = "https://dzinlyv2.s3.us-east-2.amazonaws.com/liv/materials";
-  const newPath = "https://betadzinly.s3.us-east-2.amazonaws.com/material/";
   const handleToggleFavorite = async (
     e: React.MouseEvent,
     id: number,
@@ -101,32 +104,12 @@ export function SwatchCard({
         })
       );
     }
-
-    // const getAllFavorite = (await JSON.parse(
-    //   localStorage.getItem("fav_swatch") || "[]"
-    // )) as number[];
-
-    // if (!getAllFavorite.includes(id)) {
-    //   getAllFavorite.push(id);
-    //   await localStorage.setItem("fav_swatch", JSON.stringify(getAllFavorite));
-    //   setFavorites(getAllFavorite); // update state
-    // } else {
-    //   const filteredData = getAllFavorite.filter((d) => d !== id);
-    //   await localStorage.setItem("fav_swatch", JSON.stringify(filteredData));
-    //   setFavorites(filteredData);
-    // }
   };
 
-  // useEffect(() => {
-
-  //   // const stored = JSON.parse(
-  //   //   localStorage.getItem("fav_swatch") || "[]"
-  //   // ) as number[];
-  //   // setFavorites(stored);
-  // }, []);
-
   const handleViewDetails = (id: number) => {
+    // const path = `/app/swatchbook/${id}`;
     const path = `/app/swatchbook/${id}`;
+    dispatch(handleCurrentSelectedMaterial(Number(id)));
     navigate(path);
   };
 
@@ -143,7 +126,15 @@ export function SwatchCard({
   //   }).format(price);
   // };
 
-  const getLRVCategory = (lrv: number) => {
+  const getLRVCategory = (lrv?: number | undefined | null) => {
+    if (lrv == null) {
+      return {
+        label: "Dark",
+        color:
+          "bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-400 dark:border-gray-800",
+      };
+    }
+
     if (lrv >= 70)
       return {
         label: "Light",
@@ -163,7 +154,12 @@ export function SwatchCard({
     };
   };
 
-  const lrvCategory = getLRVCategory(swatch.material_category_id);
+  const categoryId =
+    typeof swatch.product_category_id === "object"
+      ? swatch.product_category_id?.id
+      : swatch.product_category_id;
+
+  const lrvCategory = getLRVCategory(categoryId);
 
   // Compact List View
   if (variant === "list" && layoutMode === "compact") {
@@ -187,15 +183,16 @@ export function SwatchCard({
               <div className="w-12 h-12 flex-shrink-0 relative rounded-md overflow-hidden border border-border">
                 <img
                   src={
-                    `${swatch.bucket_path}` === "default"
+                    `${swatch.bucket_path}` === "default" &&
+                    swatch.new_bucket === 0
                       ? `${path}/${swatch.photo}`
-                      : `${newPath}/${swatch.bucket_path}`
+                      : `${newPath}/${swatch.photo}`
                   }
-                  alt={swatch.title}
+                  alt={swatch.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.style.backgroundColor = swatch.color || "#ffffff";
+                    // target.style.backgroundColor = swatch.color || "#ffffff";
                     target.style.display = "block";
                     target.src = "";
                   }}
@@ -207,11 +204,11 @@ export function SwatchCard({
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
                     <h3 className="font-medium text-sm truncate text-foreground">
-                      {swatch.title}
+                      {swatch.name}
                     </h3>
                     <div className="flex items-center space-x-2 mt-1">
                       <code className="text-xs bg-muted px-1 py-0.5 rounded text-muted-foreground">
-                        {swatch.color ?? "#000000"}
+                        {"#000000"}
                       </code>
                       {/* <span className="text-xs text-green-600 font-medium">
                         {formatPrice(swatch.description ?? "")}
@@ -274,15 +271,16 @@ export function SwatchCard({
             <div className="relative aspect-square">
               <img
                 src={
-                  `${swatch.bucket_path}` === "default"
+                  `${swatch.bucket_path}` === "default" &&
+                  swatch.new_bucket === 0
                     ? `${path}/${swatch.photo}`
-                    : `${newPath}/${swatch.bucket_path}`
+                    : `${newPath}/${swatch.photo}`
                 }
-                alt={swatch.title}
+                alt={swatch.name}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.style.backgroundColor = swatch.color || "#ffffff";
+                  // target.style.backgroundColor = swatch.color || "#ffffff";
                   target.style.display = "block";
                   target.src = "";
                 }}
@@ -294,7 +292,7 @@ export function SwatchCard({
               {/* Compact color info */}
               <div className="absolute bottom-2 left-2 right-2">
                 <div className="text-white text-xs">
-                  <div className="font-medium truncate">{swatch.title}</div>
+                  <div className="font-medium truncate">{swatch.name}</div>
                   <div className="opacity-90">{swatch.description}</div>
                 </div>
               </div>
@@ -310,12 +308,14 @@ export function SwatchCard({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={(e) => handleToggleFavorite(e, swatch.id, profile)}
+                    onClick={(e) =>
+                      handleToggleFavorite(e, swatch.id!, profile)
+                    }
                     className={cn(
                       "h-6 w-6 p-0 bg-white/90 hover:bg-white",
                       profile?.favorite_materials !== null &&
                         profile?.favorite_materials !== undefined &&
-                        profile?.favorite_materials.includes(swatch.id) &&
+                        profile?.favorite_materials.includes(swatch.id!) &&
                         "text-red-500 hover:text-red-600"
                     )}
                   >
@@ -324,7 +324,7 @@ export function SwatchCard({
                         "h-3 w-3",
                         profile?.favorite_materials !== null &&
                           profile?.favorite_materials !== undefined &&
-                          profile?.favorite_materials.includes(swatch.id) &&
+                          profile?.favorite_materials.includes(swatch.id!) &&
                           "fill-current"
                       )}
                     />
@@ -334,7 +334,7 @@ export function SwatchCard({
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onOpenChange(swatch.id);
+                      onOpenChange(swatch.id!);
                     }}
                     className={cn("h-6 w-6 p-0 bg-white/90 hover:bg-white")}
                   >
@@ -383,7 +383,7 @@ export function SwatchCard({
         >
           <Card
             className="cursor-pointer hover:shadow-lg transition-all duration-300 overflow-hidden bg-card border-border"
-            onClick={() => handleViewDetails(swatch.id)}
+            onClick={() => handleViewDetails(swatch.id!)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -392,15 +392,16 @@ export function SwatchCard({
               <div className="w-24 h-24 flex-shrink-0 relative">
                 <img
                   src={
-                    `${swatch.bucket_path}` === "default"
+                    `${swatch.bucket_path}` === "default" &&
+                    swatch.new_bucket === 0
                       ? `${path}/${swatch.photo}`
-                      : `${newPath}/${swatch.bucket_path}`
+                      : `${newPath}/${swatch.photo}`
                   }
-                  alt={swatch.title}
+                  alt={swatch.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.style.backgroundColor = swatch.color || "#000000";
+                    // target.style.backgroundColor = swatch.color || "#000000";
                     target.style.display = "block";
                     target.src = "";
                   }}
@@ -414,10 +415,10 @@ export function SwatchCard({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="font-semibold text-lg truncate text-foreground">
-                        {swatch.title}
+                        {swatch.name}
                       </h3>
                       <Badge variant="outline" className="text-xs">
-                        {swatch.color}
+                        {/* {swatch.color} */}
                       </Badge>
                     </div>
 
@@ -459,14 +460,14 @@ export function SwatchCard({
                             variant="ghost"
                             size="sm"
                             onClick={(e) =>
-                              handleToggleFavorite(e, swatch.id, profile)
+                              handleToggleFavorite(e, swatch.id!, profile)
                             }
                             className={cn(
                               "h-8 w-8 p-0",
                               profile?.favorite_materials !== null &&
                                 profile?.favorite_materials !== undefined &&
                                 profile?.favorite_materials.includes(
-                                  swatch.id
+                                  swatch.id!
                                 ) &&
                                 "text-red-500 hover:text-red-600"
                             )}
@@ -477,7 +478,7 @@ export function SwatchCard({
                                 profile?.favorite_materials !== null &&
                                   profile?.favorite_materials !== undefined &&
                                   profile?.favorite_materials.includes(
-                                    swatch.id
+                                    swatch.id!
                                   ) &&
                                   "fill-current"
                               )}
@@ -487,7 +488,7 @@ export function SwatchCard({
                         <TooltipContent>
                           {profile?.favorite_materials !== null &&
                           profile?.favorite_materials !== undefined &&
-                          profile?.favorite_materials.includes(swatch.id)
+                          profile?.favorite_materials.includes(swatch.id!)
                             ? "Remove from favorites"
                             : "Add to favorites"}
                         </TooltipContent>
@@ -498,7 +499,7 @@ export function SwatchCard({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleViewDetails(swatch.id)}
+                            onClick={() => handleViewDetails(swatch.id!)}
                             className="h-8 w-8 p-0"
                           >
                             <ExternalLink className="h-4 w-4" />
@@ -549,7 +550,7 @@ export function SwatchCard({
       >
         <Card
           className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-card border-border"
-          onClick={() => handleViewDetails(swatch.id)}
+          onClick={() => handleViewDetails(swatch.id!)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -557,15 +558,15 @@ export function SwatchCard({
           <div className="relative aspect-square">
             <img
               src={
-                `${swatch.bucket_path}` === "default"
+                `${swatch.bucket_path}` === "default" && swatch.new_bucket === 0
                   ? `${path}/${swatch.photo}`
-                  : `${newPath}/${swatch.bucket_path}`
+                  : `${newPath}/${swatch.photo}`
               }
-              alt={swatch.title}
+              alt={swatch.name}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.style.backgroundColor = swatch.color || "#ffffff";
+                // target.style.backgroundColor = swatch.color || "#ffffff";
                 target.style.display = "block";
                 target.src = "";
               }}
@@ -578,7 +579,7 @@ export function SwatchCard({
             <div className="absolute bottom-3 left-3 right-3">
               <div className="flex items-center justify-between text-white text-sm">
                 <div>
-                  <div className="font-medium">{swatch.title}</div>
+                  <div className="font-medium">{swatch.name}</div>
                   <div className="text-xs opacity-90">
                     Description: {swatch.description}
                   </div>
@@ -601,12 +602,14 @@ export function SwatchCard({
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={(e) => handleToggleFavorite(e, swatch.id, profile)}
+                    onClick={(e) =>
+                      handleToggleFavorite(e, swatch.id!, profile)
+                    }
                     className={cn(
                       "h-8 w-8 p-0 bg-white/90 hover:bg-white",
                       profile?.favorite_materials !== null &&
                         profile?.favorite_materials !== undefined &&
-                        profile?.favorite_materials.includes(swatch.id) &&
+                        profile?.favorite_materials.includes(swatch.id!) &&
                         "text-red-500 hover:text-red-600"
                     )}
                   >
@@ -615,7 +618,7 @@ export function SwatchCard({
                         "h-4 w-4",
                         profile?.favorite_materials !== null &&
                           profile?.favorite_materials !== undefined &&
-                          profile?.favorite_materials.includes(swatch.id) &&
+                          profile?.favorite_materials.includes(swatch.id!) &&
                           "fill-current"
                       )}
                     />
@@ -624,7 +627,7 @@ export function SwatchCard({
                 <TooltipContent>
                   {profile?.favorite_materials !== null &&
                   profile?.favorite_materials !== undefined &&
-                  profile?.favorite_materials.includes(swatch.id)
+                  profile?.favorite_materials.includes(swatch.id!)
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </TooltipContent>
@@ -660,7 +663,7 @@ export function SwatchCard({
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-lg truncate text-foreground">
-                  {swatch.title}
+                  {swatch.name}
                 </CardTitle>
                 <CardDescription className="line-clamp-2 mt-1">
                   {swatch.description}
@@ -670,10 +673,10 @@ export function SwatchCard({
 
             <div className="flex items-center space-x-2 mt-2">
               <Badge variant="outline" className="text-xs">
-                {swatch.material_brand_id}
+                {/* {swatch.brand_id!} */}
               </Badge>
               <Badge variant="outline" className="text-xs">
-                {swatch.finish_needed}
+                {/* {swatch.finish_needed} */}
               </Badge>
             </div>
           </CardHeader>

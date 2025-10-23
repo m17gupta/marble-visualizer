@@ -25,6 +25,8 @@ export interface UserProfile {
   created_at?: string;
   updated_at?: string;
   favorite_materials?: number[];
+    email?:string
+  design_cord_profile_id?: number;
 }
 
 export type UserRole = "admin" | "designer" | "viewer" | "vendor" | "user";

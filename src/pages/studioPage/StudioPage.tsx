@@ -299,8 +299,8 @@ export function StudioPage() {
 
     
       <GetAllJobComments />
-
-      <MaterialData />
+{/* 
+      <MaterialData /> */}
     </>
   );
 }

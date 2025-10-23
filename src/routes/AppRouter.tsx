@@ -28,9 +28,11 @@ import VizualizerTemplate from "@/pages/vizualizer/VizualizerTemplate";
 import WorkSpace from "@/pages/workSpace/WorkSpace";
 import TryVisualizerPage from "@/pages/tryVizualizer/TryVisualizerPage";
 import MainSamplePage from "@/components/demoProject/samplePlayBook/MainSamplePage";
+import StudioTemplate from "@/pages/studioPage/StudioTemplate";
 
 export function AppRouter() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.userProfile);
 
   return (
     <Routes>
@@ -41,20 +43,48 @@ export function AppRouter() {
        <Route path="/try-visualizer/project/:id" element={<MainSamplePage />} />
       {/* <Route path="/try-visualizer/sample" element={<MainSamplePage />} />  */}
       {/* Public routes */}
-      <Route
+
+            <Route
+        path="/"
+        element={
+
+          <Homepage />
+        }
+      />
+      {/* <Route
         path="/"
         element={
           isAuthenticated ? <Navigate to="/projects" replace /> : <Homepage />
         }
-      />
+      /> */}
 
-      <Route
+      {/* <Route
         path="/login"
         element={
           isAuthenticated ? <Navigate to="/projects" replace /> : <LoginPage />
         }
-      />
+      /> */}
 
+ <Route
+        path="/login"
+        element={
+          isAuthenticated && profile && profile.role ? (
+            profile.role === "admin" ? (
+              <Navigate to="/admin" replace />
+            ) : profile.role === "support" ? (
+              <Navigate to="/support/dashboard" replace />
+            ) : profile.role === "manufacturer" ? (
+              <Navigate to="/app/dashboard" replace />
+            ) : profile.role === "user" ? (
+              <Navigate to="/app/projects" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          ) : (
+            <LoginPage />
+          )
+        }
+      />
       <Route
         path="/signup"
         element={
@@ -62,6 +92,63 @@ export function AppRouter() {
         }
       />
 
+  {/* Conditional admin/user/designer routes based on profile.role */}
+      {isAuthenticated && profile && profile.role === "admin" && (
+        <Route
+          path="/admin/*"
+          element={
+            <PrivateRoute requiredRole="admin">
+              <AdminRoutes />
+            </PrivateRoute>
+          }
+        />
+      )}
+
+        {isAuthenticated &&
+        profile &&
+        (profile.role === "user" || profile.role === "manufacturer") && (
+          <Route
+            path="/app"
+            element={
+              <PrivateRoute>
+                <MainLayout />
+              </PrivateRoute>
+            }
+          >
+            {profile.role === "manufacturer" ? (
+              <Route index element={<Navigate to="/app/dashboard" replace />} />
+            ) : (
+              <Route index element={<Navigate to="/app/projects" replace />} />
+            )}
+
+            {/* <Route index element={<Navigate to="/app/projects" replace />} /> */}
+            <Route path="projects" element={<ProjectHome />} />
+            <Route path="profile" element={<ProfilePage />} />
+
+            <Route path="studio/:id" element={<StudioTemplate />} />
+            {/* Uncomment below for default page */}
+            {/* <Route path="swatchbook/:id" element={< />} /> */}
+            {/* <Route path="swatchbook" element={<MaterialsBookPage />} /> */}
+            {/* <Route path="assets" element={<AssetsPage />} /> */}
+            <Route path="addSwatch" element={<SwatchAddPage />} />
+            {/* <Route
+              path="swatchbook/:id"
+              element={<CompactSwatchDetailsPage />}
+            /> */}
+            <Route path="addSwatch/:id" element={<SwatchAddPage />} />
+
+            {/* manufacturer routes */}
+            {profile.role === "manufacturer" && (
+              <>
+                {/* <Route path="dashboard" element={<DashBoardPage />} />
+                <Route path="company-profile" element={<CompanyProfile />} />
+                <Route path="materials" element={<MaterialLibrary />} />
+                <Route path="materials/:id" element={<MaterialDetail />} />
+                <Route path="addmaterials" element={<ProductAddEditPage />} /> */}
+              </>
+            )}
+          </Route>
+        )}
       <Route path="workspace" element={<WorkSpace />} />
       {/* Public project viewing - no authentication required */}
       <Route path="/project/public/:slug" element={<PublicProjectPage />} />
