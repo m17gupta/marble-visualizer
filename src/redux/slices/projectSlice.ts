@@ -257,7 +257,10 @@ const projectSlice = createSlice({
     },
     setIsDeleteModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isDeleteModalOpen = action.payload;
-    }
+    },
+    resetProjectSliceState: () => {
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -405,7 +408,8 @@ export const {
   clearError,
   updateIsCreateDialog,
   updateNewProjectCreated,
-  setIsDeleteModalOpen
+  setIsDeleteModalOpen,
+  resetProjectSliceState
 } = projectSlice.actions;
 
 export default projectSlice.reducer;

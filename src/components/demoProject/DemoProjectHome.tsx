@@ -1,12 +1,15 @@
 import * as React from "react";
 import { HeaderSection, PreviewBox, DemoRoomsPanel, QRDialog, GetDemoProject } from "./index";
-import { DEMO_IMAGES } from "./constants";
-import App from "@/App";
+
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { fetchMaterialSegments } from "@/redux/slices/materialSlices/materialSegmentSlice";
 import MaterialData from "../swatchBookData/materialData/MaterialData";
-import { ProjectsPage } from "@/pages/projectPage/ProjectsPage";
+
+import { Button } from "@/components/ui/button";
+import { IoArrowBack } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { resetProjectSliceState } from "@/redux/slices/projectSlice";
 
 interface DemoProjectHomeProps {
   onImageSelect?: (idx: number) => void;
@@ -23,9 +26,8 @@ const DemoProjectHome: React.FC<DemoProjectHomeProps> = ({
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [openQR, setOpenQR] = React.useState(false);
   const [selectedIdx, setSelectedIdx] = React.useState<number | null>(0);
-  const [selectedImageUrl, setSelectedImageUrl] = React.useState<string | null>(null);
-  const [searchValue, setSearchValue] = React.useState("");
 
+const navigate = useNavigate();
 
    React.useEffect(() => {
       dispatch(fetchMaterialSegments());
@@ -48,6 +50,11 @@ const DemoProjectHome: React.FC<DemoProjectHomeProps> = ({
     setSelectedIdx(idx);
     onImageSelect?.(idx);
   };
+    
+ const handleHome = () => {
+  dispatch(resetProjectSliceState())
+    navigate("/");
+  }
 
   return (
     <>
@@ -58,7 +65,17 @@ const DemoProjectHome: React.FC<DemoProjectHomeProps> = ({
       {/* page container */}
       <div className="mx-auto w-[90%] px-0 py-0 md:py-14 lg:py-14 sm:px-6 lg:px-8">
         {/* top two-column section */}
+          <Button
+          onClick={handleHome}
+          className=" mb-6 bg-gray-100 shadow-none  text-gray-800 border border-gray-100 flex items-center gap-1"
+        >
+        <IoArrowBack />
+         
+          Back
+        </Button>
         <div className="grid gap-8 lg:grid-cols-[1.1fr_minmax(0,1fr)]">
+
+             
           {/* left column */}
           <HeaderSection
             

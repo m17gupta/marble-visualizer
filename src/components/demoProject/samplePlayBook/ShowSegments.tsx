@@ -9,19 +9,7 @@ interface CategoryButtonsProps {
   variant?: "collapsed" | "expanded";
 }
 
-// Skeleton shimmer for sidebar
-const SidebarShimmer = () => (
-  <div className="p-3">
-    <div className="animate-pulse flex flex-col gap-4">
-      <div className="h-10 w-24 bg-green-200 rounded" />
-      <div className="h-8 w-20 bg-green-100 rounded" />
-      <div className="h-8 w-20 bg-green-100 rounded" />
-      <div className="h-8 w-20 bg-green-100 rounded" />
-      <div className="h-32 w-full bg-green-50 rounded" />
-      <div className="h-32 w-full bg-green-50 rounded" />
-    </div>
-  </div>
-);
+
 
 const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
   const dispatch = useDispatch();
@@ -48,8 +36,10 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
 
   if (!demoMasterArray || demoMasterArray.length === 0) {
     return (
-      <div >
-        <SidebarShimmer />
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <div className="text-gray-500 text-sm font-medium">
+          No segments found
+        </div>
       </div>
     );
   }
@@ -68,7 +58,6 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
               borderColor: seg,
               borderWidth: 1,
               color: seg,
-              // @ts-ignore
               "--tw-ring-color": seg,
             }
           : { borderColor: "rgba(0,0,0,0.08)", color: "#111827" }) as React.CSSProperties;
