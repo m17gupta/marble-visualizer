@@ -17,14 +17,14 @@ const HeroSection = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-marble-charcoal mb-6 leading-tight">
-            Plan your home renovation with{' '}
+            Design stunning marble patterns with{' '}
             <span className="bg-gradient-to-r from-yellow-700 to-yellow-400 bg-clip-text text-transparent">
-              AI
+              AI Magic
             </span>
           </h1>
           <p className="text-xl text-marble-gray-dark mb-8 max-w-3xl mx-auto leading-relaxed">
-            Transform your space in seconds with AI-powered design. Upload a photo, describe your vision,
-            and watch our advanced AI create stunning renovations that bring your dreams to life.
+            Create breathtaking marble designs instantly with our AI-powered visualization studio. 
+            Generate unique patterns, customize textures, and bring your marble vision to life in real-time.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -43,20 +43,20 @@ const HeroSection = () => {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-700 mb-2">1K+</div>
-              <div className="text-marble-gray-dark">Renovations Daily</div>
+              <div className="text-3xl font-bold text-yellow-700 mb-2">5K+</div>
+              <div className="text-marble-gray-dark">Designs Created Daily</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-700 mb-2">50+</div>
-              <div className="text-marble-gray-dark">Design Styles</div>
+              <div className="text-3xl font-bold text-yellow-700 mb-2">100+</div>
+              <div className="text-marble-gray-dark">Marble Patterns</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-700 mb-2">10M</div>
-              <div className="text-marble-gray-dark">Satisfied Customers</div>
+              <div className="text-3xl font-bold text-yellow-700 mb-2">50K+</div>
+              <div className="text-marble-gray-dark">Creative Users</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-700 mb-2">4.8⭐</div>
-              <div className="text-marble-gray-dark">App Store Rating</div>
+              <div className="text-3xl font-bold text-yellow-700 mb-2">4.9⭐</div>
+              <div className="text-marble-gray-dark">User Rating</div>
             </div>
           </div>
         </div>

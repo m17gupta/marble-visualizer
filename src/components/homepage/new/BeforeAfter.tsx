@@ -8,11 +8,11 @@ const BeforeAfter = () => {
   <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-marble-charcoal mb-4">
-            Transformations That Speak
+            AI Design Magic in Action
           </h2>
           <p className="text-xl text-marble-gray-dark max-w-2xl mx-auto">
-            See the dramatic difference our expert restoration makes. 
-            Every project showcases our commitment to excellence.
+            See how our AI transforms simple ideas into stunning marble visualizations. 
+            Every design showcases the power of artificial intelligence.
           </p>
         </div>
 
@@ -21,19 +21,19 @@ const BeforeAfter = () => {
             <div className="relative overflow-hidden rounded-xl shadow-card">
               <img 
                 src="/assets/marble/marble-before.jpg" 
-                alt="Marble surface before restoration - damaged and stained"
+                alt="Basic concept sketch or simple room layout"
                 className="w-full h-80 object-cover"
               />
               <div className="absolute top-4 left-4">
                 <span className="bg-destructive text-destructive-foreground px-4 py-2 rounded-full font-semibold">
-                  BEFORE
+                  INPUT
                 </span>
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-xl font-bold text-marble-charcoal mb-2">Damaged & Stained</h3>
+              <h3 className="text-xl font-bold text-marble-charcoal mb-2">Simple Concept</h3>
               <p className="text-marble-gray-dark">
-                Years of wear, stains, and scratches had left this marble surface dull and damaged.
+                Start with a basic idea, room photo, or simple sketch that you want to transform.
               </p>
             </div>
           </div>
@@ -42,19 +42,19 @@ const BeforeAfter = () => {
             <div className="relative overflow-hidden rounded-xl shadow-card">
               <img 
                 src="/assets/marble/marble-after.jpg" 
-                alt="Marble surface after restoration - gleaming and pristine"
+                alt="AI-generated stunning marble design visualization"
                 className="w-full h-80 object-cover"
               />
               <div className="absolute top-4 left-4">
                 <span className="bg-marble-gold text-marble-charcoal px-4 py-2 rounded-full font-semibold">
-                  AFTER
+                  AI RESULT
                 </span>
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-xl font-bold text-marble-charcoal mb-2">Restored & Gleaming</h3>
+              <h3 className="text-xl font-bold text-marble-charcoal mb-2">Stunning Visualization</h3>
               <p className="text-marble-gray-dark">
-                Our expert restoration brought back the marble's natural beauty and lustrous shine.
+                Our AI transforms your concept into photorealistic marble designs with incredible detail.
               </p>
             </div>
           </div>
@@ -63,17 +63,17 @@ const BeforeAfter = () => {
         <div className="text-center mt-12">
           <div className="bg-gradient-marble p-8 rounded-2xl max-w-4xl mx-auto shadow-card">
             <h3 className="text-2xl font-bold text-marble-charcoal mb-4">
-              Ready to Transform Your Marble?
+              Ready to Create Your Dream Design?
             </h3>
             <p className="text-marble-gray-dark mb-6">
-              Every marble surface has the potential to be stunning. Let our experts reveal its hidden beauty.
+              Every great marble design starts with an idea. Let our AI bring your vision to life instantly.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-gradient-gold hover:shadow-gold transition-all duration-300 text-marble-charcoal font-semibold px-8 py-3 rounded-lg">
-                Schedule Consultation
+                Start Creating Now
               </button>
               <button className="border border-marble-gray hover:bg-marble-gray hover:text-marble-white transition-all duration-300 text-marble-gray-dark font-semibold px-8 py-3 rounded-lg">
-                Call (555) 123-4567
+                View Gallery
               </button>
             </div>
           </div>

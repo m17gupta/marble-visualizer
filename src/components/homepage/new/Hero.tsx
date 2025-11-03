@@ -13,15 +13,15 @@ const Hero = () => {
       
       <div className="relative z-10 container mx-auto px-6 text-center text-marble-white">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-          Revive Your Marble's
+          Visualize Your Dream
           <span className="block bg-gradient-gold bg-clip-text text-transparent">
-            Timeless Beauty
+            Marble Designs
           </span>
         </h1>
         
         <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-marble-gray-light">
-          Expert marble restoration and renovation services that transform your surfaces 
-          into stunning masterpieces. Premium craftsmanship, guaranteed results.
+          AI-powered marble visualization studio that transforms your ideas into stunning 
+          marble designs. Create, customize, and visualize marble patterns instantly.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -29,14 +29,14 @@ const Hero = () => {
             size="lg" 
             className="bg-gradient-gold hover:shadow-gold transition-all duration-300 text-marble-charcoal font-semibold px-8 py-4 text-lg"
           >
-            Get Free Quote
+            Start Designing
           </Button>
           <Button 
             variant="outline" 
             size="lg"
             className="border-marble-white text-marble-white hover:bg-marble-white hover:text-marble-charcoal transition-all duration-300 px-8 py-4 text-lg"
           >
-            View Our Work
+            Explore Gallery
           </Button>
         </div>
       </div>

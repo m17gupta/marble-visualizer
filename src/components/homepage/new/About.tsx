@@ -1,28 +1,28 @@
 
 const About = () => {
   const stats = [
-    { number: "15+", label: "Years Experience" },
-    { number: "1000+", label: "Projects Completed" },
-    { number: "100%", label: "Satisfaction Rate" },
-    { number: "24/7", label: "Support Available" }
+    { number: "5+", label: "Years AI Research" },
+    { number: "50K+", label: "Designs Generated" },
+    { number: "99.9%", label: "Uptime Rate" },
+    { number: "24/7", label: "Cloud Processing" }
   ];
 
   const features = [
     {
-      title: "Master Craftsmen",
-      description: "Our certified artisans bring decades of specialized marble restoration expertise to every project."
+      title: "Advanced AI Technology",
+      description: "Our cutting-edge machine learning algorithms understand natural marble patterns and create stunning, realistic designs."
     },
     {
-      title: "Premium Materials",
-      description: "We use only the finest diamond polishing compounds and professional-grade sealants for lasting results."
+      title: "Instant Generation",
+      description: "Generate thousands of unique marble patterns in seconds with our lightning-fast AI processing engine."
     },
     {
-      title: "Guaranteed Results",
-      description: "Every restoration comes with our comprehensive warranty and satisfaction guarantee."
+      title: "Professional Quality",
+      description: "Every design meets professional standards with high-resolution output suitable for commercial projects."
     },
     {
-      title: "Eco-Friendly Process",
-      description: "Our environmentally responsible methods protect your family and preserve natural marble beauty."
+      title: "Cloud-Based Studio",
+      description: "Access your designs anywhere with our secure cloud platform that saves your creative work automatically."
     }
   ];
 
@@ -34,14 +34,14 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Why Choose Our
               <span className="block bg-gradient-gold bg-clip-text text-transparent">
-                Expert Team?
+                AI Studio?
               </span>
             </h2>
             
             <p className="text-xl text-marble-gray-light mb-8">
-              For over 15 years, we've been the trusted choice for marble restoration. 
-              Our passion for craftsmanship and commitment to excellence has made us 
-              the leading marble renovation specialists in the region.
+              We've revolutionized marble design with cutting-edge AI technology. 
+              Our passion for innovation and commitment to quality has made us 
+              the leading AI-powered marble visualization platform worldwide.
             </p>
 
             <div className="grid grid-cols-2 gap-6 mb-8">

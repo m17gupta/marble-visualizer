@@ -4,22 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const Services = () => {
   const services = [
     {
-      title: "Marble Restoration",
-      description: "Complete restoration of damaged marble surfaces, removing scratches, stains, and restoring original luster.",
+      title: "AI Pattern Generation",
+      description: "Create stunning marble patterns using advanced AI algorithms that understand natural marble formations and textures.",
   image: "/assets/marble/service-restoration.jpg",
-      features: ["Scratch Removal", "Stain Treatment", "Surface Leveling", "Color Enhancement"]
+      features: ["Smart Pattern AI", "Natural Texture Mapping", "Custom Color Schemes", "Real-time Preview"]
     },
     {
-      title: "Professional Polishing", 
-      description: "Diamond polishing techniques that bring out the natural beauty and shine of your marble surfaces.",
+      title: "3D Visualization Studio", 
+      description: "Experience your marble designs in immersive 3D environments with photorealistic rendering and lighting.",
   image: "/assets/marble/service-polishing.jpg",
-      features: ["Diamond Polishing", "High Gloss Finish", "Surface Protection", "Long-lasting Results"]
+      features: ["3D Room Visualization", "Photorealistic Rendering", "Multiple View Angles", "Interactive Design"]
     },
     {
-      title: "Sealing & Protection",
-      description: "Advanced sealing solutions that protect your marble from future damage and maintain its beauty.",
+      title: "Design Customization",
+      description: "Personalize every aspect of your marble design with our comprehensive suite of editing and customization tools.",
   image: "/assets/marble/service-polishing.jpg",
-      features: ["Premium Sealants", "Stain Prevention", "Water Protection", "Extended Durability"]
+      features: ["Color Palette Editor", "Pattern Intensity Control", "Texture Blending", "Style Variations"]
     }
   ];
 
@@ -30,31 +30,31 @@ const Services = () => {
   <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-marble-charcoal mb-4">
-            Our Expert Services
+            AI-Powered Features
           </h2>
           <p className="text-xl text-marble-gray-dark max-w-2xl mx-auto">
-            Comprehensive marble renovation solutions tailored to restore and enhance 
-            the natural beauty of your surfaces.
+            Comprehensive marble design tools powered by artificial intelligence to create 
+            stunning visualizations and bring your marble dreams to life.
           </p>
         </div>
 
         {/* Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mb-16">
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2">2K+</div>
-            <div className="text-gray-600 font-medium">Marble Restorations</div>
+            <div className="text-4xl md:text-5xl font-bold text-blue-600 mb-2">10K+</div>
+            <div className="text-gray-600 font-medium">Designs Created</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-purple-600 mb-2">150+</div>
-            <div className="text-gray-600 font-medium">Marble Types</div>
+            <div className="text-4xl md:text-5xl font-bold text-purple-600 mb-2">200+</div>
+            <div className="text-gray-600 font-medium">AI Pattern Styles</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2">50K</div>
-            <div className="text-gray-600 font-medium">Happy Clients</div>
+            <div className="text-4xl md:text-5xl font-bold text-green-600 mb-2">25K+</div>
+            <div className="text-gray-600 font-medium">Creative Users</div>
           </div>
           <div className="text-center">
             <div className="text-4xl md:text-5xl font-bold text-yellow-600 mb-2">4.9⭐</div>
-            <div className="text-gray-600 font-medium">Customer Rating</div>
+            <div className="text-gray-600 font-medium">User Rating</div>
           </div>
         </div>
 
