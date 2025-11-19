@@ -62,8 +62,8 @@ const { isLoading, isAuthenticated, error } = useSelector(
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "superadmin@codified.com",
+      password: "Jaipur@1!",
     },
   });
 

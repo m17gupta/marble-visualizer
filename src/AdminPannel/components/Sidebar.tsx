@@ -1,7 +1,8 @@
 // src/layouts/Sidebar.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import dzinlylogo from "../../../public/assets/image/dzinlylogo-icon.svg";
+// import dzinlylogo from "../../../public/assets/image/dzinlylogo-icon.svg";
+import marbleLogo from "../../../public/assets/marble/main-favicons.png";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/redux/store";
 import { logoutUser } from "@/redux/slices/user/authSlice";
@@ -314,7 +315,7 @@ function SidebarContent({
       {/* header */}
       <div className="flex items-center justify-between border-b px-2 py-3">
         <div className="flex items-center gap-3">
-          <img src={dzinlylogo} alt="Dzinly" className="h-8 w-8" />
+          <img src={marbleLogo} alt="Dzinly" className="h-8 w-8" />
           {!collapsed && <span className="font-semibold">Dzinly</span>}
         </div>
         <Button
