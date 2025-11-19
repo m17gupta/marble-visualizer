@@ -7,7 +7,7 @@ import axios from "axios";
 
 
 export class JobApi {
-  private static readonly TABLE_NAME = 'job';
+  private static readonly TABLE_NAME = 'jobs';
 
 
   // get master Data based of annotation points

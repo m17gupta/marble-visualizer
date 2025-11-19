@@ -25,10 +25,8 @@ export class AdminMaterialBrandService {
     try {
       const { data, error } = await supabase
         .from("product_brand")
-        .select(
-          `*,product_brand_categories(category_id(name),material_segment_id(name))`
-        )
-        .order(`${orderby}`, { ascending: order == "asec" ? true : false });
+        .select("*")
+        .order(orderby, { ascending: order === "asc" });
 
       const flattened = data?.map((d) => {
         if (d.product_brand_categories.length === 0) {
@@ -123,10 +121,13 @@ export class AdminMaterialBrandService {
 
   static async getMaterialStyles(product: ProductBrand): Promise<ApiResponse> {
     try {
+      // console.log("product-----",product)
       const { data, error } = await supabase
         .from("product_brand_styles")
         .select(`*`)
         .eq("product_brand_id", product.id);
+
+        // console.log("error in bran s stykles",error)
 
       const brandwithstyles = { ...product, styles: data };
 
@@ -256,11 +257,14 @@ export class AdminMaterialBrandService {
     try {
       const { data, error } = await supabase
         .from("product_brand_styles")
+        // .select("*")
         .select(
           `id,product_brand_id(id,name,url,description,logo),title,slug,description,sort_order,status`
         )
         .order(`${orderby}`, { ascending: order == "asec" ? true : false });
 
+
+        console.group("error in getting ",error)
       if (!error) {
         return {
           data: data as StylesModal[],

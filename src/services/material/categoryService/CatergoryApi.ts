@@ -62,7 +62,7 @@ export interface CategoryQueryParams {
 
 // Category API Class
 export class CategoryApi {
-    private static readonly TABLE_NAME = 'material_categories';
+    private static readonly TABLE_NAME = 'product_categories';
 
    
 

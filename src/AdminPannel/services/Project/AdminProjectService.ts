@@ -20,11 +20,13 @@ export class AdminProjectService {
     order: string
   ): Promise<ProjectApiResponse> {
     try {
+    
       const { data, error } = await supabase
         .from("projects")
-        .select(`id,name,user_id(full_name, id),description,status,thumbnail,created_at,updated_at,jobs:job(id,title,jobType,full_image,thumbnail,created_at,updated_at,segments,distance_ref)`) // join jobs
-        .order(`${orderby}`, { ascending: order == "asec" ? true : false });
+        .select("*,jobs(*)") // try the likely relation names
+        .order("created_at", { ascending: false });
 
+      console.log("project dtaat---", data);
       if (!error) {
         return {
           data: data as Project[],
@@ -73,6 +75,39 @@ export class AdminProjectService {
       console.error("Error in Admin Projects Services==>>>", error);
       return {
         data: {},
+        status: false,
+      } as ProjectApiResponse;
+    }
+  }
+
+    static async changeUserId(
+    projectId: number,
+    userId:string
+  ): Promise<{status:boolean}> {
+
+    try {
+      const {   error } = await supabase
+        .from("projects")
+        .update({ user_id: userId })
+        .eq("id", projectId);
+
+      if (!error) {
+        
+        return {
+         
+          status: true,
+        } 
+      } else {
+          
+        return {
+       
+          status: false,
+        }
+      }
+    } catch (error) {
+      console.log("err", error);
+      return {
+        data: [],
         status: false,
       } as ProjectApiResponse;
     }

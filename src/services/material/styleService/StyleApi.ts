@@ -38,7 +38,7 @@ export interface StyleApiResponse<T = unknown> {
 }
 
 export class StyleApi {
-  private static tableName = 'material_brand_styles';
+  private static tableName = 'product_brand_styles';
 
   /**
    * Create a new style

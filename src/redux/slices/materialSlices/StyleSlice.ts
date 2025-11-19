@@ -6,6 +6,7 @@ import { StyleService } from '@/services/material/styleService/StyleService';
 // Style State Interface
 interface StyleState {
   styles: StyleModel[];
+  IsStylesLoading:boolean,
   currentStyle: StyleModel | null;
   activeStyles: StyleModel[]; // Only status: true styles
   stylesByBrand: { [brandId: number]: StyleModel[] };
@@ -33,6 +34,7 @@ interface StyleState {
 // Initial State
 const initialState: StyleState = {
   styles: [],
+  IsStylesLoading:false,
   currentStyle: null,
   activeStyles: [],
   stylesByBrand: {},
@@ -131,16 +133,16 @@ const StyleSlice = createSlice({
     // Fetch Styles
     builder
       .addCase(fetchStyles.pending, (state) => {
-        state.isLoading = true;
+        state.IsStylesLoading = true;
         state.error = null;
       })
       .addCase(fetchStyles.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.styles = action.payload.styles;
         state.error = null;
       })
       .addCase(fetchStyles.rejected, (state, action) => {
-        state.isLoading = false;
+        state.IsStylesLoading = false;
         state.error = action.payload as string;
       });
   },

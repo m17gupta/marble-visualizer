@@ -39,7 +39,7 @@ export class AuthAPI {
       // Update last login
       await this.updateLastLogin(data.user.id);
       // const userPlan = await this.getUserPlan(data.user.id);
-  //  console.log("User plan fetched:", data.user);
+      //  console.log("User plan fetched:", data.user);
       const userAuth: User = {
         id: data.user.id,
         email: data.user.email || "",
@@ -97,8 +97,7 @@ export class AuthAPI {
 
       // First create the Supabase auth user
       const { data, error } = await supabase.auth.signUp(finalUser);
-     
-     
+
       console.log("Sign up error:", error);
       if (error) {
         throw new AuthError({
@@ -108,7 +107,7 @@ export class AuthAPI {
         });
       }
 
-       console.log("Sign up data:", data);
+      console.log("Sign up data:", data);
       if (!data.user || !data.session) {
         throw new AuthError({
           message: "Registration failed",
@@ -207,7 +206,7 @@ export class AuthAPI {
   static async getCurrentSession() {
     try {
       const { data, error } = await supabase.auth.getSession();
-   
+
       if (error) {
         throw new AuthError({
           message: error.message,
@@ -263,7 +262,7 @@ export class AuthAPI {
       const userAuth: User = {
         id: data.user.id,
         email: data.user.email || "",
-         name: data.user.user_metadata?.full_name || "",
+        name: data.user.user_metadata?.full_name || "",
         profile: 0, // Default profile ID or fetch from database
         is_active: true,
         status: "active",
@@ -731,7 +730,7 @@ export class AuthAPI {
    */
   private static async updateLastLogin(userId: string): Promise<void> {
     await supabase
-      .from("users")
+      .from("authenticate")
       .update({
         last_login: new Date().toISOString(),
         modified_at: new Date().toISOString(),
@@ -740,7 +739,7 @@ export class AuthAPI {
   }
 
   // get user plan
-  static async getUserPlan(userId: string): Promise<UserPlan > {
+  static async getUserPlan(userId: string): Promise<UserPlan> {
     try {
       const { data, error } = await supabase
         .from("user_subscriptions")
@@ -755,33 +754,40 @@ export class AuthAPI {
           code: "USER_PLAN_NOT_FOUND",
         });
       }
-   
-    let userPlanWithFeature: UserPlan | null = null;
-     userPlanWithFeature = {
-      id: data.id,
-      user_id: data.user_id,
-      status: data.status,
-      started_at: data.start_date,
-      expires_at: data.end_date,
-      payment_id: data.created_at,
-      created_at: data.updated_at,
-      credits: data.credits || 0,
-      // Include plan feature if available
-    };
-    if(data && data.plan_feature_id) {
-    const user_plan_feature = await this.searchPlanFeature(data.plan_feature_id);
-   
-    if (user_plan_feature) {
-      userPlanWithFeature.plan_features = user_plan_feature || null;
-    } else {
-      console.warn("No plan feature found for user plan:", data.plan_feature_id);
-    }
-  
 
-    if (!userPlanWithFeature) {
-        console.warn("No plan feature found for user plan:", userPlanWithFeature);
-   }
-  }
+      let userPlanWithFeature: UserPlan | null = null;
+      userPlanWithFeature = {
+        id: data.id,
+        user_id: data.user_id,
+        status: data.status,
+        started_at: data.start_date,
+        expires_at: data.end_date,
+        payment_id: data.created_at,
+        created_at: data.updated_at,
+        credits: data.credits || 0,
+        // Include plan feature if available
+      };
+      if (data && data.plan_feature_id) {
+        const user_plan_feature = await this.searchPlanFeature(
+          data.plan_feature_id
+        );
+
+        if (user_plan_feature) {
+          userPlanWithFeature.plan_features = user_plan_feature || null;
+        } else {
+          console.warn(
+            "No plan feature found for user plan:",
+            data.plan_feature_id
+          );
+        }
+
+        if (!userPlanWithFeature) {
+          console.warn(
+            "No plan feature found for user plan:",
+            userPlanWithFeature
+          );
+        }
+      }
       return userPlanWithFeature as UserPlan;
     } catch (error) {
       if (error instanceof AuthError) {
@@ -796,9 +802,7 @@ export class AuthAPI {
   }
 
   // searcg plan under plan_featuer table
-  static async searchPlanFeature(
-    planId: string
-  ): Promise<PlanFeature | null> {
+  static async searchPlanFeature(planId: string): Promise<PlanFeature | null> {
     try {
       const { data, error } = await supabase
         .from("plan_features")
@@ -834,7 +838,7 @@ export class AuthAPI {
   static async refreshSession() {
     try {
       const { data, error } = await supabase.auth.refreshSession();
-       console.log("Refresh session data:", data);
+      console.log("Refresh session data:", data);
       if (error) {
         throw new AuthError({
           message: error.message,

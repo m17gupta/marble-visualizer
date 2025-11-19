@@ -38,7 +38,7 @@ export interface BrandApiResponse<T = unknown> {
 }
 
 export class BrandApi {
-  private static tableName = 'material_brand';
+  private static tableName = 'product_brand';
 
   /**
    * Create a new brand

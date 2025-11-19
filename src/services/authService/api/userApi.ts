@@ -15,7 +15,7 @@ export class UserAPI {
   static async getUserById(userId: string): Promise<User> {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single();
@@ -226,7 +226,7 @@ export class UserAPI {
 
       // Get users with pagination
       const { data: users, error: usersError, count } = await supabase
-        .from('users')
+        .from('user_profiles')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
@@ -301,7 +301,7 @@ export class UserAPI {
       // Get corresponding users
       const userIds = profiles.map(profile => profile._id);
       const { data: users, error: usersError } = await supabase
-        .from('users')
+        .from('user_profiles')
         .select('*')
         .in('id', userIds);
 

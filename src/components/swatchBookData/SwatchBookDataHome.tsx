@@ -15,16 +15,16 @@ const SwatchBookDataHome = () => {
   const { isAuthenticated, isInitialized } = useSelector(
     (state: RootState) => state.auth
   );
-  const { categories, isLoading: categoriesLoading } = useSelector(
+  const { categories, iscategoriesLoading } = useSelector(
     (state: RootState) => state.categories
   );
-  const { brands, isLoading: brandsLoading } = useSelector(
+  const { brands, isBrandsLoading } = useSelector(
     (state: RootState) => state.brands
   );
-  const { materials, isLoading: materialsLoading } = useSelector(
+  const { materials, isMaterialsLoading } = useSelector(
     (state: RootState) => state.materials
   );
-  const { styles, isLoading: stylesLoading } = useSelector(
+  const { styles,  IsStylesLoading } = useSelector(
     (state: RootState) => state.styles
   );
 
@@ -67,20 +67,20 @@ const SwatchBookDataHome = () => {
     }
 
     // Fetch categories only if not already loaded and not currently loading
-    if (categories.length === 0 && !categoriesLoading) {
+    if (categories.length === 0 && !iscategoriesLoading) {
       fetchAllCategories();
     }
     // Fetch brands only if not already loaded and not currently loading
-    if (brands.length === 0 && !brandsLoading) {
+    if (brands.length === 0 && !isBrandsLoading) {
       fetchAllBrands();
     }
 
     // Fetch materials only if not already loaded and not currently loading
-    if (materials.length === 0 && !materialsLoading) {
+    if (materials.length === 0 && !isMaterialsLoading) {
       fetchAllMaterials();
     }
 
-    if (styles.length === 0 && !stylesLoading) {
+    if (styles.length === 0 && !IsStylesLoading) {
       fetchAllStyles();
     }
   }, [
@@ -90,10 +90,10 @@ const SwatchBookDataHome = () => {
     brands.length,
     materials.length,
     styles.length,
-    stylesLoading,
-    categoriesLoading,
-    brandsLoading,
-    materialsLoading,
+    IsStylesLoading,
+    iscategoriesLoading,
+    isBrandsLoading,
+    isMaterialsLoading,
     fetchAllCategories,
     fetchAllBrands,
     fetchAllMaterials,

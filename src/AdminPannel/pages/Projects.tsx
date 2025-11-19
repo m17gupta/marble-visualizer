@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import {
   adminFetchProjects,
+  changeProjectUserId,
   handleSelectViewProject,
   handlesortingprojects,
 } from "../reduxslices/adminProjectSlice";
@@ -38,6 +39,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { JobModel } from "@/models/jobModel/JobModel";
+import { MdAddHome } from "react-icons/md";
+import { toast } from "sonner";
+import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
+import { addbreadcrumb } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
+import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 
 // Types
 interface ProjectUser {
@@ -105,7 +112,7 @@ const Projects: React.FC = () => {
         .lte("created_at", endDate)
         .order("created_at", { ascending: true });
 
-       // console.log("fetchedProjects", fetchedProjects);
+      // console.log("fetchedProjects", fetchedProjects);
       if (error) {
         console.error("Error fetching projects:", error);
         return;
@@ -165,22 +172,22 @@ const Projects: React.FC = () => {
 
   const handleCreateProject = () => {
     // Logic to open a modal or navigate to a project creation page
-   // console.log("Create Project clicked");
-    navigate('/admin/add-project');
-  }
+    // console.log("Create Project clicked");
+    navigate("/admin/add-project");
+  };
 
-    const getJobByProjectId = async (projectId: number) => {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("project_id", projectId)
-        .single();
-      if (error) {
-        console.error("Error fetching job:", error);
-        return null;
-      }
-      return data as JobModel;
-    };
+  const getJobByProjectId = async (projectId: number) => {
+    const { data, error } = await supabase
+      .from("jobs")
+      .select("*")
+      .eq("project_id", projectId)
+      .single();
+    if (error) {
+      console.error("Error fetching job:", error);
+      return null;
+    }
+    return data as JobModel;
+  };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -195,7 +202,7 @@ const Projects: React.FC = () => {
           </p>
         </div>
 
-          <button
+        <button
           onClick={handleCreateProject}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
         >
@@ -312,6 +319,8 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onView }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const getStatusBadge = (status: string) => {
     const statusStyles = {
       active: "bg-green-100 text-green-800 border-green-200",
@@ -332,6 +341,41 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onView }) => {
     );
   };
 
+  const handleAddDemo = async () => {
+    const response = await dispatch(
+      changeProjectUserId({
+        projectId: project.id,
+        userId: "33eacb82-d1c8-4661-984c-635307b411de",
+      })
+    ).unwrap();
+
+    if (response?.status) {
+      toast.info("Project added to demo successfully");
+    }
+  };
+
+  const handleProjectClick = async () => {
+    if (!project?.id || !project?.jobs?.length) return;
+    if (!project?.id || !project?.jobs?.length) return;
+    const projectImage = project.jobs[0]?.full_image;
+    const jobId = project.jobs[0]?.id;
+    if (!jobId || !projectImage) return;
+
+    dispatch(updateJobList(project.jobs));
+    dispatch(addbreadcrumb("Studio"));
+    dispatch(setCurrentImageUrl(projectImage));
+    dispatch(addHouseImage(projectImage));
+    dispatch(updateSidebarHeaderCollapse(false));
+    // setSelectedProjectId(project.id);
+    // dispatch(setCurrentProject(project));
+
+    //single pallet genAi slice
+    //dispatch(setGenAiImageJobIdRequest({ jobId, imageUrl: projectImage }));
+
+    // Navigate to studio
+    navigate(`/admin/studio/${project.id}`);
+  };
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200">
       {/* Project Image */}
@@ -341,6 +385,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onView }) => {
             src={project.jobs[0].full_image || ""}
             alt={project.name}
             className="w-full h-full object-cover"
+              onClick={handleProjectClick}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -428,6 +473,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onView }) => {
             >
               <Copy className="w-4 h-4" />
             </button>
+
+            {/* ADD HOME */}
+            <div className="relative group" onClick={handleAddDemo}>
+              <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                <MdAddHome className="w-4 h-4" />
+              </button>
+              <span className="absolute left-1/2 -translate-x-1/2 -top-7 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+                Add to demo
+              </span>
+            </div>
             <button
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
               title="More"

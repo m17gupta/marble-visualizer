@@ -85,6 +85,28 @@ export const fetchCurrentProjectJobs = createAsyncThunk(
   }
 );
 
+// change project to demo user
+export const changeProjectUserId = createAsyncThunk(
+  "projects/changeProjectUserId",
+  async (
+    { projectId, userId }: { projectId: number; userId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await AdminProjectService.changeUserId(projectId, userId);
+      if (response.status !== false) {
+        return response
+      } else {
+        return null;
+      }
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to change project user"
+      );
+    }
+  }
+);
+
 const adminProjectSlice = createSlice({
   name: "adminProjectSlice",
   initialState,

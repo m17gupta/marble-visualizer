@@ -6,6 +6,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 interface MaterialsState {
   materials: MaterialModel[];
+  isMaterialsLoading:boolean,
   wallMaterials: MaterialModel[];
   doorMaterials: MaterialModel[];
   roofMaterials: MaterialModel[];
@@ -26,6 +27,7 @@ interface MaterialsState {
 
 const initialState: MaterialsState = {
   materials: [],
+  isMaterialsLoading:false,
   wallMaterials: [],
   doorMaterials: [],  
   roofMaterials: [],
@@ -224,11 +226,11 @@ const materialsSlice = createSlice({
     builder
       // Fetch materials
       .addCase(fetchMaterials.pending, (state) => {
-        state.isLoading = true;
+        state.isMaterialsLoading = true;
         state.error = null;
       })
       .addCase(fetchMaterials.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         const { materials, pagination } = action.payload;
         state.materials = materials;
         state.pagination = pagination || {
@@ -239,7 +241,7 @@ const materialsSlice = createSlice({
         };
       })
       .addCase(fetchMaterials.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isMaterialsLoading = false;
         state.error = action.payload as string;
       })
 

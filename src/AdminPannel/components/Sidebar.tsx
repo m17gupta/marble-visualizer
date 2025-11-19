@@ -1,15 +1,16 @@
+// src/layouts/Sidebar.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AdminPage } from "../AdminPanel";
 import dzinlylogo from "../../../public/assets/image/dzinlylogo-icon.svg";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/redux/store";
 import { logoutUser } from "@/redux/slices/user/authSlice";
 import { clearCurrentJob } from "@/redux/slices/jobSlice";
 import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import { clearBreadcrumbs } from "@/redux/slices/visualizerSlice/workspaceSlice";
-import { toast } from "sonner";
-import { AnimatePresence, motion } from "framer-motion";
+import Setting from "@/layouts/Setting";
+import { cn } from "@/lib/utils";
+
 import {
   LayoutDashboard,
   BarChart3,
@@ -27,13 +28,56 @@ import {
   Menu,
   ChevronRight,
   ChevronLeft,
-  Settings,
+  Settings as SettingsIcon,
   Database,
   FileText,
+  Settings,
 } from "lucide-react";
-//import marbleLogo from "../../../public/assets/image/marble-logo-icon.svg";
-import marbleLogo from "../../../public/assets/marble/main-favicons.png";
-import Setting from "@/layouts/Setting";
+
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+export type AdminPage =
+  | "dashboard"
+  | "projects"
+  | "analytics"
+  | "demo_project"
+  | "materials"
+  | "addmaterials"
+  | "material-attributes"
+  | "brand"
+  | "style"
+  | "category"
+  | "material-segment"
+  | "material-connections"
+  | "user"
+  | "user-plan"
+  | "data-library"
+  | "roles"
+  | "permissions"
+  | "word-assistant"
+  | "material"
+  | "addSwatch"
+  | "add-project"
+  | "reports";
+
+
 
 interface SidebarProps {
   currentPage: AdminPage;
@@ -47,63 +91,23 @@ interface NavigationItem {
   section?: "main" | "documents";
 }
 
+/* ---------- data ---------- */
 const navigationItems: NavigationItem[] = [
-  {
-    id: "dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    section: "main",
-  },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, section: "main" },
   { id: "projects", label: "Projects", icon: FolderOpen, section: "main" },
   { id: "analytics", label: "Analytics", icon: BarChart3, section: "main" },
-  {
-    id: "demo_project",
-    label: "Demo Project",
-    icon: FolderOpen,
-    section: "main",
-  },
+  { id: "demo_project", label: "Demo Project", icon: FolderOpen, section: "main" },
 ];
 
 const documentItems: NavigationItem[] = [
-  {
-    id: "materials",
-    label: "Materials Library",
-    icon: Package,
-    section: "documents",
-  },
-  {
-    id: "addmaterials",
-    label: "Add Materials",
-    icon: Plus,
-    section: "documents",
-  },
-  {
-    id: "material-attributes",
-    label: "Attributes",
-    icon: Settings,
-    section: "documents",
-  },
+  { id: "materials", label: "Materials Library", icon: Package, section: "documents" },
+  { id: "addmaterials", label: "Add Materials", icon: Plus, section: "documents" },
+  { id: "material-attributes", label: "Attributes", icon: SettingsIcon, section: "documents" },
   { id: "brand", label: "Brands", icon: Tag, section: "documents" },
   { id: "style", label: "Styles", icon: Palette, section: "documents" },
-  {
-    id: "category",
-    label: "Categories",
-    icon: Grid3x3,
-    section: "documents",
-  },
-
-  {
-    id: "material-segment",
-    label: "Segments",
-    icon: Users,
-    section: "documents",
-  },
-  {
-    id: "material-connections",
-    label: "Connections",
-    icon: Link,
-    section: "documents",
-  },
+  { id: "category", label: "Categories", icon: Grid3x3, section: "documents" },
+  { id: "material-segment", label: "Segments", icon: Users, section: "documents" },
+  { id: "material-connections", label: "Connections", icon: Link, section: "documents" },
 ];
 
 const userManagementItems: NavigationItem[] = [
@@ -116,215 +120,320 @@ const userManagementItems: NavigationItem[] = [
   },
   { id: "roles", label: "User Roles", icon: User, section: "main" },
   { id: "permissions", label: "Permissions", icon: Settings, section: "main" },
+  { id: "user-plan", label: "Subscriptions", icon: CreditCard, section: "main" },
 ];
 
 const toolsItems: NavigationItem[] = [
-  {
-    id: "data-library",
-    label: "Data Library",
-    icon: Database,
-    section: "documents",
-  },
+  { id: "data-library", label: "Data Library", icon: Database, section: "documents" },
   { id: "reports", label: "Reports", icon: FileText, section: "documents" },
 ];
 
+/* ---------- helpers ---------- */
+function selectUser(state: RootState) {
+  // apne store ke hisaab se adjust kar sakte ho
+  const u =
+    (state as any)?.auth?.user ||
+    (state as any)?.user?.profile ||
+    (state as any)?.user;
+  return {
+    name: u?.name || u?.fullName || "shadcn",
+    email: u?.email || "m@example.com",
+    avatar: u?.avatarUrl || u?.image || "",
+  };
+}
+
+function NavSection({
+  title,
+  items,
+  collapsed,
+  currentPage,
+  onClick,
+}: {
+  title: string;
+  items: NavigationItem[];
+  collapsed: boolean;
+  currentPage: AdminPage;
+  onClick: (id: AdminPage) => void;
+}) {
+  return (
+    <div className="space-y-1">
+      {!collapsed && (
+        <div className="px-3 py-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {title}
+          </p>
+        </div>
+      )}
+      <div className="space-y-1">
+        {items.map((item) => {
+          const Icon = item.icon;
+          const active = currentPage === item.id;
+
+          const content = (
+            <Button
+              key={item.id}
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-3 h-8 rounded-lg text-gray-600 hover:bg-gray-50 bg-transparent hover:border-none border-none focus:ring-outline-none focus:ring-0",
+                "hover:bg-gray-50 hover:text-accent-foreground focus:ring-outline-none focus:ring-0",
+                "data-[active=true]:bg-gray-50 data-[active=true]:text-primary focus:ring-outline-none focus:ring-0",
+                collapsed && "justify-center px-2",
+                !collapsed && "px-3"
+              )}
+              data-active={active}
+              onClick={() => onClick(item.id)}
+              aria-current={active ? "page" : undefined}
+            >
+              <Icon
+                className={cn(
+                  "h-4 w-4",
+                  active ? "text-primary" : "text-muted-foreground"
+                )}
+              />
+              {!collapsed && <span className="text-sm">{item.label}</span>}
+            </Button>
+          );
+
+          return collapsed ? (
+            <TooltipProvider key={item.id}>
+              <Tooltip delayDuration={150}>
+                <TooltipTrigger asChild>{content}</TooltipTrigger>
+                <TooltipContent side="right">{item.label}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            content
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- user menu (shadcn style, dynamic) ---------- */
+function UserMenu({
+  collapsed,
+  onLogout,
+  name,
+  email,
+  avatar,
+}: {
+  collapsed: boolean;
+  onLogout: () => void;
+  name: string;
+  email: string;
+  avatar?: string;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full h-12 rounded-lg justify-start gap-3",
+            "hover:bg-accent hover:text-accent-foreground",
+            collapsed ? "justify-center px-2" : "px-3"
+          )}
+        >
+          <Avatar className="h-6 w-6">
+            {!!avatar && <AvatarImage src={avatar} alt={name} />}
+            <AvatarFallback>
+              {name?.[0]?.toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          {!collapsed && (
+            <div className="flex min-w-0 flex-col text-left">
+              <span className="truncate text-sm font-medium leading-4">{name}</span>
+              <span className="truncate text-xs text-muted-foreground">{email}</span>
+            </div>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent side="right" align="start" className="w-64">
+        <DropdownMenuLabel className="flex items-center gap-3">
+          <Avatar className="h-6 w-6">
+            {!!avatar && <AvatarImage src={avatar} alt={name} />}
+            <AvatarFallback>{name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-medium leading-4">{name}</div>
+            <div className="truncate text-xs text-muted-foreground">{email}</div>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Upgrade to Pro
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Account
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Billing
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Notifications
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onSelect={onLogout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/* ---------- actual sidebar content ---------- */
+function SidebarContent({
+  collapsed,
+  setCollapsed,
+  currentPage,
+  onNav,
+  onOpenSettings,
+  onLogout,
+  name,
+  email,
+  avatar,
+}: {
+  collapsed: boolean;
+  setCollapsed: (b: boolean) => void;
+  currentPage: AdminPage;
+  onNav: (p: AdminPage) => void;
+  onOpenSettings: () => void;
+  onLogout: () => void;
+  name: string;
+  email: string;
+  avatar?: string;
+}) {
+  return (
+    <div className={cn("flex h-screen flex-col border-r bg-background", collapsed ? "w-16" : "w-64")}>
+      {/* header */}
+      <div className="flex items-center justify-between border-b px-2 py-3">
+        <div className="flex items-center gap-3">
+          <img src={dzinlylogo} alt="Dzinly" className="h-8 w-8" />
+          {!collapsed && <span className="font-semibold">Dzinly</span>}
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="ml-auto hidden md:flex"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      {/* nav */}
+      <ScrollArea className="flex-1 px-2 py-4">
+        <div className="space-y-6">
+          <NavSection title="Workspace" items={navigationItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
+          <NavSection title="Materials Library" items={documentItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
+          <NavSection title="User Management" items={userManagementItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
+          <NavSection title="Tools & Features" items={toolsItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
+        </div>
+      </ScrollArea>
+
+      {/* footer: settings + user menu */}
+      <div className="border-t p-2 space-y-2">
+      
+        {/* <Button
+          variant="ghost"
+          className={cn(
+            "w-full h-10 rounded-lg justify-start",
+            "hover:bg-accent hover:text-accent-foreground",
+            collapsed && "justify-center"
+          )}
+          onClick={onOpenSettings}
+        >
+          <SettingsIcon className="h-4 w-4 text-muted-foreground" />
+          {!collapsed && <span className="ml-3 text-sm">Settings</span>}
+        </Button> */}
+
+        {/* Dynamic user card (shadcn style) */}
+        <UserMenu
+          collapsed={collapsed}
+          onLogout={onLogout}
+          name={name}
+          email={email}
+          avatar={avatar}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ---------- wrapper (mobile + desktop) ---------- */
 const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false); // desktop default expanded
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const { name, email, avatar } = useSelector(selectUser);
 
   const handleNavClick = (page: AdminPage) => {
     navigate(`/admin/${page}`);
     onPageChange(page);
-    setMobileOpen(false);
   };
 
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed);
-  };
-
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
       dispatch(clearCurrentJob());
       dispatch(clearCurrentImage());
       dispatch(clearBreadcrumbs());
-      toast.success("Logged out successfully");
       window.location.href = "/";
-    } catch (error) {
+    } catch {
       navigate("/", { replace: true });
     }
   };
 
-  const renderNavItem = (item: NavigationItem) => {
-    const Icon = item.icon;
-    const isActive = currentPage === item.id;
-
-    return (
-      <button
-        key={item.id}
-        onClick={() => handleNavClick(item.id)}
-        className={`group flex items-center w-full px-3 py-2.5 rounded-lg text-left transition-all duration-200 relative 
-            ${!collapsed ? "justify-start" : "justify-center"}
-          ${
-            isActive
-              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md hover:from-blue-600 hover:to-blue-700"
-              : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-      >
-        <Icon
-          className={`w-4 h-4 transition-colors ${
-            isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"
-          }`}
-        />
-        {!collapsed && (
-          <span
-            className={`ml-3 font-medium text-sm ${
-              isActive ? "text-white" : "text-gray-700"
-            }`}
-          >
-            {item.label}
-          </span>
-        )}
-      </button>
-    );
-  };
-
-  const renderSection = (title: string, items: NavigationItem[]) => {
-    if (collapsed) {
-      return <div className="space-y-1">{items.map(renderNavItem)}</div>;
-    }
-
-    return (
-      <div className="space-y-1">
-        <div className="px-3 py-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            {title}
-          </p>
-        </div>
-        <div className="space-y-1">{items.map(renderNavItem)}</div>
-      </div>
-    );
-  };
-
-  console.log(collapsed, mobileOpen);
-
   return (
     <>
-      {/* Mobile Hamburger */}
-      <Setting
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen((prev) => !prev)}
-      />
-      <button
-        className={`absolute z-50 p-3 bg-white rounded-lg shadow-lg lg:hidden  hover:shadow-xl transition-shadow ${
-          mobileOpen ? "top-2 left-[200px]" : "top-4 left-4"
-        }`}
-        onClick={() => {
-          setMobileOpen((prev) => !prev);
-          setCollapsed((prev) => !prev);
-        }}
-      >
-        <Menu className="w-6 h-6 text-gray-700" />
-      </button>
+      <Setting isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
-      {/* Sidebar */}
-      <div
-        className={`
-          flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex-shrink-0
-          ${collapsed ? "w-16" : "w-64"}
-          ${
-            mobileOpen
-              ? "fixed z-40 w-64 shadow-xl lg:relative lg:shadow-none"
-              : "hidden lg:flex"
-          }
-        `}
-      >
-        {/* Header */}
-        <div className="relative flex items-center p-4 ps-3 border-b border-gray-200">
-          <div className="flex items-end space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white-600">
-              <img src={marbleLogo} alt="Marble Logo" className="w-10 h-10" />
-            </div>
-            {!collapsed && (
-              <div className="flex flex-col">
-                <span className="text-lg font-bold text-gray-900">Marble</span>
-              </div>
-            )}
-          </div>
-
-          {/* Toggle Button - Always positioned at the right */}
-          <button
-            onClick={toggleSidebar}
-            className={`relative ${
-              collapsed ? "left-[30]" : "left-[100px]"
-            }  p-1.5 rounded-md hover:bg-gray-100 transition-colors md:block hidden`}
-          >
-            {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1  overflow-y-auto px-1 py-4">
-          <div className="space-y-6">
-            {/* Workspace Section */}
-            {renderSection("Workspace", navigationItems)}
-
-            {/* Materials Library Section */}
-            {renderSection("Materials Library", documentItems)}
-
-            {/* User Management Section */}
-            {renderSection("User Management", userManagementItems)}
-
-            {/* Tools & Features Section */}
-            {renderSection("Tools & Features", toolsItems)}
-          </div>
-        </nav>
-
-        {/* User Profile and Settings */}
-        <div className="p-2 border-t border-gray-200">
-          <div className="space-y-2">
-            {/* Settings */}
-            <button
-              className={`flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors ${
-                collapsed ? "justify-center" : ""
-              }`}
-              onClick={() => setIsSettingsOpen(true)}
-            >
-              <Settings className="w-4 h-4 text-gray-500" />
-              {!collapsed && (
-                <span className="ml-3 text-sm font-medium">Settings</span>
-              )}
-            </button>
-
-            {/* Sign Out */}
-            {/* <button
-              onClick={handleSignOut}
-              className={`flex items-center w-full px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors ${
-                collapsed ? "justify-center" : ""
-              }`}
-            >
-              <LogOut className="w-6 h-6" />
-              {!collapsed && (
-                <span className="ml-3 text-sm font-medium">Sign Out</span>
-              )}
-            </button> */}
-          </div>
-        </div>
-        {/* </ScrollArea> */}
+      {/* mobile */}
+      <div className="md:hidden fixed left-4 top-4 z-50">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="secondary" size="icon" className="shadow">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-72">
+            <SidebarContent
+              collapsed={false}
+              setCollapsed={() => {}}
+              currentPage={currentPage}
+              onNav={handleNavClick}
+              onOpenSettings={() => setIsSettingsOpen(true)}
+              onLogout={handleLogout}
+              name={name}
+              email={email}
+              avatar={avatar}
+            />
+          </SheetContent>
+        </Sheet>
       </div>
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-          onClick={() => {
-            setCollapsed((prev) => !prev);
-            setMobileOpen((prev) => !prev);
-          }}
-        ></div>
-      )}
+
+      {/* desktop */}
+      <div className="hidden md:block">
+        <SidebarContent
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+          currentPage={currentPage}
+          onNav={handleNavClick}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onLogout={handleLogout}
+          name={name}
+          email={email}
+          avatar={avatar}
+        />
+      </div>
     </>
   );
 };

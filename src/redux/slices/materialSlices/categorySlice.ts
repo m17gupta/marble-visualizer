@@ -6,6 +6,7 @@ import type { CreateCategoryRequest, UpdateCategoryRequest } from '@/services/ma
 // Category State Interface
 interface CategoryState {
   categories: CategoryModel[];
+  iscategoriesLoading:boolean;
   currentCategory: CategoryModel | null;
   activeCategories: CategoryModel[]; // Only status: true categories
   isLoading: boolean;
@@ -30,6 +31,7 @@ interface CategoryState {
 // Initial State
 const initialState: CategoryState = {
   categories: [],
+  iscategoriesLoading:false,
   currentCategory: null,
   activeCategories: [],
   isLoading: false,
@@ -384,11 +386,11 @@ const categorySlice = createSlice({
     builder
       // Fetch categories
       .addCase(fetchCategories.pending, (state) => {
-        state.isLoading = true;
+        state.iscategoriesLoading = true;
         state.error = null;
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.categories = action.payload.categories;
         // state.pagination = action.payload.pagination;
       })
@@ -430,7 +432,7 @@ const categorySlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchCategoryByTitle.fulfilled, (state, action) => {
+      .addCase(fetchCategoryByTitle.fulfilled, (state) => {
         state.isLoading = false;
        // state.currentCategory = action.payload;
       })

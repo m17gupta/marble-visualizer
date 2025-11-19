@@ -6,6 +6,7 @@ import type { CreateBrandRequest, UpdateBrandRequest } from '@/services/material
 // Brand State Interface
 interface BrandState {
   brands: BrandModel[];
+  isBrandsLoading:boolean,
   currentBrand: BrandModel | null;
   activeBrands: BrandModel[]; // Only status: true brands
   brandsByCategory: Record<number, BrandModel[]>; // Brands grouped by category ID
@@ -32,6 +33,7 @@ interface BrandState {
 // Initial State
 const initialState: BrandState = {
   brands: [],
+  isBrandsLoading:false,
   currentBrand: null,
   activeBrands: [],
   brandsByCategory: {},
@@ -481,16 +483,16 @@ const brandSlice = createSlice({
     // Fetch Brands
     builder
       .addCase(fetchBrands.pending, (state) => {
-        state.isLoading = true;
+        state.isBrandsLoading = true;
         state.error = null;
       })
       .addCase(fetchBrands.fulfilled, (state, action) => {
-        state.isLoading = false;
+        // state.isLoading = false;
         state.brands = action.payload.brands;
         state.error = null;
       })
       .addCase(fetchBrands.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isBrandsLoading = false;
         state.error = action.payload as string;
       });
 
