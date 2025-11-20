@@ -18,6 +18,8 @@ export interface SegmentModal {
   updated_at?: string;
   seg_area_pixel?:number
   group_label_system?: string;
+    additionalArea?: number;
+  centroid?: { x: number; y: number };
 }
 
 

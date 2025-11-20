@@ -179,5 +179,27 @@ async createSegment(segmentData: SegmentModal): Promise<SegmentApiResponse> {
       throw error;
     }
   }
+
+
+
+   async deleteSegmentBySegId(segmentId: number): Promise<{ status: boolean }> {
+  try {
+    const { error } = await supabase
+      .from('job_segments')
+      .delete()
+      .eq('id', segmentId);
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      status: true,
+    };
+  } catch (error) {
+    console.error('Error deleting segment:', error);
+    throw error;
+  }
+}
 }
 

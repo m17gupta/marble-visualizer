@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { MasterGroupModel, MasterModel } from "@/models/jobModel/JobModel";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
-import { setCanvasType, updateHoverGroup } from "@/redux/slices/canvasSlice";
+import { setCanvasType, updateHoverGroup, updateIsEditSegments } from "@/redux/slices/canvasSlice";
 import {
   addUserSelectedSegment,
   updatedSelectedGroupSegment,
@@ -28,6 +28,7 @@ import { updateSegmentIntoRequestPallet } from "@/redux/slices/visualizerSlice/g
 import { SegmentEditComp } from "./editSegment/SegmentEditComp";
 import DeleteSegModal from "./deleteSegModal/DeleteSegModal";
 import { resetSelectedSegment, updateClearEditCanvas } from "@/redux/slices/segmentsSlice";
+import { SegmentInfoPanel } from "../segmentInfo";
 
 const StudioTabs = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,14 +43,27 @@ const StudioTabs = () => {
 
   const [edit, setEdit] = useState(false);
   const [optionEdit, setOptionEdit] = useState<string | null>(null);
-
+  const [isInfoTab, setIsInfoTab] = useState(false);
   const { userSelectedSegment } = useSelector(
     (state: RootState) => state.masterArray
   );
 
-  const handleEditOption = (data: boolean, option: string) => {
-    setEdit(data);
-    setOptionEdit(option);
+  const handleEditOptions = (data: boolean, option: string) => {
+    if (option === "edit-annotation") {
+      setEdit(data);
+      setOptionEdit(option);
+      setIsInfoTab(false);
+
+    } else if (option === "edit-segment") {
+     // console.log("edit-annotation or hover", option);
+      setOptionEdit(option);
+      setIsInfoTab(false);
+      setEdit(true);
+    } else if (option === "information") {
+      setEdit(false);
+      setIsInfoTab(true);
+      setOptionEdit(option);
+    }
   };
 
   // ✅ Per-group Swiper refs (map)
@@ -125,12 +139,17 @@ const StudioTabs = () => {
 
   // update optionaction
   useEffect(() => {
-    if (activeOption) {
-      setOptionEdit(activeOption);
-    } else if (activeOption === null) {
-      setOptionEdit("pallet");
+    if (activeOption === "pallet") {
+      // setOptionEdit(activeOption);
       setEdit(false);
-    }
+    } 
+    // else if (activeOption === null) {
+    //   setOptionEdit("pallet");
+    //   setEdit(false);
+    // } else {
+    //   setOptionEdit(activeOption);
+    //   // setEdit(true);
+    // }
   }, [activeOption]);
 
   // Initialize from selectedMasterArray
@@ -216,31 +235,33 @@ const StudioTabs = () => {
     if (!currentSelectedGroupSegment || !segSwiperMapRef.current) return;
     // Get sorted segments as in render
     // if (onCanvasClick) {
-    
-      const sortedSegments = currentSelectedGroupSegment.segments
+
+    const sortedSegments = currentSelectedGroupSegment.segments
       .slice()
       .filter((tab) => tab.short_title)
       .sort((a, b) => (a.short_title ?? "").localeCompare(b.short_title ?? ""));
 
     const idx = sortedSegments.findIndex((tab) => active.includes(tab.id!));
     if (idx >= 0) {
-     setActiveTab(currentSelectedGroupSegment.groupName);
-    
+      setActiveTab(currentSelectedGroupSegment.groupName);
+
       segSwiperMapRef.current[currentSelectedGroupSegment.groupName]?.slideTo(idx, 300);
-    
-  }
-  
-  }, [active,currentSelectedGroupSegment, activeTab]);
+
+    }
+
+  }, [active, currentSelectedGroupSegment, activeTab]);
 
   const handleGroupSegmentClick = (group: MasterGroupModel) => {
-   // setActiveTab(group.groupName);
+    // setActiveTab(group.groupName);
     dispatch(updatedSelectedGroupSegment(group));
     dispatch(addUserSelectedSegment(group.segments));
     dispatch(resetSelectedSegment());
-     dispatch(updateClearEditCanvas(true));
+    dispatch(updateClearEditCanvas(true));
+    dispatch(setCanvasType("hover"))
+    dispatch(updateIsEditSegments(false))
     const ids = group.segments.map((d) => d.id!);
-   // setActive(ids);
-   // setInnerTabValue(group.segments[0]?.short_title ?? "");
+    // setActive(ids);
+    // setInnerTabValue(group.segments[0]?.short_title ?? "");
   };
 
   const handleInnerTabClick = (seg: SegmentModal) => {
@@ -277,6 +298,7 @@ const StudioTabs = () => {
     setOptionEdit(null);
   };
 
+
   if (!masterArray || masterArray.allSegments.length === 0) {
     return <NoSegment />;
   }
@@ -285,12 +307,12 @@ const StudioTabs = () => {
     <>
       <Tabs
         value={activeTab}
-       // onValueChange={setActiveTab}
-        className="box-border overflow-y-auto"
+        // onValueChange={setActiveTab}
+        className="box-border"
       >
         {/* Top: Group tabs row */}
         <div className="flex items-center justify-between border-b bg-[#f8f9fa] px-0 py-0">
-          <TabsList className="whitespace-nowrap p-0 no-scrollbar flex items-center gap-1 bg-transparent w-full h-auto">
+          <TabsList className="flex items-center w-full h-auto gap-1 p-0 bg-transparent whitespace-nowrap no-scrollbar">
             <Swiper
               modules={[FreeMode, Mousewheel]}
               spaceBetween={8}
@@ -303,7 +325,12 @@ const StudioTabs = () => {
               {masterArray.allSegments.map((tab) => (
                 <SwiperSlide key={tab.groupName} className="!w-auto seg-group-tabs">
                   <TabsTrigger
-                    ref={(el) => (SegTypeRefs.current[tab.groupName] = el)}
+                    ref={(el) => {
+                      // Only update ref if it actually changed to avoid repeated ref callbacks
+                      if (SegTypeRefs.current[tab.groupName] !== el) {
+                        SegTypeRefs.current[tab.groupName] = el;
+                      }
+                    }}
                     onClick={() => handleGroupSegmentClick(tab)}
                     onMouseEnter={() => handleGroupHover(tab)}
                     onMouseLeave={handleLeaveGroupHover}
@@ -327,7 +354,7 @@ const StudioTabs = () => {
             >
               {/* Inner: Segment chips row with Swiper */}
               <div
-                className="whitespace-nowrap py-2 bg-white"
+                className="py-2 bg-white whitespace-nowrap"
                 onMouseMove={onHoverMove}
                 onMouseLeave={onHoverLeave}
               >
@@ -375,9 +402,12 @@ const StudioTabs = () => {
                           style={{ width: "auto" }}
                         >
                           <Button
-                            ref={(el) =>
-                              (tabRefs.current[tab.short_title ?? ""] = el)
-                            }
+                            ref={(el) => {
+                              const key = tab.short_title ?? "";
+                              if (tabRefs.current[key] !== el) {
+                                tabRefs.current[key] = el;
+                              }
+                            }}
                             onClick={() => {
                               handleInnerTabClick(tab);
                               segSwiperMapRef.current[activeTab]?.slideTo(
@@ -390,10 +420,9 @@ const StudioTabs = () => {
                             }
                             onMouseLeave={handleLeaveGroupHover}
                             className={`cursor-pointer uppercase hover:bg-blue-50 border text-sm font-semibold px-3 py-1 focus:ring-transparent transition-colors focus:outline-none duration-200
-                              ${
-                                isPresent
-                                  ? "bg-white  border-blue-500 bg text-gray-600 rounded-md shadow-sm"
-                                  : "bg-white border-gray-300 text-gray-700 hover:bg-blue-50"
+                              ${isPresent
+                                ? "bg-white  border-blue-500 bg text-gray-600 rounded-md shadow-sm"
+                                : "bg-white border-gray-300 text-gray-700 hover:bg-blue-50"
                               }`}
                           >
                             {tab.short_title}
@@ -407,9 +436,17 @@ const StudioTabs = () => {
           </TabsContent>
         ))}
 
-        <TabNavigation handleEditOption={handleEditOption} />
+        <TabNavigation handleEditOption={handleEditOptions} />
+  
+        {/* information tab */}
+        <SegmentInfoPanel
+          open={isInfoTab}
+          onClose={() => setIsInfoTab(false)}
+        />
 
+        {/* pallet tab */}
         {!edit && <SwatchRecommendations />}
+
 
         {edit &&
           activeOption !== "pallet" &&
@@ -419,9 +456,13 @@ const StudioTabs = () => {
               onCancel={handleCancelEdit}
             />
           )}
+
+   
+        {/* {isInfoTab && <SegmentInfoPanel/>} */}
       </Tabs>
 
       <DeleteSegModal />
+
     </>
   );
 };

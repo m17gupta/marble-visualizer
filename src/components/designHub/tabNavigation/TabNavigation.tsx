@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import {
   Tooltip,
@@ -11,21 +11,15 @@ import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deleteSegmentById,
+
   resetEditSegment,
   resetSelectedSegment,
   setActiveOption,
-  updateIsSegmentEdit,
+
 } from "@/redux/slices/segmentsSlice";
-import {
-  
-  updateSelectedSegment,
-} from "@/redux/slices/MasterArraySlice";
-import { setCanvasType } from "@/redux/slices/canvasSlice";
-import { toast } from "sonner";
-import DeleteModal from "@/pages/projectPage/deleteProject/DeleteModel";
-import { RiHome8Line, RiHomeOfficeLine } from "react-icons/ri";
-import { PiWallLight, PiWallThin } from "react-icons/pi";
+
+import { setCanvasType, updateSegTab } from "@/redux/slices/canvasSlice";
+
 import { LuBrickWall } from "react-icons/lu";
 
 type Props = {
@@ -34,7 +28,6 @@ type Props = {
   handleEditOption: (val: boolean, data: string) => void;
 };
 const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
-  const [active, setActive] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const { activeOption } = useSelector((state: RootState) => state.segments);
   const buttons = [
@@ -51,7 +44,7 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
         <img
           src="/assets/image/solar--home-line-duotone 1 (1).svg"
           alt="Add Segment"
-          className="h-5 w-5"
+          className="w-5 h-5"
         />
       ),
     },
@@ -63,7 +56,7 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
         <img
           src="/assets/image/line-md--edit-twotone.svg"
           alt="Edit Segment"
-          className="h-5 w-5"
+          className="w-5 h-5"
         />
       ),
     },
@@ -75,7 +68,7 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
         <img
           src="/assets/image/carbon--area.svg"
           alt="Edit"
-          className="h-5 w-5"
+          className="w-5 h-5"
         />
       ),
     },
@@ -86,34 +79,14 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
         <img
           src="/assets/image/solar--info-square-linear.svg"
           alt="Information"
-          className="h-5 w-5"
+          className="w-5 h-5"
         />
       ),
     },
   ];
 
-  const handlepallet = (segment: SegmentModal) => {
-    dispatch(updateSelectedSegment(segment));
-    dispatch(setCanvasType("reannotation"));
-    // Implement your re-annotation logic here
-  };
 
-  const handleEditSegment = (segment: SegmentModal) => {
-    dispatch(updateSelectedSegment(segment));
-    dispatch(updateIsSegmentEdit(true));
-    // Implement your edit logic here
-  };
 
-  const handleReAnnotation = (segment: SegmentModal) => {
-    dispatch(updateSelectedSegment(segment));
-    dispatch(setCanvasType("reannotation"));
-    // Implement your re-annotation logic here
-  };
-
-  const handleEditSegmentAnnotation = (segment: SegmentModal) => {
-    dispatch(updateSelectedSegment(segment));
-    dispatch(setCanvasType("edit"));
-  };
 
   // const handleDeleteSegment = async (segmentId: number) => {
   //   try {
@@ -129,41 +102,44 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
   //   }
   // };
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const handleCancelProjectDelete = () => {
-    setIsDeleteModalOpen(false);
-  };
 
-  const handleOpenDeleteModal = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  // update Active option
-  useEffect(() => {
-    if (activeOption == null) {
-      setActive("pallet");
-    } else if (activeOption) {
-      setActive(activeOption);
-    }
-  }, [activeOption]);
+  // useEffect(() => {
+  //   if (activeOption == null) {
+  //     setActive("pallet");
+  //   } 
+  //   if (activeOption) {
+      
+  //     setActive(activeOption);
+  //   }
+  // }, [activeOption]);
 
   const handleOptionSelect = (val: string) => {
-    dispatch(resetSelectedSegment())
+    // prevent redundant dispatches that can cause re-renders/loops
+    if (activeOption === val) return;
+
+    dispatch(resetSelectedSegment());
+    dispatch(updateSegTab(val));
+    dispatch(resetEditSegment());
     dispatch(setActiveOption(val));
     if (val === "add-segment" || val === "pallet") {
       dispatch(setCanvasType(val === "add-segment" ? "draw" : "hover"));
       handleEditOption(false, val);
-      // setActive(val);
-    } else {
+    } else if (val === "edit-annotation") {
       dispatch(setCanvasType("hover"));
       handleEditOption(true, val);
-      // setActive(val);
+    } else if (val === "information") {
+      dispatch(setCanvasType("hover"));
+      handleEditOption(false, val);
+    } else {
+      console.log("edit segment", val);
+      dispatch(setCanvasType("hover"));
+      handleEditOption(true, val);
     }
   };
 
   return (
     <TooltipProvider>
-      <div className="flex items-center justify-center px-4 py-2 bg-muted text-muted-foreground border-b border-gray-200 gap-2">
+      <div className="flex items-center justify-center gap-2 px-4 py-2 border-b border-gray-200 bg-muted text-muted-foreground">
         {buttons.map((btn) => {
           return (
             <Tooltip key={btn.id}>
@@ -172,7 +148,7 @@ const TabNavigation = ({ title, segment, handleEditOption }: Props) => {
                   onClick={() => handleOptionSelect(btn.id)}
                   className={`px-3 py-1 rounded-md border transition-colors focus:outline-none focus:ring-0 focus:ring-blue-400
                   ${
-                    active === btn.id
+                    activeOption === btn.id
                       ? "bg-white text-white border-gray-400"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
                   }`}

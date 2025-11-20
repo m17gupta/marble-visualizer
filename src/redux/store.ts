@@ -34,43 +34,48 @@ import adminProjectSlice from "../AdminPannel/reduxslices/adminProjectSlice";
 import adminBrandSlice from "../AdminPannel/reduxslices/MaterialBrandSlice";
 import adminMaterialCategorySlice from "../AdminPannel/reduxslices/adminMaterialCategorySlice";
 
-//import designCoordinatorSlice from "./slices/user/design_coordinatorSlice";
-//import NewGenAiSlice from "./slices/visualizerSlice/NewGenAiSlice";
-//import shareProjectSlice from "./slices/shareProject/ShareProjectSlice";
-//import visitorInfoSlice from "./slices/shareProject/VisterInfoSlice"; // New visitor info slice
+// import designCoordinatorSlice from "./slices/user/design_coordinatorSlice";
+// import NewGenAiSlice from "./slices/visualizerSlice/NewGenAiSlice";
+// import shareProjectSlice from "./slices/shareProject/ShareProjectSlice";
+// import visitorInfoSlice from "./slices/shareProject/VisterInfoSlice"; // New visitor info slice
 import adminMaterialLibSlice from "../AdminPannel/reduxslices/adminMaterialLibSlice";
 import adminMaterialSegmentSlice from "../AdminPannel/reduxslices/adminMaterialSegment";
-//import InformationSlice from "./slices/InformationSlice";
+import InformationSlice from "./slices/InformationSlice";
 import adminMaterialConnectionSlice from "../AdminPannel/reduxslices/adminMaterialConnectionSlice";
 import adminMaterialAttributesSlice from "../AdminPannel/reduxslices/adminMaterialAttributeSlice";
 import demoMasterArraySlice from "./slices/demoProjectSlice/DemoMasterArraySlice";
 import demoCanvasSlice from "./slices/demoProjectSlice/DemoCanvasSlice";
 import RoleSlice from "@/AdminPannel/reduxslices/RoleSlice";
-import permissionSlice from "@/AdminPannel/reduxslices/Role_PermissionSlice";
+//import permissionSlice from "@/AdminPannel/reduxslices/Role_PermissionSlice";
+
+//import singlePalletGenAiSlice from "@/redux/slices/visualizerSlice/SinglePalletGenAiSlice";
 import Role_permissionSlice from "@/AdminPannel/reduxslices/Role_PermissionSlice";
+///import canvasImageSettingSlice from "./slices/canvasImageSetting/canvasImageSettingSlice";
 export const store = configureStore({
   reducer: {
+    // canvasImageSetting:canvasImageSettingSlice,
+    //singlePalletGenAi: singlePalletGenAiSlice,
     role_permission: Role_permissionSlice,
     role:RoleSlice,
     demoCanvas: demoCanvasSlice,
     demoMasterArray: demoMasterArraySlice,
-    // shareProject: shareProjectSlice,
-    // visitorInfo: visitorInfoSlice, // New visitor info slice
+    //shareProject: shareProjectSlice,
+    //visitorInfo: visitorInfoSlice, // New visitor info slice
     auth: authSlice,
     userProfile: userProfileSlice,
-    // designCoordinator: designCoordinatorSlice,
+    //designCoordinator: designCoordinatorSlice,
     subscriptionPlan: subscriptionPlanSlice,
     projects: projectSlice,
     masterArray: masterArraySlice,
     segments: segmentsSlice,
-    // information: InformationSlice,
+    information: InformationSlice,
     canvas: canvasSlice,
     jobComments: jobCommentsSlice, // New job comments slice
     // New canvas slice
     materials: materialsSlice,
     materialSegments: materialSegmentSlice,
     genAi: genAiSlice, // New GenAI slice
-    // newGenAi: NewGenAiSlice,
+    //newGenAi: NewGenAiSlice,
     filterSwatch: FilterSwatchSlice,
     jobs: jobSlice, // New job slice based on JobModel
     activityLogs: activityLogsSlice,

@@ -245,7 +245,7 @@ export class MaterialApi {
   ): Promise<MaterialApiResponse<MaterialModel[]>> {
     try {
       const { data, error } = await supabase
-        .from("material_segments")
+        .from("materials")
         .select("*")
         .eq("name", segName)
         .single();

@@ -18,9 +18,14 @@ const SelectCategory = ({ okCategory }: Props) => {
   /// set selected category if selectedSegments changes
   useEffect(() => {
     if (selectedSegments && selectedSegments.length > 0) {
-      const firstSegment = selectedSegments[0];
-      setSelectedCategory(firstSegment.title || "");
-      okCategory(firstSegment.title || "");
+      const firstSegmentTitle = selectedSegments[0].title || "";
+      setSelectedCategory((prev) => {
+        if (prev !== firstSegmentTitle) {
+          okCategory(firstSegmentTitle);
+          return firstSegmentTitle;
+        }
+        return prev;
+      });
     } else {
       setSelectedCategory("");
     }

@@ -1,8 +1,6 @@
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { set } from "date-fns";
-import { resetEditSegment } from "./segmentsSlice";
 
 // Define the types for canvas state
 export type ZoomMode = "mouse";
@@ -36,6 +34,11 @@ export type activeCanvasType =
   | "compare"
   | "zoom";
 
+export type activeCompareType =
+  | "chat_genAi"
+  | "palette_genAi"
+  | "single_pallet_genAi";
+
 // Define the state interface
 interface CanvasState {
   currentZoom: number;
@@ -60,9 +63,12 @@ interface CanvasState {
   isCompare: boolean;
   isSwitchCanvas: boolean;
   markingMode: string;
+  eachSegTab: string | null;
   editSegments: SegmentModal[];
+  isEditSegments: boolean;
   isDelete: boolean;
   changeSegType: string[] | null;
+  compareType: activeCompareType | null;
   isCanvasIcon: boolean;
 }
 
@@ -85,16 +91,18 @@ const initialState: CanvasState = {
   screenShotUrl: null, // URL of the screenshot if taken
   isResetZoom: false, // Flag to indicate if the canvas has been reset
   activeCanvas: "hideSegments",
-  aiTrainImageWidth: 800,
-  aiTrainImageHeight: 600,
+  aiTrainImageWidth: 0,
+  aiTrainImageHeight: 0,
   isCompare: false,
   isSwitchCanvas: false,
   markingMode: "polygon",
+  eachSegTab: null,
   editSegments: [],
   isDelete: false,
   changeSegType: null,
+  isEditSegments: false,
+  compareType: null,
   isCanvasIcon: false,
-
 };
 
 // Create the canvas slice
@@ -181,7 +189,7 @@ const canvasSlice = createSlice({
     setActiveTab(state, action: PayloadAction<string>) {
       state.activeCanvas = action.payload;
     },
-   
+
     // ;start compare
     updateIsCompare: (state, action: PayloadAction<boolean>) => {
       state.isCompare = action.payload;
@@ -191,6 +199,12 @@ const canvasSlice = createSlice({
     },
     updateMarkingMode: (state, action: PayloadAction<string>) => {
       state.markingMode = action.payload;
+    },
+    updateCompareType: (
+      state,
+      action: PayloadAction<activeCompareType | null>
+    ) => {
+      state.compareType = action.payload;
     },
     // Reset canvas state to initial values
     resetCanvas(state) {
@@ -203,26 +217,45 @@ const canvasSlice = createSlice({
       state.isScreenshotTaken = false; // Reset screenshot taken flag
       state.screenShotUrl = null; // Reset screenshot URL
       state.activeCanvas = "hideSegments";
-      (state.isCompare = false), (state.markingMode = "polygon");
+      state.eachSegTab = null;
+      state.isEditSegments = false;
+      state.compareType = null;
+      state.isCompare = false;
+      state.markingMode = "polygon";
     },
     setIsResetZoom: (state, action: PayloadAction<boolean>) => {
       state.isResetZoom = action.payload; // Update the reset zoom flag
     },
-    updateEditSegmentsOncanvas: (state, action: PayloadAction<SegmentModal[]>) => {
+    updateEditSegmentsOncanvas: (
+      state,
+      action: PayloadAction<SegmentModal[]>
+    ) => {
       state.editSegments = action.payload;
-     
     },
     resetEditSegmentsOnCanvas: (state) => {
       state.editSegments = [];
-      
-    }, 
-    updateIsDelete:(state, action: PayloadAction<boolean>) => {
+    },
+    updateIsDelete: (state, action: PayloadAction<boolean>) => {
       state.isDelete = action.payload;
     },
-    updateChangeSegType:(state, action: PayloadAction<string[] | null>) => {
+    updateChangeSegType: (state, action: PayloadAction<string[] | null>) => {
       state.changeSegType = action.payload;
+    },
+    updateSegTab: (state, action: PayloadAction<string | null>) => {
+      state.eachSegTab = action.payload;
+    },
+    updateIsEditSegments: (state, action: PayloadAction<boolean>) => {
+      state.isEditSegments = action.payload;
+    },
+    setIsCanvasIcon: (state, action: PayloadAction<boolean>) => {
+      state.isCanvasIcon = action.payload;
+    },
+    setTrainImage: (state, action) => {
+      const { width, height } = action.payload;
+      state.aiTrainImageHeight = height;
+      state.aiTrainImageWidth = width;
+    },
   },
-}
 });
 
 // Export actions
@@ -253,8 +286,12 @@ export const {
   updateSwitchCanvas,
   updateMarkingMode,
   updateIsDelete,
-  updateChangeSegType
-  
+  updateChangeSegType,
+  updateSegTab,
+  updateIsEditSegments,
+  updateCompareType,
+  setIsCanvasIcon,
+  setTrainImage
 } = canvasSlice.actions;
 
 // Export reducer

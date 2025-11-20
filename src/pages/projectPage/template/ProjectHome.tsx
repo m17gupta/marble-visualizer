@@ -21,8 +21,8 @@ const ProjectHome = () => {
       {(!isRegistered && isAuthenticated) ? (<GetUserSubscription />) : ( <CreateUserSubscription/>)}
 
       {/* <SwatchBookDataHome /> */}
-{/* 
-      <MaterialData /> */}
+
+      <MaterialData />
 
       <ProjectAnalyseSegmentApiCall />
 

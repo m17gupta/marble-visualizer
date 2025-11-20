@@ -3,6 +3,7 @@ import { JobModel, MasterModel } from "@/models/jobModel/JobModel";
 import { SegmentService } from "@/services/segment/SegmentService";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 
+
 export interface SegmentPoint {
   x: number;
   y: number;
@@ -74,6 +75,7 @@ interface SegmentsState {
   manualAnnotationResult: unknown | null;
   manualAnnotationError: string | null;
   clearUpdateCanvas: boolean;
+  isCentroidUpdated: boolean;
 }
 
 const initialState: SegmentsState = {
@@ -115,8 +117,8 @@ const initialState: SegmentsState = {
   isSegmentLoaded: false,
   activeOption: "pallet",
   isDeleteSegModal: false,
-   clearUpdateCanvas: false,
-  
+  clearUpdateCanvas: false,
+  isCentroidUpdated: false,
 };
 
 // Create segment service instance
@@ -208,10 +210,25 @@ export const updateMultipleSegment = createAsyncThunk(
 
 // delete segment based on id
 export const deleteSegmentById = createAsyncThunk(
-  "segments/deleteSegmentById",
+  "segments/deleteSegmentId",
   async (segmentIds: number[], { rejectWithValue }) => {
     try {
       return await segmentService.deleteSegmentById(segmentIds);
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to delete segment");
+    }
+  }
+);
+
+export const deleteSegmentId = createAsyncThunk(
+  "segments/deleteSegmentById",
+  async (segmentId: number, { rejectWithValue }) => {
+    try {
+      await segmentService.deleteSegmentId(segmentId);
+      return segmentId;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -275,6 +292,9 @@ const segmentsSlice = createSlice({
     },
 
     // edit segment
+    addEntireSelectedSegment: (state, action) => {
+      state.selectedSegments = action.payload;
+    },
     editSelectedSegment: (
       state,
       action: PayloadAction<SegmentModal | null>
@@ -293,28 +313,52 @@ const segmentsSlice = createSlice({
     },
     updateEditSelectedSegment: (state, action) => {
       const updatedSegment = action.payload;
+
       if (!state.selectedSegments) return;
-      const index = state.selectedSegments.findIndex((s) => s.id === updatedSegment.id);
+      const index = state.selectedSegments.findIndex(
+        (s) => s.id === updatedSegment.id
+      );
       if (index !== -1 && updatedSegment.annotation && updatedSegment.bb) {
-        state.selectedSegments[index].annotation_points_float= updatedSegment.annotation??[];
+        state.selectedSegments[index].annotation_points_float =
+          updatedSegment.annotation ?? [];
         state.selectedSegments[index].segment_bb_float = updatedSegment.bb;
+        //console.log("updatedSegment", updatedSegment.annotation);
       }
     },
     updateAndDeleteSelectedSegment: (state, action) => {
-      const {segType, allSegmnets} = action.payload;
-      if (!state.selectedSegments || state.selectedSegments.length === 0) return;
-      const segmentsToUpdate = state.selectedSegments.filter(seg => seg.segment_type === segType);
-     // remove all  segmentsToUpdate
-      const remainingSegments = state.allSegments.filter(seg => !segmentsToUpdate.some(s => s.id === seg.id));
+      const { segType, allSegmnets } = action.payload;
+      if (!state.selectedSegments || state.selectedSegments.length === 0)
+        return;
+      const segmentsToUpdate = state.selectedSegments.filter(
+        (seg) => seg.segment_type === segType
+      );
+      // remove all  segmentsToUpdate
+      const remainingSegments = state.allSegments.filter(
+        (seg) => !segmentsToUpdate.some((s) => s.id === seg.id)
+      );
       state.allSegments = remainingSegments;
-       state.allSegments = [...state.allSegments, ...allSegmnets];   
+      state.allSegments = [...state.allSegments, ...allSegmnets];
+    },
+    updateChangeOnSelectedSegment: (state, action) => {
+      const segType = action.payload;
+
+      if (!state.selectedSegments || state.selectedSegments.length === 0)
+        return;
+      const index = state.selectedSegments.findIndex(
+        (s) => s.id === segType.id
+      );
+
+      if (index !== -1) {
+        state.selectedSegments[index] = segType;
+      }
     },
     resetSelectedSegment: (state) => {
       state.selectedSegments = [];
+      state.activeOption = "pallet";
     },
     resetEditSegment: (state) => {
       state.selectedSegments = [];
-      state.activeOption = null;
+      state.activeOption = "pallet";
     },
 
     setActiveOption: (state, action: PayloadAction<string | null>) => {
@@ -353,25 +397,23 @@ const segmentsSlice = createSlice({
     },
     changeGroupSegment: (state, action: PayloadAction<SegmentModal[]>) => {
       const updatedSegment = action.payload;
-      updatedSegment.map(item=>{
-     const index = state.allSegments.findIndex(
-        (seg) => seg.id === item.id
-      );
-      if (index !== -1) {
-        // remove existed and add new segment
-        const segArray = state.allSegments.filter(
-          (seg) => seg.id !== item.id
-        );
-        state.allSegments = [...segArray, item];
-      }
-      })
- 
+      updatedSegment.map((item) => {
+        const index = state.allSegments.findIndex((seg) => seg.id === item.id);
+        if (index !== -1) {
+          // remove existed and add new segment
+          const segArray = state.allSegments.filter(
+            (seg) => seg.id !== item.id
+          );
+          state.allSegments = [...segArray, item];
+        }
+      });
     },
     updateIsSegmentEdit: (state, action) => {
       state.isSegmentEdit = action.payload;
     },
     updateReAnnoatationPoints: (state, action: PayloadAction<number[]>) => {
       state.reAnnotationPoints = action.payload;
+      state.selectedSegments = [];
     },
     undo: (state) => {
       if (state.historyIndex > 0) {
@@ -393,7 +435,17 @@ const segmentsSlice = createSlice({
       state.error = null;
     },
 
-
+    updateCentroid: (state, action) => {
+      const { segmentId, centroid, lastIndex } = action.payload;
+      const count = state.allSegments.length;
+      const index = state.allSegments.findIndex((seg) => seg.id === segmentId);
+      if (index !== -1) {
+        state.allSegments[index].centroid = centroid;
+      }
+      if (lastIndex === count) {
+        state.isCentroidUpdated = true;
+      }
+    },
     updateClearEditCanvas: (state, action: PayloadAction<boolean>) => {
       state.clearUpdateCanvas = action.payload;
     },
@@ -427,9 +479,7 @@ const segmentsSlice = createSlice({
       .addCase(getManualAnnotation.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
-      });
-
-    builder
+      })
       // Handle addSegment thunk
       .addCase(addSegment.pending, (state) => {
         state.isLoadingManualAnnotation = true;
@@ -443,9 +493,7 @@ const segmentsSlice = createSlice({
       .addCase(addSegment.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
-      });
-
-    builder
+      })
       // Handle getSegmentsByJobId thunk
       .addCase(getSegmentsByJobId.pending, (state) => {
         state.isLoadingManualAnnotation = true;
@@ -461,7 +509,6 @@ const segmentsSlice = createSlice({
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
       })
-
       // Handle deleteSegmentById thunk
       .addCase(deleteSegmentById.pending, (state) => {
         state.isLoadingManualAnnotation = true;
@@ -476,13 +523,20 @@ const segmentsSlice = createSlice({
               (seg) => seg.id !== item
             );
           });
-
           state.manualAnnotationError = null;
         }
       })
       .addCase(deleteSegmentById.rejected, (state, action) => {
         state.isLoadingManualAnnotation = false;
         state.manualAnnotationError = action.payload as string;
+      })
+      // delete segment byId
+      .addCase(deleteSegmentId.fulfilled, (state, action) => {
+        const id = action.payload;
+        const index = state.allSegments.findIndex((item) => item.id === id);
+        if (index != -1) {
+          state.allSegments.splice(index, 1);
+        }
       });
   },
 });
@@ -521,7 +575,10 @@ export const {
   resetSelectedSegment,
   updateEditSelectedSegment,
   updateClearEditCanvas,
-  updateAndDeleteSelectedSegment
+  updateAndDeleteSelectedSegment,
+  updateCentroid,
+  addEntireSelectedSegment,
+  updateChangeOnSelectedSegment,
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

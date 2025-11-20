@@ -1,109 +1,117 @@
-import { MasterGroupModel } from "@/models/jobModel/JobModel";
 import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Prop = {
+ 
+ 
+  segGroupName:string
   segType: string;
-  onChange: (value: string) => void;
+  onChangeGroup: (value: string) => void;
 };
-const SelectGroup = ({ segType, onChange }: Prop) => {
-  const dispatch = useDispatch();
-  const [groupArray, setGroupArray] = React.useState<string[]>([]);
-  const [groupName, setGroupName] = useState("");
-  const { selectedSegments } = useSelector(
-    (state: RootState) => state.segments
-  );
+
+const SelectGroups = ({segGroupName,segType, onChangeGroup }: Prop) => {
+  const [groupArray, setGroupArray] = useState<string[]>([]);
+  const [groupName, setGroupName] = useState<string>(segGroupName);
+
+  const { selectedSegments } = useSelector((state: RootState) => state.segments);
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
 
-  // update selected group if selectedSegments changes
-  useEffect(() => {
-    if (selectedSegments && selectedSegments.length > 0) {
-      const firstSegment = selectedSegments[0];
-      setGroupName(firstSegment.group_label_system || "");
-      onChange(firstSegment.group_label_system || "");
-    }
-  }, [selectedSegments]);
 
+useEffect(()=>{
+  if(segGroupName){
+    setGroupName(segGroupName)
+  }
+},[segGroupName])
+
+
+
+
+  // Preselect from first selected segment (if present)
+  // useEffect(() => {
+  // //   if (selectedSegments && selectedSegments.length > 0) {
+  // //     const first = selectedSegments[0];
+  // //     const pre = first?.group_label_system || "";
+  // //     setGroupName(pre);
+  // //     console.log("Preselecting group:", pre);
+  // //  //  onChangeGroup(pre);
+  // //   }
+  // //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedSegments]);
+
+
+
+  // Load group list from masterArray based on segType
   useEffect(() => {
-    if (masterArray && masterArray.length > 0 && segType) {
-      const groupmaster = masterArray.find((item) => item.name === segType);
-      if (groupmaster) {
-        const totalGroups = groupmaster.allSegments.map((seg) => seg.groupName);
-        setGroupArray(totalGroups);
-      }
+    if (Array.isArray(masterArray) && segType) {
+      const groupMaster = masterArray.find((item) => item.name === segType);
+      const totalGroups = groupMaster?.allSegments?.map((seg: any) => seg.groupName) ?? [];
+      setGroupArray(totalGroups);
+      // if current selected doesn't exist anymore, reset
+     // setGroupName((prev) => (prev && totalGroups.includes(prev) ? prev : ""));
     } else {
       setGroupArray([]);
+     
     }
   }, [masterArray, segType]);
 
   const handleGroup = (value: string) => {
+    console.log("Selected group:", value);
     setGroupName(value);
-    onChange(value);
+    onChangeGroup(value);
   };
 
-   const handleAddGroup = () => {
-     
-      if (groupArray != undefined) {
-        const groupLength = groupArray.length;
-        const newGroupName = `${segType}${groupLength + 1}`;
-        setGroupArray([...groupArray, newGroupName]);
-        toast.success(`Group ${newGroupName} added successfully!`);
-      }
-    };
-  return (
-    <>
-      <div className="pt-2">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="font-medium text-sm">Select Group</h4>
-          <button
-            className="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-purple-300 text-purple-600 text-lg font-bold"
-             onClick={handleAddGroup}
-          >
-            +
-          </button>
-        </div>
-        <div className="relative w-full">
-          <select
-            value={groupName}
-            onChange={(e) => handleGroup(e.target.value)}
-            className="w-full appearance-none rounded-md border border-1 border-gray-300 px-4 py-1.5 text-sm bg-gray-100 pr-10 text-gray-800 font-medium shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition"
-          >
-            <option value="" disabled>
-              Select Group Name
-            </option>
-            {groupArray &&
-              groupArray.map((opt) => {
-                return (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                );
-              })}
-          </select>
+  const handleAddGroup = () => {
+    const length = groupArray?.length ?? 0;
+    const newGroupName = `${segType}${length + 1}`;
+    setGroupArray((prev) => [...prev, newGroupName]);
+    // (original behavior) don't auto-select; only notify
+    toast.success(`Group ${newGroupName} added successfully!`);
+  };
 
-          {/* Dropdown arrow */}
-          <div className="pointer-events-none absolute inset-y-0  right-0 flex items-center pr-3">
-            <svg
-              className="h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-        </div>
+  return (
+    <div className="pt-2">
+      <div className="flex items-center justify-start mb-2">
+        <label className="mb-1 text-xs text-gray-500 pe-2 focus:ring-0 focus:outline-none ">Group</label>
+        <button
+          type="button"
+          onClick={handleAddGroup}
+          className="flex items-center justify-center p-2 w-2 h-4 text-lg font-bold text-blue-600 bg-white border border-purple-300 rounded-full"
+          aria-label="Add group"
+          title="Add group"
+        >
+          +
+        </button>
       </div>
-    </>
+
+  {/* shadcn Select */}
+  {/* Keep the Select controlled by always passing a string (empty when not selected) */}
+  <Select value={groupName ?? ""} onValueChange={handleGroup}>
+        <SelectTrigger 
+        className="w-full h-8"
+        >
+          {/* border-0 bg-transparent shadow-none outline-none ring-0 ring-offset-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 data-[state=open]:ring-offset-0 */}
+          {/* w-full mt-2 h-8 */}
+          <SelectValue placeholder="Select" />
+        </SelectTrigger>
+        <SelectContent>
+          {groupArray.map((opt) => (
+            <SelectItem key={opt} value={opt}>
+              {opt}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
 
-export default SelectGroup;
+export default SelectGroups;

@@ -33,4 +33,8 @@ async updateMultipleSegment(segmentData: SegmentModal[]): Promise<{ success: boo
 async deleteSegmentById(segmentId: number[]): Promise<DeleteSegmentResponse> {
   return this.segmentApi.deleteSegmentById(segmentId);
 }
+
+async deleteSegmentId(segmentId: number): Promise<{status:boolean}> {
+  return this.segmentApi.deleteSegmentBySegId(segmentId)
+}
 }
