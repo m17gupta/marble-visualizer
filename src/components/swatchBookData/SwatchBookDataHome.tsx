@@ -30,6 +30,7 @@ const SwatchBookDataHome = () => {
 
   const fetchAllCategories = useCallback(async () => {
     try {
+      console.log("callinf categories")
       await dispatch(fetchCategories());
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -46,6 +47,8 @@ const SwatchBookDataHome = () => {
 
   const fetchAllBrands = useCallback(async () => {
     try {
+
+      console.log(" calling brand")
       await dispatch(fetchBrands());
     } catch (error) {
       console.error("Error fetching brands:", error);

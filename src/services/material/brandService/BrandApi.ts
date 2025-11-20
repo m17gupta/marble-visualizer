@@ -154,10 +154,10 @@ export class BrandApi {
         query = query.eq('status', filters.status);
       }
 
-      // Apply sorting
-      const sortBy = filters.sort_by || 'sort_order';
-      const sortOrder = filters.sort_order || 'asc';
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' });
+      // // Apply sorting
+      // const sortBy = filters.sort_by || 'sort_order';
+      // const sortOrder = filters.sort_order || 'asc';
+      // query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
       // Apply pagination
       if (filters.limit) {
@@ -170,6 +170,7 @@ export class BrandApi {
       const { data, error, count } = await query;
 
       if (error) {
+                console.log("error on geting brand---", error)
         throw new Error(error.message);
       }
 

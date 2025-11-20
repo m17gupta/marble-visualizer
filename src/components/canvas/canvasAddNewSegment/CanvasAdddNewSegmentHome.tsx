@@ -93,7 +93,9 @@ const CanvasAdddNewSegmentHome = () => {
       updated_at: new Date().toISOString(),
       group_label_system: segmentDrawn.groupName,
     };
+    
     const response = await dispatch(addSegment(segData)).unwrap();
+  
     dispatch(updateAddSegMessage(" Updating segment details..."));
     if (response && response.success) {
       // update into master Array
