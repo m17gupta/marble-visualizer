@@ -229,11 +229,11 @@ export function StudioPage() {
             <div className="text-start">
               <Link to="/">
                 <img
-                  className="w-10 h-10 mx-auto"
-                  src={marbleLogo}
+                  className="w-32 mx-auto"
+                  src="https://marble-visualizer.vercel.app/assets/marble-DnOX0AGi.png"
                   alt="dzinly logo"
                 />
-                 <span className="text-lg font-bold text-foreground">Marble</span>
+                
               </Link>
            
             </div>

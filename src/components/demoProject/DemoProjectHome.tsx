@@ -82,8 +82,8 @@ const navigate = useNavigate();
           />
 
           {/* right column preview box */}
-          <div className="hidden lg:block md:block">
-          {/* <PreviewBox /> */}
+          <div className="hidden lg:block md:block 1">
+          <PreviewBox />
           </div>
         </div>
 

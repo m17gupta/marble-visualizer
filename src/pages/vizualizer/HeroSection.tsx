@@ -23,7 +23,7 @@ const HeroSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="text-center lg:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-5xl font-semibold text-foreground mb-6 leading-tight">
               Visualize Your
               <span className="text-primary block">Perfect Space</span>
             </h1>

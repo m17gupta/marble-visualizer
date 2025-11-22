@@ -132,7 +132,7 @@ const LeftSection = () => {
         <div className="flex h-dvh flex-col">
           {/* header */}
           <div className="flex items-center justify-between border-b px-4 py-3 pt-2">
-            <Link to="/"><img className="w-44" src={dzinlylogo} alt="dzinly logo" /></Link>
+            <Link to="/"><img className="w-32" src="https://marble-visualizer.vercel.app/assets/marble-DnOX0AGi.png" alt="Marble logo" /></Link>
             <Button className="flex h-8 items-center space-x-2 rounded-2 bg-white py-1 text-sm text-gray-800 shadow-none hover:bg-gray-50"
               onClick={handleMoveTryVisualizer}
             >
@@ -140,19 +140,18 @@ const LeftSection = () => {
               <span>Back</span>
             </Button>
           </div>
-
+ <div className="flex items-center gap-3 border-b p-2">
+              <ShowSegments
+          
+                variant="expanded"
+              />
+            </div>
           {/* inner */}
           <div className="flex flex-1">
             {/* left icon column */}
 
 
-            <div className="flex w-16 flex-col items-center gap-3 border-r p-2">
-              <ShowSegments
-                // category={category} 
-                // setCategory={setCategory} 
-                variant="expanded"
-              />
-            </div>
+           
 
             {/* right content */}
             <div className="flex min-w-0 flex-1 flex-col">

@@ -9,11 +9,12 @@ interface CategoryButtonsProps {
   variant?: "collapsed" | "expanded";
 }
 
-
-
 const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
   const dispatch = useDispatch();
-  const { demoMasterArray, selectedDemoMasterItem } = useSelector((state: RootState) => state.demoMasterArray);
+  const { demoMasterArray, selectedDemoMasterItem } = useSelector(
+    (state: RootState) => state.demoMasterArray
+  );
+
   const [category, setCategory] = useState<string>("");
   const initialized = useRef(false);
 
@@ -23,10 +24,9 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
       setCategory(first.name ?? "");
       dispatch(setSelectedDemoMasterItem(first));
       initialized.current = true;
-    }else{
-    if(selectedDemoMasterItem){
-        setCategory(selectedDemoMasterItem.name ?? "");
-    }}
+    } else if (selectedDemoMasterItem) {
+      setCategory(selectedDemoMasterItem.name ?? "");
+    }
   }, [demoMasterArray, selectedDemoMasterItem, dispatch]);
 
   const handleDemoSegments = (item: DemoMasterModel) => {
@@ -37,65 +37,87 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
   if (!demoMasterArray || demoMasterArray.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center">
-        <div className="text-gray-500 text-sm font-medium">
-          No segments found
-        </div>
+        <div className="text-gray-500 text-sm font-medium">No segments found</div>
       </div>
     );
   }
 
+  const isCollapsed = variant === "collapsed";
+
   return (
-    <>
+    <div className="flex flex-wrap gap-3">
       {demoMasterArray.map((item) => {
         const isActive = category === (item.name ?? "");
-        const seg = item.color_code || "#0ea5e9";
-
-        const btnBase =
-          "grid place-items-center rounded-xl border bg-white transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 h-14 w-14 p-0";
-        const btnStyle = (isActive
-          ? {
-              backgroundColor: `${seg}20`,
-              borderColor: seg,
-              borderWidth: 1,
-              color: seg,
-              "--tw-ring-color": seg,
-            }
-          : { borderColor: "rgba(0,0,0,0.08)", color: "#111827" }) as React.CSSProperties;
 
         return (
-          <div key={item.name} className="text-center">
-            <Button
-              type="button"
-              variant="outline"
-              aria-pressed={isActive}
-              className={btnBase}
-              style={btnStyle}
-              onClick={() => handleDemoSegments(item)}
-            >
-              {item.icon ? (
-                <img
-                  src={item.icon}
-                  alt={item.name || "Segment Icon"}
-                  className="h-6 w-6 object-contain transition-transform"
-             
-                />
-              ) : (
-                <div className="h-5 w-5 bg-gray-300 rounded" />
-              )}
-            </Button>
+          <Button
+            key={item.name}
+            type="button"
+            variant="outline"
+            aria-pressed={isActive}
+            onClick={() => handleDemoSegments(item)}
+            className={[
+              // base pill
+              "h-12 rounded-lg border bg-white px-4",
+              "flex items-center justify-start gap-3",
+              "text-sm font-medium text-gray-900",
+              "transition-all duration-150",
+              "hover:bg-gray-50 hover:shadow-sm",
+              "focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2",
+              // active state like screenshot
+              isActive
+                ? "bg-gray-100 border-gray-400 shadow-sm"
+                : "border-gray-300",
+              // collapsed sizing
+              isCollapsed ? "h-10 px-3 text-[13px]" : "",
+            ].join(" ")}
+          >
+            {/* left icon / check */}
+            {isActive ? (
+              <div
+                className={[
+                  "grid place-items-center rounded-full",
+                  "bg-gray-600 text-white",
+                  isCollapsed ? "h-7 w-7" : "h-8 w-8",
+                ].join(" ")}
+              >
+                {/* checkmark */}
+                <svg
+                  viewBox="0 0 24 24"
+                  className={isCollapsed ? "h-4 w-4" : "h-5 w-5"}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </div>
+            ) : item.icon ? (
+              <img
+                src={item.icon}
+                alt={item.name || "Segment Icon"}
+                className={[
+                  "object-contain",
+                  isCollapsed ? "h-5 w-5" : "h-6 w-6",
+                ].join(" ")}
+              />
+            ) : (
+              <div
+                className={[
+                  "rounded-sm bg-gray-300",
+                  isCollapsed ? "h-5 w-5" : "h-6 w-6",
+                ].join(" ")}
+              />
+            )}
 
-            <h6
-              className={`mt-1 text-[12px] font-medium transition-colors ${
-                isActive ? "text-current" : "text-gray-500"
-              }`}
-              style={isActive ? { color: seg } : undefined}
-            >
-              {item.name}
-            </h6>
-          </div>
+            {/* label */}
+            <span className="whitespace-nowrap">{item.name}</span>
+          </Button>
         );
       })}
-    </>
+    </div>
   );
 };
 
