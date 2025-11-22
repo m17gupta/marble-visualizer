@@ -34,7 +34,11 @@ useEffect(() => {
   if (open) {
     if (masterArray && masterArray.length > 0 && segments && segments.length > 0) {
       const masterNames = masterArray.map((master) => master.name);
-      const updateSeg = segments.map((seg: MaterialSegmentModel) => ({
+
+      const activeSegmnets=segments.filter(item=>item.is_visible)
+
+      console.log("activeSegmnets------",activeSegmnets)
+      const updateSeg = activeSegmnets.map((seg: MaterialSegmentModel) => ({
         ...seg,
         isDisabled: masterNames.includes(seg.name),
       }));

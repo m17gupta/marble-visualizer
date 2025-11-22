@@ -17,7 +17,11 @@ import LayerContent from "./tabContent/LayerContent";
 import { setCurrentTabContent } from "@/redux/slices/studioSlice";
 import Comments from "./tabContent/Comments";
 import { setCurrentGenAiImage } from "@/redux/slices/visualizerSlice/genAiSlice";
-import { setCanvasReady, setCanvasType, updateIsCompare } from "@/redux/slices/canvasSlice";
+import {
+  setCanvasReady,
+  setCanvasType,
+  updateIsCompare,
+} from "@/redux/slices/canvasSlice";
 import StudioStyleTabs from "./StudioStyleTabs";
 
 const StudioMainTabs = () => {
@@ -27,12 +31,11 @@ const StudioMainTabs = () => {
   );
   const handleChangeTab = (value: string) => {
     dispatch(updateActiveTab(value));
-    
   };
 
   const handleDesignHubClick = () => {
-     dispatch(updateIsCompare(false))
-  dispatch(setCanvasType("hover"))
+    dispatch(updateIsCompare(false));
+    dispatch(setCanvasType("hover"));
     dispatch(updateActiveTab("design-hub"));
     dispatch(setCurrentTabContent("home"));
     dispatch(setCurrentGenAiImage(null)); // Reset current GenAI image when switching tabs
@@ -40,28 +43,25 @@ const StudioMainTabs = () => {
   };
 
   const handleInspirationClick = () => {
-  
     dispatch(setCurrentTabContent("home"));
     dispatch(updateActiveTab("inspiration"));
-    dispatch(setCanvasType("hover")) // Set canvas type to hover when Inspiration tab is clicked
+    dispatch(setCanvasType("hover")); // Set canvas type to hover when Inspiration tab is clicked
   };
 
   const handleMeasurementClick = () => {
-   
     dispatch(setCanvasType("hover")); // Set canvas type to measurement when Measurement tab is clicked
     dispatch(updateActiveTab("measurement"));
   };
 
   const handleLayersClick = () => {
-    
     dispatch(updateActiveTab("layers"));
     // dispatch(setCanvasType("test-canvas")); // Set canvas type to test-canvas when Layers tab is clicked
   };
 
   const handleCommentsClick = () => {
-     dispatch(setCanvasReady(false))
-      dispatch(updateActiveTab("comments"));
-  
+    dispatch(setCanvasReady(false));
+    dispatch(updateActiveTab("comments"));
+
     dispatch(setCanvasType("comment")); // Set canvas type to comment when Comments tab is clicked
   };
   return (
@@ -78,7 +78,11 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="inspiration"
                   onClick={handleInspirationClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white  ${activeTabFromStore === 'inspiration' ? ' text-blue-700  shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white  ${
+                    activeTabFromStore === "inspiration"
+                      ? " text-blue-700  shadow font-semibold border-blue-600 border bg-gray-50"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +108,11 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="design-hub"
                   onClick={handleDesignHubClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'design-hub' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                    activeTabFromStore === "design-hub"
+                      ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +143,11 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="measurement"
                   onClick={handleMeasurementClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'measurement' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                    activeTabFromStore === "measurement"
+                      ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +181,11 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="layers"
                   onClick={handleLayersClick}
-                 className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'layers' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                    activeTabFromStore === "layers"
+                      ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
+                  }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -196,9 +212,14 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="comments"
                   onClick={handleCommentsClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${activeTabFromStore === 'comments' ? ' text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50' : 'text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border'}`}
+                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                    activeTabFromStore === "comments"
+                      ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
+                  }`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
                     viewBox="0 0 24 24"
@@ -224,8 +245,7 @@ const StudioMainTabs = () => {
           </TabsContent>
 
           <TabsContent value="inspiration" className="flex-grow">
-            <StudioStyleTabs/>
-        
+            <StudioStyleTabs />
           </TabsContent>
 
           <TabsContent value="measurement" className="flex-grow ">
