@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CanvasEditor } from "@/components/canvas/CanvasEditor";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -25,6 +25,7 @@ import CanavasImage from "../canvas/CanavasImage";
 import React from "react";
 import WorkSpaceHome from "../workSpace/WorkSpaceHome";
 import StudioPageMobile from "@/pages/StudioPageMobile";
+import { CanvasEditor } from "../canvas/newSegmentCanvas/CanvasEditor";
 // import Hovertesttemplate from "./canvasTemplate/HoverTestTemplate";
 
 interface StudioMainCanvasProps {

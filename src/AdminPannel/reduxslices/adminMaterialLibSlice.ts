@@ -148,7 +148,7 @@ const adminMaterialLibSlice = createSlice({
 
       if (name == "material_segment_id" || name == "product_category_id") {
         if (name == "material_segment_id" && results !== null) {
-          let finalCategories = Array.from(
+          const finalCategories = Array.from(
             new Map(
               results.map((d: any) => [d.category_id.id, d.category_id])
             ).values()
@@ -161,7 +161,7 @@ const adminMaterialLibSlice = createSlice({
             };
           });
         } else {
-          let finalBrands = Array.from(
+        const finalBrands = Array.from(
             new Map(
               results.map((d: any) => [d.brand_id.id, d.brand_id])
             ).values()

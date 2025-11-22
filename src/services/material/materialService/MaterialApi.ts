@@ -245,7 +245,7 @@ export class MaterialApi {
   ): Promise<MaterialApiResponse<MaterialModel[]>> {
     try {
       const { data, error } = await supabase
-        .from("materials")
+        .from("product_segments")
         .select("*")
         .eq("name", segName)
         .single();
@@ -266,6 +266,7 @@ export class MaterialApi {
         };
       }
 
+      console.log("getting wallm maetrial", data)
       const materialSegment = data as MaterialSegmentModel;
       const categoryIds = materialSegment.categories;
 
@@ -296,6 +297,9 @@ export class MaterialApi {
           data: [],
         };
       }
+
+
+      console.log("allCategories---",allCategories)
 
       // Get all materials based on category IDs
       const materialPromises = allCategories.map(

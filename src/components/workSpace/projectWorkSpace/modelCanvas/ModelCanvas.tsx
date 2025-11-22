@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { CanvasEditor } from "@/components/canvas/CanvasEditor";
+
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import GeneratedMask from "./GeneratedMask";
 import { resetCanvas, setCanvasType } from "@/redux/slices/canvasSlice";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { CanvasEditor } from "@/components/canvas/newSegmentCanvas/CanvasEditor";
 
 type Props = {
   isCanvasModalOpen: boolean;

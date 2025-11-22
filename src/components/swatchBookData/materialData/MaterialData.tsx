@@ -53,6 +53,7 @@ const MaterialData = () => {
              await dispatch(fetchDoorMaterials({ page: 0, limit: 30 })).unwrap();
             
         } catch (error) {
+            if(error instanceof Error)
             toast.error('Error fetching door materials');
 
           

@@ -57,12 +57,12 @@ export class AdminMaterialLibService {
     brand_id,
   }: getMaterialByPaginationArgs): Promise<ApiResponse> {
     try {
-      let query = supabase.from("products").select(
+      let query = supabase.from("materials").select(
         `id,
          name,
          brand_id(*),
          product_category_id(*),
-         material_segment_id(*),
+         product_segment_id(*),
          description,
          photo,
          bucket_path,
@@ -73,7 +73,7 @@ export class AdminMaterialLibService {
         { count: "exact" }
       );
       if (segment_id?.length! > 0)
-        query = query.in("material_segment_id", segment_id!);
+        query = query.in("product_segment_id", segment_id!);
 
       // 2️⃣ then filter further by category if provided
       if (category_id!?.length > 0)

@@ -142,6 +142,7 @@ const AddSegSidebar = ({ open, onClose, onSave }: AddSegmentModalProps) => {
   //  },[isUpdateSegType, masterArray,segType])
   // resegrate teh group type
   const handleSegTypeChange = (value: string) => {
+    console.log("rifghth----=")
     if (masterArray && masterArray.length > 0) {
       const selectedArray = masterArray.find((master) => master.name === value);
       if (selectedArray && selectedArray.name) {

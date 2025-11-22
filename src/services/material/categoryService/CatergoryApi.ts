@@ -138,7 +138,7 @@ export class CategoryApi {
             const { data, error } = await supabase
                 .from(this.TABLE_NAME)
                 .select('*')
-                .in("title", identifier);
+                .in("name", identifier);
 
                 
             if (error) {

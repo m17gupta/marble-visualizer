@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-// Utility to create a custom crosshair cursor as a data URL
 
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
@@ -11,6 +10,7 @@ import {
   redo,
   updateSegmentDrawn,
   updateReAnnoatationPoints,
+  resetEditSegment,
 } from "@/redux/slices/segmentsSlice";
 import {
   setZoom,
@@ -32,13 +32,13 @@ import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { animatePolygonCompletion, PointModel } from "@/utils/canvasAnimations";
-import { drawLines } from "../canvasUtil/DrawMouseLine";
-import CanvasToolbar from "./CanvasToolbar";
+import { drawLines } from "../../canvasUtil/DrawMouseLine";
+import CanvasToolbar from "../CanvasToolbar";
 import {
   handleCanvasAutoPan,
   cleanupAutoPan,
 } from "@/components/canvasUtil/canvasAutoPan";
-import { ZoomCanvasMouse } from "../canvasUtil/ZoomCanvas";
+import { ZoomCanvasMouse } from "../../canvasUtil/ZoomCanvas";
 import { CanvasModel } from "@/models/canvasModel/CanvasModel";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import {
@@ -46,19 +46,20 @@ import {
   LoadImageWithCORS,
   LoadImageWithFetch,
   setBackgroundImage,
-} from "../canvasUtil/canvasImageUtils";
+} from "../../canvasUtil/canvasImageUtils";
 import {
   CreateCustomCursor,
   UpdateCursorOffset,
-} from "../canvasUtil/CreateCustomCursor";
-import ReAnnotationPoint from "./ReAnnotationPoint";
+} from "../../canvasUtil/CreateCustomCursor";
+import ReAnnotationPoint from "../ReAnnotationPoint";
 import {
   updateDistanceRefPixel,
   updateIsDistanceRef,
 } from "@/redux/slices/jobSlice";
-import { takeFabricCanvasScreenshot } from "../canvasUtil/ScreenShotCanvas";
+import { takeFabricCanvasScreenshot } from "../../canvasUtil/ScreenShotCanvas";
+import ShowRecpectiveSegType from "./ShowRecpectiveSegType";
 
-export type DrawingTool = "select" | "polygon";
+export type DrawingTool = "select" | "polygon" | "rectangle";
 interface ExtendedTEvent extends fabric.TEvent {
   absolutePointer?: { x: number; y: number };
 }
@@ -98,7 +99,8 @@ export function CanvasEditor({
   const { aiTrainImageWidth, aiTrainImageHeight } = useSelector(
     (state: RootState) => state.canvas
   );
-  //
+
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const backgroundImageRef = useRef<fabric.Image | null>(null);
@@ -125,14 +127,35 @@ export function CanvasEditor({
   const { allSegments: allSegmentArray } = useSelector(
     (state: RootState) => state.segments
   );
+const isRectangleMode = useRef(false);
+const rectStartPoint = useRef<fabric.Point | null>(null);
+const tempRect = useRef<fabric.Rect | null>(null);
 
-  const {markingMode} = useSelector((state: RootState) => state.canvas);
+  const { markingMode } = useSelector((state: RootState) => state.canvas);
 
   const [allSegArray, setAllSegArray] = useState<SegmentModal[]>([]);
   const { selectedMasterArray } = useSelector(
     (state: RootState) => state.masterArray
   );
   const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
+  // Method to clean the canvas (remove all objects and reset state)
+  const handleCleanCanvas = useCallback(() => {
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      // Remove only polygons
+      const polygons = canvas.getObjects().filter(obj => obj.type === 'polygon');
+      polygons.forEach(poly => canvas.remove(poly));
+      // Optionally reset polygon-related state
+      isPolygonMode.current = false;
+      tempPoints.current = [];
+      tempLines.current = [];
+      tempPointCircles.current = [];
+      allSegments.current = {};
+      allSegmentsCount.current = 0;
+      canvas.renderAll();
+      toast.success("All polygons removed from canvas");
+    }
+  }, []);
   // const [hoveredSegmentId] = useState<string | null>(null);
   // upate all segmnet Array
   useEffect(() => {
@@ -144,11 +167,20 @@ export function CanvasEditor({
   }, [allSegmentArray]);
 
   // update the canavasActiveTool
+  // useEffect(() => {
+  //   if (canavasActiveTool != "") {
+  //     activeTool.current = canavasActiveTool as DrawingTool;
+  //   }
+  // }, [canavasActiveTool]);
+  
+  //console.log("activeTool.current", activeTool.current);
   useEffect(() => {
-    if (canavasActiveTool != "") {
-      activeTool.current = canavasActiveTool as DrawingTool;
+    if (markingMode != "" && isCanvasReady) {
+      activeTool.current = markingMode as DrawingTool;
+      handleCleanCanvas()
     }
-  }, [canavasActiveTool]);
+    
+  }, [markingMode,isCanvasReady]);
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
@@ -271,6 +303,7 @@ export function CanvasEditor({
 
     // Canvas event handlers
     canvas.on("mouse:down", handleMouseDown);
+    // canvas.on("mouse:up", handleMouseUp);
     canvas.on("mouse:move", (event) => {
       handleMouseMove(event);
     });
@@ -451,7 +484,6 @@ export function CanvasEditor({
     canvas.renderAll();
   }, [activeTool, isCanvasReady, setIsAutoPanning]);
 
-
   const handleMouseWheel = (event: fabric.TEvent) => {
     // Cast the event to WheelEvent to access deltaY
     const deltaE = event.e as WheelEvent;
@@ -536,7 +568,7 @@ export function CanvasEditor({
 
     const canvas = fabricCanvasRef.current;
     const currentZoom = canvas.getZoom();
-
+        console.log("tempPoints------->",tempPoints.current)
     // Remove all temporary objects (lines, preview line, and point circles)
     const tempObjects = canvas
       .getObjects()
@@ -553,6 +585,10 @@ export function CanvasEditor({
 
     const ratioWidth = aiTrainImageWidth / canvas.width;
     const ratioHeight = aiTrainImageHeight / canvas.height;
+
+    console.log("ratioWidth----",ratioWidth)
+
+    console.log("ratioHeight----",ratioHeight)
     // Create the actual polygon
     const polygonPoints = tempPoints.current.map(
       (p) => new fabric.Point(p.x, p.y)
@@ -560,6 +596,8 @@ export function CanvasEditor({
     const polygonPointsafterScale = tempPoints.current.map(
       (p) => new fabric.Point(p.x * ratioWidth, p.y * ratioHeight)
     );
+
+    console.log("polygonPointsafterScale---",polygonPointsafterScale)
 
     const polygonNumberArray = polygonPointsafterScale.flatMap((point) => [
       Number(point.x.toFixed(2)),
@@ -604,12 +642,13 @@ export function CanvasEditor({
         name: `area-${allSegmentsCount.current}`,
         annotations: polygonNumberArray,
       };
-
+         console.log("polygonNumberArray----",polygonNumberArray)
       dispatch(updateMasks(data));
     } else if (canvasType === "draw") {
       dispatch(updateSegmentDrawn(polygonNumberArray));
       // dispatch(updateSegmentDrawn(updatedSegments));
     } else if (canvasType === "reannotation") {
+     dispatch(resetEditSegment())
       dispatch(updateReAnnoatationPoints(polygonNumberArray));
     }
 
@@ -632,6 +671,45 @@ export function CanvasEditor({
 
   // Handle mouse down events
   const handleMouseDown = useCallback(
+    (e: ExtendedTEvent) => {
+      if (!fabricCanvasRef.current) return;
+      if (activeTool.current === "rectangle") {
+        drawRectangleMouseDown(e);
+        return;
+      }
+      if (activeTool.current === "polygon") {
+        handleMousePolyDown(e);
+        return;
+      }
+    },
+    [
+      activeTool,
+      dispatch,
+      createPointCircle,
+      calculateDistance,
+      finishPolygon,
+      segmentDrawn,
+      selectedMasterArray,
+    ]
+  );
+  
+
+      // Handle mouse move for preview line
+  const handleMouseMove = useCallback(
+    (e: fabric.TEvent) => {
+      if (!fabricCanvasRef.current) return;
+  if (activeTool.current === "rectangle") {
+        drawReactangleMouseMove(e);
+        return;
+      }
+      if (activeTool.current === "polygon") {
+        handleMousePolyMove(e);
+        return;
+      }
+    },
+    [dispatch]
+  );
+  const handleMousePolyDown = useCallback(
     (e: ExtendedTEvent) => {
       if (!fabricCanvasRef.current || activeTool.current !== "polygon") {
         return;
@@ -696,7 +774,8 @@ export function CanvasEditor({
         const line = new fabric.Line(
           [lastPoint.x, lastPoint.y, pointer.x, pointer.y],
           {
-            stroke: "#FF1493",
+            //stroke: "#FF1493",
+            stroke: "rgb(7 239 253)",
             strokeWidth: adjustedStrokeWidth,
             selectable: false,
             evented: false,
@@ -725,24 +804,99 @@ export function CanvasEditor({
     ]
   );
 
-  // handle Dimesion Ref Pixel
-  const handleDimensionRefPixel = (pixelDistance: number) => {
-    dispatch(updateDistanceRefPixel(pixelDistance));
-    dispatch(setCanvasType("hover"));
-    dispatch(updateIsDistanceRef(true));
-    // handleCancelDrawing()
-  };
 
-  // Handle mouse move for preview line
-  const handleMouseMove = useCallback(
+// ✅ Mouse Down (first or second click)
+const drawRectangleMouseDown = useCallback((e: ExtendedTEvent) => {
+  if (!fabricCanvasRef.current || activeTool.current !== "rectangle") return;
+
+  const canvas = fabricCanvasRef.current;
+  const pointer = e.absolutePointer || canvas.getPointer(e.e);
+
+  // ---- FIRST CLICK: start drawing ----
+  if (!isRectangleMode.current) {
+    isRectangleMode.current = true;
+    rectStartPoint.current = new fabric.Point(pointer.x, pointer.y);
+
+    // create a temporary rectangle
+    const rect = new fabric.Rect({
+      left: pointer.x,
+      top: pointer.y,
+      width: 1,
+      height: 1,
+      fill: "rgba(6, 134, 13, 0.3)",
+      stroke: "#FF1493",
+      strokeWidth: 2 / (canvas.getZoom() || 1),
+      selectable: false,
+      evented: false,
+    });
+    tempRect.current = rect;
+    canvas.add(rect);
+    canvas.requestRenderAll();
+    return;
+  }
+
+  // ---- SECOND CLICK: finish drawing ----
+  if (isRectangleMode.current && tempRect.current) {
+    const rect = tempRect.current;
+
+    const points = [
+      { x: rect.left!, y: rect.top! },
+      { x: rect.left! + rect.width!, y: rect.top! },
+      { x: rect.left! + rect.width!, y: rect.top! + rect.height! },
+      { x: rect.left!, y: rect.top! + rect.height! },
+    ];
+    tempPoints.current = points.map(p => new fabric.Point(p.x, p.y));
+    //console.log("Rectangle Points:", points);
+    // replace temp rectangle with polygon
+    const polygon = new fabric.Polygon(points.map(p => ({ x: p.x, y: p.y })), {
+      fill: "rgba(6, 134, 13, 0.3)",
+      stroke: "#FF1493",
+      strokeWidth: 2 / (canvas.getZoom() || 1),
+      selectable: true,
+    });
+
+    canvas.remove(rect);
+    canvas.add(polygon);
+    canvas.requestRenderAll();
+
+    // reset state
+    isRectangleMode.current = false;
+    rectStartPoint.current = null;
+    tempRect.current = null;
+    finishPolygon();
+  }
+}, [activeTool]);
+
+// ✅ Mouse Move (resize while drawing)
+const drawReactangleMouseMove = useCallback((e: ExtendedTEvent) => {
+  if (!fabricCanvasRef.current || !isRectangleMode.current || !rectStartPoint.current || !tempRect.current) return;
+  const canvas = fabricCanvasRef.current;
+  const pointer = e.absolutePointer || canvas.getPointer(e.e);
+  const rect = tempRect.current;
+
+  // update rectangle dimensions dynamically
+  if (pointer.x < rectStartPoint.current.x) {
+    rect.set({ left: pointer.x, width: rectStartPoint.current.x - pointer.x });
+  } else {
+    rect.set({ width: pointer.x - rectStartPoint.current.x });
+  }
+
+  if (pointer.y < rectStartPoint.current.y) {
+    rect.set({ top: pointer.y, height: rectStartPoint.current.y - pointer.y });
+  } else {
+    rect.set({ height: pointer.y - rectStartPoint.current.y });
+  }
+  canvas.requestRenderAll();
+}, []);
+
+
+  const handleMousePolyMove = useCallback(
     (e: fabric.TEvent) => {
       if (!fabricCanvasRef.current) return;
       const canvas = fabricCanvasRef.current;
       // Always use canvas pointer coordinates (transformed for zoom/pan)
       const pointer = canvas.getPointer(e.e);
       const pointerCanvas = (e as any)?.absolutePointer;
-      console.log("Pointer:", pointer);
-      console.log("Pointer Canvas:", pointerCanvas);
       const currentZoom = canvas.getZoom();
 
       // Handle auto-panning if enabled
@@ -826,6 +980,17 @@ export function CanvasEditor({
     },
     [dispatch]
   );
+
+
+    // handle Dimesion Ref Pixel
+    const handleDimensionRefPixel = (pixelDistance: number) => {
+      dispatch(updateDistanceRefPixel(pixelDistance));
+      dispatch(setCanvasType("hover"));
+      dispatch(updateIsDistanceRef(true));
+    // handleCancelDrawing()
+  };
+
+
 
   // Handle double click to finish polygon
   const handleDoubleClick = useCallback(() => {
@@ -918,7 +1083,7 @@ export function CanvasEditor({
         1.0,
         2
       );
-      console.log("Screenshot taken successfully:", dataURL);
+      //console.log("Screenshot taken successfully:", dataURL);
       dispatch(updateScreenShotUrl(dataURL));
       dispatch(setIsCanvasModalOpen(false));
       dispatch(setCanvasType("hover"));
@@ -947,14 +1112,14 @@ export function CanvasEditor({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="relative px-4"
+            className="relative px-4 pb-4"
           >
             <Card className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative bg-gray-50 flex items-center justify-center min-h-[600px] min-w-[800px]">
                   <canvas
                     ref={canvasRef}
-                    className="border-0 block"
+                    className="block border-0"
                     style={{ maxWidth: "100%", height: "auto" }}
                   />
 
@@ -962,7 +1127,7 @@ export function CanvasEditor({
                   {!isCanvasReady && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100/80">
                       <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                        <div className="w-8 h-8 mx-auto mb-2 border-b-2 rounded-full animate-spin border-primary"></div>
                         <p className="text-sm text-muted-foreground">
                           Initializing canvas...
                         </p>
@@ -979,10 +1144,10 @@ export function CanvasEditor({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-4 right-4 bg-black/80 text-white px-3 py-2 rounded-lg text-sm"
+                      className="absolute px-3 py-2 text-sm text-white rounded-lg top-4 right-4 bg-black/80"
                     >
                       <div className="flex items-center space-x-2">
-                        <Palette className="h-3 w-3" />
+                        <Palette className="w-3 h-3" />
                       
                       </div>
                     </motion.div>
@@ -993,15 +1158,15 @@ export function CanvasEditor({
             </Card>
           </motion.div>
 
-          {/* Material Picker Dialog */}
-          {/* <MaterialPickerDialog
-          open={materialPickerOpen}
-          onOpenChange={setMaterialPickerOpen}
-          onSelect={handleMaterialSelect}
-          selectedMaterialId={activeSegment?.material?.materialId}
-        /> */}
+     
         </div>
       </TooltipProvider>
+
+     { fabricCanvasRef.current &&
+     <ShowRecpectiveSegType
+        canvasRef={fabricCanvasRef }
+        
+      />}
     </>
   );
 }

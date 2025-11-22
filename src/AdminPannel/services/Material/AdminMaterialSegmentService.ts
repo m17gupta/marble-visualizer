@@ -25,7 +25,7 @@ export class AdminMaterialSegmentService {
   ): Promise<ApiResponse> {
     try {
       const { data, error } = await supabase
-        .from("material_segments")
+        .from("product_segments")
         .select(
           `id,name,color,color_code,icon,icon_svg,index,is_active,is_visible,description,short_code`
         )
@@ -56,7 +56,7 @@ export class AdminMaterialSegmentService {
   ): Promise<ApiResponse> {
     try {
       const { data, error } = await supabase
-        .from("material_segments")
+        .from("product_segments")
         .insert(product)
         .select("*");
 
@@ -90,7 +90,7 @@ export class AdminMaterialSegmentService {
     try {
       // First, check if the record exists
       const { data: existingRecord, error: checkError } = await supabase
-        .from("material_segments")
+        .from("product_segments")
         .select("id")
         .eq("id", id)
         .single();
@@ -135,7 +135,7 @@ export class AdminMaterialSegmentService {
       console.log("Cleaned product data:", cleanedProduct);
 
       const { data, error } = await supabase
-        .from("material_segments")
+        .from("product_segments")
         .update(cleanedProduct)
         .eq("id", id)
         .select(

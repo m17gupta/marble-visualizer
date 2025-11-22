@@ -175,8 +175,8 @@ const AdminPanel = () => {
         return <MaterialBrands />;
       case "style":
         return <MaterialBrandStyles />;
-      // case "material-segment":
-      //   return <MaterialSegment />;
+      case "material-segment":
+        return <MaterialSegment />;
       case "material-connections":
         return <MaterialConnections />;
       case "material-attributes":

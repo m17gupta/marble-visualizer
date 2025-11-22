@@ -91,8 +91,8 @@ const initialState: CanvasState = {
   screenShotUrl: null, // URL of the screenshot if taken
   isResetZoom: false, // Flag to indicate if the canvas has been reset
   activeCanvas: "hideSegments",
-  aiTrainImageWidth: 0,
-  aiTrainImageHeight: 0,
+  aiTrainImageWidth: 1400,
+  aiTrainImageHeight: 750,
   isCompare: false,
   isSwitchCanvas: false,
   markingMode: "polygon",
