@@ -38,7 +38,7 @@ export function FilterSidebars() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="h-9 min-w-36 gap-2">
+        <Button variant="outline" className="h-9 min-w-44 gap-2">
           <SlidersHorizontal className="h-4 w-4" />
           Filters
         </Button>

@@ -45,7 +45,7 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
   const isCollapsed = variant === "collapsed";
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3 px-1">
       {demoMasterArray.map((item) => {
         const isActive = category === (item.name ?? "");
 
@@ -58,11 +58,11 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
             onClick={() => handleDemoSegments(item)}
             className={[
               // base pill
-              "h-12 rounded-lg border bg-white px-4",
+              "h-10 rounded-lg border bg-white px-4 focus:outline-none focus:ring-0",
               "flex items-center justify-start gap-3",
               "text-sm font-medium text-gray-900",
               "transition-all duration-150",
-              "hover:bg-gray-50 hover:shadow-sm",
+              "hover:bg-gray-50 hover:shadow-sm ",
               "focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2",
               // active state like screenshot
               isActive
@@ -78,13 +78,13 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
                 className={[
                   "grid place-items-center rounded-full",
                   "bg-gray-600 text-white",
-                  isCollapsed ? "h-7 w-7" : "h-8 w-8",
+                  isCollapsed ? "h-5 w-5" : "h-5 w-5",
                 ].join(" ")}
               >
                 {/* checkmark */}
                 <svg
                   viewBox="0 0 24 24"
-                  className={isCollapsed ? "h-4 w-4" : "h-5 w-5"}
+                  className={isCollapsed ? "h-2 w-2" : "h-3 w-3"}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="3"

@@ -93,6 +93,9 @@ const LeftSection = () => {
 
   const toggle = (v: string) =>
     setActive((a) => (a.includes(v) ? a.filter((x) => x !== v) : [...a, v]));
+
+
+  const  [showSearch, setShowSearch] = useState(false)
   return (
     <aside
       className={` ${collapsed ? "w-[84px]" : "w-[100%] md:w-[360px] lg:w-[360px]"
@@ -158,19 +161,56 @@ const LeftSection = () => {
               {/* toolbar */}
               <div className="grid items-center gap-2 px-3 pb-3 pt-3">
                 <div className="flex items-center gap-2">
+
+                  {/* <div className="border py-2 px-2 rounded-md">
+                  
+                  <Search className="pointer-events-none  h-5 w-5 text-zinc-500" />
+               
+                  </div> */}
+
+                   <button
+
+                    onClick={() =>setShowSearch (!showSearch)}
+                    className="p-2"
+                  >
+                    <Search className="h-5 w-5 text-zinc-600 cursor-pointer focus:outline-none focus:ring-0" />
+                  </button>
+                
                   <FilterSidebars />
 
                   <Tabs value={view} onValueChange={(v) => setView(v as "grid" | "list")}>
-                    <TabsList className="h-10 rounded-sm py-0">
-                      <TabsTrigger value="grid" className="px-3">
-                        <Grid3X3 className="h-4 w-4" />
-                      </TabsTrigger>
-                      <TabsTrigger value="list" className="px-3">
-                        <List className="h-4 w-4" />
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+        <TabsList className="h-10 rounded-sm py-0 bg-gray-100 gap-1 px-2">
+          <TabsTrigger
+            value="grid"
+            className="px-3 py-2 focus:ring-none focus:outline-none rounded-sm data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent"
+          >
+            <Grid3X3 className="h-4 w-4" />
+          </TabsTrigger>
+
+          <TabsTrigger
+            value="list"
+            className="px-3 py-2 focus:ring-none focus:outline-none rounded-sm data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent"
+          >
+            <List className="h-4 w-4" />
+          </TabsTrigger>
+        </TabsList>
+                </Tabs>
+
+
+
                 </div>
+
+                {showSearch && (
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-zinc-500" />
+                  <Input
+                    placeholder="Search products…"
+                    className="h-9 pl-8"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </div>
+                )}
 
                 <div className="flex flex-wrap gap-2">
                   {OPTIONS.map((opt) => {
@@ -194,15 +234,8 @@ const LeftSection = () => {
                   })}
                 </div>
 
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-zinc-500" />
-                  <Input
-                    placeholder="Search products…"
-                    className="h-9 pl-8"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
+               
+               
               </div>
 
 

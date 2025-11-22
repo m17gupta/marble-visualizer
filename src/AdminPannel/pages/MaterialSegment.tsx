@@ -16,6 +16,7 @@ import {
   updateSegmentInTable,
 } from "../reduxslices/adminMaterialSegment";
 import type { MaterialSegment } from "@/components/swatchBook/interfaces";
+import { Plus, Upload } from "lucide-react";
 
 const MaterialSegment: React.FC = () => {
   const { isLoading, sortfield, sortorder, list } = useSelector(
@@ -112,21 +113,24 @@ const MaterialSegment: React.FC = () => {
               </div>
             </div>
 
-            <div className="col-span-2 md:justify-end col-start-3 flex md:flex-row flex-col justify-start">
-              <button
-                onClick={() => handleMaterialPageSelection("add")}
-                className="rounded-lg border border-gray-200 h-10 bg-black text-white hover:bg-white hover:text-black transition-colors duration-200"
-              >
-                Add Segment Type
-              </button>
+      <div className="col-span-2 col-start-3 flex justify-start items-center md:justify-end gap-2">
+  <button
+    onClick={() => handleMaterialPageSelection("add")}
+    className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2 h-9"
+  >
+    <Upload className="w-4 h-4" />
+    Add Segment Type
+  </button>
 
-              <button
-                onClick={() => handleOpen()}
-                className="rounded-lg border border-gray-200 h-10 bg-green-800 text-white hover:bg-white hover:text-green-800 transition-colors duration-200"
-              >
-                Import Segments
-              </button>
-            </div>
+  <button
+    onClick={() => handleOpen()}
+    className="text-sm flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors h-9"
+  >
+    <Plus className="w-4 h-4 mr-1" />
+    Import Segments
+  </button>
+</div>
+
           </div>
           {isLoading ? (
             <LoadingSpinner />
