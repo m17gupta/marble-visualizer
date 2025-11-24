@@ -88,7 +88,7 @@ export class AdminMaterialLibService {
       query = query.range(from, to);
 
       const { data, error, count } = await query;
-   
+
       if (!error) {
         return {
           data: data as Product[],
@@ -257,7 +257,6 @@ export class AdminMaterialLibService {
       throw error;
     }
   }
-  
 
   static async handleSave({
     product,

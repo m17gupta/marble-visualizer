@@ -1,3 +1,22 @@
+// Thunk to delete product by id
+export const adminDeleteProduct = createAsyncThunk(
+  "materials/adminDeleteProduct",
+  async (
+    productId: number,
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await AdminMaterialLibService.deleteProduct(productId);
+      if (response.status !== false) {
+        return productId;
+      } else {
+        return rejectWithValue(response.message || "Failed to delete product");
+      }
+    } catch (error: unknown) {
+      return rejectWithValue((error as Error)?.message || "Failed to delete product");
+    }
+  }
+);
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
@@ -408,6 +427,16 @@ const adminMaterialLibSlice = createSlice({
       })
       .addCase(adminProductSave.rejected, (state, action) => {
         state.saveLoading = false;
+        state.error = action.payload as string;
+      })
+
+      
+      // Handle product delete
+      .addCase(adminDeleteProduct.fulfilled, (state, action) => {
+        state.materials = state.materials.filter((p) => p.id !== action.payload);
+        state.error = null;
+      })
+      .addCase(adminDeleteProduct.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },

@@ -24,6 +24,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import {
+  adminDeleteProduct,
   adminFetchMaterial,
   handleAddFilters,
   handlePageChange,
@@ -35,6 +36,7 @@ import { adminFetchBrands } from "@/AdminPannel/reduxslices/MaterialBrandSlice";
 import { adminFetchCategory } from "@/AdminPannel/reduxslices/adminMaterialCategorySlice";
 import { FilterDropdown } from "./FilterComp";
 import { newPath, path } from "./EditMaterialModal";
+import { toast } from "sonner";
 
 export const MaterialLibrary = () => {
   const navigate = useNavigate();
@@ -159,7 +161,11 @@ export const MaterialLibrary = () => {
 
   const handleDelete = async (productId: number) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      console.log("Delete product:", productId);
+        const resposnse= await dispatch(adminDeleteProduct(productId)).unwrap()
+        console.log("deleet product ", resposnse)
+        if(resposnse){
+          toast.info(`The product with ID ${productId} is deleted.`)
+        }
     }
   };
 
