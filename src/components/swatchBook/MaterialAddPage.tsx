@@ -106,7 +106,7 @@ const ProductAddEditPage = () => {
     const getBrandAndCategory = async () => {
       try {
         const { data: material, error: materr } = await supabase
-          .from("material_segments")
+          .from("product_segments")
           .select("*");
         const { data: category, error: err } = await supabase
           .from("product_categories")
@@ -240,6 +240,7 @@ const ProductAddEditPage = () => {
     >
   ) => {
     const { name, value, type } = e.target;
+    console.log(" traget valkue====", name, value , type)
     const mapped = {
       material_segment_id: "material_segment_id",
       product_category_id: "category_id",
@@ -1449,8 +1450,8 @@ const ProductAddEditPage = () => {
                     Segment Type <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="material_segment_id"
-                    value={String(product.material_segment_id) || ""}
+                    name="product_segment_id"
+                    value={String(product.product_segment_id) || ""}
                     onChange={handleProductChange}
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 text-sm ${
                       !product.material_segment_id

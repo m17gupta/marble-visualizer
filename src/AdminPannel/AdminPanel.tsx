@@ -20,6 +20,7 @@ import AddProject from "./pages/AddProject";
 import DemoProject from "./pages/DemoProject";
 import Role from "./pages/Role";
 import Permission from "./pages/Permission";
+import ProductAddEditPage from "@/components/swatchBook/MaterialAddPage";
 
 export type AdminPage =
   | "dashboard"
@@ -169,8 +170,8 @@ const AdminPanel = () => {
 
       case "materials":
         return <MaterialLibrary />;
-      // case "addmaterials":
-      //   return <ProductAddEditPage />;
+      case "addmaterials":
+        return <ProductAddEditPage />;
       case "brand":
         return <MaterialBrands />;
       case "style":

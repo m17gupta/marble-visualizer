@@ -28,6 +28,7 @@ export class AdminMaterialBrandService {
         .select("*")
         .order(orderby, { ascending: order === "asc" });
 
+        
       const flattened = data?.map((d) => {
         if (d.product_brand_categories.length === 0) {
           return {
@@ -68,6 +69,7 @@ export class AdminMaterialBrandService {
         }
       });
 
+       console.log("get all brand", flattened)
       // const flattened = data!.flatMap((cat: any) => {
       //   if (cat.product_brand_categories.length === 0) {
       //     // If no brand, still keep the category

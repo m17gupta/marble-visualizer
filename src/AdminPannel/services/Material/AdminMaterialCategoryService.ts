@@ -18,12 +18,16 @@ export class AdminMaterialCategoryService {
     try {
       const { data, error } = await supabase
         .from("product_categories")
-        .select(
-          `*,  product_brand_categories(brand_id(name), material_segment_id(name))
-        `
-        )
+        // .select("*")
+        // .select(
+        //   `*,  product_brand_categories(brand_id(name),
+        // `
+        // )
+        .select("*, product_brand_categories(*)")
         .order(`${orderby}`, { ascending: order == "asec" ? true : false });
-      let final = data!.map((d) => {
+
+      console.log(" all categoroes---", data);
+      const final = data!.map((d) => {
         const f = Array.from(
           new Set([
             ...d.product_brand_categories.map(
