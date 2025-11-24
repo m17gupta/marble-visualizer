@@ -310,13 +310,17 @@ function SidebarContent({
   email: string;
   avatar?: string;
 }) {
+
+
+  const {profile} =useSelector((state:RootState)=>state.userProfile)
+
   return (
     <div className={cn("flex h-screen flex-col border-r bg-background", collapsed ? "w-16" : "w-64")}>
       {/* header */}
       <div className="flex items-center justify-between border-b px-2 py-3">
         <div className="flex items-center gap-3">
           <img src={marbleLogo} alt="Dzinly" className="h-8 w-8" />
-          {!collapsed && <span className="font-semibold">Dzinly</span>}
+          {!collapsed && <span className="font-semibold">{profile?.tenant_id?.name}</span>}
         </div>
         <Button
           variant="ghost"

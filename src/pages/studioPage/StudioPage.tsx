@@ -42,7 +42,13 @@ import CanvasAdddNewSegmentHome from "@/components/canvas/canvasAddNewSegment/Ca
 //type DrawingTool = "select" | "polygon";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { resetSegmentSlice } from "@/redux/slices/segmentsSlice";
-import { addSelectedMasterArray, addUserSelectedSegment, clearMasterArray, updatedSelectedGroupSegment, updateSelectedSegment } from "@/redux/slices/MasterArraySlice";
+import {
+  addSelectedMasterArray,
+  addUserSelectedSegment,
+  clearMasterArray,
+  updatedSelectedGroupSegment,
+  updateSelectedSegment,
+} from "@/redux/slices/MasterArraySlice";
 import GetSegments from "@/components/getSegments/GetSegments";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import StudioMainTabs from "@/components/studio/studioMainTabs/StudioMainTabs";
@@ -62,9 +68,8 @@ import { Loader } from "../projectPage/ProjectsPage";
 import bgImage from "../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
 import marbleLogo from "../../../public/assets/marble/main-favicons.png";
 export function StudioPage() {
-
-    const [canvasWidth, setCanvasWidth] = useState(1023);
-    const [canvasHeight, setCanvasHeight] = useState(592);
+  const [canvasWidth, setCanvasWidth] = useState(1023);
+  const [canvasHeight, setCanvasHeight] = useState(592);
   const { id: projectId } = useParams<{ id: string }>();
   const [selectedProject, setSelectedProject] = useState<ProjectModel | null>(
     null
@@ -79,6 +84,8 @@ export function StudioPage() {
     (state: RootState) => state.workspace
   );
 
+  const { profile } = useSelector((state: RootState) => state.userProfile);
+
   // const activeTab = useRef<string>("inspiration");
 
   const [currentCanvasImage, setCurrentCanvasImage] = useState<string>("");
@@ -92,49 +99,49 @@ export function StudioPage() {
   const { addSegMessage } = useSelector((state: RootState) => state.segments);
 
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
- 
-    const { masterArray } = useSelector((state: RootState) => state.masterArray);
-    const isFirst = useRef<boolean>(true);
 
-    const {isGenLoading} = useSelector((state: RootState) => state.workspace);
-    // update master Array
-   
-    useEffect(() => {
-      if (masterArray && masterArray.length > 0) {
+  const { masterArray } = useSelector((state: RootState) => state.masterArray);
+  const isFirst = useRef<boolean>(true);
+
+  const { isGenLoading } = useSelector((state: RootState) => state.workspace);
+  // update master Array
+
+  useEffect(() => {
+    if (masterArray && masterArray.length > 0) {
+      if (
+        masterArray &&
+        masterArray[0] &&
+        masterArray[0].allSegments &&
+        masterArray[0].allSegments.length > 0
+      ) {
+        const firstGroup = masterArray[0].allSegments[0];
         if (
-          masterArray &&
-          masterArray[0] &&
-          masterArray[0].allSegments &&
-          masterArray[0].allSegments.length > 0
+          firstGroup &&
+          firstGroup.groupName &&
+          firstGroup.segments.length > 0 &&
+          isFirst.current
         ) {
-          const firstGroup = masterArray[0].allSegments[0];
-          if (
-            firstGroup &&
-            firstGroup.groupName &&
-            firstGroup.segments.length > 0 &&
-            isFirst.current
-          ) {
-            dispatch(addSelectedMasterArray(masterArray[0]));
-            dispatch(updateSelectedSegment(firstGroup.segments[0]));
-            dispatch(updatedSelectedGroupSegment(firstGroup));
-            if(firstGroup.segments &&firstGroup.segments.length>0){
-              const userSeg:SegmentModal[]=[]
-              firstGroup.segments.map(item=>{
-                userSeg.push(item)
-              })
-              dispatch(addUserSelectedSegment(userSeg))
-            }
-            
-            isFirst.current = false;
+          dispatch(addSelectedMasterArray(masterArray[0]));
+          dispatch(updateSelectedSegment(firstGroup.segments[0]));
+          dispatch(updatedSelectedGroupSegment(firstGroup));
+          if (firstGroup.segments && firstGroup.segments.length > 0) {
+            const userSeg: SegmentModal[] = [];
+            firstGroup.segments.map((item) => {
+              userSeg.push(item);
+            });
+            dispatch(addUserSelectedSegment(userSeg));
           }
-  
-         // setUpdatedMasterArray(masterArray);
+
+          isFirst.current = false;
         }
-      } else {
-//        setUpdatedMasterArray(null);
-        // isFirst.current = false;
+
+        // setUpdatedMasterArray(masterArray);
       }
-    }, [masterArray, isFirst]);
+    } else {
+      //        setUpdatedMasterArray(null);
+      // isFirst.current = false;
+    }
+  }, [masterArray, isFirst]);
   // update intial selected masterArray
 
   // update message
@@ -200,6 +207,7 @@ export function StudioPage() {
   };
 
   const handleBackToProject = () => {
+    console.log("profile---",profile)
     dispatch(resetSegmentSlice());
     dispatch(clearCurrentJob());
     dispatch(clearCurrentProject());
@@ -210,8 +218,12 @@ export function StudioPage() {
     dispatch(resetJobCommentsState());
     dispatch(clearCurrentImage());
     dispatch(setCurrentTabContent("home"));
-
-    navigate("/projects");
+    if (profile && profile.role == "admin") {
+      console.log("role admin")
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/app/projects");
+    }
   };
 
   return (
@@ -221,7 +233,7 @@ export function StudioPage() {
       {loadingMessage && loadingMessage != null && (
         <LoadingOverlay message={loadingMessage} />
       )}
-      
+
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
         {/* <Breadcrumb /> */}
         <div className="w-full md:w-1/4 border-r overflow-hidden hidden md:block">
@@ -233,9 +245,7 @@ export function StudioPage() {
                   src="https://marble-visualizer.vercel.app/assets/marble-DnOX0AGi.png"
                   alt="dzinly logo"
                 />
-                
               </Link>
-           
             </div>
             {/* <Link to="/"> */}
             <Button
@@ -253,19 +263,16 @@ export function StudioPage() {
           <StudioMainTabs />
         </div>
 
-       
-          <StudioMainCanvas
-            // currentCanvasImage={currentCanvasImage}
-            isUploading={true}
-            canEdit={canEdit}
-            isJobRunning={isJobRunning}
-            canvasWidth={canvasWidth}
-            canvasHeight={canvasHeight}
-            onFileUpload={handleFileUpload}
-            onClearImage={() => dispatch(clearCurrentImage())}
-          />
-      
-       
+        <StudioMainCanvas
+          // currentCanvasImage={currentCanvasImage}
+          isUploading={true}
+          canEdit={canEdit}
+          isJobRunning={isJobRunning}
+          canvasWidth={canvasWidth}
+          canvasHeight={canvasHeight}
+          onFileUpload={handleFileUpload}
+          onClearImage={() => dispatch(clearCurrentImage())}
+        />
 
         <SwatchBookDataHome />
 
@@ -297,9 +304,8 @@ export function StudioPage() {
 
       <MarkingDimensionHome />
 
-    
       <GetAllJobComments />
-{/* 
+      {/* 
       <MaterialData /> */}
     </>
   );

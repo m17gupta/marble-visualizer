@@ -289,7 +289,7 @@ export class AuthAPI {
       // First, check if user_profiles table exists and has data
       const response = await supabase
         .from("user_profiles")
-        .select("*")
+        .select("*, tenant_id(*)")
         .eq("user_id", userId);
 
       if (response.error) {

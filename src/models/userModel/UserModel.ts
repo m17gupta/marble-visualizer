@@ -27,6 +27,12 @@ export interface UserProfile {
   favorite_materials?: number[];
     email?:string
   design_cord_profile_id?: number;
+  tenant_id?:{
+    id:number, 
+    name?:string,
+    slug?:string, 
+    logo?:string
+  }
 }
 
 export type UserRole = "admin" | "designer" | "viewer" | "vendor" | "user";
