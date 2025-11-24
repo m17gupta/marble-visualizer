@@ -396,7 +396,7 @@ export const MaterialLibrary = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {sortedProducts.map((product) => {
-                  const imageURL =product?.gallery[0]
+                  const imageURL = product?.gallery?.[0] ?? ""
                   console.log("gallert image", imageURL)
                     // product?.bucket_path == "default" && product.new_bucket != 1
                     //   ? `${path}/${product.photo}`

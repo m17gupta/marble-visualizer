@@ -42,6 +42,14 @@ interface autogenModal {
 
 const ProductAddEditPage = () => {
   const dispatch = useDispatch<AppDispatch>();
+  // Track touched state for required fields
+  const [touched, setTouched] = useState({
+    name: false,
+    base_price: false,
+    material_segment_id: false,
+    product_category_id: false,
+    brand_id: false,
+  });
   const {
     product,
     error,
@@ -94,7 +102,8 @@ const ProductAddEditPage = () => {
           }
         }
       } catch (error) {
-        console.error("Error in Getting Attributes");
+        if(error instanceof Error)
+          toast.error("Error in fetching product")
       }
     };
     if (product.product_category_id) {
@@ -240,14 +249,13 @@ const ProductAddEditPage = () => {
     >
   ) => {
     const { name, value, type } = e.target;
-    console.log(" traget valkue====", name, value , type)
     const mapped = {
       material_segment_id: "material_segment_id",
       product_category_id: "category_id",
     };
     let results = null;
 
-    if (name == "material_segment_id" || name == "product_category_id") {
+    if (name === "material_segment_id" || name === "product_category_id") {
       results = await AdminMaterialLibService.SelectCatgeoryBrandSegment({
         name: mapped[name as keyof typeof mapped],
         id: Number(value),
@@ -257,6 +265,12 @@ const ProductAddEditPage = () => {
     dispatch(
       handleProductInSlicesChange({ name, value, type, results: results?.data })
     );
+  };
+
+  // Mark field as touched on key up
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name } = e.currentTarget;
+    setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
   const handleFileUpload = async (
@@ -699,14 +713,15 @@ const ProductAddEditPage = () => {
                     name="name"
                     value={product.name}
                     onChange={handleProductChange}
+                    onKeyUp={handleKeyUp}
                     placeholder="Winter jacket"
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 ${
-                      !product.name || product.name.trim() === ""
+                      (!product.name || product.name.trim() === "") && touched.name
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300 focus:ring-blue-500"
                     }`}
                   />
-                  {(!product.name || product.name.trim() === "") && (
+                  {(!product.name || product.name.trim() === "") && touched.name && (
                     <p className="text-red-500 text-xs mt-1">
                       Product name is required
                     </p>
@@ -719,18 +734,19 @@ const ProductAddEditPage = () => {
                   </label>
                   <input
                     onChange={handleProductChange}
+                    onKeyUp={handleKeyUp}
                     type="number"
                     step="0.01"
                     name="base_price"
                     value={product.base_price || ""}
                     placeholder="Enter Price $ 0.00"
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 ${
-                      !product.base_price
+                      !product.base_price && touched.base_price
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300 focus:ring-blue-500"
                     }`}
                   />
-                  {!product.base_price && (
+                  {!product.base_price && touched.base_price && (
                     <p className="text-red-500 text-xs mt-1">
                       Base Price is required.
                     </p>
@@ -1454,8 +1470,9 @@ const ProductAddEditPage = () => {
                     name="material_segment_id"
                     value={String(product.material_segment_id) || ""}
                     onChange={handleProductChange}
+                    onKeyUp={handleKeyUp}
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 text-sm ${
-                      !product.material_segment_id
+                      !product.material_segment_id && touched.material_segment_id
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300 focus:ring-blue-500"
                     }`}
@@ -1467,7 +1484,7 @@ const ProductAddEditPage = () => {
                       </option>
                     ))}
                   </select>
-                  {!product.material_segment_id && (
+                  {!product.material_segment_id && touched.material_segment_id && (
                     <p className="text-red-500 text-xs mt-1">
                       Material segment is required
                     </p>
@@ -1482,8 +1499,9 @@ const ProductAddEditPage = () => {
                     name="product_category_id"
                     value={String(product.product_category_id) || ""}
                     onChange={handleProductChange}
+                    onKeyUp={handleKeyUp}
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 text-sm ${
-                      !product.product_category_id
+                      !product.product_category_id && touched.product_category_id
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300 focus:ring-blue-500"
                     }`}
@@ -1495,7 +1513,7 @@ const ProductAddEditPage = () => {
                       </option>
                     ))}
                   </select>
-                  {!product.product_category_id && (
+                  {!product.product_category_id && touched.product_category_id && (
                     <p className="text-red-500 text-xs mt-1">
                       Product category is required
                     </p>
@@ -1510,8 +1528,9 @@ const ProductAddEditPage = () => {
                     name="brand_id"
                     value={String(product.brand_id) || ""}
                     onChange={handleProductChange}
+                    onKeyUp={handleKeyUp}
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 text-sm ${
-                      !product.brand_id
+                      !product.brand_id && touched.brand_id
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300 focus:ring-blue-500"
                     }`}
@@ -1523,7 +1542,7 @@ const ProductAddEditPage = () => {
                       </option>
                     ))}
                   </select>
-                  {!product.brand_id && (
+                  {!product.brand_id && touched.brand_id && (
                     <p className="text-red-500 text-xs mt-1">
                       Brand is required
                     </p>
