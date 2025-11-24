@@ -57,19 +57,19 @@ export class AdminMaterialLibService {
     brand_id,
   }: getMaterialByPaginationArgs): Promise<ApiResponse> {
     try {
-      let query = supabase.from("materials").select(
+      let query = supabase.from("products").select(
         `id,
          name,
          brand_id(*),
          product_category_id(*),
-         product_segment_id(*),
+         material_segment_id(*),
          description,
          photo,
+         gallery,
          bucket_path,
          new_bucket,
-         ai_summary,
-         base_price,
-         product_variants(*)`,
+         ai_summary
+         `,
         { count: "exact" }
       );
       if (segment_id?.length! > 0)
@@ -88,7 +88,8 @@ export class AdminMaterialLibService {
       query = query.range(from, to);
 
       const { data, error, count } = await query;
-
+       
+      console.log("data----=", data)
       if (!error) {
         return {
           data: data as Product[],

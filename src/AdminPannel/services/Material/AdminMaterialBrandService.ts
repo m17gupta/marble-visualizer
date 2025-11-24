@@ -25,10 +25,9 @@ export class AdminMaterialBrandService {
     try {
       const { data, error } = await supabase
         .from("product_brand")
-        .select("*")
+        .select("*, product_brand_categories(*)")
         .order(orderby, { ascending: order === "asc" });
 
-        
       const flattened = data?.map((d) => {
         if (d.product_brand_categories.length === 0) {
           return {
@@ -69,7 +68,7 @@ export class AdminMaterialBrandService {
         }
       });
 
-       console.log("get all brand", flattened)
+      console.log("get all brand", flattened);
       // const flattened = data!.flatMap((cat: any) => {
       //   if (cat.product_brand_categories.length === 0) {
       //     // If no brand, still keep the category
@@ -129,7 +128,7 @@ export class AdminMaterialBrandService {
         .select(`*`)
         .eq("product_brand_id", product.id);
 
-        // console.log("error in bran s stykles",error)
+      // console.log("error in bran s stykles",error)
 
       const brandwithstyles = { ...product, styles: data };
 
@@ -265,8 +264,7 @@ export class AdminMaterialBrandService {
         )
         .order(`${orderby}`, { ascending: order == "asec" ? true : false });
 
-
-        console.group("error in getting ",error)
+      console.group("error in getting ", error);
       if (!error) {
         return {
           data: data as StylesModal[],

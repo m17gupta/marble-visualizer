@@ -337,6 +337,7 @@ const ProductAddEditPage = () => {
 
       if (result.success) {
         const url = result.fileUrl;
+        console.log("image uploaded url", url)
         toast.success("File uploaded successfully!");
         return url;
       } else {
@@ -757,7 +758,7 @@ const ProductAddEditPage = () => {
               <h3 className="text-sm font-medium text-gray-700 mb-4">
                 Media <span className="text-gray-400">Optional</span>
               </h3>
-              <div className="mb-4 space-x-2">
+            <div className="mb-4 space-x-2">
                 {product.gallery &&
                   product.gallery.length > 0 &&
                   product.gallery.map((d: any, index: number) => {
@@ -789,9 +790,9 @@ const ProductAddEditPage = () => {
                       </div>
                     );
                   })}
-              </div>
+              </div> 
 
-              <div className="mb-4 space-x-2">
+              {/* <div className="mb-4 space-x-2">
                 {product.gallery &&
                   product.gallery.length > 0 &&
                   product.gallery.map((d: any, index: number) => {
@@ -830,7 +831,7 @@ const ProductAddEditPage = () => {
                       </div>
                     );
                   })}
-              </div>
+              </div> */}
 
               <label className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-gray-400 transition-colors cursor-pointer block">
                 <input
@@ -1450,8 +1451,8 @@ const ProductAddEditPage = () => {
                     Segment Type <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="product_segment_id"
-                    value={String(product.product_segment_id) || ""}
+                    name="material_segment_id"
+                    value={String(product.material_segment_id) || ""}
                     onChange={handleProductChange}
                     className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 text-sm ${
                       !product.material_segment_id

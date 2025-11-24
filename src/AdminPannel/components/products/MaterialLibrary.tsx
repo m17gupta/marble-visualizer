@@ -396,12 +396,13 @@ export const MaterialLibrary = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {sortedProducts.map((product) => {
-                  const imageURL =
-                    product?.bucket_path == "default" && product.new_bucket != 1
-                      ? `${path}/${product.photo}`
-                      : product.photo?.startsWith("https")
-                      ? product.photo
-                      : `${newPath}/${product?.photo}`;
+                  const imageURL =product?.gallery[0]
+                  console.log("gallert image", imageURL)
+                    // product?.bucket_path == "default" && product.new_bucket != 1
+                    //   ? `${path}/${product.photo}`
+                    //   : product.photo?.startsWith("https")
+                    //   ? product.photo
+                    //   : `${newPath}/${product?.photo}`;
                   return (
                     <tr key={product.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
