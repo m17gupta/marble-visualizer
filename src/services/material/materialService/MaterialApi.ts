@@ -240,16 +240,53 @@ export class MaterialApi {
    * Get all Wall materials
    * @deprecated Use getMaterials with filters instead
    */
+
+
+static async getProductWithSegmentName(segName: string): Promise<MaterialApiResponse<MaterialModel[]>> {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select(`
+        *,
+        product_segments:material_segment_id (
+          id,
+          name
+        )
+      `)
+      .eq("product_segments.name", segName);
+
+
+    if (error) {
+      console.error(`Error fetching products with segment name "${segName}":`, error);
+      return {
+        success: false,
+        error: error.message || `Failed to fetch products with segment name "${segName}"`,
+      };
+    }
+
+    return {
+      success: true,
+      data: data as MaterialModel[],
+    };
+  } catch (error) {
+    console.error(`Error fetching products with segment name "${segName}":`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
   static async getAllSegmentMaterials(
     segName: string
   ): Promise<MaterialApiResponse<MaterialModel[]>> {
     try {
       const { data, error } = await supabase
-        .from("product_segments")
+        .from("products")
         .select("*")
         .eq("name", segName)
         .single();
 
+         console.log(`${segName} pallte-------------`, data)
       if (error) {
         console.error("Error fetching wall materials:", error);
         return {

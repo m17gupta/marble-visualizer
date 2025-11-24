@@ -314,4 +314,30 @@ export class AdminMaterialBrandService {
       } as BrandStyleApiResponse;
     }
   }
+
+  // delete brand based on Id
+   static async deletBrandByID(
+    brandId: number
+  ): Promise<{
+    status: boolean,
+    brandId: number
+  }> {
+    try {
+      const { error } = await supabase
+        .from("product_brand")
+        .delete()
+        .eq("id", brandId);
+
+      return {
+        status: !error,
+        brandId
+      };
+    } catch (error) {
+      console.error("Error deleting brand==>>>", error);
+      return {
+        status: false,
+        brandId
+      };
+    }
+  }
 }

@@ -8,6 +8,7 @@ export interface ApiResponse {
 }
 
 export class AdminMaterialCategoryService {
+  // ...existing code...
   /**
    * get project by user id
    */
@@ -74,7 +75,25 @@ export class AdminMaterialCategoryService {
   static async addMaterialCategory(
     product: ProductCategory
   ): Promise<ApiResponse> {
+
+    console.log("product----->", product)
     try {
+      // Check for duplicate name
+      const { data: existing } = await supabase
+        .from("product_categories")
+        .select("*")
+        .eq("name", product.name)
+        .single();
+
+         console.log("existing",existing)
+      if (existing) {
+        // Duplicate found
+        return {
+          data: {},
+          status: false,
+        } as ApiResponse;
+      }
+
       const { data, error } = await supabase
         .from("product_categories")
         .insert(product)
@@ -133,6 +152,19 @@ export class AdminMaterialCategoryService {
         data: {},
         status: false,
       } as ApiResponse;
+    }
+  }
+  
+  static async deletMaterialCategoryById(id: number): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from("product_categories")
+        .delete()
+        .eq("id", id);
+      return !error;
+    } catch (error) {
+      console.error("Error deleting category==>>>", error);
+      return false;
     }
   }
 }

@@ -105,6 +105,22 @@ export const updateCategoryInTable = createAsyncThunk(
     }
   }
 );
+// delete categories based in Id
+export const deleteCategoryInTable = createAsyncThunk(
+  "projects/deleteCategoryInTable",
+  async (id: number, { rejectWithValue }) => {
+    try {
+    const response= await AdminMaterialCategoryService.deletMaterialCategoryById(id)
+    if(response){
+      return id
+    }
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to delete category"
+      );
+    }
+  }
+);
 
 const adminMaterialCategorySlice = createSlice({
   name: "adminBrandSlice",
@@ -175,6 +191,10 @@ const adminMaterialCategorySlice = createSlice({
       .addCase(updateCategoryInTable.rejected, (state, action) => {
         state.adding = false;
         state.error = action.payload as string;
+      })
+      .addCase(deleteCategoryInTable.fulfilled, (state, action) => {
+        const deletedId = action.payload;
+        state.list = state.list.filter((cat) => cat.id !== deletedId);
       });
   },
 });

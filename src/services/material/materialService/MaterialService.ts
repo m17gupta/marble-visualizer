@@ -28,7 +28,7 @@ export class MaterialService {
     limit?: number;
   }): Promise<ServiceResult<MaterialModel[]>> {
     try {
-      const result = await MaterialApi.getAllSegmentMaterials("Wall");
+      const result = await MaterialApi.getProductWithSegmentName("Wall");
       if (result.success) {
         return {
           success: true,

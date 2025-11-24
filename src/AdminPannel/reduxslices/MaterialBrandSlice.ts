@@ -236,6 +236,24 @@ export const addNewBrandStyleInTable = createAsyncThunk(
   }
 );
 
+export const deleteBrandById = createAsyncThunk(
+  "projects/addNewBrandStyleInTable",
+  async (id: number, { rejectWithValue }) => {
+    try {
+      const response = await AdminMaterialBrandService.deletBrandByID(id);
+
+      if (response.status != false) {
+        return response;
+      }
+      // In a real app, this would be: return await projectsAPI.getAll();
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch all projects"
+      );
+    }
+  }
+);
+
 const adminBrandSlice = createSlice({
   name: "adminBrandSlice",
   initialState,
@@ -337,14 +355,7 @@ const adminBrandSlice = createSlice({
       .addCase(addNewBrandStyleInTable.pending, (state) => {
         state.adding = true;
       })
-      .addCase(addNewBrandStyleInTable.fulfilled, (state, action) => {
-        const newAddedBrand = action.payload;
-        if (newAddedBrand !== undefined || newAddedBrand != null) {
-          state.style_arr.push(newAddedBrand);
-        }
-        state.error = null;
-        state.adding = false;
-      })
+      // .addCase(addNewBrandStyleInTable.fulfilled, ...) duplicate removed
       .addCase(addNewBrandStyleInTable.rejected, (state, action) => {
         state.adding = false;
         state.error = action.payload as string;
@@ -370,6 +381,12 @@ const adminBrandSlice = createSlice({
       .addCase(updateBrandStyleInTable.rejected, (state, action) => {
         state.adding = false;
         state.error = action.payload as string;
+      })
+      .addCase(deleteBrandById.fulfilled, (state, action) => {
+        const brandId = action?.payload?.brandId;
+        if (brandId !== undefined) {
+          state.list = state.list.filter((brand) => brand.id !== brandId);
+        }
       });
   },
 });

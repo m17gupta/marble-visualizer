@@ -8,6 +8,7 @@ import { LoadingSpinner } from "../components/Projects/ProjectModal";
 import {
   addNewBrandInTable,
   adminFetchBrands,
+  deleteBrandById,
   fetchCurrentBrandWithStylesJobs,
   handleSelectViewBrand,
   handlesortingbrands,
@@ -128,7 +129,17 @@ const MaterialBrands: React.FC = () => {
     },
     {
       label: "Delete",
-      onClick: (row: ProductBrand) => console.log("Delete project:", row),
+      onClick: async(row: ProductBrand) => {
+     if (window.confirm("Do you want to delete this category?")) {
+           
+            const response = await dispatch(
+              deleteBrandById(row?.id??0)
+            ).unwrap();
+            if (response) {
+              toast.success("The selected brand was deleted successfully");
+            }
+          }
+      },
       variant: "danger" as const,
     },
   ];

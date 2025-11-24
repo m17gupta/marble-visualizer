@@ -164,7 +164,7 @@ export const MaterialLibrary = () => {
         const resposnse= await dispatch(adminDeleteProduct(productId)).unwrap()
         console.log("deleet product ", resposnse)
         if(resposnse){
-          toast.info(`The product with ID ${productId} is deleted.`)
+          toast.info("the product with `&{prodiuctId} is deleted `")
         }
     }
   };

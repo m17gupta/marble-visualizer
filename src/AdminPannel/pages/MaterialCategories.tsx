@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import {
   addNewCatergoryInTable,
   adminFetchCategory,
+  deleteCategoryInTable,
   handleSelectViewCategories,
   handlesortingcategroies,
   ProductCategory,
@@ -31,11 +32,6 @@ export interface Project {
   created_at: string;
   updated_at: string;
   user_id: ProjectUser;
-}
-
-interface ChartData {
-  date: string;
-  count: number;
 }
 
 const MaterialCategories: React.FC = () => {
@@ -103,7 +99,17 @@ const MaterialCategories: React.FC = () => {
     },
     {
       label: "Delete",
-      onClick: (row: ProductCategory) => console.log("Delete project:", row),
+      onClick: async (row: ProductCategory) => {
+        if (window.confirm("Do you want to delete this category?")) {
+         
+          const response = await dispatch(
+            deleteCategoryInTable(row?.id??0)
+          ).unwrap();
+          if (response) {
+            toast.success("The selected category was deleted successfully");
+          }
+        }
+      },
       variant: "danger" as const,
     },
   ];

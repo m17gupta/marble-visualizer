@@ -24,18 +24,18 @@ const MaterialData = () => {
             isDoor.current = false; // Set the flag to true after the first fetch
             getFetchDoorMaterials()
         }
-        if (!roofMaterials || roofMaterials.length === 0 && isRoof.current) {
-            isRoof.current = false; // Set the flag to true after the first fetch
-            getFetchRoofMaterials()
-        }
-        if (!windowMaterials || windowMaterials.length === 0 && isWindow.current) {
-           isWindow.current = false; // Set the flag to true after the first fetch
-            getFetchWindowMaterials()
-        }
-            if (!trimMaterials || trimMaterials.length === 0 && isTrim.current) {
-                isTrim.current = false; // Set the flag to true after the first fetch
-            getFetchTrimMaterials()
-        }
+        // if (!roofMaterials || roofMaterials.length === 0 && isRoof.current) {
+        //     isRoof.current = false; // Set the flag to true after the first fetch
+        //     getFetchRoofMaterials()
+        // }
+        // if (!windowMaterials || windowMaterials.length === 0 && isWindow.current) {
+        //    isWindow.current = false; // Set the flag to true after the first fetch
+        //     getFetchWindowMaterials()
+        // }
+        //     if (!trimMaterials || trimMaterials.length === 0 && isTrim.current) {
+        //         isTrim.current = false; // Set the flag to true after the first fetch
+        //     getFetchTrimMaterials()
+        // }
     }, [wallMaterials, doorMaterials, roofMaterials, windowMaterials, trimMaterials]);
 
     const getFetchWallMMaterials = async () => {
