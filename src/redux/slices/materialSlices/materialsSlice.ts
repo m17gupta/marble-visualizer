@@ -37,6 +37,8 @@ const initialState: MaterialsState = {
   roofMaterials: [],
   windowMaterials: [],
   trimMaterials: [],  
+  isWallLoading:false, 
+  isFloorLoading:false,
   pagination: {
     page: 0,
     limit: 0,
