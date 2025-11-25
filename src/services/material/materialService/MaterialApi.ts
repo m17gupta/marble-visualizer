@@ -137,13 +137,12 @@ export class MaterialApi {
     }
   }
 
-
   // get material based on category id
 
-   static async getMaterialsByCategoryId(
-    categoryId: number,
-  ): Promise<{status: boolean, data?: MaterialModel[], error?: string}> {
-    try{
+  static async getMaterialsByCategoryId(
+    categoryId: number
+  ): Promise<{ status: boolean; data?: MaterialModel[]; error?: string }> {
+    try {
       const { data, error } = await supabase
         .from(this.tableName)
         .select("*")
@@ -161,20 +160,23 @@ export class MaterialApi {
         status: true,
         data: data as MaterialModel[],
       };
-    }catch (error) {
+    } catch (error) {
       console.error("Error fetching materials by category ID:", error);
       return {
-         status: false,
-          error: error instanceof Error ? error.message : "Failed to fetch materials by category ID",
+        status: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch materials by category ID",
       };
     }
   }
 
-  // get material based on category id and array of brand Id 
+  // get material based on category id and array of brand Id
   static async getMaterialsByCategoryAndBrandIds(
     categoryId: number,
     brandIds: number[]
-  ): Promise<{status: boolean, data?: MaterialModel[], error?: string}> {
+  ): Promise<{ status: boolean; data?: MaterialModel[]; error?: string }> {
     try {
       const { data, error } = await supabase
         .from(this.tableName)
@@ -183,10 +185,15 @@ export class MaterialApi {
         .in("material_brand_id", brandIds);
 
       if (error) {
-        console.error("Error fetching materials by category and brand IDs:", error);
+        console.error(
+          "Error fetching materials by category and brand IDs:",
+          error
+        );
         return {
           status: false,
-          error: error.message || "Failed to fetch materials by category and brand IDs",
+          error:
+            error.message ||
+            "Failed to fetch materials by category and brand IDs",
         };
       }
 
@@ -195,10 +202,16 @@ export class MaterialApi {
         data: data as MaterialModel[],
       };
     } catch (error) {
-      console.error("Error fetching materials by category and brand IDs:", error);
+      console.error(
+        "Error fetching materials by category and brand IDs:",
+        error
+      );
       return {
-         status: false,
-          error: error instanceof Error ? error.message : "Failed to fetch materials by category and brand IDs",
+        status: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch materials by category and brand IDs",
       };
     }
   }
@@ -209,30 +222,41 @@ export class MaterialApi {
     categoryId: number,
     brandIds: number[],
     styleIds: number[]
-  ): Promise<{status: boolean, data?: MaterialModel[], error?: string}> {
+  ): Promise<{ status: boolean; data?: MaterialModel[]; error?: string }> {
     try {
       const { data, error } = await supabase
         .from(this.tableName)
         .select("*")
         .eq("material_category_id", categoryId)
         .in("material_brand_id", brandIds)
-        .in("material_brand_style_id", styleIds); 
+        .in("material_brand_style_id", styleIds);
       if (error) {
-        console.error("Error fetching materials by category, brand, and style IDs:", error);
+        console.error(
+          "Error fetching materials by category, brand, and style IDs:",
+          error
+        );
         return {
           status: false,
-          error: error.message || "Failed to fetch materials by category, brand, and style IDs",
-        };  
+          error:
+            error.message ||
+            "Failed to fetch materials by category, brand, and style IDs",
+        };
       }
       return {
         status: true,
         data: data as MaterialModel[],
       };
     } catch (error) {
-      console.error("Error fetching materials by category, brand, and style IDs:", error);
+      console.error(
+        "Error fetching materials by category, brand, and style IDs:",
+        error
+      );
       return {
         status: false,
-        error: error instanceof Error ? error.message : "Failed to fetch materials by category, brand, and style IDs",
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch materials by category, brand, and style IDs",
       };
     }
   }
@@ -241,38 +265,49 @@ export class MaterialApi {
    * @deprecated Use getMaterials with filters instead
    */
 
-
-static async getProductWithSegmentName(segName: string): Promise<MaterialApiResponse<MaterialModel[]>> {
+static async getProductWithSegmentName(
+  segName: string
+): Promise<MaterialApiResponse<MaterialModel[]>> {
   try {
     const { data, error } = await supabase
       .from("products")
-      .select(`
-        *,
-        product_segments:material_segment_id (
-          id,
-          name
-        )
-      `)
-      .eq("product_segments.name", segName);
+      .select(`*,brand_id(*),product_category_id(*),material_segment_id(*)`);
 
+    console.log(`wall pallet`, data);
 
     if (error) {
-      console.error(`Error fetching products with segment name "${segName}":`, error);
+      console.error(
+        `Error fetching products with segment name "${segName}":`,
+        error
+      );
       return {
         success: false,
-        error: error.message || `Failed to fetch products with segment name "${segName}"`,
+        error:
+          error.message ||
+          `Failed to fetch products with segment name "${segName}"`,
       };
     }
 
+    // Filter products where product_category_id.name === segName
+    const filteredData = (data || []).filter(
+      (product) =>
+        product.product_category_id &&
+        product.product_category_id.name === segName
+    );
+
     return {
       success: true,
-      data: data as MaterialModel[],
+      data: filteredData as MaterialModel[],
     };
   } catch (error) {
-    console.error(`Error fetching products with segment name "${segName}":`, error);
+    console.error(
+      `Error fetching products with segment name "${segName}":`,
+      error
+    );
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 }
@@ -286,7 +321,7 @@ static async getProductWithSegmentName(segName: string): Promise<MaterialApiResp
         .eq("name", segName)
         .single();
 
-         console.log(`${segName} pallte-------------`, data)
+      console.log(`${segName} pallte-------------`, data);
       if (error) {
         console.error("Error fetching wall materials:", error);
         return {
@@ -303,7 +338,7 @@ static async getProductWithSegmentName(segName: string): Promise<MaterialApiResp
         };
       }
 
-      console.log("getting wallm maetrial", data)
+      console.log("getting wallm maetrial", data);
       const materialSegment = data as MaterialSegmentModel;
       const categoryIds = materialSegment.categories;
 
@@ -335,8 +370,7 @@ static async getProductWithSegmentName(segName: string): Promise<MaterialApiResp
         };
       }
 
-
-      console.log("allCategories---",allCategories)
+      console.log("allCategories---", allCategories);
 
       // Get all materials based on category IDs
       const materialPromises = allCategories.map(
@@ -377,7 +411,6 @@ static async getProductWithSegmentName(segName: string): Promise<MaterialApiResp
     }
   }
 
-
   static async getMaterialById(
     id: number
   ): Promise<MaterialApiResponse<SingleMaterialResponse>> {
@@ -412,7 +445,7 @@ static async getProductWithSegmentName(segName: string): Promise<MaterialApiResp
     }
   }
 
-    /**
+  /**
    * Get materials with pagination and filtering
    */
   static async getMaterials(
@@ -545,7 +578,6 @@ static async getProductWithSegmentName(segName: string): Promise<MaterialApiResp
   /**
    * Get materials by category ID
    */
- 
 
   /**
    * Get materials by brand ID

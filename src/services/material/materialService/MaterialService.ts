@@ -49,6 +49,36 @@ export class MaterialService {
     }
   }
   
+    // serve for get floor  materials
+  static async getFloorMaterials({
+    page = 0,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }): Promise<ServiceResult<MaterialModel[]>> {
+    try {
+      const result = await MaterialApi.getProductWithSegmentName("Floor");
+      if (result.success) {
+        return {
+          success: true,
+          data: result.data,
+        };
+      }
+      return {
+        success: false,
+        error: result.error || `Failed to fetch materials`,
+      };
+    } catch (error) {
+      console.error("Error in MaterialService.getWallMaterials:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  }
+  
   // serve for get door materials
   static async getDoorMaterials({
     page = 0,

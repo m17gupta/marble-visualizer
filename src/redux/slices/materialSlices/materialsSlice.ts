@@ -9,9 +9,12 @@ interface MaterialsState {
   isMaterialsLoading:boolean,
   wallMaterials: MaterialModel[];
   doorMaterials: MaterialModel[];
+   floorMaterials: MaterialModel[];
   roofMaterials: MaterialModel[];
   windowMaterials: MaterialModel[];
   trimMaterials: MaterialModel[];
+  isWallLoading:boolean, 
+  isFloorLoading:boolean,
   pagination: {
     page: number;
     limit: number;
@@ -29,6 +32,7 @@ const initialState: MaterialsState = {
   materials: [],
   isMaterialsLoading:false,
   wallMaterials: [],
+  floorMaterials:[],
   doorMaterials: [],  
   roofMaterials: [],
   windowMaterials: [],
@@ -112,6 +116,27 @@ export const fetchWallMaterials = createAsyncThunk(
       }
     } catch (error: unknown) {
       return rejectWithValue((error as Error).message || 'Failed to fetch wall materials');
+    }
+  }
+);
+
+// fetch floor material
+export const fetchFloorMaterials = createAsyncThunk(
+  'materials/fetchFloorMaterials',
+  async (filters: MaterialFilters , { rejectWithValue }) => {
+    try {
+      const result = await MaterialService.getFloorMaterials(filters);
+
+      if (result.success && result.data) {
+        return {
+          materials: result.data,
+
+        };
+      } else {
+        return rejectWithValue(result.error || 'Failed to fetch trim materials');
+      }
+    } catch (error: unknown) {
+      return rejectWithValue((error as Error).message || 'Failed to fetch trim materials');
     }
   }
 );
@@ -267,16 +292,31 @@ const materialsSlice = createSlice({
 
       // Fetch wall materials
       builder.addCase(fetchWallMaterials.pending, (state) => {
-        state.isLoading = true;
+        state.isWallLoading = true;
       })
       .addCase(fetchWallMaterials.fulfilled, (state, action) => {
-        state.isLoading = false;
+      
         const { materials } = action.payload;
         state.wallMaterials = materials;
        
       })
       .addCase(fetchWallMaterials.rejected, (state, action) => {
-        state.isLoading = false;
+        // state.isWallLoading = false;
+        state.error = action.payload as string;
+      });
+
+            // Fetch Floor materials
+      builder.addCase(fetchFloorMaterials.pending, (state) => {
+        state.isFloorLoading = true;
+      })
+      .addCase(fetchFloorMaterials.fulfilled, (state, action) => {
+  
+        const { materials } = action.payload;
+        state.floorMaterials = materials;
+       
+      })
+      .addCase(fetchFloorMaterials.rejected, (state, action) => {
+        // state.isFloorLoading = false;
         state.error = action.payload as string;
       });
 

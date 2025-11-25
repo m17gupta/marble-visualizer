@@ -33,6 +33,7 @@ export function SwatchRecommendations() {
     roofMaterials,
     windowMaterials,
     trimMaterials,
+    floorMaterials,
   } = useSelector((state: RootState) => state.materials);
 
   const { selectedMaterialSegment } = useSelector(
@@ -85,12 +86,16 @@ export function SwatchRecommendations() {
       doorMaterials &&
       roofMaterials &&
       windowMaterials &&
-      trimMaterials
+      trimMaterials &&
+      floorMaterials
     ) {
       let filtered: MaterialModel[] = [];
       switch (selectedMasterArray.name) {
         case "Wall":
           filtered = wallMaterials;
+          break;
+           case "Floor":
+          filtered = floorMaterials;
           break;
         case "Door":
           filtered = doorMaterials;
@@ -156,9 +161,10 @@ export function SwatchRecommendations() {
   const cards = useMemo(
     () =>
       (recommendedSwatches || []).map((swatch) => {
-        const url = computeImageUrl(swatch);
-        const isBroken = broken[swatch.id];
-        const hideImage = !url || isBroken;
+        //const url = computeImageUrl(swatch);
+           const url = swatch.gallery[0];
+      
+        const hideImage = !url ;
 
         return { swatch, url, hideImage };
       }),

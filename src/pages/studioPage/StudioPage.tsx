@@ -305,8 +305,8 @@ export function StudioPage() {
       <MarkingDimensionHome />
 
       <GetAllJobComments />
-      {/* 
-      <MaterialData /> */}
+    
+      <MaterialData /> 
     </>
   );
 }
