@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AdminProjectService } from "../services/Project/AdminProjectService";
 import { JobModel } from "@/models";
+import { ProjectService } from "@/services/projects/ProjectsService";
 
 export interface Project {
   id: number;
@@ -107,6 +108,23 @@ export const changeProjectUserId = createAsyncThunk(
   }
 );
 
+// delete project based on projectId
+export const deleteProjectById = createAsyncThunk(
+  "projects/deleteProjectById",
+  async (projectId: number, { rejectWithValue }) => {
+    try {
+      const response = await ProjectService.deleteProjectById(projectId);
+      if (!response.success) {
+        throw new Error(response.error || "Failed to delete project");
+      }
+      return projectId;
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to delete project"
+      );
+    }
+  }
+);
 const adminProjectSlice = createSlice({
   name: "adminProjectSlice",
   initialState,
@@ -153,8 +171,18 @@ const adminProjectSlice = createSlice({
       .addCase(fetchCurrentProjectJobs.rejected, (state, action) => {
         state.currentloading = false;
         state.error = action.payload as string;
-      });
+      })
+
+      // delete project by Id
+            .addCase(deleteProjectById.fulfilled, (state, action) => {
+              state.isLoading = false;
+      
+              const projectId = action.payload;
+              state.list = state.list.filter((project) => project.id !== projectId);
+            })
   },
+
+
 });
 
 export const {

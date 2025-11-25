@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import {
   adminFetchProjects,
   changeProjectUserId,
+  deleteProjectById,
   handleSelectViewProject,
   handlesortingprojects,
 } from "../reduxslices/adminProjectSlice";
@@ -39,12 +40,13 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { JobModel } from "@/models/jobModel/JobModel";
-import { MdAddHome } from "react-icons/md";
+import { MdAddHome, MdDeleteOutline } from "react-icons/md";
 import { toast } from "sonner";
 import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
 import { addbreadcrumb } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
+import ProjectAction from "@/pages/projectPage/ProjectAction";
 
 // Types
 interface ProjectUser {
@@ -376,6 +378,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onView }) => {
     navigate(`/admin/studio/${project.id}`);
   };
 
+  const handleDelete=async()=>{
+    window.alert("Do you want to delete project")
+    const response= await dispatch(deleteProjectById(project.id)).unwrap()
+      console.log("deleet project. ", response)
+  }
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200">
       {/* Project Image */}
@@ -483,6 +490,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onView }) => {
                 Add to demo
               </span>
             </div>
+
+                <div className="relative group" onClick={handleDelete}>
+              <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                <MdDeleteOutline className="w-4 h-4" />
+              </button>
+              <span className="absolute left-1/2 -translate-x-1/2 -top-7 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+                Delete
+              </span>
+            </div>
+                  {/* <ProjectAction
+                        project={project}
+                        openAnalysedData={handleOpenAnalysedData}
+                        doHouseAnalysis={handleHouseAnalysis}
+                      /> */}
             <button
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
               title="More"
