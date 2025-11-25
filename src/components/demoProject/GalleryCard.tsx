@@ -12,7 +12,7 @@ const GalleryCard: React.FC<GalleryCardProps> = ({
   const handleUseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onUse?.(idx);
-    console.log("Use room:", idx + 1);
+  
   };
 
   return (

@@ -84,6 +84,8 @@ export function ProjectsPage() {
     projectId: -1,
   });
 
+  const { profile } = useSelector((state: RootState) => state.userProfile);
+
   const handleClose = () => {
     const newState = { ...isOpen };
     newState.visible = false;
@@ -148,7 +150,12 @@ export function ProjectsPage() {
         setSelectedProjectId(project.id);
 
         dispatch(setCurrentProject(project));
-        navigate(`/app/studio/${project.id}`);
+
+        if (profile && profile.role === "admin") {
+          navigate(`/admin/studio/${project.id}`);
+        } else {
+          navigate(`/app/studio/${project.id}`);
+        }
       }
     }
   };

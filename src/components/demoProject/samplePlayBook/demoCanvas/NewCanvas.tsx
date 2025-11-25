@@ -46,10 +46,9 @@ const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady 
   }, [demoMasterArray]);
 
   // gesture state
-  const lastPos = useRef<{ x: number; y: number } | null>(null);
+
   const touchZoomRef = useRef<number>(1);
-  const initialPinchDistance = useRef<number>(0);
-  const pinchCenterRef = useRef<{ x: number; y: number } | null>(null);
+
 
   // "first zoom commit expands to fullscreen"
   const firstCommitDone = useRef(false);
@@ -76,10 +75,6 @@ const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady 
     y2: t2.clientY,
   });
 
-  const pinchDistance = (t1: Touch, t2: Touch) => {
-    const c = pinchCoords(t1, t2);
-    return Math.hypot(c.x2 - c.x1, c.y2 - c.y1);
-  };
 
 
 
@@ -309,8 +304,8 @@ const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady 
 
     const fc = new FabricCanvas(el, {
       allowTouchScrolling: false,
-      width: 900,  // initial logical size (we'll resize after image load)
-      height: 600,
+      width: 1400,  // initial logical size (we'll resize after image load)
+      height: 750,
       zoom: 1,
       defaultCursor: "default",
       selection: false,

@@ -21,6 +21,7 @@ const SwatchTemplate = ({ swatchType }: Props) => {
         roofMaterials,
         windowMaterials,
         trimMaterials,
+        floorMaterials
     } = useSelector((state: RootState) => state.materials);
 
     const s3DefaultBase =
@@ -103,7 +104,8 @@ const SwatchTemplate = ({ swatchType }: Props) => {
     const cards = useMemo(
         () =>
             (recommendedSwatches || []).map((swatch) => {
-                const url = computeImageUrl(swatch);
+                // const url = computeImageUrl(swatch);
+                const url=swatch.gallery[0]
                 const isBroken = broken[swatch.id];
                 const hideImage = !url || isBroken;
 
