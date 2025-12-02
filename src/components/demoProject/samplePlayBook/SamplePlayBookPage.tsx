@@ -128,7 +128,7 @@ const SamplePlayBookPage: React.FC = () => {
            
                   <Canvas
                     backgroundImage={currentProject?.jobData?.[0]?.full_image ?? baseImg}
-                    className="block h-auto w-full"
+                    // className="block h-auto w-full"
                   />
 
                   <div className="absolute bottom-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs text-zinc-700 shadow">
