@@ -121,7 +121,7 @@ const HoverHeader = () => {
 
   return (
     <>
-      <Card>
+      <Card className="inset-x-10 w-[95%] mx-auto rounded-b-lg mb-4">
         <CardContent className="py-2 pt-1.5 px-4 flex items-center">
           {/* <BreadcrumbHeader/> */}
           <DrawHeader />

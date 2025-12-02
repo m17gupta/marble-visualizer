@@ -190,11 +190,7 @@ const SortableRow: React.FC<RowProps> = ({
     <li
       ref={setNodeRef}
       style={style}
-      className={`flex items-center justify-between px-4 py-2 relative 
-        ${isDragging ? " z-30  scale-[1.01]" : "bg-white hover:bg-gray-50 border border-gray-200 mb-1"}
-        ${isSorting ? "z-0" : ""}
-        transition-all duration-150`}
-    >
+      className={`flex items-center justify-between px-4 py-2 rounded-md relative ${isDragging ? " z-30  scale-[1.01]" : "bg-white hover:bg-gray-50 border border-gray-200 mb-1"} ${isSorting ? "z-0" : ""} transition-all duration-150`}>
       {/* Left: dot + title (redux hover highlight) */}
       <div
         className="flex items-center gap-3"

@@ -315,59 +315,90 @@ function SidebarContent({
   const {profile} =useSelector((state:RootState)=>state.userProfile)
 
   return (
-    <div className={cn("flex h-screen flex-col border-r bg-background", collapsed ? "w-16" : "w-64")}>
-      {/* header */}
-      <div className="flex items-center justify-between border-b px-2 py-3">
-        <div className="flex items-center gap-3">
-          <img src={marbleLogo} alt="Dzinly" className="h-8 w-8" />
-          {!collapsed && <span className="font-semibold">{profile?.tenant_id?.name}</span>}
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="ml-auto hidden md:flex"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-        </Button>
-      </div>
+   <div
+  className={cn(
+    "flex h-screen flex-col border-r bg-background transition-all duration-200",
+    collapsed ? "w-16" : "w-64"
+  )}
+>
+  {/* header */}
+  <div className="flex items-center justify-between border-b px-2 py-3">
+    <div className="flex items-center gap-3">
+      {/* Logo always visible */}
+      <img
+        src={marbleLogo}
+        alt="Dzinly"
+        className="h-8 w-8 shrink-0"
+      />
 
-      {/* nav */}
-      <ScrollArea className="flex-1 px-2 py-4">
-        <div className="space-y-6">
-          <NavSection title="Workspace" items={navigationItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
-          <NavSection title="Materials Library" items={documentItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
-          <NavSection title="User Management" items={userManagementItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
-          <NavSection title="Tools & Features" items={toolsItems} collapsed={collapsed} currentPage={currentPage} onClick={onNav} />
-        </div>
-      </ScrollArea>
-
-      {/* footer: settings + user menu */}
-      <div className="border-t p-2 space-y-2">
-      
-        {/* <Button
-          variant="ghost"
-          className={cn(
-            "w-full h-10 rounded-lg justify-start",
-            "hover:bg-accent hover:text-accent-foreground",
-            collapsed && "justify-center"
-          )}
-          onClick={onOpenSettings}
-        >
-          <SettingsIcon className="h-4 w-4 text-muted-foreground" />
-          {!collapsed && <span className="ml-3 text-sm">Settings</span>}
-        </Button> */}
-
-        {/* Dynamic user card (shadcn style) */}
-        <UserMenu
-          collapsed={collapsed}
-          onLogout={onLogout}
-          name={name}
-          email={email}
-          avatar={avatar}
-        />
-      </div>
+      {/* Tenant name hidden only when collapsed */}
+      {!collapsed && (
+        <span className="font-semibold whitespace-nowrap">
+          {profile?.tenant_id?.name}
+        </span>
+      )}
     </div>
+
+    {/* Collapse button - always visible */}
+    <Button
+      variant="ghost"
+      className="ml-auto hidden md:flex px-2 z-10 ms-2"
+      onClick={() => setCollapsed(!collapsed)}
+    >
+      {collapsed ? (
+        <ChevronRight className="h-5 w-5" />
+      ) : (
+        <ChevronLeft className="h-5 w-5" />
+      )}
+    </Button>
+  </div>
+
+  {/* nav */}
+  <ScrollArea className="flex-1 px-2 py-4">
+    <div className="space-y-6">
+      <NavSection
+        title="Workspace"
+        items={navigationItems}
+        collapsed={collapsed}
+        currentPage={currentPage}
+        onClick={onNav}
+      />
+      <NavSection
+        title="Materials Library"
+        items={documentItems}
+        collapsed={collapsed}
+        currentPage={currentPage}
+        onClick={onNav}
+      />
+      <NavSection
+        title="User Management"
+        items={userManagementItems}
+        collapsed={collapsed}
+        currentPage={currentPage}
+        onClick={onNav}
+      />
+      <NavSection
+        title="Tools & Features"
+        items={toolsItems}
+        collapsed={collapsed}
+        currentPage={currentPage}
+        onClick={onNav}
+      />
+    </div>
+  </ScrollArea>
+
+  {/* footer: user menu */}
+  <div className="border-t p-2 space-y-2">
+    <UserMenu
+      collapsed={collapsed}
+      onLogout={onLogout}
+      name={name}
+      email={email}
+      avatar={avatar}
+    />
+  </div>
+</div>
+
   );
 }
 

@@ -236,7 +236,7 @@ export function StudioPage() {
 
       <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
         {/* <Breadcrumb /> */}
-        <div className="w-full md:w-1/4 border-r overflow-hidden hidden md:block">
+        <div className="w-full  lg:max-w-[380px] border-r overflow-hidden hidden md:block">
           <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
             <div className="text-start">
               <Link to="/">

@@ -34,6 +34,7 @@ const ProjectHeader = ({ createProject }: Props) => {
             Manage your projects and track progress
           </p>
         </div>
+
         <Button
           onClick={handleCreateProject}
           className="flex items-center space-x-2"

@@ -208,7 +208,7 @@ const AdminPanel = () => {
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Page Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm flex-shrink-0">
+        <header className="bg-white border-b border-gray-200 py-4 shadow-sm flex-shrink-0 px-10">
           <div className="flex items-center justify-between max-w-full">
             <div className="flex-1 min-w-0 pr-4">
               <h1 className="text-2xl font-bold text-gray-900 truncate">

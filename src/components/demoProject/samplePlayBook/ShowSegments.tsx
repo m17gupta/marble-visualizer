@@ -57,34 +57,37 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
             aria-pressed={isActive}
             onClick={() => handleDemoSegments(item)}
             className={[
-              // base pill
-              "h-10 rounded-lg border bg-white px-4 focus:outline-none focus:ring-0",
-              "flex items-center justify-start gap-3",
+              "h-11 rounded-lg border bg-white",
+              "flex items-center gap-3 justify-start",
               "text-sm font-medium text-gray-900",
               "transition-all duration-150",
-              "hover:bg-gray-50 hover:shadow-sm ",
+              "hover:bg-gray-50 hover:shadow-sm",
               "focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2",
-              // active state like screenshot
+              // mobile responsive fix
+              "min-w-[00px] max-w-[30px] sm:min-w-[30px] sm:max-w-max",
+              "px-0 sm:px-4",
+
+              // active style
               isActive
                 ? "bg-gray-100 border-gray-400 shadow-sm"
                 : "border-gray-300",
-              // collapsed sizing
-              isCollapsed ? "h-10 px-3 text-[13px]" : "",
+
+              // collapsed option
+              isCollapsed ? "h-10 px-3 text-[13px]" : ""
             ].join(" ")}
           >
-            {/* left icon / check */}
+            {/* Icon / Checkmark */}
             {isActive ? (
               <div
                 className={[
-                  "grid place-items-center rounded-full",
+                  "grid place-items-center rounded-full shrink-0",
                   "bg-gray-600 text-white",
-                  isCollapsed ? "h-5 w-5" : "h-5 w-5",
+                  isCollapsed ? "h-5 w-5" : "h-6 w-6",
                 ].join(" ")}
               >
-                {/* checkmark */}
                 <svg
                   viewBox="0 0 24 24"
-                  className={isCollapsed ? "h-2 w-2" : "h-3 w-3"}
+                  className={isCollapsed ? "h-2.5 w-2.5" : "h-3.5 w-3.5"}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="3"
@@ -99,21 +102,23 @@ const ShowSegments = ({ variant = "expanded" }: CategoryButtonsProps) => {
                 src={item.icon}
                 alt={item.name || "Segment Icon"}
                 className={[
-                  "object-contain",
+                  "object-contain shrink-0",
                   isCollapsed ? "h-5 w-5" : "h-6 w-6",
                 ].join(" ")}
               />
             ) : (
               <div
                 className={[
-                  "rounded-sm bg-gray-300",
+                  "rounded-sm bg-gray-300 shrink-0",
                   isCollapsed ? "h-5 w-5" : "h-6 w-6",
                 ].join(" ")}
               />
             )}
 
-            {/* label */}
-            <span className="whitespace-nowrap">{item.name}</span>
+            {/* Label with truncate for mobile */}
+            <span className="whitespace-nowrap truncate max-w-[70px] sm:max-w-full">
+              {item.name}
+            </span>
           </Button>
         );
       })}

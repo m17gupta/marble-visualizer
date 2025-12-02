@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 
 // import dzinlylogo from "../../../public/assets/image/dzinly-logo.svg";
-import dzinlylogo from "../../../../public/assets/image/dzinly-logo.svg";
+import MarbleLogo from "../../../../public/assets/marble/faicon-marble-2.png";
 
 const OPTIONS = [
   "EIFS",
@@ -121,7 +121,7 @@ const LeftSection = () => {
       {collapsed ? (
         <div className="flex h-dvh flex-col items-center gap-3 p-3">
           <Link to="/" className="mt-1 mb-2 block">
-            <img src={dzinlylogo} alt="dzinly" className="w-12" />
+            <img src={MarbleLogo} alt="Marble Logo" className="w-12" />
           </Link>
 
           <ShowSegments

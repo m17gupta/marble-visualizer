@@ -72,13 +72,13 @@ const StudioMainTabs = () => {
           onValueChange={handleChangeTab}
           className="w-full h-full flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-5 bg-white border border-gray-200 rounded-0 shadow-sm   gap-2 px-3 py-2">
+          <TabsList className="grid w-full grid-cols-4 bg-white border border-gray-200 rounded-0 shadow-sm gap-2 px-3 py-2 h-14">
             <Tooltip>
               <TooltipTrigger asChild>
                 <TabsTrigger
                   value="inspiration"
                   onClick={handleInspirationClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white  ${
+                  className={`flex flex-col items-center justify-center h-9 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white  ${
                     activeTabFromStore === "inspiration"
                       ? " text-blue-700  shadow font-semibold border-blue-600 border bg-gray-50"
                       : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
@@ -108,7 +108,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="design-hub"
                   onClick={handleDesignHubClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                  className={`flex flex-col items-center justify-center h-9 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
                     activeTabFromStore === "design-hub"
                       ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
                       : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
@@ -143,7 +143,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="measurement"
                   onClick={handleMeasurementClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                  className={`flex flex-col items-center justify-center h-9 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
                     activeTabFromStore === "measurement"
                       ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
                       : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
@@ -181,7 +181,7 @@ const StudioMainTabs = () => {
                 <TabsTrigger
                   value="layers"
                   onClick={handleLayersClick}
-                  className={`flex flex-col items-center justify-center h-8 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
+                  className={`flex flex-col items-center justify-center h-9 w-16 transition-all px-2 rounded-lg font-medium focus:outline-none hover:border-blue-400 bg-white ${
                     activeTabFromStore === "layers"
                       ? " text-blue-700 shadow font-semibold border-blue-600 border bg-gray-50"
                       : "text-gray-600 hover:bg-gray-50 hover:text-blue-700 border-gray-200 border"
@@ -207,7 +207,8 @@ const StudioMainTabs = () => {
               </TooltipTrigger>
               <TooltipContent>Layers</TooltipContent>
             </Tooltip>
-            <Tooltip>
+
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <TabsTrigger
                   value="comments"
@@ -237,7 +238,7 @@ const StudioMainTabs = () => {
                 </TabsTrigger>
               </TooltipTrigger>
               <TooltipContent>Comment</TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </TabsList>
 
           <TabsContent value="design-hub" className="">

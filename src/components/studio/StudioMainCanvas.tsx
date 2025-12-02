@@ -117,7 +117,7 @@ export function StudioMainCanvas({
   };
 
   return (
-    <div className="w-full md:w-3/4  flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
+    <div className="w-full flex flex-col bg-gray-50 h-[calc(100vh-3px)] overflow-auto">
       <AnimatePresence mode="wait">
         {canvasImage ? (
           <>
@@ -126,6 +126,7 @@ export function StudioMainCanvas({
                 {!isCompare && (
                   <>
                     <HoverHeader />
+                    
                     <CanavasImage
                       imageUrl={canvasImage}
                       width={canvasWidth ?? 1024}
