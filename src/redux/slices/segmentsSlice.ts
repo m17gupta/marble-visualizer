@@ -76,6 +76,7 @@ interface SegmentsState {
   manualAnnotationError: string | null;
   clearUpdateCanvas: boolean;
   isCentroidUpdated: boolean;
+    isUploadedSegments:boolean
 }
 
 const initialState: SegmentsState = {
@@ -119,6 +120,7 @@ const initialState: SegmentsState = {
   isDeleteSegModal: false,
   clearUpdateCanvas: false,
   isCentroidUpdated: false,
+   isUploadedSegments:false
 };
 
 // Create segment service instance
@@ -460,6 +462,9 @@ const segmentsSlice = createSlice({
     resetReAnnoatationPoints: (state) => {
       state.reAnnotationPoints = [];
     },
+     resetIsUploadedSegments:(state,action)=>{
+      state.isUploadedSegments=action.payload
+    },
     resetSegmentSlice: () => {
       return initialState;
     },
@@ -579,6 +584,7 @@ export const {
   updateCentroid,
   addEntireSelectedSegment,
   updateChangeOnSelectedSegment,
+  resetIsUploadedSegments
 } = segmentsSlice.actions;
 
 export default segmentsSlice.reducer;

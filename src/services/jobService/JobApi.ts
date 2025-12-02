@@ -48,7 +48,7 @@ export class JobApi {
 
       console.log("New Job Data to insert:", newJob);
       const { data, error } = await supabase
-        .from("job")
+        .from("jobs")
         .insert( newJob )
         .select()
         .single();

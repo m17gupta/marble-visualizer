@@ -68,14 +68,6 @@ const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady 
   }, [isResetCanvas]);
 
 
-  const pinchCoords = (t1: Touch, t2: Touch) => ({
-    x1: t1.clientX,
-    y1: t1.clientY,
-    x2: t2.clientX,
-    y2: t2.clientY,
-  });
-
-
 
 
 
@@ -302,16 +294,13 @@ const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady 
     const wrapper = wrapperRef.current;
     if (!el || !wrapper) return;
 
-    const fc = new FabricCanvas(el, {
-      allowTouchScrolling: false,
-      width: 1400,  // initial logical size (we'll resize after image load)
-      height: 750,
-      zoom: 1,
-      defaultCursor: "default",
-      selection: false,
-      renderOnAddRemove: false,
-      skipTargetFind: false, // Enable hit detection for objects
-    });
+     const fc = new fabric.Canvas(el, {
+            width:1400,
+            height:750,
+            selection: true,
+            preserveObjectStacking: true,
+            backgroundColor: "#282828",
+          });
     fabricRef.current = fc;
     // Call the callback with canvas instance
     onCanvasReady?.(fc);

@@ -43,7 +43,7 @@ const handleCanvasReady = (canvas: FabricCanvas) => {
 
    <NewCanvas
       backgroundImage={imageToUse}
-      className={ "block h-auto w-full"}
+      // className={ "block h-auto w-full"}
           onCanvasReady={handleCanvasReady}
     />
 

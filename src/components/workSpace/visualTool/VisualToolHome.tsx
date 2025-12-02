@@ -129,6 +129,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
   const handleGoBack = () => {
     if (isAuthenticated) {
       dispatch(updateIsCreateDialog(false));
+         navigate("/admin/projects")
     } else {
       dispatch(updateWorkspaceType("workspace"));
       navigate("/workspace");
@@ -157,7 +158,7 @@ const VisualToolHome = ({ resetProjectCreated }: Props) => {
       // Use direct S3 upload service
 
       const result = await DirectS3UploadService.uploadFile(
-        uploadedFile,
+          uploadWebp!,
         profile.id,
         (progress: UploadProgress) => {
           // Calculate percentage from the upload progress

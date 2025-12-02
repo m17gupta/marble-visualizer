@@ -125,12 +125,7 @@ const SamplePlayBookPage: React.FC = () => {
                 />
               ) : (
                 <div className="relative w-full overflow-hidden rounded-none border-none">
-                  {/* canvas Image */}
-                  {/* <img
-                  src={baseImg}
-                  alt="House Preview"
-                  className="block h-auto w-full"
-                /> */}
+           
                   <Canvas
                     backgroundImage={currentProject?.jobData?.[0]?.full_image ?? baseImg}
                     className="block h-auto w-full"

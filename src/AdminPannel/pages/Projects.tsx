@@ -43,7 +43,7 @@ import { JobModel } from "@/models/jobModel/JobModel";
 import { MdAddHome, MdDeleteOutline } from "react-icons/md";
 import { toast } from "sonner";
 import { updateJobList, updateSidebarHeaderCollapse } from "@/redux/slices/jobSlice";
-import { addbreadcrumb } from "@/redux/slices/visualizerSlice/workspaceSlice";
+import { addbreadcrumb, updateWorkspaceType } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import { setCurrentImageUrl } from "@/redux/slices/studioSlice";
 import { addHouseImage } from "@/redux/slices/visualizerSlice/genAiSlice";
 import ProjectAction from "@/pages/projectPage/ProjectAction";
@@ -173,6 +173,7 @@ const Projects: React.FC = () => {
   ];
 
   const handleCreateProject = () => {
+        dispatch(updateWorkspaceType("renovate"));
     // Logic to open a modal or navigate to a project creation page
     // console.log("Create Project clicked");
     navigate("/admin/add-project");

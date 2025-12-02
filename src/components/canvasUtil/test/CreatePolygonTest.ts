@@ -54,6 +54,7 @@ export const collectPoints = async (
   const point: PointModel[] = [];
   const polyName = segName;
 
+  console.log("aiTrainImageWidth",aiTrainImageWidth)
   const ratioWidth = canvasWidth / aiTrainImageWidth;
   const ratioHeight = canvasHeight / aiTrainImageHeight;
   for (let i = 0; i < annotation.length; i += 2) {

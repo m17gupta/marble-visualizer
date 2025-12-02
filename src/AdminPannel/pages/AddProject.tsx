@@ -1,28 +1,30 @@
 import VisualToolHome from '@/components/workSpace/visualTool/VisualToolHome'
+import { resetIsUploadedSegments } from '@/redux/slices/segmentsSlice';
 
-import { AppDispatch } from '@/redux/store';
-import React from 'react'
-import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '@/redux/store';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const AddProject = () => {
     const dispatch = useDispatch<AppDispatch>();
-
+  const navigate= useNavigate()
+         const { isUploadedSegments } = useSelector(
+    (state: RootState) => state.segments
+  );
     const handleResetProjectCreated = () => {
-      // dispatch(updateIsCreateDialog(false));
-      // dispatch(updateWorkspaceType("renovate"));
-      // setSelectedProjectId(undefined);
+   
     };
+     useEffect(()=>{
+      if(isUploadedSegments){
+        dispatch(resetIsUploadedSegments(false))
+        navigate("/admin/projects")
+      }
+    },[isUploadedSegments])
   return (
     <div className="p-6">
       <div className="bg-white rounded-lg shadow p-8">
-        {/* <h1 className="text-2xl font-bold mb-4">Add New Project</h1>
-        <p className="text-gray-600 mb-6">
-          This is the Add Project page with admin sidebar and layout.
-        </p>
-        <div className="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded">
-          ✅ If you can see the admin sidebar on the left, the routing is working correctly!
-        </div> */}
-
+ 
         <VisualToolHome 
                 resetProjectCreated={handleResetProjectCreated} />
       </div>
