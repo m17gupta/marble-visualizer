@@ -45,7 +45,7 @@ const PieChart: React.FC<PieChartProps> = ({
     const y2 = centerY + radius * Math.sin(endAngleRad);
     
     const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
-    
+      console.log("updxate ")
     return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
   };
 
