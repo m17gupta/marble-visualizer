@@ -15,6 +15,7 @@ export interface ProjectAccess {
 interface ProjectState {
   list: ProjectModel[];
   currentProject: ProjectModel | null;
+    demoList: ProjectModel[];
   currentUserRole: "admin" | "editor" | "viewer" | null;
   houseSegments?: HouseSegmentResponse | null;
   projectAccess: ProjectAccess[];
@@ -31,6 +32,7 @@ interface ProjectState {
 const initialState: ProjectState = {
   list: [],
   currentProject: null,
+  demoList: [],
   currentUserRole: null,
   houseSegments: null,
   projectAccess: [],
@@ -398,7 +400,20 @@ const projectSlice = createSlice({
       .addCase(deleteProject.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
-      });
+      })
+      //  .addCase(fetchDemoProjects.pending, (state) => {
+      //   state.isLoading = true;
+      //   state.error = null;
+      // })
+      // .addCase(fetchDemoProjects.fulfilled, (state, action) => {
+      //   state.isLoading = false;
+      //   state.demoList = action.payload;
+      //   state.hasfetchedDemoProjects = true;
+      // })
+      // .addCase(fetchDemoProjects.rejected, (state, action) => {
+      //   state.isLoading = false;
+      //   state.error = action.payload as string;
+      // })
   },
 });
 

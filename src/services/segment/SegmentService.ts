@@ -37,4 +37,8 @@ async deleteSegmentById(segmentId: number[]): Promise<DeleteSegmentResponse> {
 async deleteSegmentId(segmentId: number): Promise<{status:boolean}> {
   return this.segmentApi.deleteSegmentBySegId(segmentId)
 }
+async updateShowAnnoatationPoint(segmentData: SegmentModal[]): Promise<{ success: boolean; data?: SegmentModal[]; error?: string }> {
+  return this.segmentApi.updateMultipleSegments(segmentData);
+}
+
 }

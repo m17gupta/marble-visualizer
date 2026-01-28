@@ -1,9 +1,6 @@
-  // Programmatic zoom function (must be inside component to access refs/state)
 
 
-"use client";
-
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as fabric from "fabric";
 import { Canvas as FabricCanvas, Image as FabricImage, Point as FabricPoint } from "fabric";
 
@@ -12,170 +9,63 @@ import _debounce from "lodash/debounce";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setIsResetCanvas } from "@/redux/slices/demoProjectSlice/DemoCanvasSlice";
-import { getPathPoints, handlePolygonVisibilityTest, HideAll, ShowOutline } from "@/components/canvasUtil/test/HoverSegmentTest";
-import { isPointInPolygon } from "@/components/canvasUtil/ISPointInsidePolygon";
+import { getPathPoints, handlePolygonfind, handlePolygonVisibilityTest, HideAll, hoverOutline, ResetCanvas, ShowOutline } from "@/components/canvasUtil/test/HoverSegmentTest";
+
 import { setSelectedDemoMasterItem } from "@/redux/slices/demoProjectSlice/DemoMasterArraySlice";
 import ShowSelectedSegment from "./ShowSelectedSegment";
+
+import { setCanvasReady, setZoom } from "@/redux/slices/canvasSlice";
+import { LoadImageWithCORS, LoadImageWithFetch, setBackgroundImage } from "@/components/canvasUtil/canvasImageUtils";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { OnCanvasClick } from "@/components/canvasUtil/OnCanvasClickEvent";
+import { ZoomCanvasMouse } from "@/components/canvasUtil/ZoomCanvas";
+import { NamedFabricObject } from "@/components/canvas/CanavasImage";
+
 
 type Props = {
   backgroundImage: string;
   className?: string;
+  canvasWidth: number;
+  canvasHeight: number;
   onCanvasReady?: (canvas: FabricCanvas) => void;
+  onImageLoad?: () => void;
 };
 
 
-type NamedFabricObject = fabric.Object & {
-  name?: string;
-  groupName?: string;
-  subGroupName?: string;
-  isActived?: boolean;
-};
-const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady }) => {
-  const [isImageLoading, setIsImageLoading] = React.useState(false);
-  const [zoom, setZoom] = React.useState(1);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const canvasElRef = useRef<HTMLCanvasElement | null>(null);
-  const fabricRef = useRef<FabricCanvas | null>(null);
+const NewCanvas: React.FC<Props> = ({ onImageLoad, backgroundImage, className, canvasWidth, canvasHeight, onCanvasReady }) => {
+
+
   const dispatch = useDispatch<AppDispatch>();
-  const { isHover, isMask ,isShowSegmentName} = useSelector((state: RootState) => state.demoCanvas);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const backgroundImageRef = useRef<fabric.Image | null>(null);
+  const originalViewportTransform = useRef<fabric.TMat2D | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
+
+  const { isHover, isMask, isShowSegmentName, isOutline, isResetCanvas } = useSelector((state: RootState) => state.demoCanvas);
   const demoMasterArray = useSelector((state: RootState) => state.demoMasterArray.demoMasterArray);
-  // Use a ref to always have the latest value in event handlers
   const demoMasterArrayRef = useRef(demoMasterArray);
+  const isShow = useRef<boolean>(isShowSegmentName);
+
+
   useEffect(() => {
-    demoMasterArrayRef.current = demoMasterArray;
+    if (demoMasterArray) {
+      demoMasterArrayRef.current = demoMasterArray;
+    }
   }, [demoMasterArray]);
 
-  // gesture state
-
-  const touchZoomRef = useRef<number>(1);
-
-
-  // "first zoom commit expands to fullscreen"
-  const firstCommitDone = useRef(false);
-
-  // Store original canvas and image properties for reset
-  const originalCanvasSize = useRef<{ width: number; height: number } | null>(null);
-  const originalImageProps = useRef<{ width: number; height: number; scaleX: number; scaleY: number } | null>(null);
-
-  const { isResetCanvas } = useSelector((state: RootState) => state.demoCanvas);
-
-  // update the reset Canvas state
-  useEffect(() => {
-    if (isResetCanvas) {
-      dispatch(setIsResetCanvas(false));
-      resetCanvas();
-    }
-  }, [isResetCanvas]);
-
-
-
-
-
-
-  const resetCanvas = () => {
-    const fc = fabricRef.current;
-    const wrapper = wrapperRef.current;
-    if (!fc || !wrapper) return;
-
-    const wrapperEl = fc.wrapperEl as unknown as HTMLElement;
-
-    // Reset CSS transform properties
-    wrapperEl.style.setProperty("--tOriginX", "0px");
-    wrapperEl.style.setProperty("--tOriginY", "0px");
-
-    // Reset Fabric.js canvas properties
-    fc.viewportTransform = [1, 0, 0, 1, 0, 0];
-    fc.setViewportTransform(fc.viewportTransform);
-    fc.setZoom(1);
-
-    // Reset zoom tracking
-    touchZoomRef.current = 1;
-    firstCommitDone.current = false;
-
-    // Always restore to initial load state (centered, not zoomed out, not offset)
-    const vw = wrapper.clientWidth || window.innerWidth;
-    const vh = wrapper.clientHeight || window.innerHeight;
-    const targetW = Math.max(1280, Math.floor(vw * 0.6));
-    const targetH = Math.max(680, Math.floor(vh * 0.6));
-    // const targetW = Math.max(950, Math.floor(vw * 0.6));
-    // const targetH = Math.max(558, Math.floor(vh * 0.6));
-
-    let cw = targetW;
-    let ch = targetH;
-    let scale = 1;
-    let imgWidth = 0;
-    let imgHeight = 0;
-
-    const backgroundImg = fc.backgroundImage;
-    if (backgroundImg && backgroundImg.width && backgroundImg.height) {
-      imgWidth = backgroundImg.width;
-      imgHeight = backgroundImg.height;
-      scale = Math.min(targetW / imgWidth, targetH / imgHeight);
-      cw = Math.floor(imgWidth * scale);
-      ch = Math.floor(imgHeight * scale);
-
-      fc.setDimensions({ width: cw, height: ch });
-      backgroundImg.set({
-        left: 0,
-        top: 0,
-        scaleX: cw / imgWidth,
-        scaleY: ch / imgHeight,
-        originX: 'left',
-        originY: 'top',
-        selectable: false,
-        evented: false
-      });
-      backgroundImg.width = imgWidth;
-      backgroundImg.height = imgHeight;
-    } else if (originalCanvasSize.current && originalImageProps.current) {
-      // fallback to original if no background image
-      fc.setDimensions({
-        width: originalCanvasSize.current.width,
-        height: originalCanvasSize.current.height
-      });
-    } else {
-      fc.setDimensions({ width: cw, height: ch });
-    }
-
-    fc.requestRenderAll();
-
-    // Center the canvas in wrapper after reset (like initial load)
-    const dx = (vw - cw) / 2;
-    const dy = (vh - ch) / 2;
-    wrapperEl.style.transform = `translate(${dx}px, ${dy}px) scale(1)`;
-  };
-
-
-
-  // ---------------- Fabric mouse handlers ----------------
-  // Handle canvas click to get target segment
-
-
-  const onMouseDown = useCallback((e: any) => {
-    const fc = fabricRef.current;
-    const pointer = fc?.getPointer(e.e);
-    if (!fc || !pointer) return;
-    const target = e.target;
-    // Always use the latest demoMasterArray from ref
-    const currentDemoMasterArray = demoMasterArrayRef.current;
-    if (target) {
-      console.log('Mouse down target:', target.subGroupName);
-      console.log('Matched demoMasterArray:', currentDemoMasterArray);
-      const seg = currentDemoMasterArray.find(item => item.name === target.subGroupName)
-      console.log('Matched segment:', seg);
-      if (seg)
-        dispatch(setSelectedDemoMasterItem(seg));
-    }
-  }, [fabricRef, dispatch]);
-  
-  const isShow= useRef<boolean>(isShowSegmentName);
   useEffect(() => {
     isShow.current = isShowSegmentName;
   }, [isShowSegmentName]);
-  
-  const handleMouseMove = useCallback((event: any) => {
+
+  const handleMouseMove = useCallback((event: fabric.TEvent) => {
     if (isHover) {
-      const fc = fabricRef.current;
+      const fc = fabricCanvasRef.current;
 
       if (!fc) return;
       const pointer = fc.getPointer(event.e);
@@ -183,329 +73,341 @@ const NewCanvas: React.FC<Props> = ({ backgroundImage, className, onCanvasReady 
       // Use fabric.Point from imported fabric
       const fabricPoint = new FabricPoint(pointer.x, pointer.y);
       // handlePolygonVisibilityTest expects a RefObject, so wrap fc in a ref-like object if needed
-      handlePolygonVisibilityTest({ current: fc }, fabricPoint,isShow.current);
+      handlePolygonVisibilityTest({ current: fc }, fabricPoint, isShow.current);
     }
-  }, [isHover,isShow]);
-  const onMouseUp = () => {
-    // Drag functionality removed
-  };
+  }, [isHover, isShow]);
 
-    const centerCanvas = (x: number, y: number) => {
-    const fc = fabricRef.current;
-    const wrapper = wrapperRef.current;
-    if (!fc || !wrapper) return;
+  const handleCanvasClick = useCallback((event: fabric.TEvent) => {
+    const fc = fabricCanvasRef.current;
+    const pointer = fc?.getPointer(event.e);
+    if (!fc || !pointer) return;
+    const fabricPoint = new fabric.Point(pointer.x, pointer.y);
+    const polyName = handlePolygonfind(fabricCanvasRef, fabricPoint)
+    const currentDemoMasterArray = demoMasterArrayRef.current;
+    if (polyName?.name) {
+      const result = polyName?.name.replace(/[0-9]/g, '');
+      const seg = currentDemoMasterArray.find(item => item.short_code === result)
+      if (seg)
+        dispatch(setSelectedDemoMasterItem(seg));
+    }
+  }, []);
 
-    const wrapperEl = fc.wrapperEl as unknown as HTMLElement;
-    const canvasRect = wrapperEl.getBoundingClientRect();
-    const wrapperRect = wrapper.getBoundingClientRect();
+  const handleDoubleClick = useCallback((event: fabric.TEvent) => {
+  }, []);
 
-    // Calculate center position
-    const dx = (wrapperRect.width - canvasRect.width) / 2;
-    const dy = (wrapperRect.height - canvasRect.height) / 2;
+  const handleMouseWheel = useCallback((event: fabric.TEvent) => {
+    const deltaE = event.e as WheelEvent;
+    const pointer = fabricCanvasRef.current?.getPointer(event.e);
 
-    const currentScale = touchZoomRef.current;
-    // wrapperEl.style.transform = `translate(${dx}px, ${dy}px) scale(${currentScale})`;
-    wrapperEl.style.transform = `translate(${x}px, ${y}px) scale(${currentScale})`;
-  };
+    //     // Make sure we have all required objects
+    if (deltaE && fabricCanvasRef.current && pointer) {
+      // Prevent default browser behavior
+      event.e.stopPropagation();
+      event.e.preventDefault();
 
-  const onMouseWheel = (e: any) => {
-    const delta = e.e.deltaY;
-    let wheelDelta = e.e.wheelDelta;
-    let newZoom = touchZoomRef.current;
-    newZoom *= 0.999 ** delta;
+      const delta = deltaE.deltaY;
+      let zoom = fabricCanvasRef.current.getZoom();
 
-    // Clamp zoom levels like in CanavasImage
-    if (newZoom > 20) newZoom = 20;
-    if (newZoom < 1) newZoom = 1;
+      zoom *= 0.999 ** delta;
+      if (zoom > 20) zoom = 20; // Set maximum zoom level
+      if (zoom < 1) zoom = 1; // Set minimum zoom level
 
-    const fc = fabricRef.current;
-    if (!fc) return;
+      ZoomCanvasMouse(fabricCanvasRef, zoom, {
+        x: Math.round(pointer.x),
+        y: Math.round(pointer.y),
+      });
+      event.e.stopPropagation();
+      event.e.preventDefault();
 
-    // Get mouse position relative to canvas
-    const pointer = fc.getPointer(e.e);
-  
-    fc.zoomToPoint(new fabric.Point(pointer.x, pointer.y), newZoom);
-    e.e.preventDefault();
-    e.e.stopPropagation();
-
-    touchZoomRef.current = newZoom;
-    fc.renderAll();
-    setZoom(newZoom); // Update zoom state to trigger re-render
-// centerCanvas(pointer.x, pointer.y);
+      // Update the zoom state
+      dispatch(setZoom(zoom));
+    }
+  }, []);
+  const handleKeyDown = useCallback((event: fabric.TEvent) => {
+  }, []);
 
 
-  };
-
-  // ---------------- Touch handlers (on wrapper) ----------------
-  const touchStart = (event: TouchEvent) => {
-    const fc = fabricRef.current;
-    if (!fc) return;
-
-    // if (event.touches.length === 2) {
-    //   initialPinchDistance.current = pinchDistance(event.touches[0], event.touches[1]);
-    // }
-  };
-
-  const touchMove = (event: TouchEvent) => {
-    const fc = fabricRef.current;
-    const wrapper = wrapperRef.current;
-    if (!fc || !wrapper) return;
-
-    // if (event.touches.length === 2) {
-    //   const currentDist = pinchDistance(event.touches[0], event.touches[1]);
-    //   let scale = Number((currentDist / (initialPinchDistance.current || 1)).toFixed(2));
-    //   scale = 1 + (scale - 1) / 20; // slow pinch zoom
-
-    //   let newZoom = scale * touchZoomRef.current;
-    //   // Clamp zoom levels like mouse wheel
-    //   if (newZoom > 20) newZoom = 20;
-    //   if (newZoom < 1) newZoom = 1;
-
-    //   // Use Fabric.js center-based zoom like CanavasImage
-    //   const center = fc.getCenter();
-    //   fc.zoomToPoint(
-    //     { x: center.left, y: center.top } as any,
-    //     newZoom
-    //   );
-
-    //   touchZoomRef.current = newZoom;
-
-    //   // Center the canvas after zoom
-    //   centerCanvas();
-    // }
-    // Drag functionality removed
-  };
-
-  const touchEnd = (event: TouchEvent) => {
-    // if (event.touches.length < 2) {
-    //   canvasScaleToZoom();
-    // }
-    // Drag functionality removed
-  };
-
-  // ---------------- init / teardown ----------------
+  // Initialize Fabric.js canvas
   useEffect(() => {
-    // Remove previous canvas instance if exists
-    if (fabricRef.current) {
-      fabricRef.current.dispose();
-      fabricRef.current = null;
-    }
-    const el = canvasElRef.current;
-    const wrapper = wrapperRef.current;
-    if (!el || !wrapper) return;
+    if (!canvasRef.current || fabricCanvasRef.current) return;
 
-     const fc = new fabric.Canvas(el, {
-            width:1400,
-            height:750,
-            selection: true,
-            preserveObjectStacking: true,
-            backgroundColor: "#282828",
-          });
-    fabricRef.current = fc;
-    // Call the callback with canvas instance
-    onCanvasReady?.(fc);
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width: canvasWidth,
+      height: canvasHeight,
+      selection: true,
+      preserveObjectStacking: true,
+      backgroundColor: "#282828",
+    });
 
-    (fc.wrapperEl as HTMLElement).style.setProperty("--tOriginX", "0px");
-    (fc.wrapperEl as HTMLElement).style.setProperty("--tOriginY", "0px");
+    //  add group testPolygon
+    const testPolygon = new fabric.Group([], {
+      selectable: false,
+      hasControls: false,
+      hasBorders: false,
+    });
+    const editPolygon = new fabric.Group([], {
+      selectable: false,
+      hasControls: false,
+      hasBorders: false,
+    });
+    (testPolygon as NamedFabricObject).groupName = "testPoly";
+    (editPolygon as NamedFabricObject).groupName = "EditPoly";
+    canvas.add(testPolygon);
+    canvas.add(editPolygon);
 
-    // Load background and start SMALL (like the CodePen grid-in-a-box)
-    const loadBackgroundImage = async () => {
-      // setIsImageLoading(true);
-      if (!backgroundImage) {
-        //console.warn('No background image URL provided');
-        // Create a default colored canvas instead of failing
-        const vw = wrapper.clientWidth || window.innerWidth;
-        const vh = wrapper.clientHeight || window.innerHeight;
-        const cw = Math.floor(vw * 0.6);
-        const ch = Math.floor(vh * 0.6);
+    fabricCanvasRef.current = canvas;
 
-        fc.setDimensions({ width: cw, height: ch });
-        fc.backgroundColor = '#f0f0f0';
-        fc.requestRenderAll();
+    // Store the original viewport transform
+    originalViewportTransform.current = canvas.viewportTransform
+      ? ([...canvas.viewportTransform] as fabric.TMat2D)
+      : null;
 
-        // Store original properties for fallback canvas too
-        originalCanvasSize.current = { width: cw, height: ch };
-        originalImageProps.current = {
-          width: cw,
-          height: ch,
-          scaleX: 1,
-          scaleY: 1
-        };
+    onCanvasReady?.(canvas);
+    // Canvas event handlers (desktop)
+    canvas.on("mouse:down", (event) => handleCanvasClick(event));
+    canvas.on("mouse:move", (event) => {
+      handleMouseMove(event);
+    });
+    canvas.on("mouse:dblclick", (event) => handleDoubleClick(event));
+    canvas.on("mouse:wheel", (event) => {
+      handleMouseWheel(event);
+      dispatch(setZoom(canvas.getZoom()));
+    });
 
-        // Center the fallback canvas
-        const dx = (vw - cw) / 2;
-        const dy = (vh - ch) / 2;
-        (fc.wrapperEl as HTMLElement).style.transform = `translate(${dx}px, ${dy}px) scale(1)`;
+    // Canvas event handlers (mobile/touch)
+    // Fabric.js emits 'touch:gesture', 'touch:drag', 'touch:longpress' events
+    // We'll map touch:drag to mouse:move, touch:tap to mouse:down, and touch:longpress to mouse:dblclick
+    (canvas.on as any)("touch:drag", (event: any) => {
+      // Fabric.js touch events may not have .e, so we create a compatible event
+      const pointer =
+        event && event.self && event.self.x != null && event.self.y != null
+          ? { x: event.self.x, y: event.self.y }
+          : null;
+      const fakeEvent = {
+        ...event,
+        e: pointer
+          ? { clientX: pointer.x, clientY: pointer.y, ...event.e }
+          : event.e || {},
+      };
+      handleMouseMove(fakeEvent);
+    });
+    (canvas.on as any)("touch:tap", (event: any) => {
+      const pointer =
+        event && event.self && event.self.x != null && event.self.y != null
+          ? { x: event.self.x, y: event.self.y }
+          : null;
+      const fakeEvent = {
+        ...event,
+        e: pointer
+          ? { clientX: pointer.x, clientY: pointer.y, ...event.e }
+          : event.e || {},
+      };
+      handleCanvasClick(fakeEvent);
+    });
+    (canvas.on as any)("touch:longpress", (event: any) => {
+      const pointer =
+        event && event.self && event.self.x != null && event.self.y != null
+          ? { x: event.self.x, y: event.self.y }
+          : null;
+      const fakeEvent = {
+        ...event,
+        e: pointer
+          ? { clientX: pointer.x, clientY: pointer.y, ...event.e }
+          : event.e || {},
+      };
+      handleDoubleClick(fakeEvent);
+    });
 
-        // Ensure zoom is at minimum
-        touchZoomRef.current = 1;
-        return;
-      }
-
-
-      try {
-        // Try loading with different CORS settings
-        let img: any = null;
-
-        try {
-          // First try with crossOrigin: anonymous
-          img = await FabricImage.fromURL(backgroundImage, { crossOrigin: "anonymous" });
-        } catch (error) {
-          console.warn('Failed to load with crossOrigin anonymous, trying without CORS:', error);
-          try {
-            // Try without CORS
-            img = await FabricImage.fromURL(backgroundImage);
-          } catch (secondError) {
-            console.warn('Failed to load without CORS, trying use-credentials:', secondError);
-            try {
-              // Last attempt with use-credentials
-              img = await FabricImage.fromURL(backgroundImage, { crossOrigin: "use-credentials" });
-            } catch (thirdError) {
-              console.error('Failed to load image with all CORS methods:', thirdError);
-              return;
-            }
-          }
-        }
-
-        if (!img) {
-          console.error('Failed to load image after all attempts');
-          // setIsImageLoading(false);
-          return;
-        }
-
-        //  console.log('Image loaded successfully:', img.width, 'x', img.height);
-
-        // Guard: If img.width or img.height is undefined, treat as error
-        if (typeof img.width !== 'number' || typeof img.height !== 'number') {
-          // console.error('Image object missing width/height:', img);
-          // setIsImageLoading(false);
-          return;
-        }
-        const iw = img.width;
-        const ih = img.height;
-
-        const vw = wrapper.clientWidth || window.innerWidth;
-        const vh = wrapper.clientHeight || window.innerHeight;
-
-        // Start at ~60% of wrapper to get that "small initial view" feel
-        const targetW = Math.max(1280, Math.floor(vw * 0.6));
-        const targetH = Math.max(680, Math.floor(vh * 0.6));
-        // const targetW = Math.max(950, Math.floor(vw * 0.6));
-        // const targetH = Math.max(558, Math.floor(vh * 0.6));
-
-        // scale image to fit targetW x targetH
-        const scale = Math.min(targetW / iw, targetH / ih);
-        const cw = Math.floor(iw * scale);
-        const ch = Math.floor(ih * scale);
-
-        // console.log('Setting canvas dimensions:', cw, 'x', ch);
-        fc.setDimensions({ width: cw, height: ch });
-
-        // Set background image using the proper method
-        img.set({
-          left: 0,
-          top: 0,
-          originX: 'left',
-          originY: 'top',
-          scaleX: cw / iw,
-          scaleY: ch / ih,
-          selectable: false,
-          evented: false
-        });
-
-        // Wait for canvas to be fully initialized before setting background
-        setTimeout(() => {
-          fc.backgroundImage = img;
-          fc.requestRenderAll();
-          setIsImageLoading(false);
-        }, 0);
-
-        // Store original canvas and image properties for reset functionality
-        originalCanvasSize.current = { width: cw, height: ch };
-        originalImageProps.current = {
-          width: iw,
-          height: ih,
-          scaleX: cw / iw,
-          scaleY: ch / ih
-        };
-
-        // Always center the canvas in the wrapper
-        const dx = (vw - cw) / 2;
-        const dy = (vh - ch) / 2;
-        (fc.wrapperEl as HTMLElement).style.transform = `translate(${dx}px, ${dy}px) scale(1)`;
-
-        // Ensure zoom is set to minimum (1)
-        touchZoomRef.current = 1;
-      } catch (error) {
-        console.error('Error loading background image:', error);
-        //setIsImageLoading(false);
-      }
-    };
-    //console.log('Background image prop changed, reloading:');
-    loadBackgroundImage();
-
-    // Fabric mouse events
-    fc.on("mouse:down", onMouseDown);
-    // Use custom handleMouseMove for hover effect
-    fc.on("mouse:move", handleMouseMove);
-    fc.on("mouse:up", onMouseUp);
-    fc.on("mouse:wheel", onMouseWheel);
-
-    // touch events on wrapper (Fabric doesn't emit touch)
-    wrapper.addEventListener("touchstart", touchStart, { passive: false });
-    wrapper.addEventListener("touchmove", touchMove, { passive: false });
-    wrapper.addEventListener("touchend", touchEnd);
+    dispatch(setCanvasReady(true));
 
     return () => {
-      wrapper.removeEventListener("touchstart", touchStart);
-      wrapper.removeEventListener("touchmove", touchMove);
-      wrapper.removeEventListener("touchend", touchEnd);
-      fc.dispose();
-      fabricRef.current = null;
+      // document.removeEventListener("keydown", handleKeyDown);
+
+      // Clean up auto-panning
+      // cleanupAutoPan(autoPanIntervalRef, setIsAutoPanning);
+
+      // Remove canvas click event
+      canvas.off("mouse:down", handleCanvasClick);
+      canvas.off("mouse:move", handleMouseMove);
+      canvas.off("mouse:dblclick", handleDoubleClick);
+      canvas.off("mouse:wheel", handleMouseWheel);
+      // Remove touch events (bypass TS)
+      if (canvas.off as any) {
+        (canvas.off as any)("touch:drag");
+        (canvas.off as any)("touch:tap");
+        (canvas.off as any)("touch:longpress");
+      }
+
+      canvas.dispose();
+      fabricCanvasRef.current = null;
+      backgroundImageRef.current = null;
+      dispatch(setCanvasReady(false));
+      dispatch(setZoom(1));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backgroundImage]);
+  }, [canvasWidth, canvasHeight, dispatch]);
+
+  // Only update background image if imageUrl or canvasType changes
+  useEffect(() => {
+    // Add canvasType to the dependency array
+    if (!fabricCanvasRef.current || !backgroundImage) {
+      return;
+    }
+
+    const canvas = fabricCanvasRef.current;
+
+    //Remove existing background image (ensure full cleanup)
+    if (backgroundImageRef.current) {
+      canvas.backgroundImage = undefined;
+      backgroundImageRef.current = null;
+      canvas.renderAll();
+    }
+
+    const tryLoadImage = async () => {
+      setIsImageLoading(true); // Start loading indicator
+
+      // Strategy 1: Try different CORS modes
+      const corsOptions: (string | null)[] = ["anonymous", "use-credentials"];
+      for (const corsMode of corsOptions) {
+        try {
+          await LoadImageWithCORS(backgroundImage, corsMode);
+          setBackgroundImage(
+            fabricCanvasRef,
+            backgroundImage,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with CORS mode: ${corsMode}`, error);
+        }
+      }
+
+      // Strategy 2: Try different fetch modes
+      const fetchModes: RequestMode[] = ["cors", "no-cors", "same-origin"];
+      for (const fetchMode of fetchModes) {
+        try {
+          await LoadImageWithFetch(backgroundImage, fetchMode);
+          setBackgroundImage(
+            fabricCanvasRef,
+            backgroundImage,
+            backgroundImageRef,
+            (loading: boolean) => {
+              setIsImageLoading(loading);
+              if (!loading && onImageLoad) {
+                onImageLoad();
+              }
+            }
+          );
+          return;
+        } catch (error) {
+          console.warn(`Failed to load with fetch mode: ${fetchMode}`, error);
+        }
+      }
+
+      // All strategies failed
+      setIsImageLoading(false); // Stop loading indicator on failure
+      // console.error("All image loading strategies failed for URL:", imageUrl);
+      const errorMessage = backgroundImage.includes("s3.")
+        ? "Failed to load S3 image due to CORS restrictions. Please configure your S3 bucket CORS policy to allow requests from your domain."
+        : "Failed to load background image. The image server may not allow cross-origin requests.";
+
+      toast.error(errorMessage, {
+        duration: 6000,
+        description: "Check browser console for detailed error information.",
+      });
+
+      if (onImageLoad) {
+        onImageLoad();
+      }
+    };
+
+    tryLoadImage();
+  }, [backgroundImage, onImageLoad]); // Added canvasType to dependencies
+
 
 
   // handle Mask
   useEffect(() => {
-    const fc = fabricRef.current;
+    const fc = fabricCanvasRef.current;
     if (!fc) return;
     if (isMask) {
       ShowOutline({ current: fc }, "mask", true);
-    } else {
+    } else if (isOutline) {
+      ShowOutline({ current: fc }, "outline", true);
+    }
+    else if (isResetCanvas) {
+      dispatch(setIsResetCanvas(false));
+      ResetCanvas({ current: fc }, true);
+    }
+    else {
       HideAll({ current: fc }, true);
     }
-  }, [isMask]);
-
+  }, [isMask, isOutline, isResetCanvas]);
 
   return (
     <>
       <ShowSelectedSegment
-        canvas={fabricRef}
-        zoom={zoom}
+        canvas={fabricCanvasRef}
+        zoom={100}
       />
-      <section
-        ref={wrapperRef}
-        className={["relative inline-block w-full", className || ""].join(" ")}
-        style={{
-          touchAction: "none",      // important for pinch/drag
-          height: "100vh",          // wrapper = fullscreen height
-          overflow: "hidden",
-        }}
-      >
-      
-        {isImageLoading && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70">
-            <svg className="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-            <span className="ml-3 text-blue-700 font-medium">Loading image...</span>
-          </div>
+
+      <div
+        className={cn(
+          "w-full h-full flex flex-col mb-3 transition-all duration-300 ease-in-out p-20",
+          className
         )}
-        <canvas ref={canvasElRef} id="dzinly-fabric-canvas" />
-      </section>
+      >
+        {/* Canvas Container */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="relative w-full h-full"
+          ref={containerRef}
+        >
+          {/* <Card className="overflow-hidden bg-white border rounded-md shadow-sm"> */}
+          {/* <CardContent className="flex items-center justify-center p-0 mx-auto"> */}
+          <div className="w-full h-full flex items-center justify-center">
+            <canvas
+              ref={canvasRef}
+              className="block max-w-full max-h-full mx-auto border-0"
+              style={{
+                width: `${canvasWidth}px`,
+                height: `${canvasHeight}px`,
+                display: "block",
+              }}
+            />
+
+            {/* Image Loading Overlay */}
+            {isImageLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-100/80">
+                <div className="text-center">
+                  <div className="w-8 h-8 mx-auto mb-2 border-b-2 rounded-full animate-spin border-primary"></div>
+                  <p className="text-sm text-muted-foreground">
+                    Loading background image...
+                  </p>
+                </div>
+              </div>
+            )}
+
+
+            {/* {doubleClickPoint && (
+                  <DoubleClickHtml
+                    doubleClickPoint={doubleClickPoint}
+                    onClose={() => setDoubleClickPoint(null)}
+                  />
+                )} */}
+          </div>
+          {/* </CardContent>
+              </Card> */}
+        </motion.div>
+      </div>
+
     </>
 
   );

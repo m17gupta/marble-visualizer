@@ -50,7 +50,7 @@ import { updateActiveTab } from "@/redux/slices/visualizerSlice/workspaceSlice";
 import DoubleClickHtml from "./DoubleClickHtml";
 import StudioLayout from "../studio/studioMainTabs/StudioLayout";
 
-type NamedFabricObject = fabric.Object & {
+ export type NamedFabricObject = fabric.Object & {
   name?: string;
   groupName?: string;
 };
