@@ -72,16 +72,16 @@ export function StudioPage() {
   const [canvasHeight, setCanvasHeight] = useState(592);
   const { id: projectId } = useParams<{ id: string }>();
   const [selectedProject, setSelectedProject] = useState<ProjectModel | null>(
-    null
+    null,
   );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { error: jobError, isCreating: isJobRunning } = useSelector(
-    (state: RootState) => state.jobs
+    (state: RootState) => state.jobs,
   );
   const { currentProject } = useSelector((state: RootState) => state.projects);
   const { activeTab: activeTabFromStore } = useSelector(
-    (state: RootState) => state.workspace
+    (state: RootState) => state.workspace,
   );
 
   const { profile } = useSelector((state: RootState) => state.userProfile);
@@ -207,7 +207,7 @@ export function StudioPage() {
   };
 
   const handleBackToProject = () => {
-    console.log("profile---",profile)
+    console.log("profile---", profile);
     dispatch(resetSegmentSlice());
     dispatch(clearCurrentJob());
     dispatch(clearCurrentProject());
@@ -219,12 +219,69 @@ export function StudioPage() {
     dispatch(clearCurrentImage());
     dispatch(setCurrentTabContent("home"));
     if (profile && profile.role == "admin") {
-      console.log("role admin")
+      console.log("role admin");
       navigate("/admin/dashboard");
     } else {
       navigate("/app/projects");
     }
   };
+
+  const [clientId] = useState(() => Math.random().toString(36).substring(7));
+  const socketRef = useRef<WebSocket | null>(null);
+  const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Connect to WebSocket on mount
+    const wsUrl = `${import.meta.env.VITE_WS_BASE_URL || "wss://api.bharatbhraman.org"}/ws/${clientId}`;
+    const ws = new WebSocket(wsUrl);
+    socketRef.current = ws;
+
+    ws.onopen = () => {
+      setConsoleLogs((prev) => [
+        ...prev,
+        `[System] Uplink Established (ID: ${clientId})`,
+      ]);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.status === "SUCCESS") {
+          setConsoleLogs((prev) => [...prev, "Rendering Complete."]);
+          if (data.result) {
+            const imageUrl =
+              data.result.url ||
+              `data:image/png;base64,${data.result.image_bytes}`;
+            setGeneratedImage(imageUrl);
+            if (data.result.latency)
+              setConsoleLogs((prev) => [
+                ...prev,
+                `Latency: ${data.result.latency}s`,
+              ]);
+          }
+          setIsGenerating(false);
+        } else if (data.status === "FAILURE") {
+          setConsoleLogs((prev) => [...prev, `Error: ${data.error}`]);
+          setIsGenerating(false);
+          alert(`Generation Failed: ${data.error}`);
+        }
+      } catch (e) {
+        console.error("WebSocket Parse Error", e);
+      }
+    };
+
+    ws.onclose = () => {
+      setConsoleLogs((prev) => [...prev, "[System] Uplink Disconnected"]);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [clientId]);
+
+  console.log(consoleLogs,generatedImage)
 
   return (
     <>
@@ -234,10 +291,10 @@ export function StudioPage() {
         <LoadingOverlay message={loadingMessage} />
       )}
 
-      <div className="flex sm:flex-row flex-col md:h-screen bg-background relative">
+      <div className="relative flex flex-col sm:flex-row md:h-screen bg-background">
         {/* <Breadcrumb /> */}
         <div className="w-full  lg:max-w-[380px] border-r overflow-hidden hidden md:block">
-          <div className="py-3 pt-2 px-4 flex items-center justify-between align-center">
+          <div className="flex items-center justify-between px-4 py-3 pt-2 align-center">
             <div className="text-start">
               <Link to="/">
                 <img
@@ -249,7 +306,7 @@ export function StudioPage() {
             </div>
             {/* <Link to="/"> */}
             <Button
-              className="flex items-center space-x-2 h-8 mt-1 py-1 shadow-none rounded-2 text-sm border-gray-200 bg-white text-gray-800 hover:bg-gray-50 shadow-transparent "
+              className="flex items-center h-8 py-1 mt-1 space-x-2 text-sm text-gray-800 bg-white border-gray-200 shadow-none rounded-2 hover:bg-gray-50 shadow-transparent "
               onClick={handleBackToProject}
             >
               <IoMdArrowRoundBack className="w-4 h-4" />
@@ -305,8 +362,8 @@ export function StudioPage() {
       <MarkingDimensionHome />
 
       <GetAllJobComments />
-    
-      <MaterialData /> 
+
+      <MaterialData />
     </>
   );
 }
