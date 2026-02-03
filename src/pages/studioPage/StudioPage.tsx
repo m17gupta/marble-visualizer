@@ -281,7 +281,7 @@ export function StudioPage() {
     };
   }, [clientId]);
 
-  console.log(consoleLogs,generatedImage)
+
 
   return (
     <>
