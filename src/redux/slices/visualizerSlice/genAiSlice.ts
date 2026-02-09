@@ -23,6 +23,10 @@ interface GenAiState {
   isSubmitGenAiFailed?: boolean;
   task_id?: string | null;
   isFetchingGenAiImages: boolean;
+    genAiImageMode?: string;
+  isShowgenAiOutputImage: boolean;
+  showgenAiOutPutImage: string;
+  clientId?: string;
   
 }
 
@@ -51,7 +55,11 @@ const initialState: GenAiState = {
   isSubmitGenAiFailed: false, // Optional field to track if the submission failed
   task_id: null, // Optional field for storing task ID
   isFetchingGenAiImages: false,
-  currentRequestPalette: []
+  currentRequestPalette: [],
+  genAiImageMode: "api_mode",
+   isShowgenAiOutputImage: false,
+  showgenAiOutPutImage: "",
+  clientId: ""
 };
 
 // Async thunk for submitting a GenAI request
@@ -280,6 +288,9 @@ const genAiSlice = createSlice({
       state.genAiRequestSubmit = null; // Reset the genAiRequestSubmit to null
       state.isSubmitGenAiFailed = false; // Reset the submission failure flag
     },
+      updateGenAiImageGenerateMode: (state, action) => {
+      state.genAiImageMode = action.payload;
+    },
     
   },
   extraReducers: (builder) => {
@@ -438,7 +449,9 @@ export const {
   resetMaskIntoRequest,
   addUpdateRequestPalette,
   updateSegmentIntoRequestPallet,
-  updateNewPalletRequest
+  updateNewPalletRequest,
+  updateGenAiImageGenerateMode,
+  
 
 } = genAiSlice.actions;
 

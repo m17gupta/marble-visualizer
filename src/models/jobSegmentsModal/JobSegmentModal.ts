@@ -1,3 +1,4 @@
+import { CheckboxPosition } from "@/components/demoProject/samplePlayBook/demoCanvas/ShowSelectedSegment";
 
 export interface SegmentModal {
   id?: number;
@@ -20,6 +21,7 @@ export interface SegmentModal {
   group_label_system?: string;
     additionalArea?: number;
   centroid?: { x: number; y: number };
+    show_annotation_points?:CheckboxPosition;
 }
 
 

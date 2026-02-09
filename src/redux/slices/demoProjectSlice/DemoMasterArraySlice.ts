@@ -3,6 +3,7 @@ import { DemoMasterModel } from "@/models/demoModel/DemoMaterArrayModel";
 import { set } from "date-fns";
 import { MaterialModel } from "@/models/swatchBook/material/MaterialModel";
 import { update } from "lodash";
+import { CheckboxPosition } from "@/components/demoProject/samplePlayBook/demoCanvas/ShowSelectedSegment";
 
 interface DemoMasterArrayState {
   demoMasterArray: DemoMasterModel[];
@@ -65,6 +66,45 @@ const demoMasterArraySlice = createSlice({
     updateSelectedSwatchInfo: (state, action: PayloadAction<MaterialModel | null>) => {
       state.selectedSwatchInfo = action.payload;
     },
+      updateAnontationPosition: (state, action: PayloadAction<{ data: CheckboxPosition[] }>) => {
+      const { data } = action.payload;
+
+      // Iterate through each checkbox position update
+      data.forEach((checkboxPos: CheckboxPosition) => {
+        // Find the master item that contains the segment
+        const masterIndex = state.demoMasterArray.findIndex(item => {
+          const allSeg = item.allSegments;
+          return allSeg?.some(seg => seg.short_title === checkboxPos.segmentKey);
+        });
+     
+        if (masterIndex !== -1) {
+          const allSeg = state.demoMasterArray[masterIndex].allSegments;
+          const segIndex = allSeg?.findIndex(seg => seg.short_title === checkboxPos.segmentKey);
+
+          if (segIndex !== undefined && segIndex !== -1 && allSeg) {
+            state.demoMasterArray[masterIndex].allSegments![segIndex].show_annotation_points = checkboxPos;
+          }
+        }
+      });
+    },
+
+    removeSelectedSwatch: (state, action) => {
+      const { swatchId, groupId } = action.payload;
+      if (state.selectedDemoMasterItem) {
+
+        state.selectedDemoMasterItem.overAllSwatch = state.selectedDemoMasterItem.overAllSwatch.filter(
+          (swatch) => swatch.id !== swatchId
+        );
+      }
+
+      const masterIndex = state.demoMasterArray.findIndex(item => item.id === groupId);
+      if (masterIndex !== -1) {
+        state.demoMasterArray[masterIndex].overAllSwatch = state.demoMasterArray[masterIndex].overAllSwatch.filter(
+          (swatch) => swatch.id !== swatchId
+        );
+      }
+
+    },
 
     updateSwatch:(state,action)=>{
       const {pallete,segType}= action.payload;
@@ -95,6 +135,8 @@ export const {
   setIsSwatchDetailsOpen,
   updateSelectedSwatchInfo,
   resetDemoMasterArray,
+  updateAnontationPosition,
+  removeSelectedSwatch,
 } = demoMasterArraySlice.actions;
 
 export default demoMasterArraySlice.reducer;

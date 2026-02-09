@@ -25,7 +25,8 @@ export type CanvasMode =
   | "zoom"
   | "showSegments"
   | "rectangle"
-  | "polygon";
+  | "polygon"
+    | "onxModel";
 
 export type activeCanvasType =
   | "hideSegments"

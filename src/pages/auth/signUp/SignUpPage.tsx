@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AppDispatch, RootState } from "@/redux/store";
-import { signUpUser, clearError } from "@/redux/slices/user/authSlice";
+import { clearError } from "@/redux/slices/user/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import marbleLogo from "../../../../public/assets/marble/main-favicons.png";
@@ -50,6 +50,7 @@ import { setProfile } from "@/redux/slices/user/userProfileSlice";
 import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Navigation from "@/components/homepage/new/Navigation";
+import { signUpUser } from "@/redux/slices/user/authThunk";
 
 // Form validation schema
 const signUpSchema = z
@@ -156,7 +157,7 @@ export function SignUpPage() {
     };
 
     const result = await dispatch(signUpUser(signUpData));
-      console.log("Sign up result:", result);
+    
     if (signUpUser.fulfilled.match(result)) {
       if (result.payload.profile) {
         // Handle error from signUpUser

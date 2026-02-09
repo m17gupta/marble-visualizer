@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AppDispatch, RootState } from "@/redux/store";
-import { loginUser, clearError, AuthState } from "@/redux/slices/user/authSlice";
+import { loginUser} from "@/redux/slices/user/authThunk";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import bgImage from "../../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
@@ -33,6 +33,8 @@ import italian from "../../../../public/assets/marble/italian-marble.jpg";
 import GetPlanFeatures from "@/components/planfeatures/GetPlanFeatures";
 import Navigation from "@/components/homepage/new/Navigation";
 import UserProfileHome from "@/components/userProfile/UserProfileHome";
+import { clearError } from "@/redux/slices/projectSlice";
+import { AuthState } from "@/redux/slices/user/authSlice";
 
 // Form validation schema
 const loginSchema = z.object({

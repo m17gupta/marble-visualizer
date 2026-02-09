@@ -10,7 +10,12 @@ import {
 import { UserPlan } from "@/models/userModel/UserPLanModel";
 import { toast } from "sonner";
 import { UserAPI } from "./api/userApi";
+import axios from "axios";
 
+
+const Backend_URL = import.meta.env.VITE_APP_NEW_BACKEND_URL;
+const email = import.meta.env.VITE_APP_EMAIL_TOKEN;
+const password = import.meta.env.VITE_APP_PASS_TOKEN;
 export class AuthService {
   /**
    * Sign in with email and password
@@ -19,6 +24,29 @@ export class AuthService {
     return await AuthAPI.signIn(credentials);
   }
 
+    // get user token
+  static async getUserToken(): Promise<{
+    access_token: string;
+    token_type: string;
+  }> {
+    try {
+      const token = await axios.post(
+        `${Backend_URL}/api/v1/auth/login`,
+        {
+          email: email,
+          password: password,
+        },
+      );
+      console.log("tokken user", token);
+      if (token) {
+        return token.data;
+      } else {
+        throw new Error("Token not found");
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
   /**
    * Sign up with email and password
    */

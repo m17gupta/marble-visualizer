@@ -20,3 +20,23 @@ export function getPolygonCentroid(points: number[]): { x: number; y: number } {
   return { x: cx, y: cy };
 }
 
+
+export const topRightCorner = (points: number[]): { x: number; y: number } => {
+  if (!points || points.length === 0) {
+    throw new Error('Points array cannot be empty');
+  }
+
+  let maxX = -Infinity;
+  let minY = Infinity;
+
+  // Iterate through points array in pairs [x1, y1, x2, y2, ...]
+  for (let i = 0; i < points.length; i += 2) {
+    const x = points[i];
+    const y = points[i + 1];
+
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+  }
+
+  return { x: maxX-30, y: minY +50 };
+};    

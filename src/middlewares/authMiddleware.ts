@@ -4,8 +4,9 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 import { store } from "@/redux/store";
-import { refreshSession, clearAuth } from "@/redux/slices/user/authSlice";
+import { refreshSession } from "@/redux/slices/user/authThunk";
 import { Middleware } from "@reduxjs/toolkit";
+import { clearAuth } from "@/redux/slices/user/authSlice";
 
 // Create axios instance
 export const apiClient = axios.create({

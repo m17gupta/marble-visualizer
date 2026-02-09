@@ -21,7 +21,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "@/redux/slices/user/authSlice";
+import { logoutUser } from "@/redux/slices/user/authThunk";
 import { AppDispatch, RootState } from "@/redux/store";
 import Setting from "@/layouts/Setting";
 import RealEstateSideBar from "./roleBaseSideBar/RealEstateSideBar";

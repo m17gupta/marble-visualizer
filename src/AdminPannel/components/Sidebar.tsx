@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import marbleLogo from "../../../public/assets/marble/main-favicons.png";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/redux/store";
-import { logoutUser } from "@/redux/slices/user/authSlice";
+import { logoutUser } from "@/redux/slices/user/authThunk";
 import { clearCurrentJob } from "@/redux/slices/jobSlice";
 import { clearCurrentImage } from "@/redux/slices/studioSlice";
 import { clearBreadcrumbs } from "@/redux/slices/visualizerSlice/workspaceSlice";

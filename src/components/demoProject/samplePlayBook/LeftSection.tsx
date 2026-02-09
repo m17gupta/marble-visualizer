@@ -56,6 +56,7 @@ import { IoInformation } from 'react-icons/io5';
 import { resetDemoCanvasState } from '@/redux/slices/demoProjectSlice/DemoCanvasSlice';
 import FilterCategory from './fiterCategory/FilterCategory';
 import GridViewMaterial from './showMaterial/GridViewMaterial';
+import InputQuery from './inputQuery/InputQuery';
 
 
 /* -------------------- Main -------------------- */
@@ -281,9 +282,13 @@ const LeftSection = () => {
 
 
                 )}
+               
+                 <InputQuery/>
               </ScrollArea>
+              
             </div>
           </div>
+         
         </div>
       )}
     </aside>

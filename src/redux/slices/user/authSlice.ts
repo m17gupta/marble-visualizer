@@ -7,6 +7,7 @@ import {
   AuthError,
 } from "@/models";
 import { UserPlan } from "@/models/userModel/UserPLanModel";
+import { getCurrentUser, getUserSubscriptionPlan, initializeAuth, loginUser, logoutUser, refreshSession, signUpUser, updateUserSubscriptionPlan } from "./authThunk";
 
 export interface AuthState {
   user: User | null;
@@ -19,6 +20,7 @@ export interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isRegistered?: boolean;
+  genAiToken?: string | null;
 }
 
 const initialState: AuthState = {
@@ -32,153 +34,154 @@ const initialState: AuthState = {
   refreshToken: null,
   isSubscriptionLoading: false,
   isRegistered: false,
+  genAiToken: null,
 };
 
 // Async thunk for login
-export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async (credentials: LoginCredentials, { rejectWithValue }) => {
-    try {
-      const response = await AuthService.signIn(credentials);
+// export const loginUser = createAsyncThunk(
+//   "auth/loginUser",
+//   async (credentials: LoginCredentials, { rejectWithValue }) => {
+//     try {
+//       const response = await AuthService.signIn(credentials);
         
-      return response;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Login failed. Please check your credentials.");
-    }
-  }
-);
+//       return response;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Login failed. Please check your credentials.");
+//     }
+//   }
+// );
 
-// Async thunk for registration
-export const signUpUser = createAsyncThunk(
-  "auth/signUpUser",
-  async (credentials: SignUpCredentials, { rejectWithValue }) => {
-    try {
-      const response = await AuthService.signUp(credentials);
-        return response;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Registration failed. Please try again.");
-    }
-  }
-);
+// // Async thunk for registration
+// export const signUpUser = createAsyncThunk(
+//   "auth/signUpUser",
+//   async (credentials: SignUpCredentials, { rejectWithValue }) => {
+//     try {
+//       const response = await AuthService.signUp(credentials);
+//         return response;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Registration failed. Please try again.");
+//     }
+//   }
+// );
 
-// Async thunk for logout
-export const logoutUser = createAsyncThunk(
-  "auth/logoutUser",
-  async (_, { rejectWithValue, dispatch }) => {
-    try {
-      await AuthService.signOut();
+// // Async thunk for logout
+// export const logoutUser = createAsyncThunk(
+//   "auth/logoutUser",
+//   async (_, { rejectWithValue, dispatch }) => {
+//     try {
+//       await AuthService.signOut();
     
-      return null;
-    } catch (error) {
-      console.error("Logout error:", error);
+//       return null;
+//     } catch (error) {
+//       console.error("Logout error:", error);
 
-      // Even if server-side logout fails, we should still clean up locally
-      // This is important for UX - users expect to be able to log out regardless
-      dispatch(clearAuth()); // Immediately clear the Redux state
+//       // Even if server-side logout fails, we should still clean up locally
+//       // This is important for UX - users expect to be able to log out regardless
+//       dispatch(clearAuth()); // Immediately clear the Redux state
 
-      if (error instanceof AuthError) {
-        // We return the error, but the UI will still show as logged out
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(
-        "Logout failed, but local session has been cleared"
-      );
-    }
-  }
-);
+//       if (error instanceof AuthError) {
+//         // We return the error, but the UI will still show as logged out
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue(
+//         "Logout failed, but local session has been cleared"
+//       );
+//     }
+//   }
+// );
 
-// Async thunk to initialize auth state
-export const initializeAuth = createAsyncThunk(
-  "auth/initializeAuth",
-  async (_, { rejectWithValue }) => {
-    try {
-      const result = await AuthService.getCurrentUser();
-      return result;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Failed to initialize authentication");
-    }
-  }
-);
+// // Async thunk to initialize auth state
+// export const initializeAuth = createAsyncThunk(
+//   "auth/initializeAuth",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const result = await AuthService.getCurrentUser();
+//       return result;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Failed to initialize authentication");
+//     }
+//   }
+// );
 
-// Async thunk to get current user
-export const getCurrentUser = createAsyncThunk(
-  "auth/getCurrentUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const result = await AuthService.getCurrentUser();
+// // Async thunk to get current user
+// export const getCurrentUser = createAsyncThunk(
+//   "auth/getCurrentUser",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const result = await AuthService.getCurrentUser();
 
-      return result;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Failed to get current user");
-    }
-  }
-);
+//       return result;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Failed to get current user");
+//     }
+//   }
+// );
 
-// get UserSunscriptionPlan
-export const getUserSubscriptionPlan = createAsyncThunk(  
-  "auth/getUserSubscriptionPlan",
-  async (userId: string, { rejectWithValue }) => {
-    try {
-      const userPlan = await AuthService.getUserPlan(userId);
-      return userPlan;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Failed to get user subscription plan");
-    }
-  }
-);
+// // get UserSunscriptionPlan
+// export const getUserSubscriptionPlan = createAsyncThunk(  
+//   "auth/getUserSubscriptionPlan",
+//   async (userId: string, { rejectWithValue }) => {
+//     try {
+//       const userPlan = await AuthService.getUserPlan(userId);
+//       return userPlan;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Failed to get user subscription plan");
+//     }
+//   }
+// );
 
-// update UserSubscriptionPlan
-export const updateUserSubscriptionPlan = createAsyncThunk(
-  "auth/updateUserSubscriptionPlan",
-  async ({ userId, credits }: { userId: string; credits: number }, { rejectWithValue }) => {
-    try {
-      const updatedPlan = await AuthService.updateUserPlan(userId, credits);
-      console.log("Updated User Plan:", updatedPlan);
-      return updatedPlan;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Failed to update user subscription plan");
-    }
-  }
-);
+// // update UserSubscriptionPlan
+// export const updateUserSubscriptionPlan = createAsyncThunk(
+//   "auth/updateUserSubscriptionPlan",
+//   async ({ userId, credits }: { userId: string; credits: number }, { rejectWithValue }) => {
+//     try {
+//       const updatedPlan = await AuthService.updateUserPlan(userId, credits);
+//       console.log("Updated User Plan:", updatedPlan);
+//       return updatedPlan;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Failed to update user subscription plan");
+//     }
+//   }
+// );
 
-// Async thunk to refresh session
-export const refreshSession = createAsyncThunk(
-  "auth/refreshSession",
-  async (_, { rejectWithValue }) => {
-    try {
-      const session = await AuthService.refreshSession();
-      if (!session) {
-        throw new Error("No session returned");
-      }
+// // Async thunk to refresh session
+// export const refreshSession = createAsyncThunk(
+//   "auth/refreshSession",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const session = await AuthService.refreshSession();
+//       if (!session) {
+//         throw new Error("No session returned");
+//       }
 
-      const result = await AuthService.getCurrentUser();
-      return result;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("Session refresh failed");
-    }
-  }
-);
+//       const result = await AuthService.getCurrentUser();
+//       return result;
+//     } catch (error) {
+//       if (error instanceof AuthError) {
+//         return rejectWithValue(error.message);
+//       }
+//       return rejectWithValue("Session refresh failed");
+//     }
+//   }
+// );
 
 const authSlice = createSlice({
   name: "auth",
@@ -207,6 +210,9 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.refreshToken = null;
       state.isRegistered = false; 
+    },
+     setGenAiToken: (state, action: PayloadAction<string | null>) => {
+      state.genAiToken = action.payload;
     },
   },
   extraReducers: (builder) => {
