@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import {
-  adminProductSave,
+  // adminProductSave,
   handleAddAttributeInSlice,
   handleAddInCategorySegmentBrand,
   handleAddValueInSlice,
@@ -34,11 +34,24 @@ import {
   UploadProgress,
 } from "@/components/uploadImageS3";
 import { ToastAction } from "@radix-ui/react-toast";
+import { AddMaterialModel } from "@/AdminPannel/components/material/AddMaterialModel";
 
 interface autogenModal {
   price: null | number;
   stock: null | number;
 }
+
+const MarbleColors = [
+  { label: "Beige", value: "beige" },
+  { label: "Black", value: "black" },
+  { label: "Brown", value: "brown" },
+  { label: "Green", value: "green" },
+  { label: "Grey", value: "grey" },
+  { label: "Red", value: "red" },
+  { label: "White", value: "white" },
+  { label: "Yellow", value: "yellow" }
+];
+
 
 const ProductAddEditPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -67,7 +80,7 @@ const ProductAddEditPage = () => {
   };
 
   const { id } = useParams();
-
+ 
   const [saveLoading, setSaveLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -596,13 +609,13 @@ const ProductAddEditPage = () => {
     }
 
     try {
-      await dispatch(
-        adminProductSave({
-          product,
-          selected,
-          variants,
-        })
-      ).unwrap();
+      // await dispatch(
+      //   adminProductSave({
+      //     product,
+      //     selected,
+      //     variants,
+      //   })
+      // ).unwrap();
 
       toast.success("Product saved successfully!", {
         description: "Your product has been saved with all variants.",
@@ -881,7 +894,7 @@ const ProductAddEditPage = () => {
               )}
             </div>
 
-            {/* Product Options */}
+            Product Options
             <div className="bg-white rounded-lg border p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -1140,320 +1153,7 @@ const ProductAddEditPage = () => {
               </div>
             </div>
 
-            {/* Variants Preview */}
-            {variants.length > 0 && (
-              <div className="bg-white rounded-lg border p-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold">Product variants</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    This ranking will affect the variants' order in your
-                    storefront.
-                  </p>
-                </div>
-
-                <div className="border rounded-lg overflow-hidden">
-                  <table className="w-full text-sm text-gray-700">
-                    <thead className="w-full bg-gray-50 border-b">
-                      <tr>
-                        <th className="w-8 p-3 text-left">
-                          <input type="checkbox" defaultChecked />
-                        </th>
-                        {variants.length > 0 &&
-                          Object.keys(variants[0].variations!).map((key) => {
-                            const name = availableAttributes.find(
-                              (d: any) => d.id == key
-                            )?.name;
-                            return (
-                              <th
-                                key={key}
-                                className="p-3 text-left font-medium"
-                              >
-                                {name}
-                              </th>
-                            );
-                          })}
-                        <th className="p-3 text-left font-medium">Combined</th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y w-full">
-                      {variants.map((variant, idx) => {
-                        const variantLabel = Object.values(variant.variations!)
-                          .map((v) => v.value)
-                          .join(" / ");
-
-                        return (
-                          <tr key={idx} className="">
-                            <td className="p-3">
-                              <input
-                                type="checkbox"
-                                checked={variant.checked}
-                                onChange={() =>
-                                  handlecheckanduncheckinproductvariantion(idx)
-                                }
-                              />
-                            </td>
-
-                            {Object.values(variant.variations!).map((v, i) => (
-                              <td key={i} className="">
-                                <p className="w-full px-2 py-1.5 text-sm">
-                                  {v.value}
-                                </p>
-                              </td>
-                            ))}
-
-                            <td className="">
-                              <p className="w-full px-2 py-1.5 text-sm">
-                                {variantLabel}
-                              </p>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-medium">Tip:</span> Variants left
-                    unchecked won't be created. You can always create and edit
-                    variants afterwards but this list fits the variations in
-                    your product options.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Variants Configuration */}
-            {variants.length > 0 && (
-              <div className="bg-white rounded-lg border">
-                <div className="px-6 py-4 border-b">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Configure Variants
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Set SKU, pricing, and inventory for each variant
-                  </p>
-                </div>
-
-                <div className="px-4 py-3 border-b flex items-center justify-between bg-gray-50">
-                  <div className="flex gap-2">
-                    <input
-                      onChange={handleChangeInputOfRandomGen}
-                      type="number"
-                      name="stock"
-                      placeholder="Enter Stock"
-                      value={randomGen.stock || ""}
-                      className="w-32 px-2 py-1.5 border border-gray-300 rounded text-sm"
-                    />
-                    <input
-                      onChange={handleChangeInputOfRandomGen}
-                      type="number"
-                      step="0.01"
-                      name="price"
-                      value={randomGen.price || ""}
-                      placeholder="Enter Price $ 0.00"
-                      className="w-38 px-2 py-1.5 border border-gray-300 rounded text-sm"
-                    />
-                    <button
-                      onClick={() =>
-                        handleGenerateRandomSKU(
-                          stringofSKUGeneration,
-                          randomGen
-                        )
-                      }
-                      className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"
-                    >
-                      Auto Generate
-                    </button>
-                  </div>
-                  <div className="text-sm text-gray-500">Bulk Actions</div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                          {selected
-                            .filter((a) => a.is_variant_value)
-                            .map((a) => a.name)
-                            .join(" / ")}
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                          Title
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                          SKU
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                          Stock
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                          Price
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                          Image URL
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y bg-white">
-                      {variants
-                        .map((variant, realIndex) => ({ variant, realIndex }))
-                        .filter(({ variant }) => variant.checked)
-                        .map(({ variant, realIndex }) => {
-                          const variantLabel = Object.values(
-                            variant.variations!
-                          )
-                            .map((v) => v.value)
-                            .join(" / ");
-
-                          return (
-                            <tr key={realIndex} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">
-                                {variantLabel}
-                              </td>
-                              <td className="px-4 py-3">
-                                <input
-                                  type="text"
-                                  value={variantLabel}
-                                  readOnly
-                                  className="w-full px-2 py-1.5 border border-blue-200 bg-blue-50 rounded text-sm"
-                                />
-                              </td>
-                              <td className="px-4 py-3">
-                                <input
-                                  type="text"
-                                  value={variant.sku}
-                                  onChange={(e) =>
-                                    handleVariantChange(
-                                      realIndex,
-                                      "sku",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="SKU"
-                                  className={`w-28 px-2 py-1.5 border rounded text-sm ${
-                                    !variant.sku || variant.sku.trim() === ""
-                                      ? "border-red-300 focus:ring-red-500"
-                                      : "border-gray-300 focus:ring-blue-500"
-                                  }`}
-                                />
-                              </td>
-                              <td className="px-4 py-3">
-                                <input
-                                  type="number"
-                                  value={
-                                    variant.stock != null ? variant.stock : 0
-                                  }
-                                  onChange={(e) =>
-                                    handleVariantChange(
-                                      realIndex,
-                                      "stock",
-                                      Number(e.target.value)
-                                    )
-                                  }
-                                  placeholder="0"
-                                  className={`w-20 px-2 py-1.5 border rounded text-sm ${
-                                    variant.stock === null ||
-                                    variant.stock === undefined ||
-                                    variant.stock < 0
-                                      ? "border-red-300 focus:ring-red-500"
-                                      : "border-gray-300 focus:ring-blue-500"
-                                  }`}
-                                />
-                              </td>
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-1">
-                                  <span className="text-gray-500">$</span>
-                                  <input
-                                    type="number"
-                                    step="0.01"
-                                    value={variant.price || ""}
-                                    onChange={(e) =>
-                                      handleVariantChange(
-                                        realIndex,
-                                        "price",
-                                        Number(e.target.value)
-                                      )
-                                    }
-                                    placeholder="0.00"
-                                    className={`w-24 px-2 py-1.5 border rounded text-sm ${
-                                      variant.price === null ||
-                                      variant.price === undefined ||
-                                      variant.price < 0
-                                        ? "border-red-300 focus:ring-red-500"
-                                        : "border-gray-300 focus:ring-blue-500"
-                                    }`}
-                                  />
-                                </div>
-                              </td>
-                              <td className="px-4 py-3">
-                                {/* <div className="flex items-center gap-2">
-                                  {variant.image_url && (
-                                    <div className="w-10 h-10 border rounded overflow-hidden flex-shrink-0">
-                                      <img
-                                        src={variant.image_url}
-                                        alt=""
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </div>
-                                  )}
-                                  <input
-                                    type="text"
-                                    value={variant.image_url}
-                                    onChange={(e) =>
-                                      handleVariantChange(
-                                        realIndex,
-                                        "image_url",
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="https://..."
-                                    className="flex-1 min-w-[150px] px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                  />
-                                </div> */}
-                                <div className="flex items-center gap-2">
-                                  <div className="w-10 h-10 border rounded overflow-hidden flex-shrink-0 relative">
-                                    {variant.image_url ? (
-                                      <img
-                                        src={variant.image_url}
-                                        alt="Variant"
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                                        No Image
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-3 py-1.5 border border-gray-300 rounded transition">
-                                    Upload
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      className="hidden"
-                                      onChange={(e) => {
-                                        handleFileUpload(
-                                          e,
-                                          "Variant",
-                                          realIndex
-                                        );
-                                      }}
-                                    />
-                                  </label>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
+       
           </div>
 
           {/* Right Column - Organize */}
@@ -1522,10 +1222,10 @@ const ProductAddEditPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Brands <span className="text-red-500">*</span>
+                    Color <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="brand_id"
+                    name=""
                     value={String(product.brand_id) || ""}
                     onChange={handleProductChange}
                     onKeyUp={handleKeyUp}
@@ -1551,7 +1251,17 @@ const ProductAddEditPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tags <span className="text-gray-400">Optional</span>
+                    Origin Country 
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Add tags..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+                   <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Size
                   </label>
                   <input
                     type="text"

@@ -14,6 +14,7 @@ import {
 } from "../services/Material/AdminMaterialLibService";
 import { SelectOption } from "@/components/swatchBook/NewProductPage/ProductAdd";
 import { generateSKU } from "@/components/swatchBook/helper";
+import { AddMaterialModel } from "../components/material/AddMaterialModel";
 
 interface initialStateModal {
   error: string | null;
@@ -30,12 +31,16 @@ interface initialStateModal {
   filteringData: getMaterialByPaginationArgs;
   total: null | number;
   selectedmaterial: Product | null;
+  product_material: AddMaterialModel[],
+  isFetchedProductMaterial: boolean
+
 }
 
 const initialState: initialStateModal = {
   error: null,
   loading: null,
   materials: [],
+  product_material: [],
   selectedmaterial: null,
   product: {
     name: "",
@@ -68,8 +73,31 @@ const initialState: initialStateModal = {
   brand: [],
   segments: [],
   total: null,
+  isFetchedProductMaterial: false
 };
 
+export const FetchProductMaterial = createAsyncThunk(
+  "materials/FetchProductMaterial",
+  async (
+    _, { rejectWithValue }
+  ) => {
+    try {
+      const response = await AdminMaterialLibService.getProductMaterial();
+
+      if (response.success) {
+        return { data: response.data };
+      } else {
+        return {
+          data: [],
+        };
+      }
+    } catch (error: unknown) {
+      return rejectWithValue(
+        (error as Error)?.message || "Failed to fetch all projects"
+      );
+    }
+  }
+);
 export const adminFetchMaterial = createAsyncThunk(
   "materials/adminFetchMaterial",
   async (
@@ -110,21 +138,13 @@ export const adminFetchMaterial = createAsyncThunk(
 export const adminProductSave = createAsyncThunk(
   "materials/adminProductSave",
   async (
-    {
-      product,
-      selected,
-      variants,
-    }: { product: Product; selected: AttributeId[]; variants: Variant[] },
+    material: AddMaterialModel,
     { rejectWithValue }
   ) => {
     try {
-      const response = await AdminMaterialLibService.handleSave({
-        product,
-        selected,
-        variants,
-      });
+      const response = await AdminMaterialLibService.handleSave(material);
 
-      if (response.status != false) {
+      if (response.sucess) {
         return response.data;
       } else {
         return null;
@@ -147,7 +167,7 @@ export const adminDeleteProduct = createAsyncThunk(
       if (response) {
         return productId;
       } else {
-        return rejectWithValue( "Failed to delete product");
+        return rejectWithValue("Failed to delete product");
       }
     } catch (error: unknown) {
       return rejectWithValue((error as Error)?.message || "Failed to delete product");
@@ -180,7 +200,7 @@ const adminMaterialLibSlice = createSlice({
             };
           });
         } else {
-        const finalBrands = Array.from(
+          const finalBrands = Array.from(
             new Map(
               results.map((d: any) => [d.brand_id.id, d.brand_id])
             ).values()
@@ -417,10 +437,7 @@ const adminMaterialLibSlice = createSlice({
       })
       .addCase(adminProductSave.fulfilled, (state, action) => {
         if (action.payload != null) {
-          state.materials.push(action.payload as Product);
-          state.selected = [];
-          state.variant = [];
-          state.product = {};
+          state.product_material.push(action.payload as AddMaterialModel);
         }
         state.saveLoading = false;
         state.error = null;
@@ -430,13 +447,23 @@ const adminMaterialLibSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      
+
       // Handle product delete
       .addCase(adminDeleteProduct.fulfilled, (state, action) => {
         state.materials = state.materials.filter((p) => p.id !== action.payload);
         state.error = null;
       })
       .addCase(adminDeleteProduct.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+
+      // Handle fetch product material
+      .addCase(FetchProductMaterial.fulfilled, (state, action) => {
+        state.product_material = action.payload.data;
+        state.error = null;
+        state.isFetchedProductMaterial=true
+      })
+      .addCase(FetchProductMaterial.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },

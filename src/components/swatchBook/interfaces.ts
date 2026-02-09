@@ -34,12 +34,12 @@ export interface AttributeSet {
 
 export interface AttributeValues {
   [key: number]:
-    | string
-    | number
-    | readonly string[]
-    | boolean
-    | undefined
-    | null;
+  | string
+  | number
+  | readonly string[]
+  | boolean
+  | undefined
+  | null;
 }
 
 export interface SearchTerms {
@@ -173,6 +173,14 @@ export interface Product {
   description?: string;
   photo?: string;
   bucket_path?: string;
+  origin_country?: string;
+  finish_type?: string;
+  polished?: boolean;
+  thickness?: string;
+  size?: string;
+  weight?: number;
+  density?: number;
+  color?: string;
   new_bucket?: number;
   ai_summary?: string | null;
   base_price?: number | null;

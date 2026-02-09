@@ -1,4 +1,5 @@
 
+import GetAllMaterials from '@/AdminPannel/components/material/GetAllMaterials';
 import { fetchDoorMaterials, fetchFloorMaterials, fetchRoofMaterials, fetchTrimMaterials, fetchWallMaterials, fetchWindowMaterials } from '@/redux/slices/materialSlices/materialsSlice';
 import { AppDispatch, RootState } from '@/redux/store';
 import { useEffect, useRef } from 'react'
@@ -112,7 +113,7 @@ const MaterialData = () => {
 
 
     return (
-        null
+       <GetAllMaterials/>
     )
 }
 

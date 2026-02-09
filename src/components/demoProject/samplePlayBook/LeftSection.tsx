@@ -54,6 +54,8 @@ import GridSwatch from '../swatch/GridSwatch'; import SwatchTemplate from '../sw
 import { resetSegmentSlice } from '@/redux/slices/segmentsSlice';
 import { IoInformation } from 'react-icons/io5';
 import { resetDemoCanvasState } from '@/redux/slices/demoProjectSlice/DemoCanvasSlice';
+import FilterCategory from './fiterCategory/FilterCategory';
+import GridViewMaterial from './showMaterial/GridViewMaterial';
 
 
 /* -------------------- Main -------------------- */
@@ -66,12 +68,14 @@ const LeftSection = () => {
   const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { masterArray } = useSelector((state: RootState) => state.masterArray);
+
+  const {product_material}=useSelector((state:RootState)=>state.materialsdetails)
   const filtered = useMemo(
     () =>
-      products.filter(
+      product_material.filter(
         (p) =>
-          p.name.toLowerCase().includes(query.toLowerCase()) ||
-          p.brand.toLowerCase().includes(query.toLowerCase())
+          p?.title?.toLowerCase().includes(query.toLowerCase()) ||
+          p?.category?.toLowerCase().includes(query.toLowerCase())
       ),
     [query]
   );
@@ -95,7 +99,7 @@ const LeftSection = () => {
     setActive((a) => (a.includes(v) ? a.filter((x) => x !== v) : [...a, v]));
 
 
-  const  [showSearch, setShowSearch] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
   return (
     <aside
       className={` ${collapsed ? "w-[84px]" : "w-[100%] md:w-[360px] lg:w-[360px]"
@@ -143,18 +147,18 @@ const LeftSection = () => {
               <span>Back</span>
             </Button>
           </div>
- <div className="flex items-center gap-3 border-b p-2">
-              <ShowSegments
-          
-                variant="expanded"
-              />
-            </div>
+          <div className="flex items-center gap-3 border-b p-2">
+            <ShowSegments
+
+              variant="expanded"
+            />
+          </div>
           {/* inner */}
           <div className="flex flex-1">
             {/* left icon column */}
 
 
-           
+
 
             {/* right content */}
             <div className="flex min-w-0 flex-1 flex-col">
@@ -168,51 +172,51 @@ const LeftSection = () => {
                
                   </div> */}
 
-                   <button
+                  <button
 
-                    onClick={() =>setShowSearch (!showSearch)}
+                    onClick={() => setShowSearch(!showSearch)}
                     className="p-2"
                   >
                     <Search className="h-5 w-5 text-zinc-600 cursor-pointer focus:outline-none focus:ring-0" />
                   </button>
-                
+
                   <FilterSidebars />
 
                   <Tabs value={view} onValueChange={(v) => setView(v as "grid" | "list")}>
-        <TabsList className="h-10 rounded-sm py-0 bg-gray-100 gap-1 px-2">
-          <TabsTrigger
-            value="grid"
-            className="px-3 py-2 focus:ring-none focus:outline-none rounded-sm data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </TabsTrigger>
+                    <TabsList className="h-10 rounded-sm py-0 bg-gray-100 gap-1 px-2">
+                      <TabsTrigger
+                        value="grid"
+                        className="px-3 py-2 focus:ring-none focus:outline-none rounded-sm data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent"
+                      >
+                        <Grid3X3 className="h-4 w-4" />
+                      </TabsTrigger>
 
-          <TabsTrigger
-            value="list"
-            className="px-3 py-2 focus:ring-none focus:outline-none rounded-sm data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent"
-          >
-            <List className="h-4 w-4" />
-          </TabsTrigger>
-        </TabsList>
-                </Tabs>
+                      <TabsTrigger
+                        value="list"
+                        className="px-3 py-2 focus:ring-none focus:outline-none rounded-sm data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=inactive]:bg-transparent"
+                      >
+                        <List className="h-4 w-4" />
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
 
 
 
                 </div>
 
                 {showSearch && (
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-zinc-500" />
-                  <Input
-                    placeholder="Search products…"
-                    className="h-9 pl-8"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-zinc-500" />
+                    <Input
+                      placeholder="Search products…"
+                      className="h-9 pl-8"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </div>
                 )}
 
-                <div className="flex flex-wrap gap-2">
+                {/* <div className="flex flex-wrap gap-2">
                   {OPTIONS.map((opt) => {
                     const isActive = active.includes(opt);
                     return (
@@ -232,10 +236,10 @@ const LeftSection = () => {
                       </button>
                     );
                   })}
-                </div>
+                </div> */}
 
-               
-               
+                <FilterCategory/>
+
               </div>
 
 
@@ -259,8 +263,8 @@ const LeftSection = () => {
                 ) : (
                   // PURE GRID: 3 columns, only images + heart (no details)
                   <div className="grid grid-cols-3 gap-4">
-                    {/* {filtered.map((p) => (
-                  <GridTileMinimal
+                    {filtered.map((p) => (
+                  <GridViewMaterial
                     key={p.id}
                     data={p}
                     isActive={picked === p.id}
@@ -268,7 +272,7 @@ const LeftSection = () => {
                     setActiveId={setActiveId}
                     onFav={(e) => e.stopPropagation()}
                   />
-                ))} */}
+                ))}
                     <SwatchTemplate
                       swatchType="grid"
                     />

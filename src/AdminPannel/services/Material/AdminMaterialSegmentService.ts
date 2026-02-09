@@ -27,7 +27,7 @@ export class AdminMaterialSegmentService {
       const { data, error } = await supabase
         .from("product_segments")
         .select(
-          `id,name,color,color_code,icon,icon_svg,index,is_active,is_visible,description,short_code`
+          `id,name,color,categories,color_code,icon,icon_svg,index,is_active,is_visible,description,short_code`
         )
         .order(`${orderby}`, { ascending: order == "asec" ? true : false });
 

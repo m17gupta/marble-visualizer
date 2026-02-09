@@ -130,6 +130,65 @@ export interface Database {
           updated_at?: string
         }
       }
+      product_material: {
+        Row: {
+          id: string
+          title: string
+          basic_price: number | null
+          description: string | null
+          media: Json
+          segment_type: string | null
+          category: string | null
+          color: string | null
+          origin_country: string | null
+          finish_type: string | null
+          polished: boolean
+          thickness: string | null
+          size: string | null
+          weight: number | null
+          density: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          basic_price?: number | null
+          description?: string | null
+          media?: Json
+          segment_type?: string | null
+          category?: string | null
+          color?: string | null
+          origin_country?: string | null
+          finish_type?: string | null
+          polished?: boolean
+          thickness?: string | null
+          size?: string | null
+          weight?: number | null
+          density?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          basic_price?: number | null
+          description?: string | null
+          media?: Json
+          segment_type?: string | null
+          category?: string | null
+          color?: string | null
+          origin_country?: string | null
+          finish_type?: string | null
+          polished?: boolean
+          thickness?: string | null
+          size?: string | null
+          weight?: number | null
+          density?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       project_access: {
         Row: {
           id: string

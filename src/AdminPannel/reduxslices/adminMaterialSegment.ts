@@ -9,6 +9,7 @@ import { AdminMaterialSegmentService } from "../services/Material/AdminMaterialS
 
 export interface ProductBrandModal {
   list: MaterialSegment[];
+  isFetchedSegment: boolean;
   currentSegment: null | MaterialSegment;
   isLoading: boolean;
   error: null | string;
@@ -21,6 +22,7 @@ export interface ProductBrandModal {
 
 const initialState: ProductBrandModal = {
   list: [],
+  isFetchedSegment: false,
   currentSegment: null,
   isLoading: false,
   error: null,
@@ -130,6 +132,7 @@ const adminMaterialSegmentSlice = createSlice({
       })
       .addCase(adminFetchMaterialSegments.fulfilled, (state, action) => {
         state.list = action.payload;
+        state.isFetchedSegment = true;
         state.error = null;
         state.isLoading = false;
       })

@@ -64,9 +64,7 @@ import MaterialData from "@/components/swatchBookData/materialData/MaterialData"
 import GetGenAiImageJobIdBased from "@/components/workSpace/compareGenAiImages/GetGenAiImageJobIdBased";
 import { SegmentModal } from "@/models/jobSegmentsModal/JobSegmentModal";
 import { Loader } from "../projectPage/ProjectsPage";
-//import bgImage from "../../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
-import bgImage from "../../../public/assets/marble/pexels-itsterrymag-2631746.jpg";
-import marbleLogo from "../../../public/assets/marble/main-favicons.png";
+
 export function StudioPage() {
   const [canvasWidth, setCanvasWidth] = useState(1023);
   const [canvasHeight, setCanvasHeight] = useState(592);
@@ -207,7 +205,7 @@ export function StudioPage() {
   };
 
   const handleBackToProject = () => {
-    console.log("profile---", profile);
+  
     dispatch(resetSegmentSlice());
     dispatch(clearCurrentJob());
     dispatch(clearCurrentProject());

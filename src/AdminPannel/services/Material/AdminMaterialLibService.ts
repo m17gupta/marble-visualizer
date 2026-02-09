@@ -1,3 +1,4 @@
+import { AddMaterialModel } from "@/AdminPannel/components/material/AddMaterialModel";
 import { ProductCategory } from "@/AdminPannel/reduxslices/adminMaterialCategorySlice";
 import {
   AttributeId,
@@ -49,6 +50,25 @@ export class AdminMaterialLibService {
   /**
    * get project by user id
    */
+
+
+  static async getProductMaterial(): Promise<{success:boolean,data:AddMaterialModel[]}> {
+    try {
+      const { data, error } = await supabase
+        .from("product_material")
+        .select("*")
+      
+
+      if (error) {
+        return {success:false,data:[]};
+      } else {
+        return {success:true,data:data};
+      }
+    } catch (error) {
+      console.error("Error in Admin Projects Services==>>>", error);
+      return {success:false,data:[]};
+    }
+  }
   static async getMaterialByPagination({
     item_per_page = 20,
     current_page,
@@ -258,84 +278,25 @@ export class AdminMaterialLibService {
     }
   }
 
-  static async handleSave({
-    product,
-    selected,
-    variants,
-  }: handleSaveProps): Promise<ApiResponse> {
+  static async handleSave(material: AddMaterialModel): Promise<{sucess: boolean, data: any, error?: string | null}> {
     try {
-      const [id, err] = (await this.saveProduct(product)).data;
-      if (err) {
-        toast.error(err);
-        return {
-          data: {},
-          status: false,
-        } as ApiResponse;
-      }
+        const { data, error } = await supabase
+        .from("product_material")
+        .insert(material)
+        .select("*")
+        .single();
 
-      const [data, attributesaveerror] = await this.saveAttributesInDatabase({
-        id: id!,
-        selected: selected,
-      });
-
-      if (attributesaveerror) {
-        toast.error(attributesaveerror);
-        return {
-          data: {},
-          status: false,
-        } as ApiResponse;
-      }
-
-      let variantinDBS;
-
-      let varaintwithvariations = variants.filter((d: any) => d.checked);
-
-      if (data != null) {
-        variantinDBS = (await this.saveVariant({
-          attrvalues: data,
-          varaintwithvariations: varaintwithvariations,
-          productid: id!,
-        }))!.map((d) => {
+        if(error){
           return {
-            ...d,
-          };
-        });
-      }
-
-      const { data: savedVariant, error } = await supabase
-        .from("variant_attribute_values")
-        .insert(variantinDBS);
-      if (error) {
-        toast.error("Issue in Saving Variant Attribute Values");
-        return {
-          data: {},
-          status: false,
-        } as ApiResponse;
-      } else {
-        toast.success("Variant Data is Saved in Database");
-        const { data: d, error: e } = await supabase
-          .from("products")
-          .select(
-            `id,
-         name,
-         brand_id(*),
-         product_category_id(*),
-         material_segment_id(*),
-         description,
-         photo,
-         bucket_path,
-         new_bucket,
-         ai_summary,
-         base_price,
-         product_variants(*)`
-          )
-          .eq("id", id)
-          .single();
-        return {
-          data: data as Product,
-          status: true,
-        } as ApiResponse;
-      }
+            sucess: false,
+            data: null,
+            error: error.message,
+          }
+        }
+        return {  
+          sucess: true,
+          data: data,
+        }
     } catch (error) {
       throw error;
     }

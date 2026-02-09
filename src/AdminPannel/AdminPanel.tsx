@@ -21,6 +21,8 @@ import DemoProject from "./pages/DemoProject";
 import Role from "./pages/Role";
 import Permission from "./pages/Permission";
 import ProductAddEditPage from "@/components/swatchBook/MaterialAddPage";
+import AddMateraiForm from "./components/material/AddMateraiForm";
+import GetMAterialHome from "./components/material/GetMAterialHome";
 
 export type AdminPage =
   | "dashboard"
@@ -169,9 +171,9 @@ const AdminPanel = () => {
         return <DemoProject />;
 
       case "materials":
-        return <MaterialLibrary />;
+        return <GetMAterialHome />;
       case "addmaterials":
-        return <ProductAddEditPage />;
+        return <AddMateraiForm />;
       case "brand":
         return <MaterialBrands />;
       case "style":
